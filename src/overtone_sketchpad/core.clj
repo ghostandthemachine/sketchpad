@@ -94,22 +94,27 @@
 
         doc-split-pane (left-right-split
                          docs-tree-panel
-                         doc-text-panel)
+                         doc-text-panel 
+                         :divider-location 0.3)
 
         repl-out-text-area (make-text-area false)
         repl-out-writer (make-repl-writer repl-out-text-area)
         
         repl-out-scroll-pane (scrollable repl-out-text-area)
-        repl-label (label "Clojure REPL output")
-        repl-output-vertical-panel (vertical-panel :items [repl-out-scroll-pane repl-label])
+        repl-output-vertical-panel (vertical-panel :items [repl-out-scroll-pane])
 
         repl-in-text-area (make-text-area false)
-        repl-input-label (label "Clojure REPL input \u2191")
-        repl-input-vertical-panel (vertical-panel :items [repl-in-text-area repl-input-label])
+        repl-input-vertical-panel (vertical-panel :items [repl-in-text-area])
 
-        repl-split-pane (top-bottom-split repl-output-vertical-panel repl-input-vertical-panel)
+        repl-split-pane (top-bottom-split 
+        					repl-output-vertical-panel 
+        					repl-input-vertical-panel
+        					:divider-location 0.7)
                 
-        split-pane (top-bottom-split doc-split-pane repl-split-pane)
+        split-pane (top-bottom-split 
+        				doc-split-pane 
+        				repl-split-pane 
+        				:divider-location 0.7)
 
         frame (frame 
                 :title "Overtone sketch" 
@@ -126,7 +131,6 @@
                      doc-label
                      repl-out-text-area
                      repl-in-text-area
-                     repl-label
                      frame
                      help-text-area
                      help-text-scroll-pane
@@ -222,7 +226,7 @@
       (load-tree-selection tree))
     (load-font app)))
 
-(defn -show-overtone-sketchpad []
+(defn -show []
   (reset! embedded true)
   (if (not @current-app)
     (startup-overtone-sketchpad)
