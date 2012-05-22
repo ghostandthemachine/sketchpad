@@ -33,27 +33,29 @@
            (org.fife.ui.rsyntaxtextarea RSyntaxTextArea SyntaxConstants TokenMakerFactory)  
            (org.fife.ui.rtextarea RTextScrollPane)))
 
-(def pad [:fill-v 5])
+(def pad [:fill-v 3])
 
 (defn create-overtone-app []
   (let [
-        arglist-label (label)
-        search-text-area (text :size [600 :by 13])
+        arglist-label (label :foreground (color :blue))
+        search-text-area (text)
         arg-search-panel (horizontal-panel 
                             :items [arglist-label search-text-area])
-        pos-label (label :font (font "COURIER" 13))
-        position-search-panel (border-panel 
-                                :west pos-label 
-                                :center arg-search-panel
-                                :maximum-size [602 :by 15])
+        pos-label (label)
+        position-search-panel (horizontal-panel 
+                                :items [pos-label 
+                                        [:fill-h 10]
+                                        arg-search-panel
+                                        :fill-h]
+                                :maximum-size [2000 :by 15])
 
         doc-label (label "Source Editor")        
         doc-text-area (make-text-area false)
         doc-scroll-pane (make-scroll-pane doc-text-area)
         doc-text-panel (vertical-panel
                           :items [doc-label 
-                                  doc-scroll-pane 
-                                  pad 
+                                  doc-scroll-pane
+                                  pad
                                   position-search-panel
                                   pad])
         
@@ -137,7 +139,7 @@
                      completion-scroll-pane
                      completion-panel))]
 
-
+    (.setDividerSize split-pane 2)
     
     (doto doc-text-area
       attach-navigation-keys)
