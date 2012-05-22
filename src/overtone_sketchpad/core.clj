@@ -33,8 +33,7 @@
           [clooj.indent]
           [clooj.style]
           [clooj.navigate]
-          [overtone-sketchpad.rsyntax]
-          [overtone-sketchpad.documentation]))
+          [overtone-sketchpad.rsyntax]))
 
 (def pad [:fill-v 3])
 
@@ -242,7 +241,6 @@
 
     ;; docs menu
     (add-menu menu-bar "Documentation" "D"
-      ["Search" "S" "cmd1 shift D" #()]
       ["Browse" "B" "cmd1 shift B" #()]
       ["Examples..." "E" "cmd1 shift E" #()])
     
