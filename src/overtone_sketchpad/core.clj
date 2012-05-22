@@ -1,17 +1,4 @@
 (ns overtone-sketchpad.core
- (:use [seesaw core graphics color]
-        [clojure.pprint :only (pprint)]
-        [clooj.dev-tools]
-        [clooj.brackets]
-        [clooj.highlighting]
-        [clooj.repl]
-        [clooj.search]
-        [clooj.help]
-        [clooj.project]
-        [clooj.utils]
-        [clooj.indent]
-        [clooj.style]
-        [clooj.navigate])
   (:import (javax.swing AbstractListModel BorderFactory JDialog
                         JFrame JLabel JList JMenuBar JOptionPane
                         JPanel JScrollPane JSplitPane JTextArea
@@ -28,12 +15,30 @@
            (java.awt AWTEvent Color Font GridLayout Toolkit)
            (java.net URL)
            (java.util Map)
-           (java.io File FileReader StringReader
+           (javax.xml.parsers DocumentBuilder)
+           (java.io File FileReader StringReader InputStream
                     BufferedWriter OutputStreamWriter FileOutputStream)
-           (org.fife.ui.rsyntaxtextarea RSyntaxTextArea SyntaxConstants TokenMakerFactory)  
-           (org.fife.ui.rtextarea RTextScrollPane)))
+           (org.fife.ui.rsyntaxtextarea RSyntaxTextArea SyntaxConstants TokenMakerFactory Theme)  
+           (org.fife.ui.rtextarea RTextScrollPane))
+   (:use  [seesaw core graphics color]
+          [clojure.pprint :only (pprint)]
+          [clooj.dev-tools]
+          [clooj.brackets]
+          [clooj.highlighting]
+          [clooj.repl]
+          [clooj.search]
+          [clooj.help]
+          [clooj.project]
+          [clooj.utils]
+          [clooj.indent]
+          [clooj.style]
+          [clooj.navigate]
+          [overtone-sketchpad.rsyntax]
+          [overtone-sketchpad.documentation]))
 
 (def pad [:fill-v 3])
+
+(def divider-size 2)
 
 (defn create-overtone-app []
   (let [
@@ -50,16 +55,17 @@
                                 :maximum-size [2000 :by 15])
 
         doc-label (label "Source Editor")        
-        doc-text-area (make-text-area false)
+        doc-text-area (text-area :wrap-lines? false)
         doc-scroll-pane (make-scroll-pane doc-text-area)
         doc-text-panel (vertical-panel
                           :items [doc-label 
+                                  :fill-h
                                   doc-scroll-pane
                                   pad
                                   position-search-panel
                                   pad])
         
-        help-text-area (make-text-area true)
+        help-text-area (text-area :wrap-lines? true)
         help-text-scroll-pane (scrollable help-text-area)
 
         completion-label (label "Name search")
@@ -71,7 +77,8 @@
         cp (:content-pane frame)
 
         docs-tree (tree)
-        docs-tree-scroll-pane (scrollable docs-tree)
+        docs-tree-scroll-pane (scrollable 
+                                docs-tree)
         docs-tree-label (border-panel 
                           :west (label "Projects")
                           :size [200 :by 15]
@@ -83,21 +90,25 @@
         doc-split-pane (left-right-split
                          docs-tree-panel
                          doc-text-panel
-                         :divider-location 0.2)
+                         :divider-location 0.2
+                         :resize-weight 0.2
+                         :divider-size 4)
 
-        repl-out-text-area (make-text-area false)
+        repl-out-text-area (text-area :wrap-lines?  false)
         repl-out-writer (make-repl-writer repl-out-text-area)
         
         repl-out-scroll-pane (scrollable repl-out-text-area)
         repl-output-vertical-panel (vertical-panel :items [repl-out-scroll-pane])
 
-        repl-in-text-area (make-text-area false)
+        repl-in-text-area (text-area :wrap-lines?  false)
         repl-input-vertical-panel (vertical-panel :items [repl-in-text-area])
 
         repl-split-pane (top-bottom-split 
                             repl-output-vertical-panel 
                             repl-input-vertical-panel
-                            :divider-location 0.7)
+                            :divider-location 0.7
+                            :resize-weight 0.7
+                            :divider-size divider-size)
                 
         split-pane (top-bottom-split 
                         doc-split-pane 
@@ -139,7 +150,7 @@
                      completion-scroll-pane
                      completion-panel))]
 
-    (.setDividerSize split-pane 2)
+    (.setDividerSize split-pane 2)      ;; not doing anything
     
     (doto doc-text-area
       attach-navigation-keys)
@@ -187,14 +198,97 @@
 
 (defonce current-overtone-app (atom nil))
 
+(defn make-overtone-menus [app]
+  (when (is-mac)
+    (System/setProperty "apple.laf.useScreenMenuBar" "true"))
+  (let [menu-bar (JMenuBar.)]
+    (. (app :frame) setJMenuBar menu-bar)
+    (let [file-menu
+          (add-menu menu-bar "File" "F"
+            ["New" "N" "cmd1 N" #(create-file app (first (get-selected-projects app)) "")]
+            ["Save" "S" "cmd1 S" #(save-file app)]
+            ["Move/Rename" "M" nil #(rename-file app)]
+            ["Revert" "R" nil #(revert-file app)]
+            ["Delete" nil nil #(delete-file app)])]
+      (when-not (is-mac)
+        (add-menu-item file-menu "Exit" "X" nil #(System/exit 0))))
+    (add-menu menu-bar "Project" "P"
+      ["New..." "N" "cmd1 shift N" #(new-project app)]
+      ["Open..." "O" "cmd1 shift O" #(open-project app)]
+      ["Move/Rename" "M" nil #(rename-project app)]
+      ["Remove" nil nil #(remove-project app)])
+    (add-menu menu-bar "Source" "U"
+      ["Comment-out" "C" "cmd1 SEMICOLON" #(comment-out (:doc-text-area app))]
+      ["Uncomment-out" "U" "cmd1 shift SEMICOLON" #(uncomment-out (:doc-text-area app))]
+      ["Fix indentation" "F" "cmd1 BACK_SLASH" #(fix-indent-selected-lines (:doc-text-area app))]
+      ["Indent lines" "I" "cmd1 CLOSE_BRACKET" #(indent (:doc-text-area app))]
+      ["Unindent lines" "D" "cmd1 OPEN_BRACKET" #(indent (:doc-text-area app))]
+      ["Name search/docs" "S" "TAB" #(show-tab-help app (find-focused-text-pane app) inc)]
+      ;["Go to definition" "G" "cmd1 D" #(goto-definition (get-file-ns app) app)]
+      )
+    (add-menu menu-bar "REPL" "R"
+      ["Evaluate here" "E" "cmd1 ENTER" #(send-selected-to-repl app)]
+      ["Evaluate entire file" "F" "cmd1 E" #(send-doc-to-repl app)]
+      ["Apply file ns" "A" "cmd1 shift A" #(apply-namespace-to-repl app)]
+      ["Clear output" "C" "cmd1 K" #(.setText (app :repl-out-text-area) "")]
+      ["Restart" "R" "cmd1 R" #(restart-repl app
+                            (first (get-selected-projects app)))]
+      ["Print stack trace for last error" "T" "cmd1 T" #(print-stack-trace app)])
+    (add-menu menu-bar "Search" "S"
+      ["Find" "F" "cmd1 F" #(start-find app)]
+      ["Find next" "N" "cmd1 G" #(highlight-step app false)]
+      ["Find prev" "P" "cmd1 shift G" #(highlight-step app true)])
+
+
+    ;; docs menu
+    (add-menu menu-bar "Documentation" "D"
+      ["Search" "S" "cmd1 shift D" #()]
+      ["Browse" "B" "cmd1 shift B" #()]
+      ["Examples..." "E" "cmd1 shift E" #()])
+    
+    (add-menu menu-bar "Window" "W"
+      ["Go to REPL input" "R" "cmd1 3" #(.requestFocusInWindow (:repl-in-text-area app))]
+      ["Go to Editor" "E" "cmd1 2" #(.requestFocusInWindow (:doc-text-area app))]
+      ["Go to Project Tree" "P" "cmd1 1" #(.requestFocusInWindow (:docs-tree app))]
+      ["Increase font size" nil "cmd1 PLUS" #(grow-font app)]
+      ["Decrease font size" nil "cmd1 MINUS" #(shrink-font app)]
+      ["Choose font..." nil nil #(apply show-font-window
+                                        app set-font @current-font)])))
+
+
+(defn startup-overtone [create-app current-app]
+  (Thread/setDefaultUncaughtExceptionHandler
+    (proxy [Thread$UncaughtExceptionHandler] []
+      (uncaughtException [thread exception]
+                       (println thread) (.printStackTrace exception))))
+  (UIManager/setLookAndFeel (UIManager/getSystemLookAndFeelClassName))
+  (let [app (create-app)]
+    (reset! current-app app)
+    (make-overtone-menus app)
+    (add-visibility-shortcut app)
+    (add-repl-input-handler app)
+    (setup-tab-help app (app :repl-in-text-area))
+    (doall (map #(add-project app %) (load-project-set)))
+    (let [frame (app :frame)]
+      (persist-window-shape clooj-prefs "main-window" frame) 
+      (.setVisible frame true)
+      (on-window-activation frame #(update-project-tree (app :docs-tree))))
+    (setup-temp-writer app)
+    (setup-tree app)
+    (let [tree (app :docs-tree)]
+      (load-expanded-paths tree)
+      (load-tree-selection tree))
+    (load-font app)))
+
+
 
 (defn -show []
   (reset! embedded true)
   (if (not @current-overtone-app)
-    (startup create-overtone-app current-overtone-app)
+    (startup-overtone create-overtone-app current-overtone-app)
     (.setVisible (:frame @current-overtone-app) true)))
 
 (defn -main [& args]
   (reset! embedded false)
-  (startup create-overtone-app current-overtone-app))
+  (startup-overtone create-overtone-app current-overtone-app))
 
