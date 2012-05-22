@@ -39,6 +39,17 @@
 
 (def divider-size 2)
 
+(def toggle-doc-tree (atom true))
+
+(defn toggle-doc-tree-visibility [comp]
+  (if (@toggle-doc-tree)
+    (do 
+      (show! comp)
+      (reset! toggle-doc-tree true))
+    (do
+      (hide! comp)
+      (reset! toggle-doc-tree false))))
+
 (defn create-overtone-app []
   (let [
         arglist-label (label :foreground (color :blue))
@@ -52,17 +63,6 @@
                                         arg-search-panel
                                         :fill-h]
                                 :maximum-size [2000 :by 15])
-
-        doc-label (label "Source Editor")        
-        doc-text-area (text-area :wrap-lines? false)
-        doc-scroll-pane (make-scroll-pane doc-text-area)
-        doc-text-panel (vertical-panel
-                          :items [doc-label 
-                                  :fill-h
-                                  doc-scroll-pane
-                                  pad
-                                  position-search-panel
-                                  pad])
         
         help-text-area (text-area :wrap-lines? true)
         help-text-scroll-pane (scrollable help-text-area)
@@ -75,6 +75,17 @@
 
         cp (:content-pane frame)
 
+        doc-label (label "Source Editor")        
+        doc-text-area (text-area :wrap-lines? false)
+        doc-scroll-pane (make-scroll-pane doc-text-area)
+        doc-text-panel (vertical-panel
+                          :items [:fill-h
+                                  doc-label 
+                                  doc-scroll-pane
+                                  pad
+                                  position-search-panel
+                                  pad])
+
         docs-tree (tree)
         docs-tree-scroll-pane (scrollable 
                                 docs-tree)
@@ -82,8 +93,15 @@
                           :west (label "Projects")
                           :size [200 :by 15]
                           :vgap 5)
+
+        docs-tree-hide-btn (button :text "hide" )
+
+        docs-tree-label-and-collapse-panel (horizontal-panel
+                                              :items [docs-tree-hide-btn
+                                                      docs-tree-label
+                                                      :fill-h])
         docs-tree-panel (vertical-panel 
-                            :items [docs-tree-label 
+                            :items [docs-tree-label-and-collapse-panel 
                                     docs-tree-scroll-pane])
 
         doc-split-pane (left-right-split
