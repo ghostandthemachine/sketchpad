@@ -1,4 +1,5 @@
 ## Sketchpad Road Map
+***
 
 ### Project Goals
 - Create a cross platform application for programming Clojure and Overtone with these core features:
@@ -8,7 +9,7 @@
 + Has extensive documentation browsing for both clojure libraries as well as in depth Overtone API docs and SuperCollider UGen docs
 + Integration of Overtone GUI components 
 
------------------------------------------------------------------------------------------------
+***
 
 ### Road Map
 
