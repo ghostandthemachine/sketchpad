@@ -39,16 +39,16 @@
 
 (def divider-size 2)
 
-(def toggle-doc-tree (atom true))
+(def toggle-doc-tree (atom false))
 
 (defn toggle-doc-tree-visibility [comp]
-  (if (@toggle-doc-tree)
+  (if @toggle-doc-tree
     (do 
       (show! comp)
-      (reset! toggle-doc-tree true))
+      (reset! toggle-doc-tree false))
     (do
       (hide! comp)
-      (reset! toggle-doc-tree false))))
+      (reset! toggle-doc-tree true))))
 
 (defn create-overtone-app []
   (let [
@@ -94,7 +94,9 @@
                           :size [200 :by 15]
                           :vgap 5)
 
-        docs-tree-hide-btn (button :text "hide" )
+        docs-tree-hide-btn (button 
+                              :text "hide" 
+                              :listen [:action (fn [_] (toggle-doc-tree-visibility docs-tree-scroll-pane))])
 
         docs-tree-label-and-collapse-panel (horizontal-panel
                                               :items [docs-tree-hide-btn
