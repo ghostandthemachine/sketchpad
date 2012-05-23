@@ -8,6 +8,8 @@
 + Has extensive documentation browsing for both clojure libraries as well as in depth Overtone API docs and SuperCollider UGen docs
 + Integration of Overtone GUI components 
 
+-----------------------------------------------------------------------------------------------
+
 ### Road Map
 
 #### Clooj updates
@@ -19,10 +21,10 @@
 - Create Sketchpad in overtone-sketchpad.core
 	+ Use the clooj.dev-tools namespace to create custom Clooj base application as base of Sketchpad
 	+ Overhaul standard Clooj layout to be more suited to Overtone:
-- Use less real estate by making components collapsible
-- Style and minimize seesaw borders and dividers to maximize frame space
-- Implement tab system for multiple files being open at one time
-- Boot overtone server on startup
+	+ Use less real estate by making components collapsible
+	+ Style and minimize seesaw borders and dividers to maximize frame space
+	+ Implement tab system for multiple files being open at one time
+	+ Boot overtone server on startup
 
 - Add Overtone API documentation and SuperCollider UGen documentation
 	+ Integrate JavaFX 2 WebView component via [upshot](https://github.com/daveray/upshot)
