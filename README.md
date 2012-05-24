@@ -1,13 +1,14 @@
 # Sketchpad
 ## Getting started
-  $ git clone git@github.com:ghostandthemachine/overtone-sketchpad.git
-  $ git clone git@github.com:overtone/overtone.git
- 
-  $ cd overtone-sketchpad
- 
-  $ lein deps
- 
-  $ lein run
+   
+      $ git clone git@github.com:ghostandthemachine/overtone-sketchpad.git
+      $ git clone git@github.com:overtone/overtone.git
+
+      $ cd overtone-sketchpad
+
+      $ lein deps
+
+      $ lein run
 
 Once the Sketchpad is open you need to select Open Project under the Project
 menu and open the Overtone directory.

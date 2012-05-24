@@ -41,14 +41,23 @@
 
 (def toggle-doc-tree (atom false))
 
-(defn toggle-doc-tree-visibility [comp]
+(defn toggle-doc-tree-visibility [app]
   (if @toggle-doc-tree
     (do 
-      (show! comp)
+      (add! (:menu-editor-tree-panel app) (:docs-tree-panel app))
       (reset! toggle-doc-tree false))
     (do
-      (hide! comp)
+      (remove! (:menu-editor-tree-panel app) (:docs-tree-panel app))
       (reset! toggle-doc-tree true))))
+
+(defn make-toolbar [app]
+  (let [toolbar-panel (vertical-panel
+                        :items [(button 
+                                  :text ">"
+                                  :size [20 :by 20]
+                                  :listen [:action (fn [_] (toggle-doc-tree-visibility app))])])]
+    toolbar-panel))
+
 
 (defn create-overtone-app []
   (let [
@@ -94,16 +103,8 @@
                           :size [200 :by 15]
                           :vgap 5)
 
-        docs-tree-hide-btn (button 
-                              :text "hide" 
-                              :listen [:action (fn [_] (toggle-doc-tree-visibility docs-tree-scroll-pane))])
-
-        docs-tree-label-and-collapse-panel (horizontal-panel
-                                              :items [docs-tree-hide-btn
-                                                      docs-tree-label
-                                                      :fill-h])
         docs-tree-panel (vertical-panel 
-                            :items [docs-tree-label-and-collapse-panel 
+                            :items [docs-tree-label 
                                     docs-tree-scroll-pane])
 
         doc-split-pane (left-right-split
@@ -128,9 +129,11 @@
                             :divider-location 0.7
                             :resize-weight 0.7
                             :divider-size divider-size)
-                
+
+        menu-editor-tree-panel (horizontal-panel )
+
         split-pane (top-bottom-split 
-                        doc-split-pane 
+                        menu-editor-tree-panel
                         repl-split-pane 
                         :divider-location 0.7)
 
@@ -147,6 +150,7 @@
                     :changed false}
                    (gen-map
                      doc-text-area
+                     menu-editor-tree-panel
                      doc-label
                      repl-out-text-area
                      repl-in-text-area
@@ -169,7 +173,9 @@
                      completion-scroll-pane
                      completion-panel))]
 
-    (.setDividerSize split-pane 2)      ;; not doing anything
+
+  
+    (add! menu-editor-tree-panel (make-toolbar app) doc-split-pane)
     
     (doto doc-text-area
       attach-navigation-keys)
@@ -257,12 +263,6 @@
       ["Find" "F" "cmd1 F" #(start-find app)]
       ["Find next" "N" "cmd1 G" #(highlight-step app false)]
       ["Find prev" "P" "cmd1 shift G" #(highlight-step app true)])
-
-
-    ;; docs menu
-    (add-menu menu-bar "Documentation" "D"
-      ["Browse" "B" "cmd1 shift B" #()]
-      ["Examples..." "E" "cmd1 shift E" #()])
     
     (add-menu menu-bar "Window" "W"
       ["Go to REPL input" "R" "cmd1 3" #(.requestFocusInWindow (:repl-in-text-area app))]
@@ -271,7 +271,17 @@
       ["Increase font size" nil "cmd1 PLUS" #(grow-font app)]
       ["Decrease font size" nil "cmd1 MINUS" #(shrink-font app)]
       ["Choose font..." nil nil #(apply show-font-window
-                                        app set-font @current-font)])))
+                                        app set-font @current-font)])
+
+    ;; help menu
+    (add-menu menu-bar "Help" "H"
+      ["Browse Docs..." "B" "cmd1 shift B" #()]
+      ["Search Docs..." "S" "cmd1 alt S" #()]
+      ["Clojure" "C" "" #()]
+      ["Overtone" "O" "" #()]
+
+      )
+    ))
 
 
 (defn startup-overtone [create-app current-app]
