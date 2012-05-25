@@ -50,19 +50,15 @@
 (defn toggle-doc-tree-visibility [app]
   (if @toggle-doc-tree
     (do 
-      (add! (:menu-editor-tree-panel app) (:docs-tree-panel app))
+      (add!  (:doc-split-pane app) (:docs-tree-panel app))
+      (config! (:doc-split-pane app) 
+                  :resize-weight 0.3
+                  :divider-location 0.3
+                  :divider-size 4)
       (reset! toggle-doc-tree false))
     (do
-      (remove! (:menu-editor-tree-panel app) (:docs-tree-panel app))
+      (remove!  (:doc-split-pane app) (:docs-tree-panel app))
       (reset! toggle-doc-tree true))))
-
-(defn make-toolbar [app]
-  (let [toolbar-panel (vertical-panel
-                        :items [(button 
-                                  :text ">"
-                                  :size [20 :by 20]
-                                  :listen [:action (fn [_] (toggle-doc-tree-visibility app))])])]
-    toolbar-panel))
 
 
 (defn create-overtone-app []
@@ -114,6 +110,13 @@
                             :items [docs-tree-label 
                                     docs-tree-scroll-pane])
 
+        toggle-tree     (vertical-panel
+                            :items [(button 
+                                      :text ">"
+                                      :id :toggle-tree
+                                      :size [16 :by 16])])
+
+
         doc-split-pane (left-right-split
                          docs-tree-panel
                          doc-text-panel
@@ -137,12 +140,12 @@
                             :resize-weight 0.7
                             :divider-size divider-size)
 
-        menu-editor-tree-panel (horizontal-panel )
 
         split-pane (top-bottom-split 
-                        menu-editor-tree-panel
+                        doc-split-pane
                         repl-split-pane 
                         :divider-location 0.7
+                        :divider-size 3
                         :resize-weight 0.7)
 
         frame (frame 
@@ -155,10 +158,10 @@
 
         app (merge {:file (atom nil)
                     :repl (atom (create-outside-repl repl-out-writer nil))
+                    :doc-tree-visible? (atom false)
                     :changed false}
                    (gen-map
                      doc-text-area
-                     menu-editor-tree-panel
                      doc-label
                      repl-out-text-area
                      repl-in-text-area
@@ -166,6 +169,7 @@
                      help-text-area
                      help-text-scroll-pane
                      repl-out-scroll-pane
+                     toggle-tree
                      docs-tree
                      docs-tree-scroll-pane
                      docs-tree-panel
@@ -182,9 +186,6 @@
                      completion-panel))]
 
 
-  
-    (add! menu-editor-tree-panel doc-split-pane)
-    
     (doto doc-text-area
       attach-navigation-keys)
     
@@ -256,7 +257,7 @@
       ["Fix indentation" "F" "cmd1 BACK_SLASH" #(fix-indent-selected-lines (:doc-text-area app))]
       ["Indent lines" "I" "cmd1 CLOSE_BRACKET" #(indent (:doc-text-area app))]
       ["Unindent lines" "D" "cmd1 OPEN_BRACKET" #(indent (:doc-text-area app))]
-      ["Name search/docs" "S" "TAB" #(show-tab-help app (find-focused-text-pane app) inc)]
+      ; ["Name search/docs" "S" "TAB" #(show-tab-help app (find-focused-text-pane app) inc)]
       ;["Go to definition" "G" "cmd1 D" #(goto-definition (get-file-ns app) app)]
       )
     (add-menu menu-bar "REPL" "R"
@@ -278,6 +279,7 @@
       ["Go to Project Tree" "P" "cmd1 1" #(.requestFocusInWindow (:docs-tree app))]
       ["Increase font size" nil "cmd1 PLUS" #(grow-font app)]
       ["Decrease font size" nil "cmd1 MINUS" #(shrink-font app)]
+      ["File Broswer..." "F" "cmd1 shift 1" #(toggle-doc-tree-visibility app)]
       ["Choose font..." nil nil #(apply show-font-window
                                         app set-font @current-font)])
 
@@ -292,18 +294,19 @@
     ))
 
 
-(defn startup-overtone [create-app current-app]
+(defn startup-overtone [current-app]
   (Thread/setDefaultUncaughtExceptionHandler
     (proxy [Thread$UncaughtExceptionHandler] []
       (uncaughtException [thread exception]
                        (println thread) (.printStackTrace exception))))
   (UIManager/setLookAndFeel (UIManager/getSystemLookAndFeelClassName))
-  (let [app (create-app)]
+  (let [app (create-overtone-app)]
     (reset! current-app app)
+    
     (make-overtone-menus app)
     (add-visibility-shortcut app)
     (add-repl-input-handler app)
-    (setup-tab-help app (app :repl-in-text-area))
+    ; (setup-tab-help app (app :repl-in-text-area))
     (doall (map #(add-project app %) (load-project-set)))
     (let [frame (app :frame)]
       (persist-window-shape clooj-prefs "main-window" frame) 
@@ -328,13 +331,13 @@
 
 
 
-(defn -show []
-  (reset! embedded true)
-  (if (not @current-overtone-app)
-    (startup-overtone create-overtone-app current-overtone-app)
-    (.setVisible (:frame @current-overtone-app) true)))
+; (defn -show []
+;   (reset! embedded true)
+;   (if (not @current-overtone-app)
+;     (startup-overtone current-overtone-app)
+;     (.setVisible (:frame @current-overtone-app) true)))
 
 (defn -main [& args]
   (reset! embedded false)
-  (startup-overtone create-overtone-app current-overtone-app))
+  (startup-overtone current-overtone-app))
 
