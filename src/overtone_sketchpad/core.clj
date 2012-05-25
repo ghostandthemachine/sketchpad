@@ -33,7 +33,13 @@
           [clooj.indent]
           [clooj.style]
           [clooj.navigate]
-          [overtone-sketchpad.rsyntax]))
+          [overtone-sketchpad.rsyntax])
+   (:require [clojure.java.io :as io]
+             [upshot.core :as upshot]))
+
+(defn fx-panel 
+  []
+  (javafx.embed.swing.JFXPanel. ))
 
 (def pad [:fill-v 3])
 
@@ -65,6 +71,7 @@
         search-text-area (text)
         arg-search-panel (horizontal-panel 
                             :items [arglist-label search-text-area])
+
         pos-label (label)
         position-search-panel (horizontal-panel 
                                 :items [pos-label 
@@ -175,7 +182,7 @@
 
 
   
-    (add! menu-editor-tree-panel (make-toolbar app) doc-split-pane)
+    (add! menu-editor-tree-panel doc-split-pane)
     
     (doto doc-text-area
       attach-navigation-keys)
@@ -306,7 +313,17 @@
     (let [tree (app :docs-tree)]
       (load-expanded-paths tree)
       (load-tree-selection tree))
-    (load-font app)))
+    (load-font app)
+
+    (let [doc-ta (app :doc-text-area)
+          repl-in-ta (app :repl-in-text-area)
+          repl-out-ta (app :repl-out-text-area)
+          theme (Theme/load (io/input-stream "src/overtone_sketchpad/dark.xml"))]
+          (.apply theme doc-ta)
+          (.apply theme repl-in-ta)
+          (.apply theme repl-out-ta)
+
+      )))
 
 
 
