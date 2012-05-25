@@ -142,7 +142,8 @@
         split-pane (top-bottom-split 
                         menu-editor-tree-panel
                         repl-split-pane 
-                        :divider-location 0.7)
+                        :divider-location 0.7
+                        :resize-weight 0.7)
 
         frame (frame 
                 :title "Overtone sketch" 
