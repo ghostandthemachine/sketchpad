@@ -4,7 +4,7 @@
   :dependencies [[org.clojure/clojure "1.3.0"]
   				 [overtone "0.6.0"]
   				 [seesaw "1.4.1"]
-  				 [upshot "0.0.0-SNAPSHOT"]
+  				 ; [upshot "0.0.0-SNAPSHOT"]
   				 [clooj "0.3.4.1-SNAPSHOT"]
   				 [com.oracle/javafx-runtime "2.0"]
                  [com.github.insubstantial/substance "7.1"]])

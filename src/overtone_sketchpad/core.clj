@@ -35,11 +35,12 @@
           [clooj.navigate]
           [overtone-sketchpad.rsyntax])
    (:require [clojure.java.io :as io]
-             [upshot.core :as upshot]))
+             ; [upshot.core :as upshot]
+             ))
 
-(defn fx-panel 
-  []
-  (javafx.embed.swing.JFXPanel. ))
+; (defn fx-panel 
+;   []
+;   (javafx.embed.swing.JFXPanel. ))
 
 (def pad [:fill-v 3])
 
