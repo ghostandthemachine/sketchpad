@@ -38,10 +38,6 @@
              ; [upshot.core :as upshot]
              ))
 
-; (defn fx-panel 
-;   []
-;   (javafx.embed.swing.JFXPanel. ))
-
 (def pad [:fill-v 3])
 
 (def divider-size 2)
