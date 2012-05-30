@@ -228,7 +228,7 @@
                         :resize-weight 0.66
                         :divider-size 5)
         frame (frame 
-                :title "Clooj" 
+                :title "Sketchpad" 
                 :width 950 
                 :height 700 
                 :on-close :exit
