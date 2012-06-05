@@ -565,8 +565,8 @@
        flags:  :public
   interop fn:  .addHyperlinkListener
  return-type:  void"
-  [obj x]
-  (.addHyperlinkListener obj x))
+  [obj]
+  (.addHyperlinkListener obj obj))
 
 (defn foreground-for-token-type
 "wrapper type:  :getter

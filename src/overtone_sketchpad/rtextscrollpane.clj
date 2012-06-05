@@ -37,22 +37,22 @@
 	[obj x]
 	(.setFoldIndicatorEnabled obj x))
 
-(defn rtextscrollpane
+(defn scroll-pane
 "
         args:  []
        flags:  :public
   interop fn:  Rtextscrollpane.
  return-type:  "
-	[obj]
+	[]
 	(RTextScrollPane.))
 
-(defn rtextscrollpane
+(defn scroll-pane
 "
         args:  [org.fife.ui.rtextarea.RTextArea boolean]
        flags:  :public
   interop fn:  Rtextscrollpane.
  return-type:  "
-	[obj x y]
+	[x y]
 	(RTextScrollPane. x y))
 
 (defn viewport-view!
@@ -91,13 +91,13 @@
 	[obj]
 	(.getLineNumbersEnabled obj))
 
-(defn rtextscrollpane
+(defn scroll-pane
 "
         args:  [org.fife.ui.rtextarea.RTextArea boolean java.awt.Color]
        flags:  :public
   interop fn:  Rtextscrollpane.
  return-type:  "
-	[obj x y z]
+	[x y z]
 	(RTextScrollPane. x y z))
 
 (defn gutter
@@ -109,12 +109,12 @@
 	[obj]
 	(.getGutter obj))
 
-(defn rtextscrollpane
+(defn scroll-pane
 "
         args:  [org.fife.ui.rtextarea.RTextArea]
        flags:  :public
   interop fn:  Rtextscrollpane.
  return-type:  "
-	[obj x]
+	[x]
 	(RTextScrollPane. x))
 

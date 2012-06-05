@@ -3,6 +3,7 @@
         [seesaw core]
         [clooj repl utils project dev-tools indent editor filetree doc-browser search style indent])
   (:require 
+        [overtone-sketchpad.rtextscrollpane :as sp]
         [overtone-sketchpad.rsyntaxtextarea :as cr]
         [overtone-sketchpad.rtextarea :as rt]))
 
@@ -17,6 +18,59 @@
     (do
       (swap! macro-recording-state (fn [_] true))
       (rt/begin-recording-macro! (:doc-text-area app)))))
+
+(defn fold-action
+  [ta] 
+  (action :name "fold-action"
+                         :handler #((cr/code-folding-enabled? ta (not (cr/code-folding-enabled? ta))))))
+
+(defn view-menu 
+  [ta]
+  (menu :text "View" 
+        :items [(checkbox-menu-item :text "Code Folding"
+                                    :listen [:action #(fold-action ta)])]))
+
+;;actions
+
+(defn about-action
+  [ta]
+  (action :name "About Sketchpad..."
+          :handler (fn [_] )))
+
+(defn animate-bracket-matching-action
+  [ta]
+  (action :name "Animate Bracket Matching"
+          :handler (fn [_] (cr/animate-bracket-matching? ta (not (cr/animate-bracket-matching? ta))))))
+
+(defn bookmarks-action
+  [sp]
+  (action :name "Bookmarks"
+          :handler (fn [_] (sp/icon-row-header-enabled? sp (not (sp/icon-row-header-enabled? sp))))))
+
+(defn code-folding-action
+  [ta]
+  (action :name "Code Folding"
+          :handler (fn [_] (cr/code-folding-enabled? ta (not (cr/code-folding-enabled? ta))))))
+
+(defn mark-occurrences-action
+  [ta]
+  (action :name "Mark Occurrences"
+          :handler (fn [_] (cr/mark-occurrences? ta (not (cr/mark-occurrences? ta))))))
+
+(defn create-menubar
+  [app]
+  (when-not (contains? app :menus)
+    (config! (app :frame) :menubar 
+      (menubar 
+        :items [(menu :text "View"
+                      :items [(checkbox-menu-item :text "Animate Bracket Matching"
+                                                  :listen [:action (fn [_] (animate-bracket-matching-action (app :doc-text-area)))])
+                              (checkbox-menu-item :text "Code Folding"
+                                                  :listen [:action (fn [_] (code-folding-action (app :doc-text-area)))])
+                              (checkbox-menu-item :text "Bookmarks"
+                                                  :listen [:action (fn [_] (do 
+                                                                              (pprint (app :doc-scroll-pane))
+                                                                              (bookmarks-action (app :doc-scroll-pane))))])])]))))
 
 (defn make-sketchpad-menus [app]
   (when-not (contains? app :menus)
@@ -66,6 +120,10 @@
         ["Find" "F" "cmd1 F" #(start-find app)]
         ["Find next" "N" "cmd1 G" #(highlight-step app false)]
         ["Find prev" "P" "cmd1 shift G" #(highlight-step app true)])
+
+      (add-menu menu-bar "View" "V"
+        ["Folding" nil nil #(fold-action (app :doc-text-area))])
+
       (add-menu menu-bar "Window" "W"
         ["Go to REPL input" "R" "cmd1 3" #(.requestFocusInWindow (:repl-in-text-area app))]
         ["Go to Editor" "E" "cmd1 2" #(.requestFocusInWindow (:doc-text-area app))]
@@ -75,3 +133,5 @@
         ["Choose font..." nil nil #(apply show-font-window
                                           app set-font @current-font)])
       (when (is-mac) (add-menu menu-bar "Help" "H")))))
+
+

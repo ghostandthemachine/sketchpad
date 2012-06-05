@@ -1,4 +1,4 @@
-(ns clooj.editor
+(ns overtone-sketchpad.editor
     (:use [seesaw core graphics color font border]
           [clooj utils])
     (:require [clooj.rsyntax :as rsyntax]
@@ -6,7 +6,11 @@
               [clooj.highlighting :as h]
               [clooj.brackets :as b]
               [clooj.help :as help]
-              [clooj.search :as search])
+              [clooj.search :as search]
+              [overtone-sketchpad.rtextscrollpane :as sp]
+              [overtone-sketchpad.rsyntaxtextarea :as rs]
+              [overtone-sketchpad.rtextarea :as ta]
+              [overtone-sketchpad.gutter :as gutter])
     (:import  (org.fife.ui.rtextarea RTextScrollPane)
               (java.awt.event FocusAdapter MouseAdapter)))
 
@@ -103,6 +107,44 @@
 
 ;; view
 
+(defn setup-text-area-font
+  [app]
+    (cond 
+      (is-mac)
+      (do 
+        (println "This is OSX. Setting font to MENLO")
+        (config! (app :doc-text-area) :font (font 
+                             :name "MENLO"
+                             :size 12))
+        (println "Set font: " (str (config (app :doc-text-area) :font))))
+      (is-win)
+      (config! (app :doc-text-area) :font (font 
+                             :name "COURIER-NEW"
+                             :size 12))
+      :else 
+      (config! (app :doc-text-area) :font (font 
+                             :name "MONOSPACED"
+                             :size 12))))
+
+(defn set-text-area-preffs
+  [app]
+  (let [rscroll (app :doc-scroll-pane)
+        gutter  (sp/gutter rscroll)
+        ta      (app :doc-text-area)]
+    (println "Set text area prefs")
+    (println "Set gutter border color")
+    (gutter/border-color! gutter (color 0 0 0 0))
+    (gutter/fold-indicator-enabled? gutter true)
+    (gutter/bookmarking-enabled? gutter true)
+    
+    (sp/fold-indicator-enabled? rscroll true)
+    
+    (.setCodeFoldingEnabled ta true)
+    ; (rs/code-folding-enabled? ta true)
+    ; (rs/clear-whitespace-lines-enabled? ta true)
+    (println "Is folding enabled by the manager: " (.isCodeFoldingEnabled (rs/fold-manager ta)))
+    ))
+
 (defn editor
   [app-atom]
   (let [arglist-label         (label  :foreground     (color :blue)
@@ -141,7 +183,7 @@
                                       :syntax         :clojure
                                       :id             :doc-text-area
                                       :class          [:editor-comp :syntax-editor])
-        doc-scroll-pane       (RTextScrollPane. doc-text-area)
+        doc-scroll-pane       (sp/scroll-pane doc-text-area)
         doc-text-panel        (vertical-panel       
                                       :items         [doc-label-panel 
                                                       doc-scroll-pane 
@@ -149,24 +191,6 @@
                                       :id             :doc-text-panel
                                       :class          :editor-comp)]
 
-    (.setCodeFoldingEnabled doc-text-area true)
-    (.setAntiAliasingEnabled doc-text-area true)
-    (.setFoldIndicatorEnabled doc-scroll-pane true)
-
-        ;; fonts
-    (cond 
-      (is-mac)
-      (config! doc-text-area :font (font 
-                             :name "COURIER-NEW"
-                             :size 12))
-      (is-win)
-      (config! doc-text-area :font (font 
-                             :name "COURIER-NEW"
-                             :size 12))
-      :else 
-      (config! doc-text-area :font (font 
-                             :name "MONOSPACED"
-                             :size 12)))
 
     (swap! app-atom conj (gen-map
                             arglist-label

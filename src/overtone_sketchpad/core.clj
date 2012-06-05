@@ -4,12 +4,14 @@
           [clooj.help]
           [clooj.utils]
           [clooj.navigate]
-          [clooj.editor]
           [clooj.doc-browser] 
           [clooj.filetree]
           [clooj.menus]
           [clooj.dev-tools]
           [clooj.indent]
+          [clojure.pprint]
+          [overtone-sketchpad.editor]
+          [overtone-sketchpad.popup]
           [overtone-sketchpad.menu])
     (:require [overtone-sketchpad.theme :as theme]))
 
@@ -74,6 +76,11 @@
     (setup-temp-writer app)
     (attach-action-keys (app :doc-text-area)
       ["cmd1 ENTER" #(send-selected-to-repl app)])
+
+    ; (gutter-popup (app :doc-scroll-pane))
+    (setup-text-area-font app)
+    (set-text-area-preffs app)
+
     ;; repl
     (setup-autoindent (app :repl-in-text-area))
     (setup-tab-help app (app :repl-in-text-area))
@@ -123,7 +130,7 @@
   (reset! embedded false)
   (reset! current-app (create-app))
   (add-behaviors @current-app)
-  (make-sketchpad-menus @current-app)
+  (create-menubar @current-app)
   (invoke-later
     (-> 
       (startup-overtone @current-app) 
@@ -132,8 +139,9 @@
 (defn -main [& args]
   (reset! embedded false)
   (reset! current-app (create-app))
+  ; (pprint (@current-app :doc-scroll-pane))
   (add-behaviors @current-app)
-  (make-sketchpad-menus @current-app)
+  (create-menubar @current-app)
   (invoke-later
     (-> 
       (startup-overtone @current-app) 
