@@ -16,7 +16,7 @@
 	+ Extract clooj application components from clooj.core and create a new clooj.dev-tools namespace which will contain all of the application components.
 	+ Update clooj.core to build standard Clooj with simple (create-application) function where the desired components can be added and styled.  
 
-- Create Sketchpad in overtone-sketchpad.core
+- Create Sketchpad in sketchpad.core
 	+ Use the clooj.dev-tools namespace to create custom Clooj base application as base of Sketchpad
 	+ Overhaul standard Clooj layout to be more suited to Overtone:
 	+ Use less real estate by making components collapsible

@@ -1,5 +1,5 @@
-(ns overtone-sketchpad.test.core
-  (:use [overtone-sketchpad.core])
+(ns sketchpad.test.core
+  (:use [sketchpad.core])
   (:use [clojure.test]))
 
 (deftest replace-me ;; FIXME: write
