@@ -101,6 +101,7 @@
                             ["shift ENTER" #(search/highlight-step app true)]
                             ["ESCAPE" #(search/escape-find app)])))
 
+
 ;; view
 
 (defn text-editor

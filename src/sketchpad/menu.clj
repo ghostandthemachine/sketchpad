@@ -1,13 +1,14 @@
 (ns sketchpad.menu
   (:use [clojure.pprint]
-        [seesaw core]
+        [seesaw core keystroke]
         [sketchpad.edit-menu]
         [sketchpad.vim-mode]
         [sketchpad.default-mode]
         [sketchpad.edit-mode]
         [sketchpad.vim-mode]
+        [sketchpad.layout-config]
         [sketchpad.toggle-vim-mode-action]
-        [clooj repl utils project dev-tools indent editor filetree doc-browser search style indent])
+        [clooj repl help utils project dev-tools indent editor filetree doc-browser search style indent])
   (:require 
         [sketchpad.rtextscrollpane :as sp]
         [sketchpad.rsyntaxtextarea :as cr]
@@ -84,67 +85,253 @@
                                                                 :listen [:action (fn [_] (toggle-vim-mode! (app :doc-text-area)))
     ])])])]))))
 
-(defn make-sketchpad-menus [app]
-  (when-not (contains? app :menus)
-    (when (is-mac)
-      (System/setProperty "apple.laf.useScreenMenuBar" "true"))
-    (let [menu-bar (menubar)]
-      (. (app :frame) setJMenuBar menu-bar)
-      (let [file-menu
-            (add-menu menu-bar "File" "F"
-              ["New" "N" "cmd1 N" #(create-file app (first (get-selected-projects app)) "")]
-              ["Save" "S" "cmd1 S" #(save-file app)]
-              ["Move/Rename" "M" nil #(rename-file app)]
-              ["Revert" "R" nil #(revert-file app)]
-              ["Delete" nil nil #(delete-file app)])]
-        (when-not (is-mac)
-          (add-menu-item file-menu "Exit" "X" nil #(System/exit 0))))
-      (add-menu menu-bar "Edit" "E"
-        ["Undo" "U" "cmd1 Z" #()]
-        ["Redo" "Y" "cmd1 shift Z" #(rt/redo-last-action (app :doc-text-area))]
-        ["Copy" "C" "cmd1 C" #(cr/copy-as-rtf (app :doc-text-area))]
-        ["Paste" "P" "cmd1 V" #(rt/paste (:doc-text-area app))])
-      (add-menu menu-bar "Project" "P"
-        ["New..." "N" "cmd1 shift N" #(new-project app)]
-        ["Open..." "O" "cmd1 shift O" #(open-project app)]
-        ["Move/Rename" "M" nil #(rename-project app)]
-        ["Remove" nil nil #(remove-project app)])
-      (add-menu menu-bar "Source" "U"
-        ["Comment-out" "C" "cmd1 SEMICOLON" #(comment-out (:doc-text-area app))]
-        ["Uncomment-out" "U" "cmd1 shift SEMICOLON" #(uncomment-out (:doc-text-area app))]
-        ["Fix indentation" "F" "cmd1 BACK_SLASH" #(fix-indent-selected-lines (:doc-text-area app))]
-        ["Indent lines" "I" "cmd1 CLOSE_BRACKET" #(indent (:doc-text-area app))]
-        ["Unindent lines" "D" "cmd1 OPEN_BRACKET" #(indent (:doc-text-area app))]
-        ["Name search/docs" "S" "TAB" #(show-tab-help app (find-focused-text-pane app) inc)])
-      (add-menu menu-bar "Tools" "T"
-        ["Begin recording macro..." nil "ctrl Q" #(toggle-macro-recording! app)]
-        ["End recording macro..." nil "ctrl Q" #(toggle-macro-recording! app)]
-        ["Playback last macro..." nil "ctrl shift Q" #(rt/playback-last-macro! (:doc-text-area app))]
-      )
-      (add-menu menu-bar "REPL" "R"
-        ["Evaluate here" "E" "cmd1 ENTER" #(send-selected-to-repl app)]
-        ["Evaluate entire file" "F" "cmd1 E" #(send-doc-to-repl app)]
-        ["Apply file ns" "A" "cmd1 shift A" #(apply-namespace-to-repl app)]
-        ["Clear output" "C" "cmd1 K" #(.setText (app :repl-out-text-area) "")]
-        ["Restart" "R" "cmd1 R" #(restart-repl app
-                              (first (get-selected-projects app)))]
-        ["Print stack trace for last error" "T" "cmd1 T" #(print-stack-trace app)])
-      (add-menu menu-bar "Search" "S"
-        ["Find" "F" "cmd1 F" #(start-find app)]
-        ["Find next" "N" "cmd1 G" #(highlight-step app false)]
-        ["Find prev" "P" "cmd1 shift G" #(highlight-step app true)])
+(defn make-file-menu
+  [app]
+  (menu :text "File"
+        :mnemonic "F"
+        :items [
+                (menu-item :text "New" 
+                           :mnemonic "N" 
+                           :key (keystroke "meta N") 
+                           :listen [:action (fn [_] (create-file app (first (get-selected-projects app)) ""))])
+                (menu-item :text "Save" 
+                           :mnemonic "S" 
+                           :key (keystroke "meta S") 
+                           :listen [:action (fn [_] (save-file app))])
+                (menu-item :text "Move/Rename" 
+                           :mnemonic "M" 
+                           :listen [:action (fn [_] (rename-file app))])
+                (menu-item :text "Revert" 
+                           :mnemonic "R" 
+                           :listen [:action (fn [_] (revert-file app))])
+                (menu-item :text "Delete" 
+                           :listen [:action (fn [_] (delete-file app))])
+                (if (is-mac)
+                  (menu-item :text "Exit"
+                             :mnemonic "X"
+                             :listen [:action (fn [_] (System/exit 0))]))
+                ]))
 
-      (add-menu menu-bar "View" "V"
-        ["Folding" nil nil #(fold-action (app :doc-text-area))])
+(defn make-edit-menu
+  [app]
+  (menu :text "Edit" 
+            :mnemonic "E"
+        :items [(menu-item :text "Undo" 
+                           :mnemonic "U" 
+                           :key (keystroke "meta Z") 
+                           :listen [:action (fn [_] ())])
+                (menu-item :text "Redo" 
+                           :mnemonic "Y" 
+                           :key (keystroke "meta shift Z") 
+                           :listen [:action (fn [_] (rt/redo-last-action (app :doc-text-area)))])
+                (menu-item :text "Copy" 
+                           :mnemonic "C" 
+                           :key (keystroke "meta C") 
+                           :listen [:action (fn [_] (cr/copy-as-rtf (app :doc-text-area)))])
+                (menu-item :text "Paste" 
+                           :mnemonic "P" 
+                           :key (keystroke "meta V") 
+                           :listen [:action (fn [_] (rt/paste (:doc-text-area app)))])]))
 
-      (add-menu menu-bar "Window" "W"
-        ["Go to REPL input" "R" "cmd1 3" #(.requestFocusInWindow (:repl-in-text-area app))]
-        ["Go to Editor" "E" "cmd1 2" #(.requestFocusInWindow (:doc-text-area app))]
-        ["Go to Project Tree" "P" "cmd1 1" #(.requestFocusInWindow (:docs-tree app))]
-        ["Increase font size" nil "cmd1 PLUS" #(grow-font app)]
-        ["Decrease font size" nil "cmd1 MINUS" #(shrink-font app)]
-        ["Choose font..." nil nil #(apply show-font-window
-                                          app set-font @current-font)])
-      (when (is-mac) (add-menu menu-bar "Help" "H")))))
+(defn make-project-menu
+  [app]
+  (menu :text "Project" 
+            :mnemonic "P"
+        :items [(menu-item :text "New..." 
+                           :mnemonic "N" 
+                           :key (keystroke "meta shift N") 
+                           :listen [:action (fn [_] (new-project app))])
+                (menu-item :text "Open..." 
+                           :mnemonic "O" 
+                           :key (keystroke "meta shift O") 
+                           :listen [:action (fn [_] (open-project app))])
+                (menu-item :text "Move/Rename" 
+                           :mnemonic "M" 
+                           :listen [:action (fn [_] (rename-project app))])
+                (menu-item :text "Remove" 
+                           :listen [:action (fn [_] (remove-project app))])]))
 
+(defn make-source-menu
+  [app]
+  (menu :text "Source"
+        :mnemonic "U"
+        :items [(menu-item :text "Comment-out" 
+                           :mnemonic "C" 
+                           :key (keystroke "meta SEMICOLON") 
+                           :listen [:action (fn [_] (comment-out (:doc-text-area app)))])
+                (menu-item :text "Uncomment-out" 
+                           :mnemonic "U" 
+                           :key (keystroke "meta shift SEMICOLON") 
+                           :listen [:action (fn [_] (uncomment-out (:doc-text-area app)))])
+                (menu-item :text "Fix indentation" 
+                           :mnemonic "F" 
+                           :key (keystroke "meta BACK_SLASH") 
+                           :listen [:action (fn [_] (fix-indent-selected-lines (:doc-text-area app)))])
+                (menu-item :text "Indent lines"
+                           :mnemonic "I" 
+                           :key (keystroke "meta CLOSE_BRACKET") 
+                           :listen [:action (fn [_] (indent (:doc-text-area app)))])
+                (menu-item :text "Unindent lines"
+                           :mnemonic "D" 
+                           :key (keystroke "meta OPEN_BRACKET") 
+                           :listen [:action (fn [_] (indent (:doc-text-area app)))])
+                (menu-item :text "Name search/docs"
+                           :mnemonic "S" 
+                           :key (keystroke "alt TAB") 
+                           :listen [:action (fn [_] (show-tab-help app (find-focused-text-pane app) inc toggle-file-tree-panel))])]))
+
+(defn make-tools-menu
+  [app]
+  (menu :text "Tools"
+        :mnemonic "T"
+        :items [(menu-item :text "Begin recording macro..." 
+                           :key (keystroke "ctrl Q") 
+                           :listen [:action (fn [_] (toggle-macro-recording! app))])
+                (menu-item :text "End recording macro..." 
+                           :key (keystroke "ctrl Q") 
+                           :listen [:action (fn [_] (toggle-macro-recording! app))])
+                (menu-item :text "Playback last macro..." 
+                           :key (keystroke "ctrl shift Q") 
+                           :listen [:action (fn [_] (rt/playback-last-macro! (:doc-text-area app)))])]))
+
+(defn use-reload-current-file-ns
+  [app]
+  (if (= "ns" (str (first (current-ns-form app))))
+    (do 
+      (send-to-repl app (str "(use :reload " \' (str (second (current-ns-form app))) ")")))))
+
+(defn require-reload-current-file-ns
+  [app]
+  (if (= "ns" (str (first (current-ns-form app))))
+    (do 
+      (send-to-repl app (str "(require :reload " \' (str (second(current-ns-form app))) ")")))))
+
+
+(defn- make-repl-file-menu
+  [app]
+  (menu :text "REPL"
+        :mnemonic "R"
+        :items [
+
+                (menu-item :text "Evaluate here" 
+                           :mnemonic "E" 
+                           :key (keystroke "meta ENTER") 
+                           :listen [:action (fn [_] (send-selected-to-repl app))])
+                (menu-item :text "Evaluate entire file" 
+                           :mnemonic "F" 
+                           :key (keystroke "meta E")
+                           :listen [:action (fn [_] (send-doc-to-repl app))])
+                (menu-item :text "Apply file ns"
+                           :mnemonic "A"
+                           :key (keystroke "meta shift A")
+                           :listen [:action  (fn [_] (apply-namespace-to-repl app))])
+                (menu-item :text "Use :reload file"
+                           :mnemonic "U"
+                           :key (keystroke "meta shift U")
+                           :listen [:action (fn [_] (use-reload-current-file-ns app))])
+                (menu-item :text "Require :reload file"
+                           :mnemonic "R"
+                           :key (keystroke "meta shift R")
+                           :listen [:action (fn [_] (require-reload-current-file-ns app))])]))
+
+(defn- make-repl-repl-menu
+  [app]
+  (menu :text "REPL"
+        :mnemonic "R"
+        :items [
+                (menu-item :text "Clear output"
+                           :mnemonic "C"
+                           :key (keystroke "meta K")
+                           :listen [:action (fn [_] (.setText (app :repl-out-text-area) ""))])
+                (menu-item :text "Restart"
+                           :mnemonic "R"
+                           :key (keystroke "meta R")
+                           :listen [:action (fn [_] (restart-repl app (first (get-selected-projects app))))])
+                (menu-item :text "Print stack trace for last error"
+                           :mnemonic "T"
+                           :key (keystroke "meta T")
+                           :listen [:action (fn [_] (print-stack-trace app))])]))
+
+(defn make-repl-menu
+  [app]
+  (menu :text "REPL"
+        :mnemonic "R"
+        :items [(make-repl-file-menu app)
+                (make-repl-repl-menu app)]))
+              
+
+(defn make-search-menu
+  [app]
+  (menu :text "Search"
+        :mnemonic "S"
+        :items [(menu-item :text "Find" 
+                           :mnemonic "F" 
+                           :key (keystroke "meta F") 
+                           :listen [:action (fn [_] (start-find app))])
+                (menu-item :text "Find next" 
+                           :mnemonic "N" 
+                           :key (keystroke "meta G") 
+                           :listen [:action (fn [_] (highlight-step app false))])
+                (menu-item :text "Find prev" 
+                           :mnemonic "P" 
+                           :key (keystroke "meta shift G") 
+                           :listen [:action (fn [_] (highlight-step app true))])]))
+
+(defn make-view-menu
+  [app]
+  (menu :text "View"
+        :mnemonic "V"
+        :items [(menu-item :text "Folding"
+                           :listen [:action (fn [_] (fold-action (app :doc-text-area)))])]))
+
+(defn make-window-menu
+  [app]
+  (menu :text "Window"
+        :mnemonic "W"
+        :items [(menu-item :text "Foo Bar" :listen [:action #(println "FOFOBAR")]
+                           :key (keystroke "meta T"))
+                (menu-item :text "Go to REPL input" 
+                           :mnemonic "R" 
+                           :key (keystroke "meta alt 3") 
+                           :listen [:action (fn [_] (.requestFocusInWindow (:repl-in-text-area app)))])
+                (menu-item :text "Go to Editor" 
+                           :mnemonic "E" 
+                           :key (keystroke "meta alt 2") 
+                           :listen [:action (fn [_] (.requestFocusInWindow (:doc-text-area app)))])
+                (menu-item :text "Go to Project Tree" 
+                           :mnemonic "P" 
+                           :key (keystroke "meta alt 1") 
+                           :listen [:action (fn [_] (.requestFocusInWindow (:docs-tree app)))])
+                (menu-item :text "Increase font size" 
+                           :key (keystroke "meta PLUS") 
+                           :listen [:action (fn [_] (grow-font app))])
+                (menu-item :text "Decrease font size" 
+                           :key (keystroke "meta MINUS") 
+                           :listen [:action (fn [_] (shrink-font app))])
+                (menu-item :text "Show File Tree" 
+                           :key (keystroke "meta 1") 
+                           :listen [:action (fn [_] (toggle-file-tree-panel app))])
+                (menu-item :text "Choose font..." 
+                           :listen [:action (fn [_] (apply show-font-window app set-font @current-font))])]))
+
+(defn make-help-menu
+  [app]
+  (menu :text "Help"
+        :mnemonic "H"
+        :items []))
+
+(defn make-sketchpad-menus
+  [app]
+  (config! (:frame app) :menubar (menubar :items [
+                                                  (make-file-menu app)
+                                                  (make-edit-menu app)
+                                                  (make-project-menu app)
+                                                  (make-source-menu app)
+                                                  (make-tools-menu app)
+                                                  (make-repl-menu app)
+                                                  (make-search-menu app)
+                                                  (make-view-menu app)
+                                                  (make-window-menu app)
+                                                  (make-help-menu app)
+                                                  ])))
 

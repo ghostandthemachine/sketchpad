@@ -36,13 +36,13 @@
                          editor
                          :divider-location 0.25
                          :resize-weight 0.25
-                         :divider-size 5)
+                         :divider-size 3)
         split-pane (left-right-split 
                         doc-split-pane 
                         repl
                         :divider-location 0.66
                         :resize-weight 0.66
-                        :divider-size 5)
+                        :divider-size 3)
         frame (frame 
                 :title "Sketchpad" 
                 :width 950 
@@ -72,6 +72,7 @@
     (double-click-selector (app :doc-text-area))
     (add-caret-listener (app :doc-text-area) #(display-caret-position app))
     (setup-search-text-area app)
+    (setup-cmd-line-area app)
     ; (activate-caret-highlighter handle-caret-move app :doc-text-area)
     ; (activate-caret-highlighter handle-caret-move app :repl-in-text-area)
     (setup-temp-writer app)
@@ -142,8 +143,8 @@
   (reset! embedded false)
   (reset! current-app (create-app))
   (add-behaviors @current-app)
-  (sketchpad-menus @current-app)
-  ; (make-sketchpad-menus @current-app)
+  ; (sketchpad-menus @current-app)
+  (make-sketchpad-menus @current-app)
   (invoke-later
     (-> 
       (startup-overtone @current-app) 

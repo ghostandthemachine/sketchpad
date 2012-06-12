@@ -4,6 +4,7 @@
               [clooj.highlighting]
               [clooj.help]
               [clooj.utils]
+              [sketchpad.layout-config]
               [clojure.repl :only (source-fn)]
               [clooj.collaj :only (raw-data)])
 
@@ -190,6 +191,11 @@
       (.setViewPosition (Point. (int 0) (int 0)))))
 
 (defn show-tab-help [app text-comp index-change-fn]
+      (println "add file tree panel for help")
+    (if (not @show-file-tree)
+    (do 
+      (println "add file tree panel for help")
+      (toggle-file-tree-panel app :help)))
   (awt-event
     (let [text (get-text-str text-comp)
           pos (.getCaretPosition text-comp)
@@ -207,7 +213,9 @@
                            (app :docs-tree-panel))
       ; (.setText (app :repl-label) "Clojure REPL output")
       )
-    (swap! help-state assoc :visible false :pos nil)))
+    (swap! help-state assoc :visible false :pos nil)
+    (if (not @show-file-tree)
+      (toggle-file-tree-panel app :help))))
 
 (defn update-ns-form [app]
   (current-ns-form app))

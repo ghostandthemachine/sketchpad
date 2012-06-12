@@ -3,6 +3,7 @@
           [clooj utils]
           [sketchpad.vim-mode]
           [sketchpad.toggle-vim-mode-action]
+          [rounded-border.core]
           )
     (:require [clooj.rsyntax :as rsyntax]
               [clooj.doc-browser :as db]
@@ -107,6 +108,14 @@
                             ["shift ENTER" #(search/highlight-step app true)]
                             ["ESCAPE" #(search/escape-find app)])))
 
+
+(defn setup-cmd-line-area [app]
+  (let [sta (doto (app :editor-command-line)
+      (.addFocusListener (proxy [FocusAdapter] [] (focusLost [_] (search/stop-find app)))))]
+    (attach-action-keys sta ["ENTER" #(search/highlight-step app false)]
+                            ["shift ENTER" #(search/highlight-step app true)]
+                            ["ESCAPE" #(search/escape-find app)])))
+
 ;; view
 
 (defn setup-text-area-font
@@ -144,9 +153,8 @@
                                       :id             :arglist-label
                                       :class          :arg-response)
         search-text-area      (text   :visible? 	  false
-                      							  :border         (line-border 
-                            							  						    :color     :grey
-                            							  						    :thickness 1)
+                      					    :border         (line-border :color     :grey
+                            			 				  				        :thickness 1)
                       							  :id             :search-text-area
                                       :class          :search-area)
         arg-search-panel      (horizontal-panel 
@@ -163,17 +171,18 @@
                                       :maximum-size   [2000 :by 15]
                                       :id             :position-search-panel
                                       :class          :search-panel)
+        editor-command-line (rsyntax/text-area  :wrap-lines?    false
+                                                :maximum-size   [2000 :by 15]
+                                                :syntax         :clojure
+                                                :id             :editor-command-line
+                                                :class          [:editor-comp :syntax-editor])
 
-        editor-command-line   (vertical-panel
+        editor-command-line-panel   (vertical-panel
                                       :maximum-size   [2000 :by 15]
-                                      :items [(rsyntax/text-area  :wrap-lines?    false
-                                                                  :maximum-size   [2000 :by 15]
-                                                                  :syntax         :clojure
-                                                                  :id             :editor-command-line
-                                                                  :class          [:editor-comp :syntax-editor])])
+                                      :items [editor-command-line])
 
         editor-helpers-panel  (vertical-panel       
-                                      :items [editor-command-line
+                                      :items [editor-command-line-panel
                                               position-search-panel])
 
         doc-label             (label  :text           "Source Editor"
@@ -202,6 +211,7 @@
                             arglist-label
                             search-text-area
                             arg-search-panel
+                            editor-command-line
                             pos-label
                             position-search-panel 
                             doc-label
