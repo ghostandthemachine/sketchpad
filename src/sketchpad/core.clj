@@ -1,5 +1,11 @@
 (ns sketchpad.core
     (:gen-class :name "Sketchpad")
+    (:import (javax.swing.TollTipManager)
+             (org.fife.ui.rtextarea.ToolTipSupplier)
+             (org.fife.ui.autocomplete.AutoCompletion)
+             (org.fife.ui.autocomplete.DefaultCompletionProvider)
+             (org.fife.ui.autocomplete.demo.CCellRenderer)
+             (java.io.File))
     (:use [seesaw core graphics color border font]
           [clojure.pprint]
           [clooj.repl] 
@@ -23,6 +29,29 @@
                           :get-selected-projects get-selected-projects
                           :apply-namespace-to-repl apply-namespace-to-repl
                           :find-file find-file})
+                          
+(defn create-completion-provider
+  ([] (create-completion-provider :default))
+  ([kw]
+  (let [cp (org.fife.ui.autocomplete.DefaultCompletionProvider. )]
+      (.loadFromXML cp (java.io.File. "lang/c.xml"))
+      cp)))
+  
+(defn install-auto-completion
+  [rta]
+  (let [provider (create-completion-provider)
+        ac (org.fife.ui.autocomplete.AutoCompletion. provider)]
+    ;; install auto completion
+;    (.setListCellRenderer ac (org.fife.ui.autocomplete.demo.CCellRenderer. ))
+    (.setShowDescWindow ac true)
+    (.setParameterAssistanceEnabled ac true)
+    (.install ac rta)
+    ;; setup tool tip
+
+;    (let [tts-provider (cast org.fife.ui.rtextarea.ToolTipSupplier provider)]
+;      (.setToolTipSupplier rta tts-provider))
+;    (.registerComponent (javax.swing.ToolTipManager/sharedInstance ))
+    ))
 
 (defn create-app []
   (let [app-init  (atom {})
@@ -69,6 +98,9 @@
     (setup-temp-writer app)
     (attach-action-keys (app :doc-text-area)
       ["cmd1 ENTER" #(send-selected-to-repl app)])
+
+    ;; install auto completion
+    (install-auto-completion (app :doc-text-area))
 
     ; (gutter-popup (app :doc-scroll-pane))
     (setup-text-area-font app)

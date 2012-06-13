@@ -5,7 +5,5 @@
         				 [overtone "0.6.0"]
         				 [franks42/seesaw "1.4.2-SNAPSHOT"]
         				 [clooj "0.3.4.2-SNAPSHOT"]
-                 [rounded-border "0.0.1-SNAPSHOT"]
-                 [org.fife.ui/rsyntaxtextarea "2.0.3"]
-           		 ]
+                 [rounded-border "0.0.1-SNAPSHOT"]]
   :jvm-opts ~(if (= (System/getProperty "os.name") "Mac OS X") ["-Xdock:name=Sketchpad"] []))
