@@ -80,10 +80,7 @@
                                                                               (pprint (app :doc-scroll-pane))
                                                                               (bookmarks-action (app :doc-scroll-pane))))])])
                 (menu :text "Project"
-                      :items [(menu :text "Mode"
-                                    :items [(checkbox-menu-item :text "Vim Command Mode"
-                                                                :listen [:action (fn [_] (toggle-vim-mode! (app :doc-text-area)))
-    ])])])]))))
+                      :items [])]))))
 
 (defn make-file-menu
   [app]
@@ -98,6 +95,7 @@
                            :mnemonic "S" 
                            :key (keystroke "meta S") 
                            :listen [:action (fn [_] (save-file app))])
+                (separator)
                 (menu-item :text "Move/Rename" 
                            :mnemonic "M" 
                            :listen [:action (fn [_] (rename-file app))])
@@ -107,9 +105,12 @@
                 (menu-item :text "Delete" 
                            :listen [:action (fn [_] (delete-file app))])
                 (if (is-mac)
-                  (menu-item :text "Exit"
-                             :mnemonic "X"
-                             :listen [:action (fn [_] (System/exit 0))]))
+                    (separator))
+                (if (is-mac)
+                  (do 
+                    (menu-item :text "Exit"
+                               :mnemonic "X"
+                               :listen [:action (fn [_] (System/exit 0))])))
                 ]))
 
 (defn make-edit-menu
@@ -124,6 +125,7 @@
                            :mnemonic "Y" 
                            :key (keystroke "meta shift Z") 
                            :listen [:action (fn [_] (rt/redo-last-action (app :doc-text-area)))])
+                (separator)
                 (menu-item :text "Copy" 
                            :mnemonic "C" 
                            :key (keystroke "meta C") 
@@ -131,7 +133,11 @@
                 (menu-item :text "Paste" 
                            :mnemonic "P" 
                            :key (keystroke "meta V") 
-                           :listen [:action (fn [_] (rt/paste (:doc-text-area app)))])]))
+                           :listen [:action (fn [_] (rt/paste (:doc-text-area app)))])
+                (separator)
+                (menu :text "Mode"
+                      :items [(checkbox-menu-item :text "Vim Command Mode"
+                                                  :listen [:action (fn [_] (toggle-vim-mode! (app :doc-text-area)))])])]))
 
 (defn make-project-menu
   [app]
@@ -145,6 +151,7 @@
                            :mnemonic "O" 
                            :key (keystroke "meta shift O") 
                            :listen [:action (fn [_] (open-project app))])
+                (separator)
                 (menu-item :text "Move/Rename" 
                            :mnemonic "M" 
                            :listen [:action (fn [_] (rename-project app))])
@@ -163,6 +170,7 @@
                            :mnemonic "U" 
                            :key (keystroke "meta shift SEMICOLON") 
                            :listen [:action (fn [_] (uncomment-out (:doc-text-area app)))])
+                (separator)
                 (menu-item :text "Fix indentation" 
                            :mnemonic "F" 
                            :key (keystroke "meta BACK_SLASH") 
@@ -175,6 +183,7 @@
                            :mnemonic "D" 
                            :key (keystroke "meta OPEN_BRACKET") 
                            :listen [:action (fn [_] (indent (:doc-text-area app)))])
+                (separator)
                 (menu-item :text "Name search/docs"
                            :mnemonic "S" 
                            :key (keystroke "alt TAB") 
@@ -209,7 +218,7 @@
 
 (defn- make-repl-file-menu
   [app]
-  (menu :text "REPL"
+  (menu :text "File"
         :mnemonic "R"
         :items [
 
@@ -221,10 +230,12 @@
                            :mnemonic "F" 
                            :key (keystroke "meta E")
                            :listen [:action (fn [_] (send-doc-to-repl app))])
+                (separator)
                 (menu-item :text "Apply file ns"
                            :mnemonic "A"
                            :key (keystroke "meta shift A")
                            :listen [:action  (fn [_] (apply-namespace-to-repl app))])
+                (separator)
                 (menu-item :text "Use :reload file"
                            :mnemonic "U"
                            :key (keystroke "meta shift U")
@@ -238,15 +249,16 @@
   [app]
   (menu :text "REPL"
         :mnemonic "R"
-        :items [
-                (menu-item :text "Clear output"
+        :items [(menu-item :text "Clear output"
                            :mnemonic "C"
                            :key (keystroke "meta K")
                            :listen [:action (fn [_] (.setText (app :repl-out-text-area) ""))])
+                (separator)
                 (menu-item :text "Restart"
                            :mnemonic "R"
                            :key (keystroke "meta R")
                            :listen [:action (fn [_] (restart-repl app (first (get-selected-projects app))))])
+                (separator)
                 (menu-item :text "Print stack trace for last error"
                            :mnemonic "T"
                            :key (keystroke "meta T")
@@ -288,9 +300,7 @@
   [app]
   (menu :text "Window"
         :mnemonic "W"
-        :items [(menu-item :text "Foo Bar" :listen [:action #(println "FOFOBAR")]
-                           :key (keystroke "meta T"))
-                (menu-item :text "Go to REPL input" 
+        :items [(menu-item :text "Go to REPL input" 
                            :mnemonic "R" 
                            :key (keystroke "meta alt 3") 
                            :listen [:action (fn [_] (.requestFocusInWindow (:repl-in-text-area app)))])
@@ -302,17 +312,19 @@
                            :mnemonic "P" 
                            :key (keystroke "meta alt 1") 
                            :listen [:action (fn [_] (.requestFocusInWindow (:docs-tree app)))])
+                (separator)
                 (menu-item :text "Increase font size" 
                            :key (keystroke "meta PLUS") 
                            :listen [:action (fn [_] (grow-font app))])
                 (menu-item :text "Decrease font size" 
                            :key (keystroke "meta MINUS") 
                            :listen [:action (fn [_] (shrink-font app))])
+                (menu-item :text "Choose font..." 
+                           :listen [:action (fn [_] (apply show-font-window app set-font @current-font))])
+                (separator)
                 (menu-item :text "Show File Tree" 
                            :key (keystroke "meta 1") 
-                           :listen [:action (fn [_] (toggle-file-tree-panel app))])
-                (menu-item :text "Choose font..." 
-                           :listen [:action (fn [_] (apply show-font-window app set-font @current-font))])]))
+                           :listen [:action (fn [_] (toggle-file-tree-panel app))])]))
 
 (defn make-help-menu
   [app]

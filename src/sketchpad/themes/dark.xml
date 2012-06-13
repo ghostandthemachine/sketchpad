@@ -7,7 +7,7 @@
 <RSyntaxTheme version="1.0">
 
    <!-- Specify family="..." attribute to override system default monospaced. -->
-   <baseFont size="12"/>
+   <baseFont size="14"/>
    
    <!--  General editor colors. -->
    <background color="272822"/>

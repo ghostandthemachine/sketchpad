@@ -1,6 +1,7 @@
 (ns sketchpad.editor
     (:use [seesaw core graphics color font border]
           [clooj utils]
+          [clojure.pprint]
           [sketchpad.vim-mode]
           [sketchpad.toggle-vim-mode-action]
           [rounded-border.core]
@@ -15,7 +16,7 @@
               [sketchpad.rsyntaxtextarea :as rs]
               [sketchpad.rtextarea :as ta]
               [sketchpad.gutter :as gutter])
-    (:import  (java.awt.event FocusAdapter MouseAdapter)))
+    (:import  (java.awt.event FocusAdapter MouseAdapter KeyAdapter)))
 
 (def highlight-agent (agent nil))
 (def arglist-agent (agent nil))
@@ -123,29 +124,33 @@
     (cond 
       (is-mac)
       (do 
-        ; (println "This is OSX. Setting font to MENLO")
         (config! (app :doc-text-area) :font (font 
                              :name "MENLO"
-                             :size 12)))
-        ; (println "Set font: " (str (config (app :doc-text-area) :font))))
+                             :size 13)))
       (is-win)
       (config! (app :doc-text-area) :font (font 
                              :name "COURIER-NEW"
-                             :size 12))
+                             :size 14))
       :else 
       (config! (app :doc-text-area) :font (font 
                              :name "MONOSPACED"
-                             :size 12))))
+                             :size 14))))
 
-(defn set-text-area-preffs
-  [app]
-  (let [rta      (app :doc-text-area)]
-        (add-actions-to-action-map (.getActionMap rta))
-    ))
+(def key-stack (atom []))
 
 (defn command-line-key-listener
   []
-  )
+  (let [global-key-listener (proxy [KeyAdapter] []
+                              (keyTyped [e]
+                                (swap! key-stack (fn [s] (conj e s)))
+                                (pprint @key-stack)))]))
+
+(defn set-text-area-preffs
+  [app]
+  (let [rta (app :doc-text-area)]
+    (add-actions-to-action-map (.getActionMap rta))
+    (.addKeyListener (:doc-text-panel app) (command-line-key-listener))
+    ))
 
 (defn editor
   [app-atom]
@@ -205,7 +210,6 @@
                                                       editor-helpers-panel]
                                       :id             :doc-text-panel
                                       :class          :editor-comp)]
-
 
     (swap! app-atom conj (gen-map
                             arglist-label

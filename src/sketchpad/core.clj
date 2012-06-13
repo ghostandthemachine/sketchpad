@@ -73,8 +73,6 @@
     (add-caret-listener (app :doc-text-area) #(display-caret-position app))
     (setup-search-text-area app)
     (setup-cmd-line-area app)
-    ; (activate-caret-highlighter handle-caret-move app :doc-text-area)
-    ; (activate-caret-highlighter handle-caret-move app :repl-in-text-area)
     (setup-temp-writer app)
     (attach-action-keys (app :doc-text-area)
       ["cmd1 ENTER" #(send-selected-to-repl app)])
@@ -112,7 +110,6 @@
   (let [frame (app :frame)]
     (persist-window-shape clooj-prefs "main-window" frame) 
     (on-window-activation frame #(update-project-tree (app :docs-tree))))
-  (load-font app)
   ;; set theme
   (let [doc-ta (app :doc-text-area)
         repl-in-ta (app :repl-in-text-area)
@@ -132,7 +129,7 @@
   (reset! embedded false)
   (reset! current-app (create-app))
   (add-behaviors @current-app)
-  ; (sketchpad-menus @current-app)
+  ; (config! (@current-app :frame) :on-close #())
   (make-sketchpad-menus @current-app)
   (invoke-later
     (-> 
@@ -143,7 +140,6 @@
   (reset! embedded false)
   (reset! current-app (create-app))
   (add-behaviors @current-app)
-  ; (sketchpad-menus @current-app)
   (make-sketchpad-menus @current-app)
   (invoke-later
     (-> 
