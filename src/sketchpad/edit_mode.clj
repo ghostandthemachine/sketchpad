@@ -40,9 +40,10 @@
       (= kw :default)
         (do 
     		(swap! editor-mode (fn [_] :default))
-          (set-input-map! rta input-map)
+          (set-input-map! rta input-map)          
+          (set-action-map! rta action-map)
           (.setKeymap rta (create-keymap))
-        	(println "edit mode to defa4ult"))
+        	(println "edit mode to default"))
       (= kw :vim)
       	(do
       	     (swap! editor-mode (fn [_] :vim))
@@ -54,4 +55,3 @@
         	(set-input-map! rta input-map)
           (.setKeymap rta (create-keymap))
         	(println (name kw) "is not a valid edit mode. Setting edit mode to default")))))
-

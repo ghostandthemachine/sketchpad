@@ -176,18 +176,19 @@
                                       :maximum-size   [2000 :by 15]
                                       :id             :position-search-panel
                                       :class          :search-panel)
-        editor-command-line (rsyntax/text-area  :wrap-lines?    false
-                                                :maximum-size   [2000 :by 15]
-                                                :syntax         :clojure
-                                                :id             :editor-command-line
-                                                :class          [:editor-comp :syntax-editor])
 
-        editor-command-line-panel   (vertical-panel
-                                      :maximum-size   [2000 :by 15]
-                                      :items [editor-command-line])
+;        editor-command-line (rsyntax/text-area  :wrap-lines?    false
+;                                                :maximum-size   [2000 :by 15]
+;                                                :syntax         :clojure
+;                                                :id             :editor-command-line
+;                                                :class          [:editor-comp :syntax-editor])
+;
+;        editor-command-line-panel   (vertical-panel
+;                                      :maximum-size   [2000 :by 15]
+;                                      :items [editor-command-line])
 
         editor-helpers-panel  (vertical-panel       
-                                      :items [editor-command-line-panel
+                                      :items [;editor-command-line-panel
                                               position-search-panel])
 
         doc-label             (label  :text           "Source Editor"
@@ -215,7 +216,7 @@
                             arglist-label
                             search-text-area
                             arg-search-panel
-                            editor-command-line
+                            ;editor-command-line
                             pos-label
                             position-search-panel 
                             doc-label

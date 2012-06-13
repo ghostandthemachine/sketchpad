@@ -43,13 +43,6 @@
                         :divider-location 0.66
                         :resize-weight 0.66
                         :divider-size 3)
-        frame (frame 
-                :title "Sketchpad" 
-                :width 950 
-                :height 700 
-                :on-close :exit
-                :minimum-size [500 :by 350]
-                :content split-pane)
         app (merge {:file      (atom nil)
                     :repl      (atom (create-outside-repl (@app-init :repl-out-writer) nil))
                     :changed   false}
@@ -72,7 +65,7 @@
     (double-click-selector (app :doc-text-area))
     (add-caret-listener (app :doc-text-area) #(display-caret-position app))
     (setup-search-text-area app)
-    (setup-cmd-line-area app)
+;    (setup-cmd-line-area app)
     (setup-temp-writer app)
     (attach-action-keys (app :doc-text-area)
       ["cmd1 ENTER" #(send-selected-to-repl app)])
@@ -105,7 +98,11 @@
     (proxy [Thread$UncaughtExceptionHandler] []
       (uncaughtException [thread exception]
                        (println thread) (.printStackTrace exception))))
-
+  ;; add behaviors                       
+  (add-behaviors app)
+  ;; create menus
+  (make-sketchpad-menus app)
+  ;; load projects
   (doall (map #(add-project app %) (load-project-set)))
   (let [frame (app :frame)]
     (persist-window-shape clooj-prefs "main-window" frame) 
@@ -128,23 +125,31 @@
 (defn show []
   (reset! embedded false)
   (reset! current-app (create-app))
-  (add-behaviors @current-app)
-  ; (config! (@current-app :frame) :on-close #())
-  (make-sketchpad-menus @current-app)
+  (let [frame (frame :title "Sketchpad" 
+                     :width 950 
+                     :height 700 
+                     :minimum-size [500 :by 350]
+                     :content (@current-app :split-pane))]
+  (swap! current-app (fn [app] (assoc app :frame frame)))
   (invoke-later
     (-> 
       (startup-overtone @current-app) 
-      show!)))
+      show!))))
 
 (defn -main [& args]
   (reset! embedded false)
   (reset! current-app (create-app))
-  (add-behaviors @current-app)
-  (make-sketchpad-menus @current-app)
+  (let [frame (frame :title "Sketchpad" 
+                     :width 950 
+                     :height 700 
+                     :on-close :exit
+                     :minimum-size [500 :by 350]
+                     :content (@current-app :split-pane))]
+  (swap! current-app (fn [app] (assoc app :frame frame)))
   (invoke-later
     (-> 
-      (startup-overtone @current-app) 
-      show!)))
+      (startup-overtone @current-app)
+      show!))))
 
 
 
