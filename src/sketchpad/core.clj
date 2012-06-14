@@ -101,6 +101,7 @@
 
     ;; install auto completion
     (install-auto-completion (app :doc-text-area))
+    (install-auto-completion (app :repl-in-text-area))
 
     ; (gutter-popup (app :doc-scroll-pane))
     (setup-text-area-font app)

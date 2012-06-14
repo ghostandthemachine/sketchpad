@@ -23,6 +23,36 @@
 	+ Style and minimize seesaw borders and dividers to maximize frame space
 	+ Implement tab system for multiple files being open at one time
 	+ Boot overtone server on startup
+	
+### Sketchpad features
+- Complete reworking of Clooj menus in seesaw with new features
+     + Putting the menu construction into seesaw will make for more readbale code and a cleaner way to add more features that fit in the Sketchpad key binding system
+
+- Edit and command modes
+     + Easy to configure edit modes for vim and emacs style text navigating and manipulation
+
+- Macros
+     + recording and palying back macros of recordable text area actions (RSyntaxTextArea)
+
+- Auto completion
+     + Integrate RSTA auto completion 
+     + Dynamically generate auto completion info for current project based on name space meta data
+
+- Repl tools
+     + Create a palete of hot key commands that make things easier for working with Clojure projects
+         - use :reload current.project ["cmd shit U"]
+         - require :reload current.project ["cmd shift R"]
+         - eval file in repl ["cmd E"]
+         - eval current function in repl ["cmd enter"]
+         - restart a repl ["cmd R"]
+         - clear repl output ["cmd K"]
+         - apply ns ["cmd shift A"]
+         - print stack trace ["cmd T"]
+
+- Layout management
+     + Hot key toggling file tree browser to take up less space and be more useable for switching between files
+         - "cmd 1" hides and shows the browser as well as requests focus when open and passes focus back to the editor when closed allowing for fast movement between files
+     + possibly for the repl as well
 
 - Add Overtone API documentation and SuperCollider UGen documentation
 	+ Integrate JavaFX 2 WebView component via [upshot](https://github.com/daveray/upshot)
