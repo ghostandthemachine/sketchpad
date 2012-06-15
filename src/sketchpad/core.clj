@@ -48,7 +48,6 @@
   (let [provider (create-completion-provider)
         ac (org.fife.ui.autocomplete.AutoCompletion. provider)]
     ;; install auto completion
-    (.setListCellRenderer ac (org.fife.ui.autocomplete.demo.CCellRenderer. ))
     (.setShowDescWindow ac true)
     (.setParameterAssistanceEnabled ac true)
     
