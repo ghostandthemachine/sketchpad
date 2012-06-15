@@ -1,5 +1,5 @@
 (ns sketchpad.rtextarea
-  (:import (org.fife.ui.rtextarea RTextArea)))
+  (:import (org.fife.ui.rtextarea RTextArea RTextScrollPane)))
 
 (defn action-properties!
 "wrapper type:  :setter
@@ -567,4 +567,11 @@
  return-type:  void"
   [obj]
   (RTextArea/beginRecordingMacro))
+
+
+(defn fold-indicator-enabled!
+  [obj b]
+  (.setFoldIndicatorEnabled obj b))
+
+
 

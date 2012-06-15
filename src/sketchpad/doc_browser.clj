@@ -17,10 +17,22 @@
               (javax.swing DefaultListCellRenderer ListSelectionModel)
               (javax.swing.event ListSelectionListener)
               (java.util Vector)
-              (java.lang.reflect Modifier)))
+              (java.lang.reflect Modifier)
+              (java.net URLEncoder)))
 
 ;; tab help
 ; (defonce help-state (atom {:visible false :token nil :pos nil}))
+(defn url-encode
+  "URL-encode a string."
+  [s]
+  (URLEncoder/encode s "UTF-8"))
+  
+(defn raw-data
+  "Get a clojure data collection of raw search
+   results from collaj.net"
+  [terms]
+  (read-string (slurp (str "http://collaj.net/data/"
+                           (url-encode terms)))))
 
 (defn var-map [v]
   (when-let [m (meta v)]

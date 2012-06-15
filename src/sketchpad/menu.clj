@@ -224,11 +224,11 @@
 
                 (menu-item :text "Evaluate here" 
                            :mnemonic "E" 
-                           :key (keystroke "meta ENTER") 
+                           :key (keystroke "meta shift ENTER") 
                            :listen [:action (fn [_] (send-selected-to-repl app))])
                 (menu-item :text "Evaluate entire file" 
                            :mnemonic "F" 
-                           :key (keystroke "meta E")
+                           :key (keystroke "meta shift E")
                            :listen [:action (fn [_] (send-doc-to-repl app))])
                 (separator)
                 (menu-item :text "Apply file ns"
@@ -314,10 +314,10 @@
                            :listen [:action (fn [_] (.requestFocusInWindow (:docs-tree app)))])
                 (separator)
                 (menu-item :text "Increase font size" 
-                           :key (keystroke "meta PLUS") 
+                           :key (keystroke "meta shift PLUS") 
                            :listen [:action (fn [_] (grow-font app))])
                 (menu-item :text "Decrease font size" 
-                           :key (keystroke "meta MINUS") 
+                           :key (keystroke "meta shift MINUS") 
                            :listen [:action (fn [_] (shrink-font app))])
                 (menu-item :text "Choose font..." 
                            :listen [:action (fn [_] (apply show-font-window app set-font @current-font))])

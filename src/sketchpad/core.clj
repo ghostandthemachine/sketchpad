@@ -1,11 +1,13 @@
 (ns sketchpad.core
     (:gen-class :name "Sketchpad")
     (:import (javax.swing.TollTipManager)
+             (org.fife.ui.rsyntaxtextarea.RSyntaTextArea)
              (org.fife.ui.rtextarea.ToolTipSupplier)
-             (org.fife.ui.autocomplete.AutoCompletion)
+             (org.fife.ui.autocomplete AutoCompletion FunctionCompletion ParameterizedCompletion)
              (org.fife.ui.autocomplete.DefaultCompletionProvider)
              (org.fife.ui.autocomplete.demo.CCellRenderer)
-             (java.io.File))
+             (java.io.File)
+             (java.util.Vector))
     (:use [seesaw core graphics color border font]
           [clojure.pprint]
           [clooj.repl] 
@@ -19,7 +21,8 @@
           [clooj.indent]
           [sketchpad.editor]
           [sketchpad.menu]
-          [sketchpad.edit-mode])
+          [sketchpad.edit-mode]
+          [sketchpad.completion-builder])
     (:require [sketchpad.theme :as theme]))
 
 (def overtone-handlers  { :update-caret-position update-caret-position 
@@ -34,24 +37,25 @@
   ([] (create-completion-provider :default))
   ([kw]
   (let [cp (org.fife.ui.autocomplete.DefaultCompletionProvider. )]
-      ;; generate the xml file
-      (.loadFromXML cp (java.io.File. "lang/clojure.xml"))
-      cp)))
+	(add-all-ns-completions cp)
+     ;; generate the xml file
+;     (.loadFromXML cp (java.io.File. "lang/clojure.xml"))
+     cp)))
+
   
 (defn install-auto-completion
   [rta]
   (let [provider (create-completion-provider)
         ac (org.fife.ui.autocomplete.AutoCompletion. provider)]
     ;; install auto completion
-;    (.setListCellRenderer ac (org.fife.ui.autocomplete.demo.CCellRenderer. ))
+    (.setListCellRenderer ac (org.fife.ui.autocomplete.demo.CCellRenderer. ))
     (.setShowDescWindow ac true)
     (.setParameterAssistanceEnabled ac true)
+    
+    (.setDescriptionWindowSize ac (int 500) (int 300))
+    (.setChoicesWindowSize ac (int 200) (int 300))
+    
     (.install ac rta)
-    ;; setup tool tip
-
-;    (let [tts-provider (cast org.fife.ui.rtextarea.ToolTipSupplier provider)]
-;      (.setToolTipSupplier rta tts-provider))
-;    (.registerComponent (javax.swing.ToolTipManager/sharedInstance ))
     ))
 
 (defn create-app []
@@ -59,7 +63,7 @@
         editor    (editor app-init)
         file-tree (file-tree app-init)
         repl      (repl app-init)
-        doc-view  (doc-view app-init)
+;        doc-view  (doc-view app-init)
         doc-nav   (doc-nav app-init)
         doc-split-pane (left-right-split
                          file-tree
@@ -87,34 +91,17 @@
 (defn add-behaviors
   [app]
     ;; docs
-    (setup-completion-list (app :completion-list) app)    
-    (setup-tab-help app (app :doc-text-area))
+;    (setup-completion-list (app :completion-list) app)    
+;    (setup-tab-help app (app :doc-text-area))
     ;;editor
-    (setup-autoindent (app :doc-text-area))
-    (doto (app :doc-text-area) attach-navigation-keys)
-    (double-click-selector (app :doc-text-area))
     (add-caret-listener (app :doc-text-area) #(display-caret-position app))
     (setup-search-text-area app)
-;    (setup-cmd-line-area app)
     (setup-temp-writer app)
-    (attach-action-keys (app :doc-text-area)
-      ["cmd1 ENTER" #(send-selected-to-repl app)])
-
     ;; install auto completion
     (install-auto-completion (app :doc-text-area))
     (install-auto-completion (app :repl-in-text-area))
-
-    ; (gutter-popup (app :doc-scroll-pane))
-    (setup-text-area-font app)
-    (set-text-area-preffs app)
-
     ;; repl
-    (setup-autoindent (app :repl-in-text-area))
-    (setup-tab-help app (app :repl-in-text-area))
     (add-repl-input-handler app)
-    (doto (app :repl-in-text-area)
-            double-click-selector
-            attach-navigation-keys)
     ;; file tree
     (setup-tree app)
     ;; global
@@ -134,6 +121,8 @@
                        (println thread) (.printStackTrace exception))))
   ;; add behaviors                       
   (add-behaviors app)
+  (setup-text-area-font app)
+  (set-text-area-preffs app)
   ;; create menus
   (make-sketchpad-menus app)
   ;; load projects
@@ -184,6 +173,4 @@
     (-> 
       (startup-overtone @current-app)
       show!))))
-
-
 

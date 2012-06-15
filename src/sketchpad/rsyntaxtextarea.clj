@@ -281,7 +281,7 @@
   [obj]
   (RSyntaxTextArea/MARK_OCCURRENCES_PROPERTY))
 
-(defn code-folding-enabled?
+(defn code-folding-enabled!
 "wrapper type:  :boolean
         args:  [boolean]
        flags:  :public

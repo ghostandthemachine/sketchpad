@@ -212,6 +212,9 @@
                                       :id             :doc-text-panel
                                       :class          :editor-comp)]
 
+    (rs/code-folding-enabled! doc-text-area true);
+    (ta/fold-indicator-enabled! doc-scroll-pane true)
+    
     (swap! app-atom conj (gen-map
                             arglist-label
                             search-text-area

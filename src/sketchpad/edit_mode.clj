@@ -41,7 +41,7 @@
         (do 
     		(swap! editor-mode (fn [_] :default))
           (set-input-map! rta input-map)          
-          (set-action-map! rta action-map)
+;          (set-action-map! rta action-map)
           (.setKeymap rta (create-keymap))
         	(println "edit mode to default"))
       (= kw :vim)
