@@ -34,7 +34,8 @@
   ([] (create-completion-provider :default))
   ([kw]
   (let [cp (org.fife.ui.autocomplete.DefaultCompletionProvider. )]
-      (.loadFromXML cp (java.io.File. "lang/c.xml"))
+      ;; generate the xml file
+      (.loadFromXML cp (java.io.File. "lang/clojure.xml"))
       cp)))
   
 (defn install-auto-completion

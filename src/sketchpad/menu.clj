@@ -250,8 +250,8 @@
   (menu :text "REPL"
         :mnemonic "R"
         :items [(menu-item :text "Clear output"
-                           :mnemonic "C"
-                           :key (keystroke "meta K")
+                           :mnemonic "P"
+                           :key (keystroke "meta P")
                            :listen [:action (fn [_] (.setText (app :repl-out-text-area) ""))])
                 (separator)
                 (menu-item :text "Restart"

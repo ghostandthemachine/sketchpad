@@ -1,0 +1,204 @@
+  \documentclass[footexclude,twocolumn,DIV40,fontsize=8.7pt]{scrreprt}
+
+% Author: Jon Rose
+% Comments, errors, suggestions: jonrose08@gmail.com
+
+% Based on Steve Tayon's excellent Clojure Cheat Sheet
+% and Sam Aaron's Overtone Cheat Sheet
+
+% License
+% Eclipse Public License v1.0
+% http://opensource.org/licenses/eclipse-1.0.php
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\usepackage{lmodern}
+\renewcommand*\familydefault{\sfdefault}
+
+
+\usepackage[table]{xcolor}
+
+% Set column space
+\setlength{\columnsep}{0.30em}
+
+% Define colours
+\definecolorset{hsb}{}{}{red,0,.4,0.95;orange,.1,.4,0.95;green,.25,.4,0.95;grey,0.0,0.0,0.1;yellow,.15,.4,0.95}
+
+\definecolorset{hsb}{}{}{blue,.55,.4,0.95;purple,.7,.4,0.95;pink,.8,.4,0.95;blue2,.58,.4,0.95}
+
+\definecolorset{hsb}{}{}
+               {magenta,.9,.4,0.95;green2,.29,.4,0.95}
+
+               % Redefine sections
+               \makeatletter
+               \renewcommand{\section}{\@startsection{section}{1}{0mm}
+                 {-1.7ex}{0.7ex}{\normalfont\large\bfseries}}
+               \renewcommand{\subsection}{\@startsection{subsection}{2}{0mm}
+                 {-1.7ex}{0.5ex}{\normalfont\normalsize\bfseries}}
+               \makeatother
+
+               % No section numbers
+               \setcounter{secnumdepth}{0}
+
+               % No indentation
+               \setlength{\parindent}{0em}
+
+               % No header and footer
+               \pagestyle{empty}
+
+
+               % A few shortcuts
+               \newcommand{\cmd}[1] {\frenchspacing\texttt{\textbf{{#1}}}}
+               \newcommand{\cmdline}[1] {
+                 \begin{tabularx}{\hsize}{X}
+                   \texttt{\textbf{{#1}}}
+                 \end{tabularx}
+               }
+
+               \newcommand{\colouredbox}[2] {
+                 \colorbox{#1!40}{
+                   \begin{minipage}{0.95\linewidth}
+                     {
+                       \rowcolors[]{1}{#1!20}{#1!10}
+                       #2
+                     }
+                   \end{minipage}
+                 }
+               }
+
+               \begin{document}
+
+               {\Large{\textbf{Sketchpad Cheat Sheet (beta)}}}
+               
+               \colouredbox{green}{
+                 \section{File}
+                 \begin{tabularx}{\hsize}{lX}
+                   New&\cmd{meta N}\\
+                   Save& \cmd{meta S}\\
+                 \end{tabularx}
+               }
+               \colouredbox{blue2}{
+                 \section{Edit}
+                 \begin{tabularx}{\hsize}{lX}
+                   Undo & \cmd{meta Z}\\
+                   Redo & \cmd{meta shift Z}\\
+                   Copy & \cmd{meta C}\\
+                   Paste & \cmd{meta V}\\
+                 \end{tabularx}
+               }
+               \colouredbox{orange}{
+                 \section{Project}
+                 \begin{tabularx}{\hsize}{lX}
+                   New&\cmd{meta shift N}\\
+                   Open&\cmd{meta shift O}\\
+                 \end{tabularx}
+               }
+               \colouredbox{yellow}{
+                 \section{Source}
+                 \begin{tabularx}{\hsize}{lX}
+                   Comment-out & \cmd {meta ;}\\
+                   Uncomment-out & \cmd {meta shift ;}\\
+                   Fix indentation & \cmd {meta \textbackslash}\\
+                   Indent lines & \cmd {meta ]}\\
+                   Unindent lines & \cmd {meta [}\\                   
+                 \end{tabularx}
+               }
+               \colouredbox{purple}{
+                 \section{Tools}
+                 \begin{tabularx}{\hsize}{lX}
+                   Begin recording macro... & \cmd {meta ;}\\
+                   End recording macro... & \cmd {meta shift ;}\\
+                   Playback last macro... & \cmd {meta \textbackslash}\\
+                 \end{tabularx}
+               }
+               \colouredbox{green}{
+                 \section{Tools}
+                 \begin{tabularx}{\hsize}{lX}
+                   Begin recording macro... & \cmd {meta ;}\\
+                   End recording macro... & \cmd {meta shift ;}\\
+                   Playback last macro... & \cmd {meta \textbackslash}\\
+                 \end{tabularx}
+               }
+               \colouredbox{green}{
+                 \section{REPL}
+                 \subsection{File}
+                 \begin{tabularx}{\hsize}{lX}
+                   Evaluate here & \cmd {meta enter}\\
+                   Evaluate entire file & \cmd {meta E}\\
+                   Apply file ns & \cmd {meta shift A}\\
+                   Use :reload file & \cmd {meta shift U}\\
+                   Require :reload file & \cmd {meta shift R}\\
+                 \end{tabularx}
+                 \subsection{REPL}
+                 \begin{tabularx}{\hsize}{lX}
+                   Clear output & \cmd {meta P}\\
+                   Restart & \cmd {meta R}\\
+                   Print stack trace for last error & \cmd {meta T}\\
+                 \end{tabularx}
+               }
+               \colouredbox{red}{
+                 \section{Search}
+                 \begin{tabularx}{\hsize}{lX}
+                   Find & \cmd {meta F}\\
+                   Find next & \cmd {meta G}\\
+                   Find prev & \cmd {meta cmd shift G}\\
+                 \end{tabularx}
+               }
+               \colouredbox{blue}{
+                 \section{Window}
+                 \begin{tabularx}{\hsize}{lX}
+                   Go to REPL input \cmd {meta alt 3}\\
+                   Go to Editor \cmd {meta alt 2}\\
+                   Go to Project Tree \cmd {meta alt 1}\\
+                   Increase font size & \cmd {meta +}\\
+                   Decrease font size  & \cmd {meta -}\\
+                   Show File Tree & \cmd {meta -}\\
+                 \end{tabularx}
+               }
+               \colouredbox{grey}{
+                 \section{Editor commands}
+                 \begin{tabularx}{\hsize}{lX}
+                   Decrease indent & \cmd {shift tab}\\
+                   Toggle comment & \cmd {meta \textbackslash}\\
+                   Go to matching bracket & \cmd {meta [}\\
+                   Collapse fold & \cmd {meta -}\\
+                   Expand fold & \cmd {meta +}\\
+                   Collapse all fold & \cmd {meta /}\\
+                   Begin & \cmd {meta home}\\
+                   Selection begin & \cmd {meta shift end}\\
+                   End & \cmd {meta end}\\
+                   Selection end & \cmd {meta shift home}\\
+                   Begin line & \cmd {home}\\
+                   Selection begin line & \cmd {shift home}\\
+                   End line & \cmd {end}\\
+                   Selection end line & \cmd {shift end}\\
+                   Next word & \cmd {meta right}\\
+                   Selection next word & \cmd {meta shift right}\\
+                   Previous word & \cmd {meta left}\\
+                   Selection previous word & \cmd {meta shift left}\\
+                   Line up & \cmd {meta up}\\
+                   Delete line & \cmd {meta D}\\
+                   Join lines & \cmd {meta J}\\
+                   Delete previous char & \cmd {backspace}\\
+                   Delete previous word & \cmd {meta backspace}\\
+                   Delete next char & \cmd {delete}\\
+                   Delete next word & \cmd {meta delete}\\
+                   Next occurence & \cmd {meta K}\\
+                   Previous occurence & \cmd {meta shift K}\\
+                 \end{tabularx}
+               }
+               \begin{flushright}
+                 \footnotesize
+                 \rule{0.7\linewidth}{0.25pt}
+                 \verb!$Revision: 0.0.0.1, $Date: 14th June, 2012!\\
+                 \verb!Jon Rose - jonrose08@gmail.com!
+               \end{flushright}
+
+               % history
+
+
+               \end{document}
