@@ -222,7 +222,7 @@
         :mnemonic "R"
         :items [
 
-                (menu-item :text "Evaluate here" 
+                (menu-item :text "Evaluate form" 
                            :mnemonic "E" 
                            :key (keystroke "meta shift ENTER") 
                            :listen [:action (fn [_] (send-selected-to-repl app))])
@@ -334,8 +334,7 @@
 
 (defn make-sketchpad-menus
   [app]
-  (config! (:frame app) :menubar (menubar :items [
-                                                  (make-file-menu app)
+  (config! (:frame app) :menubar (menubar :items [(make-file-menu app)
                                                   (make-edit-menu app)
                                                   (make-project-menu app)
                                                   (make-source-menu app)
@@ -346,4 +345,5 @@
                                                   (make-window-menu app)
                                                   (make-help-menu app)
                                                   ])))
+
 

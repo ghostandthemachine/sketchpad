@@ -1,7 +1,7 @@
 (ns sketchpad.completion-builder
   (:use [clojure.pprint])
   (:require [clojure.string :as s])
-  (:import (org.fife.ui.autocomplete AutoCompletion FunctionCompletion ParameterizedCompletion)
+  (:import (org.fife.ui.autocomplete AutoCompletion ClojureFunctionCompletion ParameterizedCompletion)
            (org.fife.ui.autocomplete.DefaultCompletionProvider)
            (org.fife.ui.autocomplete.demo.CCellRenderer)
            (java.io.File)
@@ -134,14 +134,14 @@
   (let [p-list (java.util.Vector. )]
     (dotimes [n (count pv)]
       (.add p-list
-		(org.fife.ui.autocomplete.ParameterizedCompletion$Parameter. " " (add-space (str (nth pv n))))))
+		(org.fife.ui.autocomplete.ParameterizedCompletion$Parameter. " " (str (nth pv n)))))
     p-list))
 
 (defn add-function-completion
   [provider var]  
   (let [arglists (into [] (:arglists var))
         num-arglists (count arglists)
-        completion (FunctionCompletion. provider (add-space (str (:name var))) (str \space))]
+        completion (ClojureFunctionCompletion. provider (str (:name var)) (str \space))]
      (dotimes [n num-arglists]
  	  ;; convert params
  	  (.setParams completion (create-params-list (nth arglists n)))

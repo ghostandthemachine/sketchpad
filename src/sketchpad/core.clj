@@ -4,7 +4,7 @@
              (org.fife.ui.rsyntaxtextarea.RSyntaTextArea)
              (org.fife.ui.rtextarea.ToolTipSupplier)
              (org.fife.ui.autocomplete AutoCompletion FunctionCompletion ParameterizedCompletion)
-             (org.fife.ui.autocomplete.DefaultCompletionProvider)
+             (org.fife.ui.autocomplete.ClojureCompletionProvider)
              (org.fife.ui.autocomplete.demo.CCellRenderer)
              (java.io.File)
              (java.util.Vector))
@@ -36,10 +36,11 @@
 (defn create-completion-provider
   ([] (create-completion-provider :default))
   ([kw]
-  (let [cp (org.fife.ui.autocomplete.DefaultCompletionProvider. )]
-	(add-all-ns-completions cp)
+  (let [cp (org.fife.ui.autocomplete.ClojureCompletionProvider. )]
+	  (add-all-ns-completions cp)
      ;; generate the xml file
-;     (.loadFromXML cp (java.io.File. "lang/clojure.xml"))
+    (.setParameterizedCompletionParams cp \space " " \))
+
      cp)))
 
   
