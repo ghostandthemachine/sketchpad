@@ -7,5 +7,6 @@
         		  [clooj "0.3.4.2-SNAPSHOT"]
                  [rounded-border "0.0.1-SNAPSHOT"]
                  [org.fife.ui/rsyntaxtextarea "2.0.3"]
-                 [language-builder "1.0.0-SNAPSHOT"]]
+                 [language-builder "1.0.0-SNAPSHOT"]
+                 [rsta-auto-completion "1.0.0-SNAPSHOT"]]
   :jvm-opts ~(if (= (System/getProperty "os.name") "Mac OS X") ["-Xdock:name=Sketchpad"] []))
