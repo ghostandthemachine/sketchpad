@@ -10,20 +10,22 @@
              (java.util.Vector))
     (:use [seesaw core graphics color border font]
           [clojure.pprint]
-          [clooj.repl] 
+          [sketchpad.repl] 
           [clooj.help]
           [clooj.utils]
           [clooj.navigate]
           [clooj.doc-browser] 
-          [clooj.filetree]
+          [sketchpad.filetree]
           [clooj.menus]
           [clooj.dev-tools]
           [clooj.indent]
           [sketchpad.editor]
           [sketchpad.menu]
           [sketchpad.edit-mode]
+          [sketchpad.default-mode]
           [sketchpad.completion-builder])
-    (:require [sketchpad.theme :as theme]))
+    (:require [sketchpad.theme :as theme]
+    					[sketchpad.config :as config]))
 
 (def overtone-handlers  { :update-caret-position update-caret-position 
                           :save-caret-position save-caret-position
@@ -63,7 +65,6 @@
         editor    (editor app-init)
         file-tree (file-tree app-init)
         repl      (repl app-init)
-;        doc-view  (doc-view app-init)
         doc-nav   (doc-nav app-init)
         doc-split-pane (left-right-split
                          file-tree
@@ -90,9 +91,6 @@
 
 (defn add-behaviors
   [app]
-    ;; docs
-;    (setup-completion-list (app :completion-list) app)    
-;    (setup-tab-help app (app :doc-text-area))
     ;;editor
     (add-caret-listener (app :doc-text-area) #(display-caret-position app))
     (setup-search-text-area app)
@@ -100,6 +98,7 @@
     ;; install auto completion
     (install-auto-completion (app :doc-text-area))
     (install-auto-completion (app :repl-in-text-area))
+
     ;; repl
     (add-repl-input-handler app)
     ;; file tree
@@ -123,6 +122,8 @@
   (add-behaviors app)
   (setup-text-area-font app)
   (set-text-area-preffs app)
+
+  (edit-mode! (app :doc-text-area) :default (default-input-map ))
   ;; create menus
   (make-sketchpad-menus app)
   ;; load projects
@@ -134,7 +135,7 @@
   (let [doc-ta (app :doc-text-area)
         repl-in-ta (app :repl-in-text-area)
         repl-out-ta (app :repl-out-text-area)
-        theme (theme/theme "src/sketchpad/themes/dark.xml")]
+        theme (theme/theme (str "src/sketchpad/themes/" (config/prefs :theme)))]
       (theme/apply! theme doc-ta)
       (theme/apply! theme repl-in-ta)
       (theme/apply! theme repl-out-ta))

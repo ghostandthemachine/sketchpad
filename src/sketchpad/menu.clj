@@ -8,7 +8,8 @@
         [sketchpad.vim-mode]
         [sketchpad.layout-config]
         [sketchpad.toggle-vim-mode-action]
-        [clooj repl help utils project dev-tools indent editor filetree doc-browser search style indent])
+        [sketchpad.filetree]
+        [clooj repl help utils project dev-tools indent editor doc-browser search style indent])
   (:require 
         [sketchpad.rtextscrollpane :as sp]
         [sketchpad.rsyntaxtextarea :as cr]

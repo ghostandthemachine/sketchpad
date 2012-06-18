@@ -1108,3 +1108,6 @@
   [rta im]
   (.setActionMap rta im))
 
+(defn input-map 
+  [rta]
+  (.getInputMap rta))

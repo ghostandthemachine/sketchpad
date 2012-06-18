@@ -8,6 +8,27 @@
 			 (javax.swing.text DefaultEditorKit)
 			 (org.fife.ui.rtextarea RTextArea RTextAreaEditorKit RTextAreaUI RecordableTextAction)))
 
+(defonce vim-key-listener (proxy [java.awt.event.KeyListener] []
+    				  (keyPressed 
+    				    [e]
+    				  	(println e))
+    				  (keyReleased 
+    				    [e]
+    				  	)
+    				  (keyTyped 
+    				    [e]
+    				  	)))
+
+; (defn attach-vim-key-listener
+;   [rta]
+;    (let [listener 2]
+; 	 (.addKeyListener (app :doc-text-area) vim-key-listener)))
+
+; (defn remove-vim-key-listener
+;   [rta]
+;    (let [listener ]
+; 	 (.removeKeyListener (app :doc-text-area) vim-key-listener)))
+
 (defn vim-input-map
 	[]
 	"Extend the Swing InputMap class and implement key mappings"

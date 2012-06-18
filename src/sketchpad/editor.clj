@@ -15,7 +15,8 @@
               [sketchpad.rtextscrollpane :as sp]
               [sketchpad.rsyntaxtextarea :as rs]
               [sketchpad.rtextarea :as ta]
-              [sketchpad.gutter :as gutter])
+              [sketchpad.gutter :as gutter]
+              [sketchpad.config :as config])
     (:import  (java.awt.event FocusAdapter MouseAdapter KeyAdapter)))
 
 (def highlight-agent (agent nil))
@@ -149,6 +150,7 @@
   [app]
   (let [rta (app :doc-text-area)]
     (add-actions-to-action-map (.getActionMap rta))
+    (.setTabSize rta (config/prefs :tab-size))
     (.addKeyListener (:doc-text-panel app) (command-line-key-listener))
     ))
 

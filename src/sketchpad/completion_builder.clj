@@ -159,5 +159,15 @@
 (defn add-all-ns-completions
   [provider]
   (dotimes [n (count (all-ns))]
-	(add-completions-from-ns provider (nth (all-ns) n))))
+  (add-completions-from-ns provider (nth (all-ns) n))))
+; (defn add-all-ns-completions
+;   [provider]
+;   (doseq [ns (all-ns)]
+;     (add-function-completion provider ns)))
+; (map (partial add-function-completion provider) (all-ns))
+;; do it lasy later
+; (map #(add-function-completion provider %) (all-ns))
+;; execute the mapping now
+; (doall (map #(add-function-completion provider %) (all-ns)))
+
 
