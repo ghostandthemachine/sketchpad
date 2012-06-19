@@ -1,6 +1,6 @@
 (ns sketchpad.editor
     (:use [seesaw core graphics color font border]
-          [clooj utils]
+          [sketchpad utils]
           [clojure.pprint]
           [sketchpad.vim-mode]
           [sketchpad.toggle-vim-mode-action]
@@ -23,7 +23,7 @@
 (def arglist-agent (agent nil))
 (def caret-position (atom nil))
 
-;; caret finding
+; caret finding
 (defn save-caret-position [app]
   (when-lets [text-area (app :doc-text-area)
               pos (get @caret-position text-area)
@@ -125,9 +125,10 @@
     (cond 
       (is-mac)
       (do 
-        (config! (app :doc-text-area) :font (font 
-                             :name "MENLO"
-                             :size 13)))
+        (config! (app :doc-text-area) 
+                            :font (font 
+                            :name "MENLO"
+                            :size 14)))
       (is-win)
       (config! (app :doc-text-area) :font (font 
                              :name "COURIER-NEW"
@@ -149,8 +150,7 @@
 (defn set-text-area-preffs
   [app]
   (let [rta (app :doc-text-area)]
-    (add-actions-to-action-map (.getActionMap rta))
-    (.setTabSize rta (config/prefs :tab-size))
+;    (add-actions-to-action-map (.getActionMap rta))
     (.addKeyListener (:doc-text-panel app) (command-line-key-listener))
     ))
 
@@ -179,19 +179,9 @@
                                       :id             :position-search-panel
                                       :class          :search-panel)
 
-;        editor-command-line (rsyntax/text-area  :wrap-lines?    false
-;                                                :maximum-size   [2000 :by 15]
-;                                                :syntax         :clojure
-;                                                :id             :editor-command-line
-;                                                :class          [:editor-comp :syntax-editor])
-;
-;        editor-command-line-panel   (vertical-panel
-;                                      :maximum-size   [2000 :by 15]
-;                                      :items [editor-command-line])
 
         editor-helpers-panel  (vertical-panel       
-                                      :items [;editor-command-line-panel
-                                              position-search-panel])
+                                      :items [position-search-panel])
 
         doc-label             (label  :text           "Source Editor"
                                       :id             :doc-label
@@ -207,6 +197,7 @@
                                       :id             :doc-text-area
                                       :class          [:editor-comp :syntax-editor])
         doc-scroll-pane       (sp/scroll-pane doc-text-area)
+        gutter                (.getGutter doc-scroll-pane)
         doc-text-panel        (vertical-panel       
                                       :items         [doc-label-panel 
                                                       doc-scroll-pane 
@@ -215,8 +206,7 @@
                                       :class          :editor-comp)]
 
     (rs/code-folding-enabled! doc-text-area true);
-    (ta/fold-indicator-enabled! doc-scroll-pane true)
-    
+    (ta/fold-indicator-enabled! doc-scroll-pane true)    
     (swap! app-atom conj (gen-map
                             arglist-label
                             search-text-area
@@ -228,5 +218,6 @@
                             doc-text-area
                             doc-scroll-pane
                             doc-text-panel
+                            gutter
                             editor-helpers-panel))
     doc-text-panel))

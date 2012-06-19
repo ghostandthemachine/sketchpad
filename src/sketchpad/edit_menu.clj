@@ -1,6 +1,6 @@
 (ns sketchpad.edit-menu
-	(:use [sketchpad editor-kit] 
-		  [clooj utils dev-tools]
+	(:use [sketchpad editor-kit utils] 
+		  [clooj dev-tools]
 		  [seesaw.core])
 
 	(:import (org.fife.ui.rtextarea RTextAreaEditorKit)))

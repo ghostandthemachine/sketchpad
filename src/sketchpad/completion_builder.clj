@@ -143,13 +143,12 @@
         num-arglists (count arglists)
         completion (ClojureFunctionCompletion. provider (str (:name var)) (str \space))]
      (dotimes [n num-arglists]
- 	  ;; convert params
- 	  (.setParams completion (create-params-list (nth arglists n)))
- 	  ;; doc/description
- 	  (.setReturnValueDescription completion (:doc var)))
-	(.addCompletion provider completion)))
+    ;; convert params
+    (.setParams completion (create-params-list (nth arglists n)))
+    ;; doc/description
+    (.setReturnValueDescription completion (:doc var)))
+    (.addCompletion provider completion)))
   
-
 (defn add-completions-from-ns
   [provider ns]
   (let [ns-map (ns-publics-to-map ns)]
@@ -160,12 +159,13 @@
   [provider]
   (dotimes [n (count (all-ns))]
   (add-completions-from-ns provider (nth (all-ns) n))))
+  
 ; (defn add-all-ns-completions
 ;   [provider]
 ;   (doseq [ns (all-ns)]
 ;     (add-function-completion provider ns)))
 ; (map (partial add-function-completion provider) (all-ns))
-;; do it lasy later
+;; do it lazy later
 ; (map #(add-function-completion provider %) (all-ns))
 ;; execute the mapping now
 ; (doall (map #(add-function-completion provider %) (all-ns)))

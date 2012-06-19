@@ -767,7 +767,7 @@
   [obj x y]
   (.setActiveLineRange obj x y))
 
-(defn clear-whitespace-lines-enabled?
+(defn clear-whitespace-lines-enabled!
 "wrapper type:  :boolean
         args:  [boolean]
        flags:  :public
@@ -992,7 +992,7 @@
   [obj]
   (RSyntaxTextArea/getCodeTemplateManager))
 
-(defn whitespace-visible?
+(defn whitespace-visible!
 "wrapper type:  :boolean
         args:  [boolean]
        flags:  :public

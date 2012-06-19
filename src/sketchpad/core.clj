@@ -3,6 +3,7 @@
     (:import (javax.swing.TollTipManager)
              (org.fife.ui.rsyntaxtextarea.RSyntaTextArea)
              (org.fife.ui.rtextarea.ToolTipSupplier)
+             (org.fife.ui.rtextarea.RTextArea)
              (org.fife.ui.autocomplete AutoCompletion FunctionCompletion ParameterizedCompletion)
              (org.fife.ui.autocomplete.ClojureCompletionProvider)
              (org.fife.ui.autocomplete.demo.CCellRenderer)
@@ -10,20 +11,13 @@
              (java.util.Vector))
     (:use [seesaw core graphics color border font]
           [clojure.pprint]
-          [sketchpad.repl] 
           [clooj.help]
-          [clooj.utils]
           [clooj.navigate]
           [clooj.doc-browser] 
-          [sketchpad.filetree]
           [clooj.menus]
           [clooj.dev-tools]
           [clooj.indent]
-          [sketchpad.editor]
-          [sketchpad.menu]
-          [sketchpad.edit-mode]
-          [sketchpad.default-mode]
-          [sketchpad.completion-builder])
+          [sketchpad utils repl filetree editor menu edit-mode default-mode completion-builder])
     (:require [sketchpad.theme :as theme]
     					[sketchpad.config :as config]))
 
@@ -34,31 +28,23 @@
                           :get-selected-projects get-selected-projects
                           :apply-namespace-to-repl apply-namespace-to-repl
                           :find-file find-file})
-                          
+
 (defn create-completion-provider
   ([] (create-completion-provider :default))
   ([kw]
   (let [cp (org.fife.ui.autocomplete.ClojureCompletionProvider. )]
 	  (add-all-ns-completions cp)
-     ;; generate the xml file
     (.setParameterizedCompletionParams cp \space " " \))
-
      cp)))
+     
 
-  
 (defn install-auto-completion
   [rta]
   (let [provider (create-completion-provider)
-        ac (org.fife.ui.autocomplete.AutoCompletion. provider)]
-    ;; install auto completion
-    (.setShowDescWindow ac true)
-    (.setParameterAssistanceEnabled ac true)
-    
-    (.setDescriptionWindowSize ac (int 500) (int 300))
-    (.setChoicesWindowSize ac (int 200) (int 300))
-    
-    (.install ac rta)
-    ))
+        auto-complete (org.fife.ui.autocomplete.AutoCompletion. provider)]
+    ;; load prefs from config/default.clj
+    (config/apply-auto-completion-prefs! config/default-auto-completion-prefs auto-complete)
+    (.install auto-complete rta)))
 
 (defn create-app []
   (let [app-init  (atom {})
@@ -89,12 +75,16 @@
                       split-pane))]
     app))
 
+
 (defn add-behaviors
   [app]
     ;;editor
     (add-caret-listener (app :doc-text-area) #(display-caret-position app))
     (setup-search-text-area app)
     (setup-temp-writer app)
+
+    ; (add-defaults-to-input-map (.getInputMap (app :doc-text-area)))
+
     ;; install auto completion
     (install-auto-completion (app :doc-text-area))
     (install-auto-completion (app :repl-in-text-area))
@@ -120,10 +110,9 @@
                        (println thread) (.printStackTrace exception))))
   ;; add behaviors                       
   (add-behaviors app)
-  (setup-text-area-font app)
-  (set-text-area-preffs app)
+;  (setup-text-area-font app)
+;  (set-text-area-preffs app)
 
-  (edit-mode! (app :doc-text-area) :default (default-input-map ))
   ;; create menus
   (make-sketchpad-menus app)
   ;; load projects
@@ -131,17 +120,12 @@
   (let [frame (app :frame)]
     (persist-window-shape clooj-prefs "main-window" frame) 
     (on-window-activation frame #(update-project-tree (app :docs-tree))))
-  ;; set theme
-  (let [doc-ta (app :doc-text-area)
-        repl-in-ta (app :repl-in-text-area)
-        repl-out-ta (app :repl-out-text-area)
-        theme (theme/theme (str "src/sketchpad/themes/" (config/prefs :theme)))]
-      (theme/apply! theme doc-ta)
-      (theme/apply! theme repl-in-ta)
-      (theme/apply! theme repl-out-ta))
   (let [tree (app :docs-tree)]
     (load-expanded-paths tree)
     (load-tree-selection tree))
+  	;; load default prefs
+	  (config/apply-editor-prefs! config/default-editor-prefs (:doc-text-area app))
+		;; done with init
     (app :frame))
 
 (defonce current-app (atom nil))

@@ -1,15 +1,8 @@
 (ns sketchpad.menu
   (:use [clojure.pprint]
         [seesaw core keystroke]
-        [sketchpad.edit-menu]
-        [sketchpad.vim-mode]
-        [sketchpad.default-mode]
-        [sketchpad.edit-mode]
-        [sketchpad.vim-mode]
-        [sketchpad.layout-config]
-        [sketchpad.toggle-vim-mode-action]
-        [sketchpad.filetree]
-        [clooj repl help utils project dev-tools indent editor doc-browser search style indent])
+        [sketchpad utils edit-menu vim-mode default-mode edit-mode vim-mode layout-config toggle-vim-mode-action filetree completion-builder]
+        [clooj repl help project dev-tools indent editor doc-browser search style indent])
   (:require 
         [sketchpad.rtextscrollpane :as sp]
         [sketchpad.rsyntaxtextarea :as cr]
@@ -208,7 +201,9 @@
   [app]
   (if (= "ns" (str (first (current-ns-form app))))
     (do 
-      (send-to-repl app (str "(use :reload " \' (str (second (current-ns-form app))) ")")))))
+      (send-to-repl app (str "(use :reload " \' (str (second (current-ns-form app))) ")"))
+      (add-completions-from-ns (quote (second (current-ns-form app))))
+      )))
 
 (defn require-reload-current-file-ns
   [app]
