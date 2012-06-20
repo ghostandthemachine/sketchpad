@@ -1,16 +1,22 @@
 (ns sketchpad.completion-builder
   (:use [clojure.pprint])
-  (:require [clojure.string :as s])
-  (:import (org.fife.ui.autocomplete AutoCompletion ClojureFunctionCompletion ParameterizedCompletion)
+  (:require [clojure.string :as s]
+  					[clojure.repl :as repl])
+  (:import (org.fife.ui.autocomplete AutoCompletion VariableCompletion ClojureFunctionCompletion ParameterizedCompletion)
            (org.fife.ui.autocomplete.DefaultCompletionProvider)
            (org.fife.ui.autocomplete.demo.CCellRenderer)
            (java.io.File)
            (java.util.Vector)))
 
 (defn ns-publics-to-map [name-space] 
-	(let [meta-data (map meta (vals (ns-publics name-space)))]
+	(let [ns-pubs (ns-publics name-space)
+				ns-keys (keys ns-pubs)
+				ns-vars (vals ns-pubs)
+				meta-data (map meta ns-vars)]
 ;		(reduce (fn [m vs] (assoc-in m [(str (:orig-ns vs)) (:name vs)] vs)) {} meta-data)
-		meta-data))
+		[ns-keys
+		 ns-vars
+		 meta-data]))
 
 ;(def clj-lang-start (str (slurp "resources/clojure-header.txt")))
 (def clj-lang-start "")
@@ -138,27 +144,47 @@
     p-list))
 
 (defn add-function-completion
-  [provider var]  
-  (let [arglists (into [] (:arglists var))
-        num-arglists (count arglists)
-        completion (ClojureFunctionCompletion. provider (str (:name var)) (str \space))]
-     (dotimes [n num-arglists]
-    ;; convert params
-    (.setParams completion (create-params-list (nth arglists n)))
-    ;; doc/description
-    (.setReturnValueDescription completion (:doc var)))
-    (.addCompletion provider completion)))
-  
+  [provider sym var]    
+  (let [var-meta (meta var)
+  			completion-list (java.util.Vector. )]
+    ; (if (not (fn? sym))
+    	(let [completion (ClojureFunctionCompletion. provider (str (:name var-meta)) (str \space))
+            arglists (into [] (:arglists var-meta))
+            num-arglists (count arglists)]
+  	    (dotimes [n num-arglists]
+  		    ;; convert params
+  		    (.setParams completion (create-params-list (nth arglists n)))
+  		    ;; doc/description
+  		    (.setReturnValueDescription completion (:doc var-meta))
+  		    (if (repl/source-fn sym)
+            (.setReturnValueSourceDescription 
+    		    		completion 
+    		    		(s/replace
+    		    			(repl/source-fn sym)
+    		    			(str "\n")
+    		    			(str "<br/>"))))
+					(.setDefinedIn completion (str (:ns var-meta)))
+;  		    (.addCompletion provider completion)
+          (if (not (.contains completion-list completion))  
+            (.add completion-list completion))
+  		    ))
+  		    (.addCompletions provider completion-list)
+  		; (let [var-completion (VariableCompletion. provider (str (:name var-meta)) (str \space))]
+  		; 		;; doc/description
+  		;     (.addCompletion provider var-completion))
+
+  ))
+    
 (defn add-completions-from-ns
   [provider ns]
-  (let [ns-map (ns-publics-to-map ns)]
-    (dotimes [n (count ns-map)]
-      (add-function-completion provider (nth ns-map n)))))
+    (doseq [[k v] (ns-publics ns)]
+      (add-function-completion provider k v)))
 
 (defn add-all-ns-completions
   [provider]
-  (dotimes [n (count (all-ns))]
-  (add-completions-from-ns provider (nth (all-ns) n))))
+  (let [all-namespaces (all-ns)]
+    (dotimes [n (count (all-ns))]
+      (add-completions-from-ns provider (nth (all-ns) n)))))
   
 ; (defn add-all-ns-completions
 ;   [provider]

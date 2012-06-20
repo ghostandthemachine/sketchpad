@@ -2,7 +2,8 @@
     (:use [seesaw core keystroke]
           [sketchpad utils editor]
           [clojure.pprint])
-    (:require [seesaw.color :as c])
+    (:require [seesaw.color :as c]
+              [seesaw.chooser :as chooser])
     (:import (java.io File StringReader BufferedWriter OutputStreamWriter FileOutputStream)
            (java.awt GridLayout)
            (javax.swing JButton JTree JOptionPane JWindow)
@@ -93,6 +94,14 @@
           the-dir (File. project-dir dirstring)]
       (.mkdirs the-dir)
       [(File. the-dir (str name ".clj")) namespace])))
+
+(defn file-name-choose [project-dir title]
+  (chooser/choose-file :type :save
+               :dir project-dir
+               :success-fn (fn [fc file] (do 
+               															(spit (File. (.getAbsolutePath file)) "") 
+               															(println "Createded file " (.getAbsolutePath file))))))
+
 
 (defn new-project-clj [app project-dir]
   (let [project-name (.getName project-dir)
@@ -272,13 +281,17 @@
       (update-project-tree (app :docs-tree)))))
 
 (defn create-file [app project-dir default-namespace]
-   (when-let [[file namespace] (specify-source project-dir
-                                          "Create a source file"
-                                          default-namespace)]
-     (let [tree (:docs-tree app)]
-       (spit file (str "(ns " namespace ")\n"))
-       (update-project-tree (:docs-tree app))
-       (set-tree-selection tree (.getAbsolutePath file)))))
+   (when-let [file-name (file-name-choose project-dir "Create a new file")]
+    ))
+
+; (defn create-file [app project-dir default-namespace]
+;    (when-let [[file namespace] (specify-source project-dir
+;                                           "Create a new file"
+;                                           default-namespace)]
+;      (let [tree (:docs-tree app)]
+;        (spit file (str "(ns " namespace ")\n"))
+;        (update-project-tree (:docs-tree app))
+;        (set-tree-selection tree (.getAbsolutePath file)))))
 
 (defn open-project [app]
   (when-let [dir (choose-directory (app :f) "Choose a project directory")]

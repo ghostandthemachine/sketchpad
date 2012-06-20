@@ -17,7 +17,7 @@
           [clooj.menus]
           [clooj.dev-tools]
           [clooj.indent]
-          [sketchpad utils repl filetree editor menu edit-mode default-mode completion-builder])
+          [sketchpad utils repl filetree editor menu edit-mode default-mode completion-builder rsyntaxtextarea])
     (:require [sketchpad.theme :as theme]
     					[sketchpad.config :as config]))
 
@@ -58,12 +58,12 @@
                          :divider-location 0.25
                          :resize-weight 0.25
                          :divider-size 3)
-        split-pane (left-right-split 
+        split-pane (top-bottom-split 
                         doc-split-pane 
                         repl
                         :divider-location 0.66
                         :resize-weight 0.66
-                        :divider-size 3)
+                        :divider-size 1)
         app (merge {:file      (atom nil)
                     :repl      (atom (create-outside-repl (@app-init :repl-out-writer) nil))
                     :changed   false}
@@ -88,6 +88,9 @@
     ;; install auto completion
     (install-auto-completion (app :doc-text-area))
     (install-auto-completion (app :repl-in-text-area))
+
+    ;; test default input map
+    (set-input-map! (app :doc-text-area) (default-input-map))
 
     ;; repl
     (add-repl-input-handler app)
@@ -124,7 +127,9 @@
     (load-expanded-paths tree)
     (load-tree-selection tree))
   	;; load default prefs
-	  (config/apply-editor-prefs! config/default-editor-prefs (:doc-text-area app))
+    (config/apply-editor-prefs! config/default-editor-prefs (:doc-text-area app))
+    (config/apply-editor-prefs! config/default-editor-prefs (:repl-in-text-area app))
+	  (config/apply-editor-prefs! config/default-editor-prefs (:repl-out-text-area app))
 		;; done with init
     (app :frame))
 

@@ -11,16 +11,11 @@
 ;; edit modes [:default :vim]
 (def editor-mode (atom :default))
 
-(comment 
-  (require :reload 'sketchpad.edit-mode)
-  )
-
 (defn- get-default-modifier
   []
   (.getMenuShortcutKeyMask (Toolkit/getDefaultToolkit)))
 
 (defonce default-modifier (get-default-modifier))
-
 
 (def RTEXTAREA_KEYMAP_NAME "RTextAreaKeymap")
 

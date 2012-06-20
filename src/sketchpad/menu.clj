@@ -99,11 +99,11 @@
                 (menu-item :text "Delete" 
                            :listen [:action (fn [_] (delete-file app))])
                 (if (is-mac)
-                    (separator))
-                (if (is-mac)
                   (do 
-                    (menu-item :text "Exit"
-                               :mnemonic "X"
+                  	(separator)
+                    (menu-item :text "Quit"
+                               :mnemonic "Q"
+                               :key (keystroke "meta Q")
                                :listen [:action (fn [_] (System/exit 0))])))
                 ]))
 
@@ -128,6 +128,16 @@
                            :mnemonic "P" 
                            :key (keystroke "meta V") 
                            :listen [:action (fn [_] (rt/paste (:doc-text-area app)))])
+                (separator)
+                (menu-item :text "Increase font size" 
+                           :key (keystroke "meta shift PLUS") 
+                           :listen [:action (fn [_] (grow-font app))])
+                (menu-item :text "Decrease font size" 
+                           :key (keystroke "meta shift MINUS") 
+                           :listen [:action (fn [_] (shrink-font app))])
+                (separator)
+                (menu-item :text "Choose font..." 
+                           :listen [:action (fn [_] (apply show-font-window app set-font @current-font))])
                 (separator)
                 (menu :text "Mode"
                       :items [(checkbox-menu-item :text "Vim Command Mode"
@@ -178,16 +188,24 @@
                            :key (keystroke "meta OPEN_BRACKET") 
                            :listen [:action (fn [_] (indent (:doc-text-area app)))])
                 (separator)
+                (menu-item :text "Find" 
+                           :mnemonic "F" 
+                           :key (keystroke "meta F") 
+                           :listen [:action (fn [_] (start-find app))])
+                (menu-item :text "Find next" 
+                           :mnemonic "N" 
+                           :key (keystroke "meta G") 
+                           :listen [:action (fn [_] (highlight-step app false))])
+                (menu-item :text "Find prev" 
+                           :mnemonic "P" 
+                           :key (keystroke "meta shift G") 
+                           :listen [:action (fn [_] (highlight-step app true))])
                 (menu-item :text "Name search/docs"
                            :mnemonic "S" 
                            :key (keystroke "alt TAB") 
-                           :listen [:action (fn [_] (show-tab-help app (find-focused-text-pane app) inc toggle-file-tree-panel))])]))
-
-(defn make-tools-menu
-  [app]
-  (menu :text "Tools"
-        :mnemonic "T"
-        :items [(menu-item :text "Begin recording macro..." 
+                           :listen [:action (fn [_] (show-tab-help app (find-focused-text-pane app) inc toggle-file-tree-panel))])
+                (separator)
+                (menu-item :text "Begin recording macro..." 
                            :key (keystroke "ctrl Q") 
                            :listen [:action (fn [_] (toggle-macro-recording! app))])
                 (menu-item :text "End recording macro..." 
@@ -211,91 +229,52 @@
     (do 
       (send-to-repl app (str "(require :reload " \' (str (second(current-ns-form app))) ")")))))
 
-
-(defn- make-repl-file-menu
-  [app]
-  (menu :text "File"
-        :mnemonic "R"
-        :items [
-
-                (menu-item :text "Evaluate form" 
-                           :mnemonic "E" 
-                           :key (keystroke "meta shift ENTER") 
-                           :listen [:action (fn [_] (send-selected-to-repl app))])
-                (menu-item :text "Evaluate entire file" 
-                           :mnemonic "F" 
-                           :key (keystroke "meta shift E")
-                           :listen [:action (fn [_] (send-doc-to-repl app))])
-                (separator)
-                (menu-item :text "Apply file ns"
-                           :mnemonic "A"
-                           :key (keystroke "meta shift A")
-                           :listen [:action  (fn [_] (apply-namespace-to-repl app))])
-                (separator)
-                (menu-item :text "Use :reload file"
-                           :mnemonic "U"
-                           :key (keystroke "meta shift U")
-                           :listen [:action (fn [_] (use-reload-current-file-ns app))])
-                (menu-item :text "Require :reload file"
-                           :mnemonic "R"
-                           :key (keystroke "meta shift R")
-                           :listen [:action (fn [_] (require-reload-current-file-ns app))])]))
-
-(defn- make-repl-repl-menu
-  [app]
-  (menu :text "REPL"
-        :mnemonic "R"
-        :items [(menu-item :text "Clear output"
-                           :mnemonic "P"
-                           :key (keystroke "meta P")
-                           :listen [:action (fn [_] (.setText (app :repl-out-text-area) ""))])
-                (separator)
-                (menu-item :text "Restart"
-                           :mnemonic "R"
-                           :key (keystroke "meta R")
-                           :listen [:action (fn [_] (restart-repl app (first (get-selected-projects app))))])
-                (separator)
-                (menu-item :text "Print stack trace for last error"
-                           :mnemonic "T"
-                           :key (keystroke "meta T")
-                           :listen [:action (fn [_] (print-stack-trace app))])]))
-
 (defn make-repl-menu
   [app]
   (menu :text "REPL"
         :mnemonic "R"
-        :items [(make-repl-file-menu app)
-                (make-repl-repl-menu app)]))
-              
-
-(defn make-search-menu
-  [app]
-  (menu :text "Search"
-        :mnemonic "S"
-        :items [(menu-item :text "Find" 
-                           :mnemonic "F" 
-                           :key (keystroke "meta F") 
-                           :listen [:action (fn [_] (start-find app))])
-                (menu-item :text "Find next" 
-                           :mnemonic "N" 
-                           :key (keystroke "meta G") 
-                           :listen [:action (fn [_] (highlight-step app false))])
-                (menu-item :text "Find prev" 
-                           :mnemonic "P" 
-                           :key (keystroke "meta shift G") 
-                           :listen [:action (fn [_] (highlight-step app true))])]))
+        :items [  (menu-item :text "Evaluate form" 
+                             :mnemonic "E" 
+                             :key (keystroke "meta shift ENTER") 
+                             :listen [:action (fn [_] (send-selected-to-repl app))])
+                  (menu-item :text "Evaluate entire file" 
+                             :mnemonic "F" 
+                             :key (keystroke "meta shift E")
+                             :listen [:action (fn [_] (send-doc-to-repl app))])
+                  (separator)
+                  (menu-item :text "Apply file ns"
+                             :mnemonic "A"
+                             :key (keystroke "meta shift A")
+                             :listen [:action  (fn [_] (apply-namespace-to-repl app))])
+                  (separator)
+                  (menu-item :text "Use :reload file"
+                             :mnemonic "U"
+                             :key (keystroke "meta shift U")
+                             :listen [:action (fn [_] (use-reload-current-file-ns app))])
+                  (menu-item :text "Require :reload file"
+                             :mnemonic "R"
+                             :key (keystroke "meta shift R")
+                             :listen [:action (fn [_] (require-reload-current-file-ns app))])
+                  (separator)
+                  (menu-item :text "Clear output"
+                             :mnemonic "P"
+                             :key (keystroke "meta P")
+                             :listen [:action (fn [_] (.setText (app :repl-out-text-area) ""))])
+                  (separator)
+                  (menu-item :text "Restart"
+                             :mnemonic "R"
+                             :key (keystroke "meta R")
+                             :listen [:action (fn [_] (restart-repl app (first (get-selected-projects app))))])
+                  (separator)
+                  (menu-item :text "Print stack trace for last error"
+                             :mnemonic "T"
+                             :key (keystroke "meta T")
+                             :listen [:action (fn [_] (print-stack-trace app))])]))
 
 (defn make-view-menu
   [app]
   (menu :text "View"
         :mnemonic "V"
-        :items [(menu-item :text "Folding"
-                           :listen [:action (fn [_] (fold-action (app :doc-text-area)))])]))
-
-(defn make-window-menu
-  [app]
-  (menu :text "Window"
-        :mnemonic "W"
         :items [(menu-item :text "Go to REPL input" 
                            :mnemonic "R" 
                            :key (keystroke "meta alt 3") 
@@ -309,18 +288,12 @@
                            :key (keystroke "meta alt 1") 
                            :listen [:action (fn [_] (.requestFocusInWindow (:docs-tree app)))])
                 (separator)
-                (menu-item :text "Increase font size" 
-                           :key (keystroke "meta shift PLUS") 
-                           :listen [:action (fn [_] (grow-font app))])
-                (menu-item :text "Decrease font size" 
-                           :key (keystroke "meta shift MINUS") 
-                           :listen [:action (fn [_] (shrink-font app))])
-                (menu-item :text "Choose font..." 
-                           :listen [:action (fn [_] (apply show-font-window app set-font @current-font))])
-                (separator)
                 (menu-item :text "Show File Tree" 
                            :key (keystroke "meta 1") 
-                           :listen [:action (fn [_] (toggle-file-tree-panel app))])]))
+                           :listen [:action (fn [_] (toggle-file-tree-panel app))])
+                (separator)
+                (menu-item :text "Folding"
+                           :listen [:action (fn [_] (fold-action (app :doc-text-area)))])]))
 
 (defn make-help-menu
   [app]
@@ -330,16 +303,14 @@
 
 (defn make-sketchpad-menus
   [app]
-  (config! (:frame app) :menubar (menubar :items [(make-file-menu app)
-                                                  (make-edit-menu app)
-                                                  (make-project-menu app)
-                                                  (make-source-menu app)
-                                                  (make-tools-menu app)
-                                                  (make-repl-menu app)
-                                                  (make-search-menu app)
-                                                  (make-view-menu app)
-                                                  (make-window-menu app)
-                                                  (make-help-menu app)
-                                                  ])))
+  (config! 
+    (:frame app) :menubar 
+                    (menubar :items [ (make-file-menu app)
+                                      (make-edit-menu app)
+                                      (make-project-menu app)
+                                      (make-source-menu app)
+                                      (make-repl-menu app)
+                                      (make-view-menu app)
+                                      (make-help-menu app)])))
 
 

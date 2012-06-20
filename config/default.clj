@@ -3,16 +3,17 @@
 
 (def default-editor-prefs
 	{
+	
+		;; load RSyntaxTextArea from xml theme file
+		:rsta-theme "themes/dark.xml"
+
 		:whitespace-visible false
 		:line-wrap 				false
-		; :highlight-current-line true
 		:rounded-selection-edges true
-;		:background-img "img/dir"
 		:animate-bracket-matching true
 		:anti-aliasing true
 		:code-folding true
 		:auto-indent true
-		; :clear-white-space-lines false
 		:eol-marker false
 ;		:font "Monaco"	;; override if you don't want default based on OS
 		:tab-size 				2 ;; default tab size
@@ -20,10 +21,9 @@
 		:mark-occurences false
 		:mark-occurences-color "#ADA6A9"
 		:paint-mark-occurences-border false
-		:matched-bracket-bg-color "#C8FCBB"
-		:matched-bracket-border-color "#57FC2D"
+		:matched-bracket-bg-color [80 240 70 50]
+		:matched-bracket-border-color [80 240 70 100]
 		:tab-lines-enabled false
-		; :templates-enabled true
 		:close-curly-braces true
 	})
 
@@ -35,7 +35,7 @@
   	:auto-complete-single-choice false
   	:show-description-window true
   	:description-window-size [600 300]
-	:parameter-assistance true
+	  :parameter-assistance true
   	:trigger-key "control SPACE"
   	})
 

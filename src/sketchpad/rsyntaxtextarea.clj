@@ -1100,14 +1100,19 @@
   [obj x]
   (RSyntaxTextArea. obj x))
 
+(defn input-map 
+  [rta]
+  (.getInputMap rta))
+
+(defn set-parent!
+  [im comp]
+  (.setParent im (input-map comp)))
+
 (defn set-input-map! 
   [rta im]
-  (.setInputMap rta (JComponent/WHEN_FOCUSED) im))
+  (.setParent im (.getInputMap rta))
+  (.setInputMap rta JComponent/WHEN_FOCUSED im))
 
 (defn set-action-map! 
   [rta im]
   (.setActionMap rta im))
-
-(defn input-map 
-  [rta]
-  (.getInputMap rta))
