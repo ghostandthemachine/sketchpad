@@ -31,7 +31,7 @@
   {
   	:auto-complete true
   	:auto-activation true
-  	:auto-activation-delay 500
+  	:auto-activation-delay 1
   	:auto-complete-single-choice false
   	:show-description-window true
   	:description-window-size [600 300]

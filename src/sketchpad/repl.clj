@@ -25,12 +25,13 @@
         [sketchpad.app-cmd])
   (:require [clojure.string :as string]
             [clooj.rsyntax :as rsyntax]
-            [clojure.java.io :as io])
+            [clojure.java.io :as io]
+            [sketchpad.editor-kit :as kit])
   (:import [org.fife.ui.rtextarea RTextScrollPane]))
 
 (use 'clojure.java.javadoc)
 
-(def repl-history {:items (atom nil) :pos (atom 0)})
+(def repl-history {:items (atom nil) :pos (atom 0) :last-end-pos (atom 0)})
 
 (def repls (atom {}))
 
@@ -133,7 +134,8 @@
                 :project-path project-path
                 :thread nil
                 :proc proc
-                :var-maps (agent nil)}
+                :var-maps (agent nil)
+                :last-start-line 1}
           is (.getInputStream proc)]
       (send-off (repl :var-maps) #(merge % (get-var-maps project-path classpath)))
       (future (io/copy is result-writer :buffer-size 1))
@@ -176,13 +178,32 @@
                    *file* ~file]
            (last (map eval ~read-string-code)))))))
            
+; (defn send-to-repl
+;   ([app cmd] (send-to-repl app cmd "NO_SOURCE_PATH" 0))
+;   ([app cmd file line]
+;   (awt-event
+;     (let [cmd-ln (str \newline (.trim cmd) \newline)
+;           cmd-trim (.trim cmd)]
+;       (append-text (app :repl-out-text-area) cmd-ln)
+;       (let [cmd-str (cmd-attach-file-and-line cmd file line)]
+;         (binding [*out* (:input-writer @(app :repl))]
+;           (println cmd-str)
+;           (flush)))
+;       (when (not= cmd-trim (second @(:items repl-history)))
+;         (swap! (:items repl-history)
+;                replace-first cmd-trim)
+;         (swap! (:items repl-history) conj ""))
+;       (reset! (:pos repl-history) 0)))))
+
 (defn send-to-repl
   ([app cmd] (send-to-repl app cmd "NO_SOURCE_PATH" 0))
   ([app cmd file line]
   (awt-event
     (let [cmd-ln (str \newline (.trim cmd) \newline)
           cmd-trim (.trim cmd)]
-      (append-text (app :repl-out-text-area) cmd-ln)
+          ; (println cmd-ln)
+          ; (println cmd-trim)
+      (append-text (app :repl-in-text-area) cmd-ln)
       (let [cmd-str (cmd-attach-file-and-line cmd file line)]
         (binding [*out* (:input-writer @(app :repl))]
           (println cmd-str)
@@ -229,16 +250,19 @@
   (let [text (->> app :doc-text-area .getText)]
     (send-to-repl app text (relative-file app) 0)))
 
-(defn make-repl-writer [ta-out]
+(defn make-repl-writer [ta-out app-atom]
   (->
     (let [buf (agent (StringBuffer.))]
       (proxy [Writer] []
         (write
           ([char-array offset length]
-            ;(println "char array:" (apply str char-array) (count char-array))
-            (awt-event (append-text ta-out (apply str char-array))))
+            ; (println "char array:" (apply str char-array) (count char-array))
+            (awt-event 
+              (append-text ta-out (apply str char-array))
+              (swap! (:last-end-pos repl-history) (fn [_] (.getLastVisibleOffset ta-out)))
+              ))
           ([^Integer t]
-            ;(println "Integer: " t (type t))
+            ; (println "Integer: " t (type t))
             (awt-event (append-text ta-out (str (char t))))))
         (flush [] (awt-event (scroll-to-last ta-out)))
         (close [] nil)))
@@ -274,22 +298,52 @@
            [(-> app :repl deref :project-path) :ns]
            current-ns)))
 
+; (defn restart-repl [app project-path]
+;   (append-text (app :repl-out-text-area)
+;                (str "\n=== RESTARTING " project-path " REPL ===\n"))
+;   (when-let [proc (-> app :repl deref :proc)]
+;     (.destroy proc))
+;   (reset! (:repl app) (create-outside-repl (app :repl-out-writer) project-path))
+;   (apply-namespace-to-repl app))
+
 (defn restart-repl [app project-path]
-  (append-text (app :repl-out-text-area)
+  (append-text (app :repl-in-text-area)
                (str "\n=== RESTARTING " project-path " REPL ===\n"))
   (when-let [proc (-> app :repl deref :proc)]
     (.destroy proc))
   (reset! (:repl app) (create-outside-repl (app :repl-out-writer) project-path))
   (apply-namespace-to-repl app))
 
+; (defn switch-repl [app project-path]
+;   (when (and project-path
+;              (not= project-path (-> app :repl deref :project-path)))
+;     (append-text (app :repl-out-text-area)
+;                  (str "\n\n=== Switching to " project-path " REPL ===\n"))
+;     (let [repl (or (get @repls project-path)
+;                    (create-outside-repl (app :repl-out-writer) project-path))]
+;       (reset! (:repl app) repl))))
+
 (defn switch-repl [app project-path]
   (when (and project-path
              (not= project-path (-> app :repl deref :project-path)))
-    (append-text (app :repl-out-text-area)
+    (append-text (app :repl-in-text-area)
                  (str "\n\n=== Switching to " project-path " REPL ===\n"))
     (let [repl (or (get @repls project-path)
                    (create-outside-repl (app :repl-out-writer) project-path))]
       (reset! (:repl app) repl))))
+
+(defn get-last-cmd [app]
+  (let [rta (app :repl-in-text-area)
+        last-char (kit/text rta (kit/last-visible-offset rta) 1)
+        start (if (= ")" last-char)
+                ;; if we are ending with a close paren then eval 
+                ;; from the last matching opening paren
+                (kit/matching-bracket-position rta)
+                ;; otherwise go for hack match of last pos
+                ;; FIX THIS 
+                @(:last-end-pos repl-history))
+        len (- (kit/last-visible-offset rta) start)]
+        (kit/text rta start len)))
 
 (defn add-repl-input-handler [app]
   (let [ta-in (app :repl-in-text-area)
@@ -304,17 +358,22 @@
                    (= -1 (first (find-enclosing-brackets
                                   txt
                                   caret-pos)))))
-        submit #(when-let [txt (.getText ta-in)]
+        submit #(when-let [txt (get-last-cmd app)]
                   (let [cmd-type (cmd-prefix? txt)]
                     (cond
-  				  (= :app-cmd cmd-type)
+                      ;; handle an application command
+  				            (= :app-cmd cmd-type)
                     	  (do
-                    	    (println txt))
+                    	    ;(println txt)
+                          )
+                      ;; handle a normal command
                       (= :repl-cmd cmd-type)
-                      	(if (correct-expression? txt)
+                        (do
+                          ;(println txt)
+                          (if (correct-expression? txt)
                             (do 
                               (send-to-repl app txt)
-                              (.setText ta-in "")))
+                              )))
                       :else
                         (.setText (app :arglist-label) "Malformed expression"))))
         at-top #(zero? (.getLineOfOffset ta-in (get-caret-pos)))
@@ -322,12 +381,13 @@
                       (.getLineOfOffset ta-in (.. ta-in getText length)))
         prev-hist #(show-previous-repl-entry app)
         next-hist #(show-next-repl-entry app)]
-    (attach-child-action-keys ta-in ["UP" at-top prev-hist]
-                              ["DOWN" at-bottom next-hist]
-                              ["ENTER" ready submit])
-    (attach-action-keys ta-in ["cmd1 UP" prev-hist]
-                        ["cmd1 DOWN" next-hist]
-                        ["cmd1 ENTER" submit])))
+    (attach-child-action-keys ta-in ["control UP" at-top prev-hist]
+                                    ["control DOWN" at-bottom next-hist]
+                                    ["ENTER" ready submit])
+    ; (attach-action-keys ta-in ["cmd1 UP" prev-hist]
+    ;                           ["cmd1 DOWN" next-hist]
+    ;                           ["cmd1 ENTER" submit])
+    ))
 
 (defn print-stack-trace [app]
     (send-to-repl app "(.printStackTrace *e)"))
@@ -336,43 +396,45 @@
 
 (defn repl
   [app-atom]
-  (let [repl-out-text-area  (rsyntax/text-area 
-                                      :wrap-lines?    false
-                                      :editable?      false
-                                      :border         (line-border 
-                                      	                    :thickness 7
-                                      	                    :color (color "#FFFFFF" 0))
-                                      :id             :repl-out-text-area
-                                      :class          [:repl :syntax-editor])
-        repl-out-writer   (make-repl-writer repl-out-text-area)
-        repl-out-scroll-pane (RTextScrollPane. repl-out-text-area false) ;; default to no linenumbers
-        repl-output-vertical-panel (vertical-panel 
-                                      :items          [repl-out-scroll-pane]                                      
-                                      :id             :repl-output-vertical-panel
-                                      :class          :repl)
+  (let [
+        ; repl-out-text-area  (rsyntax/text-area 
+        ;                               :wrap-lines?    false
+        ;                               :editable?      false
+        ;                               :border         (line-border 
+        ;                               	                    :thickness 7
+        ;                               	                    :color (color "#FFFFFF" 0))
+        ;                               :id             :repl-out-text-area
+        ;                               :class          [:repl :syntax-editor])
+        ; repl-out-scroll-pane (RTextScrollPane. repl-out-text-area false) ;; default to no linenumbers
+        ; repl-output-vertical-panel (vertical-panel 
+        ;                               :items          [repl-out-scroll-pane]                                      
+        ;                               :id             :repl-output-vertical-panel
+        ;                               :class          :repl)
         repl-in-text-area (rsyntax/text-area 
                                       :syntax         "clojure"     
                                       :border         (line-border 
-                                                            :thickness 7
+                                                            :thickness 4
                                                             :color (color "#FFFFFF" 0))                                
-                                      :id             :repl-in-text-area
+                                      :id             :repl-text-area
                                       :class          [:repl :syntax-editor])
+        repl-out-writer   (make-repl-writer repl-in-text-area app-atom)
         repl-in-scroll-pane (RTextScrollPane. repl-in-text-area false) ;; default to no linenumbers
         repl-input-vertical-panel (vertical-panel 
                                       :items          [repl-in-scroll-pane]                                      
                                       :id             :repl-input-vertical-panel
                                       :class          :repl)
-        repl-split-pane (top-bottom-split             repl-output-vertical-panel 
-                                                      repl-input-vertical-panel
-                                      :divider-location 0.66
-                                      :resize-weight 0.66
-                                      :divider-size   3)]
+        ; repl-split-pane (top-bottom-split             repl-output-vertical-panel 
+        ;                                               repl-input-vertical-panel
+        ;                               :divider-location 0.66
+        ;                               :resize-weight 0.66
+        ;                               :divider-size   3)]
+        ]
     (swap! app-atom conj (gen-map
-                            repl-out-scroll-pane
-                            repl-out-text-area
+                            ; repl-out-scroll-pane
+                            ; repl-out-text-area
+                            ; repl-split-pane
                             repl-in-text-area
                             repl-in-scroll-pane
                             repl-input-vertical-panel
-                            repl-out-writer
-                            repl-split-pane))
-    repl-split-pane))
+                            repl-out-writer))
+    repl-in-scroll-pane))

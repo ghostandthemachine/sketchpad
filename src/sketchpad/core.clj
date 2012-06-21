@@ -102,7 +102,7 @@
                 [(app :docs-tree) 
                  (app :doc-text-area) 
                  (app :repl-in-text-area) 
-                 (app :repl-out-text-area) 
+                 ; (app :repl-out-text-area) 
                  (.getContentPane (app :frame))])))
 
 ;; startup
@@ -129,7 +129,7 @@
   	;; load default prefs
     (config/apply-editor-prefs! config/default-editor-prefs (:doc-text-area app))
     (config/apply-editor-prefs! config/default-editor-prefs (:repl-in-text-area app))
-	  (config/apply-editor-prefs! config/default-editor-prefs (:repl-out-text-area app))
+	  ; (config/apply-editor-prefs! config/default-editor-prefs (:repl-out-text-area app))
 		;; done with init
     (app :frame))
 

@@ -136,12 +136,21 @@
   (str (s/join (concat s (str \space)))))
 
 (defn create-params-list
-  [pv]
-  (let [p-list (java.util.Vector. )]
-    (dotimes [n (count pv)]
-      (.add p-list
-		(org.fife.ui.autocomplete.ParameterizedCompletion$Parameter. " " (str (nth pv n)))))
-    p-list))
+  [args]
+  (let [param-list (java.util.Vector. )
+  			opts? (atom false)]
+    (doseq [arg args]
+      (if (= "&" (str arg))
+        (swap! opts? (fn [_] true))
+        (swap! opts? (fn [_] false)))
+	  	(if opts?
+	  		;; prepend & on opt arg
+	      (.add param-list
+					(org.fife.ui.autocomplete.ParameterizedCompletion$Parameter. " " (str arg)))
+	    	;; non opt arg
+	    	(.add param-list
+					(org.fife.ui.autocomplete.ParameterizedCompletion$Parameter. " " (str arg)))))
+	  param-list))
 
 (defn add-function-completion
   [provider sym var]    
@@ -149,11 +158,10 @@
   			completion-list (java.util.Vector. )]
     ; (if (not (fn? sym))
     	(let [completion (ClojureFunctionCompletion. provider (str (:name var-meta)) (str \space))
-            arglists (into [] (:arglists var-meta))
-            num-arglists (count arglists)]
-  	    (dotimes [n num-arglists]
+            arglists (into [] (:arglists var-meta))]
+  	    (doseq [arg-list arglists]
   		    ;; convert params
-  		    (.setParams completion (create-params-list (nth arglists n)))
+  		    (.setParams completion (create-params-list arg-list))
   		    ;; doc/description
   		    (.setReturnValueDescription completion (:doc var-meta))
   		    (if (repl/source-fn sym)
@@ -183,8 +191,8 @@
 (defn add-all-ns-completions
   [provider]
   (let [all-namespaces (all-ns)]
-    (dotimes [n (count (all-ns))]
-      (add-completions-from-ns provider (nth (all-ns) n)))))
+    (doseq [namespace all-namespaces]
+      (add-completions-from-ns provider namespace))))
   
 ; (defn add-all-ns-completions
 ;   [provider]

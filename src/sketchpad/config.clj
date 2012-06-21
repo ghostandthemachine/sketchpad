@@ -12,15 +12,6 @@
 
 
 (load-file "config/default.clj")
-  ;; set theme
-  ; (let [doc-ta (app :doc-text-area)
-  ;       repl-in-ta (app :repl-in-text-area)
-  ;       repl-out-ta (app :repl-out-text-area)
-  ;       theme (theme/theme (str "src/sketchpad/themes/" (config/prefs :theme)))]
-  ;     (theme/apply! theme doc-ta)
-  ;     (theme/apply! theme repl-in-ta)
-  ;     (theme/apply! theme repl-out-ta))
-
 
 (def editor-prefs-handlers
   ^{:doc "default handlers for config settings found in config/default.clj"}

@@ -3,7 +3,7 @@
 
 
 (def user-editor-prefs
-	{
+ 	{
 ; 		:whitespace-visible true
 ; 		:clear-whitespace-lines true
 ; 		:line-wrap 				true

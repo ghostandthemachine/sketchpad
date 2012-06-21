@@ -402,27 +402,31 @@
 ;  )
   )
 
-(defn handle-single-click [row path app]
-  )
+(defn handle-single-click [row path app])
 
-(defn handle-double-click [row path app]
-  )
+(defn handle-double-click [row path app])
+  
+(defn handle-right-click [row path app]
+  (.setSelectionRow (app :docs-tree) row))
 
 (defn tree-listener
   [app]
   (let [tree (app :docs-tree)
         listener (proxy [MouseAdapter] []
                     (mousePressed [e]
-                    	(pprint "Mouse PRessed in JTree")
                       (let [sel-row (.getRowForLocation tree (.getX e) (.getY e))
                             sel-path (.getPathForLocation tree (.getX e) (.getY e))
                             click-count (.getClickCount e)]
                         (cond
                           ;; handle single click 
                           (= click-count 1)
-                            (handle-single-click sel-row sel-path app)
+                          	(if (.isMetaDown e)
+                          		;; handle right click
+                          		(handle-right-click sel-row sel-path app)
+                          		;; handle single left click
+                            	(handle-single-click sel-row sel-path app))
                           ;; handle double click
-                          (= click-count 1)
+                          (= click-count 2)
                             (handle-double-click sel-row sel-path app)
 
                           )))
@@ -433,6 +437,13 @@
                        )))]
         listener))
 
+
+(defn tree-model [app]
+  (let [model (DefaultTreeModel. nil)]
+    ; (doto 
+    ;   model
+    ;   (.addTreeModelListener (tree-listener app)))
+    model))
 
 (defn make-filetree-popup
   [app]
@@ -491,7 +502,6 @@
                        (text-file? f)
                        )
                  (restart-doc app f)))))))
-
     (.addMouseListener (tree-listener app))
     )))
 
@@ -500,7 +510,7 @@
 
 (defn file-tree
   [app-atom]
-  (let [docs-tree             (tree   :model          (DefaultTreeModel. nil)
+  (let [docs-tree             (tree   :model          (tree-model @app-atom)
                                       :id             :file-tree
                                       :class          :file-tree)
         docs-tree-scroll-pane (scrollable             docs-tree
