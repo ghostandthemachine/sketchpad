@@ -156,7 +156,7 @@
   [provider sym var]    
   (let [var-meta (meta var)
   			completion-list (java.util.Vector. )]
-    ; (if (not (fn? sym))
+    (if (fn? (var-get var))
     	(let [completion (ClojureFunctionCompletion. provider (str (:name var-meta)) (str \space))
             arglists (into [] (:arglists var-meta))]
   	    (doseq [arg-list arglists]
@@ -172,16 +172,14 @@
     		    			(str "\n")
     		    			(str "<br/>"))))
 					(.setDefinedIn completion (str (:ns var-meta)))
-;  		    (.addCompletion provider completion)
           (if (not (.contains completion-list completion))  
-            (.add completion-list completion))
-  		    ))
-  		    (.addCompletions provider completion-list)
-  		; (let [var-completion (VariableCompletion. provider (str (:name var-meta)) (str \space))]
-  		; 		;; doc/description
-  		;     (.addCompletion provider var-completion))
+            (.add completion-list completion)))
+  		    (.addCompletions provider completion-list))
 
-  ))
+  		(let [var-completion (VariableCompletion. provider (str (:name var-meta)) (str \space))]
+        (.setDefinedIn var-completion (str (:ns var-meta)))
+  			;; doc/description
+  		  (.addCompletion provider var-completion)))))
     
 (defn add-completions-from-ns
   [provider ns]
@@ -193,15 +191,4 @@
   (let [all-namespaces (all-ns)]
     (doseq [namespace all-namespaces]
       (add-completions-from-ns provider namespace))))
-  
-; (defn add-all-ns-completions
-;   [provider]
-;   (doseq [ns (all-ns)]
-;     (add-function-completion provider ns)))
-; (map (partial add-function-completion provider) (all-ns))
-;; do it lazy later
-; (map #(add-function-completion provider %) (all-ns))
-;; execute the mapping now
-; (doall (map #(add-function-completion provider %) (all-ns)))
-
 

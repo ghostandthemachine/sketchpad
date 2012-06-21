@@ -57,14 +57,17 @@
                          editor
                          :divider-location 0.25
                          :resize-weight 0.25
-                         :divider-size 3)
+                         :divider-size 3
+                         :background config/app-color)
         split-pane (top-bottom-split 
                         doc-split-pane 
                         repl
                         :divider-location 0.66
                         :resize-weight 0.66
-                        :divider-size 1)
-        app (merge {:file      (atom nil)
+                        :divider-size 1
+                         :background config/app-color)
+        app (merge {:current-files (atom {})
+                    :current-file      (atom nil)
                     :repl      (atom (create-outside-repl (@app-init :repl-out-writer) nil))
                     :changed   false}
                     @app-init
@@ -83,14 +86,13 @@
     (setup-search-text-area app)
     (setup-temp-writer app)
 
-    ; (add-defaults-to-input-map (.getInputMap (app :doc-text-area)))
-
     ;; install auto completion
     (install-auto-completion (app :doc-text-area))
     (install-auto-completion (app :repl-in-text-area))
 
-    ;; test default input map
+    ;; set default input map
     (set-input-map! (app :doc-text-area) (default-input-map))
+    (set-input-map! (app :repl-in-text-area) (default-input-map))
 
     ;; repl
     (add-repl-input-handler app)
@@ -106,15 +108,14 @@
                  (.getContentPane (app :frame))])))
 
 ;; startup
-(defn startup-overtone [app]
+(defn startup-sketchpad [app]
   (Thread/setDefaultUncaughtExceptionHandler
     (proxy [Thread$UncaughtExceptionHandler] []
       (uncaughtException [thread exception]
                        (println thread) (.printStackTrace exception))))
   ;; add behaviors                       
   (add-behaviors app)
-;  (setup-text-area-font app)
-;  (set-text-area-preffs app)
+  (set-text-area-preffs app)
 
   ;; create menus
   (make-sketchpad-menus app)
@@ -146,7 +147,7 @@
   (swap! current-app (fn [app] (assoc app :frame frame)))
   (invoke-later
     (-> 
-      (startup-overtone @current-app) 
+      (startup-sketchpad @current-app) 
       show!))))
 
 (defn -main [& args]
@@ -161,6 +162,7 @@
   (swap! current-app (fn [app] (assoc app :frame frame)))
   (invoke-later
     (-> 
-      (startup-overtone @current-app)
+      (startup-sketchpad @current-app)
       show!))))
 
+  

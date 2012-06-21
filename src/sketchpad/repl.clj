@@ -19,15 +19,17 @@
         [clooj.help :only (get-var-maps)]
         [sketchpad.utils :only (gen-map get-temp-file)]
         [clj-inspector.jars :only (get-entries-in-jar jar-files)]
-        [seesaw.core :only (config vertical-panel top-bottom-split)] 
+        [seesaw.core] 
         [seesaw.color]
         [seesaw.border]
         [sketchpad.app-cmd])
   (:require [clojure.string :as string]
             [clooj.rsyntax :as rsyntax]
             [clojure.java.io :as io]
-            [sketchpad.editor-kit :as kit])
-  (:import [org.fife.ui.rtextarea RTextScrollPane]))
+            [sketchpad.editor-kit :as kit]
+            [sketchpad.config :as config])
+  (:import (org.fife.ui.rtextarea RTextScrollPane)
+           (java.io.IOException)))
 
 (use 'clojure.java.javadoc)
 
@@ -128,19 +130,22 @@
                   [java "-cp" classpath-str "clojure.main"])]
     (.redirectErrorStream builder true)
     (.directory builder (File. (or project-path ".")))
-    (let [proc (.start builder)
-          input-writer  (-> proc .getOutputStream (PrintWriter. true))
-          repl {:input-writer input-writer
-                :project-path project-path
-                :thread nil
-                :proc proc
-                :var-maps (agent nil)
-                :last-start-line 1}
-          is (.getInputStream proc)]
-      (send-off (repl :var-maps) #(merge % (get-var-maps project-path classpath)))
-      (future (io/copy is result-writer :buffer-size 1))
-      (swap! repls assoc project-path repl)
-      repl)))
+    (try
+      (let [proc (.start builder)
+            input-writer  (-> proc .getOutputStream (PrintWriter. true))
+            repl {:input-writer input-writer
+                  :project-path project-path
+                  :thread nil
+                  :proc proc
+                  :var-maps (agent nil)
+                  :last-start-line 1}
+            is (.getInputStream proc)]
+        (send-off (repl :var-maps) #(merge % (get-var-maps project-path classpath)))
+        (future (io/copy is result-writer :buffer-size 1))
+        (swap! repls assoc project-path repl)
+        repl)
+      (catch java.io.IOException e
+        (println "Could not create outside REPL for path: " project-path)))))
 
 (defn replace-first [coll x]
   (cons x (next coll)))
@@ -196,14 +201,18 @@
 ;       (reset! (:pos repl-history) 0)))))
 
 (defn send-to-repl
-  ([app cmd] (send-to-repl app cmd "NO_SOURCE_PATH" 0))
-  ([app cmd file line]
+  ([app cmd] (send-to-repl app cmd "NO_SOURCE_PATH" 0) :repl)
+  ([app cmd file line] (send-to-repl app cmd file line :file))
+  ([app cmd file line src-key]
   (awt-event
     (let [cmd-ln (str \newline (.trim cmd) \newline)
           cmd-trim (.trim cmd)]
-          ; (println cmd-ln)
-          ; (println cmd-trim)
-      (append-text (app :repl-in-text-area) cmd-ln)
+      (cond
+          (= src-key :repl)
+            ;; with one repl panel we just want to go to the next line
+            (append-text (app :repl-in-text-area) (str \newline))
+          (= src-key :file)
+            (append-text (app :repl-in-text-area) cmd-ln))
       (let [cmd-str (cmd-attach-file-and-line cmd file line)]
         (binding [*out* (:input-writer @(app :repl))]
           (println cmd-str)
@@ -221,7 +230,7 @@
 (defn relative-file [app]
   (let [prefix (str (-> app :repl deref :project-path) File/separator
                     "src"  File/separator)]
-    (when-lets [f @(app :file)
+    (when-lets [f @(app :current-file)
                 path (.getAbsolutePath f)]
       (subs path (count prefix)))))
 
@@ -243,7 +252,6 @@
 	  (if-not (and txt (correct-expression? txt))
         (.setText (app :arglist-label) "Malformed expression")
          (let [line (.getLineOfOffset ta (:start region))]
-           (println txt)
            (send-to-repl app txt (relative-file app) line)))))
 
 (defn send-doc-to-repl [app]
@@ -287,7 +295,7 @@
     (update-repl-in app)))
 
 (defn load-file-in-repl [app]
-  (when-lets [f0 @(:file app)
+  (when-lets [f0 @(:current-file app)
               f (or (get-temp-file f0) f0)]
     (send-to-repl app (str "(load-file \"" (.getAbsolutePath f) "\")"))))
 
@@ -429,6 +437,7 @@
         ;                               :resize-weight 0.66
         ;                               :divider-size   3)]
         ]
+    (config! repl-in-scroll-pane :background config/app-color)
     (swap! app-atom conj (gen-map
                             ; repl-out-scroll-pane
                             ; repl-out-text-area

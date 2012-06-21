@@ -1,18 +1,19 @@
 (ns sketchpad.filetree
-    (:use [seesaw core keystroke]
+    (:use [seesaw core keystroke border]
           [sketchpad utils editor]
           [clojure.pprint])
     (:require [seesaw.color :as c]
-              [seesaw.chooser :as chooser])
+              [seesaw.chooser :as chooser]
+              [sketchpad.config :as config])
     (:import (java.io File StringReader BufferedWriter OutputStreamWriter FileOutputStream)
            (java.awt GridLayout)
            (javax.swing JButton JTree JOptionPane JWindow)
            (javax.swing.event TreeSelectionListener
                               TreeExpansionListener)
            (java.awt.event MouseAdapter MouseListener)
-           (javax.swing.tree DefaultMutableTreeNode DefaultTreeModel
+           (javax.swing.tree DefaultTreeCellRenderer DefaultMutableTreeNode DefaultTreeModel
                              TreePath TreeSelectionModel)
-           (org.fife.ui.rsyntaxtextarea SyntaxConstants)))
+           (org.fife.ui.rsyntaxtextarea SyntaxConstants RSyntaxDocument)))
 
 (def project-set (atom (sorted-set)))
 ;; setup
@@ -62,6 +63,7 @@
   (let [node  (file-tree-node
                 (file-node node-str file-path))]
     (.add parent node)
+
     node))
 
 (defn add-file-tree [root-file-node]
@@ -234,7 +236,7 @@
 
 (defn save-file [app]
   (try
-    (let [f @(app :file)
+    (let [f @(app :current-file)
           ft (File. (str (.getAbsolutePath f) "~"))]
       (with-open [writer (BufferedWriter.
                            (OutputStreamWriter.
@@ -257,14 +259,14 @@
       (save-expanded-paths tree))))
   
 (defn rename-file [app]
-  (when-let [old-file @(app :file)]
+  (when-let [old-file @(app :current-file)]
     (let [tree (app :docs-tree)
           [file namespace] (specify-source
                              (first (get-selected-projects app))
                              "Rename a source file"
                              (get-selected-namespace tree))]
       (when file
-        (.renameTo @(app :file) file)
+        (.renameTo @(app :current-file) file)
         (update-project-tree (:docs-tree app))
         (awt-event (set-tree-selection tree (.getAbsolutePath file)))))))
 
@@ -351,30 +353,6 @@
             (update-project-tree (:docs-tree app))
             (restart-doc app f))))))
 
-; (defn setup-tree [app]
-;   (let [tree (:docs-tree app)
-;         save #(save-expanded-paths tree)]
-;     (doto tree
-;       (.setRootVisible false)
-;       (.setShowsRootHandles true)
-;       (.. getSelectionModel (setSelectionMode TreeSelectionModel/CONTIGUOUS_TREE_SELECTION))
-;       (.addTreeExpansionListener
-;         (reify TreeExpansionListener
-;           (treeCollapsed [this e] (save))
-;           (treeExpanded [this e] (save))))
-;       (.addTreeSelectionListener
-;         (reify TreeSelectionListener
-;           (valueChanged [this e]
-;             (awt-event
-;               (save-tree-selection tree (.getNewLeadSelectionPath e))
-;               (let [f (.. e getPath getLastPathComponent
-;                             getUserObject)]
-;                 (when (and
-;                         (not= f @(app :file))
-;                         (text-file? f))
-;                   (restart-doc app f))))))))))
-
-
 (defn save-file-state
   [app] 
   )
@@ -396,7 +374,7 @@
 ;  (save-tree-selection (app :docs-tree) (.getClosestPathForLocation (app :docs-tree) (.getX e) (.getY e)))
 ;  (let [f (.. e getPath getLastPathComponent getUserObject)]
 ;		(when (and
-;			(not= f @(app :file))
+;			(not= f @(app :current-file))
 ;			(text-file? f))
 ;			(restart-doc app f))
 ;  )
@@ -465,10 +443,10 @@
                       :key (keystroke "meta shift O") 
                       :listen [:action (fn [_] (open-project app))])
             (separator)
-            (menu-item :text "Move/Rename" 
+            (menu-item :text "Remove" 
                       :mnemonic "M" 
                       :listen [:action (fn [_] (remove-project app))])
-            (menu-item :text "Remove" 
+            (menu-item :text "Rename Project" 
                       :listen [:action (fn [_] (rename-project app))])
             (separator)
             (menu-item :text "Move/Rename" 
@@ -476,6 +454,11 @@
             (separator)
             (menu-item :text "Delete" 
                       :listen [:action (fn [_] (delete-file app))])]))
+
+; (defn dirty? [tree-path app]
+;   (if (>= 5 (.getPathCount tree-path))
+;     @()
+;   )
 
 (defn setup-tree [app]
   (let [tree (:docs-tree app)
@@ -495,15 +478,31 @@
          (valueChanged [this e]
            (awt-event
              (save-tree-selection tree (.getNewLeadSelectionPath e))
+             ; (println (.toString (.getNewLeadSelectionPath e)))
+
+             ; (if (dirty? @(app :current-file-path))
+             ;    ;; store this text in a buffer
+             ;    )
+             
              (let [f (.. e getPath getLastPathComponent
                            getUserObject)]
                (when (and
-                       (not= f @(app :file))
-                       (text-file? f)
-                       )
-                 (restart-doc app f)))))))
+                       (not= f @(app :current-file))
+                       (text-file? f))
+                  ; (if (contains? ))
+                  ; (swap! @(app :current-files) (fn [_] (.getNewLeadSelectionPath e)))
+                  (restart-doc app f)
+                  ; (update-editor-content app f)
+                  ))))))
     (.addMouseListener (tree-listener app))
     )))
+
+
+; { :path nil
+;   :file-name nil
+;   :dirty false
+;   :open false
+;   :buffer nil}
 
 ;; view
 
@@ -512,27 +511,41 @@
   [app-atom]
   (let [docs-tree             (tree   :model          (tree-model @app-atom)
                                       :id             :file-tree
-                                      :class          :file-tree)
+                                      :class          :file-tree
+                                      :background config/file-tree-bg)
         docs-tree-scroll-pane (scrollable             docs-tree
                                       :id             :file-tree-scrollable
-                                      :class          :file-tree)
-        docs-tree-label       (border-panel 
-                                      :west           (label "Projects")
+                                      :class          :file-tree
+                                      :background config/file-tree-bg)
+        docs-tree-label       (horizontal-panel 
+                                      :items          [(label :text "Projects"
+                                      											 :foreground config/file-tree-fg
+                                      											 :border (empty-border :thickness 5))]
                                       :id             :file-tree-label
                                       :class          :file-tree
-                                      :size           [200 :by 15]
-                                      :vgap           5)
+                                      ; :size           [200 :by 15]
+                                      ; :vgap           5
+                                      :background config/file-tree-bg)
         docs-tree-label-panel (horizontal-panel       
                                       :items          [docs-tree-label
                                                        :fill-h]
                                       :id             :docs-tree-label-panel
-                                      :class          :file-tree)
+                                      :class          :file-tree
+                                      :background config/file-tree-bg
+                                        )
         docs-tree-panel (vertical-panel 
-                                      :background     (c/color :white)
                                       :items          [docs-tree-label-panel
                                                       docs-tree-scroll-pane]
                                       :id             :file-tree-panel
-                                      :class          :file-tree)]
+                                      :class          :file-tree
+                                      :background config/file-tree-bg)]
+
+    (.setBackground (.getHorizontalScrollBar docs-tree-scroll-pane) config/file-tree-bg)
+
+    (let [cell-renderer (cast DefaultTreeCellRenderer (.getCellRenderer docs-tree))]
+      (.setBackgroundNonSelectionColor cell-renderer config/file-tree-bg)
+      )
+
     (swap! app-atom conj (gen-map
                             docs-tree
                             docs-tree-scroll-pane

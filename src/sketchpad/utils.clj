@@ -17,7 +17,8 @@
            (javax.swing AbstractAction JButton JFileChooser JMenu JMenuBar JMenuItem BorderFactory
                         JOptionPane JSplitPane KeyStroke SpringLayout SwingUtilities)
            (javax.swing.event CaretListener DocumentListener UndoableEditListener)
-           (javax.swing.undo UndoManager))
+           (javax.swing.undo UndoManager)
+           (org.fife.ui.rsyntaxtextarea RSyntaxDocument))
   (:use [seesaw.core :only (config config!)]))
 
 ;; general
@@ -525,7 +526,7 @@
 (defn update-temp [app caret-position-atom]
   (let [text-comp (app :doc-text-area)
         txt (get-text-str text-comp)
-        f @(app :file)]
+        f @(app :current-file)]
     (send-off temp-file-manager
               (fn [old-pos]
                 (try
@@ -544,7 +545,7 @@
 
 (defn restart-doc [app ^File file]
   (send-off temp-file-manager
-            (let [f @(:file app)
+            (let [f @(:current-file app)
                   txt (get-text-str (:doc-text-area app))]
               (let [temp-file (get-temp-file f)]
                 (fn [_] (when (and f temp-file (.exists temp-file))
@@ -574,10 +575,45 @@
           (.setEditable text-area false)))
     ((app :update-caret-position) text-area)
     ((app :setup-autoindent) text-area)
-    (reset! (app :file) file)
-    ((app :switch-repl) app (first ((app :get-selected-projects) app)))
-;    ((app :apply-namespace-to-repl) app)
-    ))
+    (reset! (app :current-file) file)
+    ((app :switch-repl) app (first ((app :get-selected-projects) app)))))
+
+
+(defn update-editor-content [app ^File file]
+  (send-off temp-file-manager
+            (let [f @(:current-file app)
+                  rta-doc (cast org.fife.ui.rsyntaxtextarea.RSyntaxDocument (.getDoc f))
+                  txt (.getText rta-doc)]
+              (let [temp-file (get-temp-file f)]
+                (fn [_] (when (and f temp-file (.exists temp-file))
+                          (dump-temp-doc app f txt))
+                  0))))
+  (await temp-file-manager)
+  (let [frame (app :frame)
+        text-area (app :doc-text-area)
+        temp-file (get-temp-file file)
+        file-to-open (if (and temp-file (.exists temp-file)) temp-file file)
+        doc-label (app :doc-label)]
+    ;(remove-text-change-listeners text-area)
+    (reset! changing-file true)
+    ((app :save-caret-position) app)
+    (.. text-area getHighlighter removeAllHighlights)
+    (if (and file-to-open (.exists file-to-open) (.isFile file-to-open))
+      (do (let [txt (slurp file-to-open)
+                rdr (StringReader. txt)]
+            (.read text-area rdr nil))
+          (.setText doc-label (str "Source Editor \u2014 " (.getName file)))
+          (config! text-area :editable?  true)
+          (if (.endsWith (.getName file-to-open) ".clj")
+            (config! text-area :syntax  :clojure)
+            (config! text-area :syntax  :none)))
+      (do (.setText text-area no-project-txt)
+          (.setText doc-label (str "Source Editor (No file selected)"))
+          (.setEditable text-area false)))
+    ((app :update-caret-position) text-area)
+    ((app :setup-autoindent) text-area)
+    (reset! (app :current-file) file)
+    ((app :switch-repl) app (first ((app :get-selected-projects) app)))))
 
 
 

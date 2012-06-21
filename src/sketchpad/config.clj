@@ -13,6 +13,11 @@
 
 (load-file "config/default.clj")
 
+(def app-color (c/color 39 40 34))
+(def file-tree-bg (c/color 230 230 230))
+(def file-tree-fg (c/color 130 130 130))
+(def doc-title-color (c/color 165 165 164))
+
 (def editor-prefs-handlers
   ^{:doc "default handlers for config settings found in config/default.clj"}
 	{

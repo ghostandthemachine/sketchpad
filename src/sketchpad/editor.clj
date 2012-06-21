@@ -27,14 +27,14 @@
 (defn save-caret-position [app]
   (when-lets [text-area (app :doc-text-area)
               pos (get @caret-position text-area)
-              file @(:file app)]
+              file @(:current-file app)]
     (when-not (.isDirectory file)
       (let [key-str (str "caret_" (.hashCode (.getAbsolutePath file)))]
         (write-value-to-prefs clooj-prefs key-str pos)))))
 
 (defn load-caret-position [app]
   (when-lets [text-area (app :doc-text-area)
-              file @(:file app)]
+              file @(:current-file app)]
     (when-not (.isDirectory file)
       (when-lets [key-str (str "caret_" (.hashCode (.getAbsolutePath file)))
                   pos (read-value-from-prefs clooj-prefs key-str)]
@@ -126,9 +126,9 @@
       (is-mac)
       (do 
         (config! (app :doc-text-area) 
-                            :font (font 
-                            :name "MENLO"
-                            :size 14)))
+                      :font (font :name "MENLO"
+                                  :style :bold
+                                  :size 14)))
       (is-win)
       (config! (app :doc-text-area) :font (font 
                              :name "COURIER-NEW"
@@ -147,10 +147,16 @@
                                 (swap! key-stack (fn [s] (conj e s)))
                                 (pprint @key-stack)))]))
 
+(defn dirty-state-listener
+  [app]
+  (let [listener (proxy [KeyAdapter] []
+                    (keyTyped [e]
+                      ))]))
+
 (defn set-text-area-preffs
   [app]
   (let [rta (app :doc-text-area)]
-;    (add-actions-to-action-map (.getActionMap rta))
+    (.addKeyListener (:doc-text-panel app) (dirty-state-listener app))
     (.addKeyListener (:doc-text-panel app) (command-line-key-listener))
     ))
 
@@ -178,12 +184,11 @@
                                       :maximum-size   [2000 :by 15]
                                       :id             :position-search-panel
                                       :class          :search-panel)
-
-
         editor-helpers-panel  (vertical-panel       
                                       :items [position-search-panel])
 
         doc-label             (label  :text           "Source Editor"
+        															:border 				(empty-border :thickness 5)
                                       :id             :doc-label
                                       :class          :editor-comp)
         doc-label-panel       (horizontal-panel       
@@ -198,15 +203,25 @@
                                       :class          [:editor-comp :syntax-editor])
         doc-scroll-pane       (sp/scroll-pane doc-text-area)
         gutter                (.getGutter doc-scroll-pane)
-        doc-text-panel        (vertical-panel       
+        doc-text-panel        (vertical-panel  
                                       :items         [doc-label-panel 
                                                       doc-scroll-pane 
                                                       editor-helpers-panel]
                                       :id             :doc-text-panel
                                       :class          :editor-comp)]
+    (config! doc-scroll-pane :background config/app-color)
+    (config! arglist-label :background config/app-color)
+    (config! arg-search-panel :background config/app-color)
 
-    (rs/code-folding-enabled! doc-text-area true);
-    (ta/fold-indicator-enabled! doc-scroll-pane true)    
+    (config! arg-search-panel :background config/app-color)
+    (config! arglist-label :background config/app-color)
+
+    ;; editor top doc title label
+    (config! doc-label :foreground config/doc-title-color)
+    (config! doc-label :background config/app-color)
+    (config! doc-label-panel :foreground config/doc-title-color)
+    (config! doc-label-panel :background config/app-color)
+
     (swap! app-atom conj (gen-map
                             arglist-label
                             search-text-area

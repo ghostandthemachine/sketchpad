@@ -32,11 +32,11 @@
       <style token="RESERVED_WORD" fg="93C763" bold="false" italic="true"/>
       <style token="RESERVED_WORD_2" fg="FFFFFF" bold="false"/>
       <style token="ANNOTATION" fg="E8E2B7"/>
-      <style token="COMMENT_DOCUMENTATION" fg="6C788C"/>
-      <style token="COMMENT_EOL" fg="66747B"/>
-      <style token="COMMENT_MULTILINE" fg="66747B"/>
-      <style token="COMMENT_KEYWORD" fg="ae9fbf"/>
-      <style token="COMMENT_MARKUP" fg="ae9fbf"/>
+      <style token="COMMENT_DOCUMENTATION" fg="716F59"/>
+      <style token="COMMENT_EOL" fg="716F59"/>
+      <style token="COMMENT_MULTILINE" fg="716F59"/>
+      <style token="COMMENT_KEYWORD" fg="716F59"/>
+      <style token="COMMENT_MARKUP" fg="716F59"/>
       <style token="FUNCTION" fg="66D9E7" italic="true"/>
       <style token="DATA_TYPE" fg="678CB1" bold="true"/>
       <style token="LITERAL_BOOLEAN" fg="93C763" bold="true"/>
