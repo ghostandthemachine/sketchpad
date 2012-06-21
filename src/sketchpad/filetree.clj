@@ -434,11 +434,11 @@
                       ; :listen [:action (fn [_] (create-folder app))]
                       )
             (separator)
-            (menu-item :text "New..." 
+            (menu-item :text "New Project" 
                       :mnemonic "N" 
                       :key (keystroke "meta shift N") 
                       :listen [:action (fn [_] (new-project app))])
-            (menu-item :text "Open..." 
+            (menu-item :text "Open Project" 
                       :mnemonic "O" 
                       :key (keystroke "meta shift O") 
                       :listen [:action (fn [_] (open-project app))])

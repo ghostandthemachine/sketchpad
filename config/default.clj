@@ -3,10 +3,9 @@
 
 (def default-editor-prefs
 	{
-	
 		;; load RSyntaxTextArea from xml theme file
 		:rsta-theme "themes/dark.xml"
-
+		;; params after this point will overide those set by the theme selection above
 		:whitespace-visible false
 		:line-wrap 				false
 		:rounded-selection-edges true
@@ -16,7 +15,7 @@
 		:auto-indent true
 		:eol-marker false
 ;		:font "Monaco"	;; override if you don't want default based on OS
-		:tab-size 				2 ;; default tab size
+		:tab-size 				2
 		:hyper-links-enabled false
 		:mark-occurences false
 		:mark-occurences-color "#ADA6A9"

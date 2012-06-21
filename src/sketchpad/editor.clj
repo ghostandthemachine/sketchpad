@@ -222,6 +222,13 @@
     (config! doc-label-panel :foreground config/doc-title-color)
     (config! doc-label-panel :background config/app-color)
 
+
+    (.setVisible (.getVerticalScrollBar doc-scroll-pane)  false)
+    (.setVisible (.getHorizontalScrollBar doc-scroll-pane)  false)
+    ; (.setWheelScrollingEnabled doc-scroll-pane  true)
+
+
+
     (swap! app-atom conj (gen-map
                             arglist-label
                             search-text-area
