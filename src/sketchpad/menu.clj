@@ -307,9 +307,7 @@
                 (separator)
                 (menu-item :text "Close tab"
                            :key (keystroke "meta W")
-                           :listen [:action (fn [_] 
-                                              (println "Close current tab")
-                                              (close-current-tab app))])
+                           :listen [:action (fn [_] (close-current-tab app))])
                            ]))
 
 (defn make-help-menu

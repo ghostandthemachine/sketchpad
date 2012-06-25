@@ -77,9 +77,3 @@
 	(doseq [[k pref] default-auto-completion-prefs]
 ;		(println k pref)
 		((k auto-completion-handlers) ac pref)))
-
-
-
-
-
-

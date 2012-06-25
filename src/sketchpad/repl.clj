@@ -113,7 +113,7 @@
   (let [clojure-jar-term (when-not (clojure-jar-location project-path)
                            (find-clojure-jar (.getClassLoader clojure.lang.RT)))]
   
-    (println clojure-jar-term)
+    ; (println clojure-jar-term)
 
     (filter identity [(str project-path "/lib/*")
                       (str project-path "/src")

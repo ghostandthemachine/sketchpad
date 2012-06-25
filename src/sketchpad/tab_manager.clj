@@ -68,7 +68,6 @@
 				tab (get-meta rsta :tab)
 				indicator (select tab [:#indicator])
 				file-state (get-meta rsta :state)]
-				(println file-state)
 		(cond
 			(= kw :clean)
 				(do
