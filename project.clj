@@ -13,5 +13,6 @@
                  [rounded-border "0.0.1-SNAPSHOT"]
                  [org.fife.ui/rsyntaxtextarea "2.0.3"]
                  [language-builder "1.0.0-SNAPSHOT"]
-                 [auto-complete "0.1.0-SNAPSHOT"]]
+                 [auto-complete "0.1.0-SNAPSHOT"]
+                 [com.github.insubstantial/substance "7.1"]]
   :jvm-opts ~(if (= (System/getProperty "os.name") "Mac OS X") ["-Xdock:name=Sketchpad"] []))

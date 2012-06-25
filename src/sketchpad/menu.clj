@@ -1,7 +1,7 @@
 (ns sketchpad.menu
   (:use [clojure.pprint]
         [seesaw core keystroke]
-        [sketchpad repl utils edit-menu vim-mode default-mode edit-mode vim-mode layout-config toggle-vim-mode-action filetree completion-builder]
+        [sketchpad tab-manager repl utils edit-menu vim-mode default-mode edit-mode vim-mode layout-config toggle-vim-mode-action filetree completion-builder]
         [clooj help project dev-tools indent editor doc-browser search style indent])
   (:require 
         [sketchpad.rtextscrollpane :as sp]
@@ -292,8 +292,19 @@
                            :key (keystroke "meta 1") 
                            :listen [:action (fn [_] (toggle-file-tree-panel app))])
                 (separator)
-                (menu-item :text "Folding"
-                           :listen [:action (fn [_] (fold-action (app :doc-text-area)))])]))
+;                (menu-item :text "Folding"
+;                           :listen [:action (fn [_] (fold-action (app :doc-text-area)))])
+                (menu-item :text "Next tab"
+                					 :key (keystroke "meta alt RIGHT")
+                					 :listen [:action (fn [_] (select-next-tab app))])
+                (menu-item :text "Previous tab"
+                					 :key (keystroke "meta alt LEFT")
+                					 :listen [:action (fn [_] (select-previous-tab app))])
+                (separator)
+                (menu-item :text "Close tab"
+                           :key (keystroke "meta W")
+                           :listen [:action (fn [_] (close-current-tab app))])
+                           ]))
 
 (defn make-help-menu
   [app]

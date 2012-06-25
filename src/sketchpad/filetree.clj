@@ -1,10 +1,13 @@
 (ns sketchpad.filetree
-    (:use [seesaw core keystroke border]
-          [sketchpad utils editor]
+    (:use [seesaw core keystroke border meta]
+          [sketchpad utils editor tab-manager]
           [clojure.pprint])
     (:require [seesaw.color :as c]
               [seesaw.chooser :as chooser]
-              [sketchpad.config :as config])
+              [sketchpad.config :as config]
+              [clojure.java.io :as io]
+              [sketchpad.preview-manager :as preview]
+              [sketchpad.file-manager :as fm])
     (:import (java.io File StringReader BufferedWriter OutputStreamWriter FileOutputStream)
            (java.awt GridLayout)
            (javax.swing JButton JTree JOptionPane JWindow)
@@ -235,20 +238,28 @@
            .getUserObject .getAbsolutePath))))
 
 (defn save-file [app]
-  (try
-    (let [f @(app :current-file)
-          ft (File. (str (.getAbsolutePath f) "~"))]
-      (with-open [writer (BufferedWriter.
-                           (OutputStreamWriter.
-                             (FileOutputStream. f)
-                             "UTF-8"))]
-        (.write (app :doc-text-area) writer))
-      (send-off temp-file-manager (fn [_] 0))
-      (.delete ft)
-      (.updateUI (app :docs-tree)))
-    (catch Exception e (JOptionPane/showMessageDialog
-                         nil "Unable to save file."
-                         "Oops" JOptionPane/ERROR_MESSAGE))))
+  (let [index (current-tab-index app)]
+    (if (not= index -1)
+      (try
+        (let [f (get @(app :current-files) index)
+              rsta (select (current-tab app) [:#editor])
+              ]
+          (with-open [writer (BufferedWriter.
+                               (OutputStreamWriter.
+                                 (FileOutputStream. f)
+                                 "UTF-8"))]
+            (.write rsta writer))
+            ;; left from clooj
+            ;; this doesn't seem needed and it also messes up the CellRenderer sketchpad uses
+            ; (.updateUI (app :docs-tree))
+            (mark-current-tab-clean! (app :editor-tabbed-panel)))
+        (catch Exception e 
+          (do
+            (println e)
+            (JOptionPane/showMessageDialog
+                             nil "Unable to save file."
+                             "Oops" JOptionPane/ERROR_MESSAGE)))))))
+
 (defn update-project-tree [tree]
   (let [model (project-set-to-tree-model)]
     (awt-event
@@ -353,6 +364,9 @@
             (update-project-tree (:docs-tree app))
             (restart-doc app f))))))
 
+; (defn is-active-tab? [app path]
+;   (conatins? path (app :editor-tabbed-panel)))
+
 (defn save-file-state
   [app] 
   )
@@ -365,31 +379,48 @@
   [e]
   (= (.getClickCount e) 2))
 
-(defn handle-filtree-popup
-  [e app]
-  )
-
 (defn handle-filetree-double-click
   [e app]
-;  (save-tree-selection (app :docs-tree) (.getClosestPathForLocation (app :docs-tree) (.getX e) (.getY e)))
-;  (let [f (.. e getPath getLastPathComponent getUserObject)]
-;		(when (and
-;			(not= f @(app :current-file))
-;			(text-file? f))
-;			(restart-doc app f))
-;  )
-  )
+  (let [tree (:docs-tree app)
+        path (.getPathForLocation tree (.getX e) (.getY e))]
+    (awt-event
+      (save-tree-selection tree path)
+      ; (if (dirty? @(app :current-file-path))
+      ;    ;; store this text in a buffer
+      ;    )
 
-(defn handle-single-click [row path app])
+      ; (let [f (.. path getLastPathComponent
+      ;              getUserObject)]
+      ;  (when (and
+      ;          (not= f @(app :current-file))
+      ;          (text-file? f))
+          ; (if (contains? ))
+          ; (swap! @(app :current-files) (fn [_] (.getNewLeadSelectionPath e)))
+          ; (restart-doc app f)
 
-(defn handle-double-click [row path app])
+          ; (update-editor-content app f)
+            )))
+
+(defn handle-single-click [row path app-atom]
+    (.setSelectionRow (@app-atom :docs-tree) row)
+    ; (let [file (.. path getLastPathComponent getUserObject)]
+    ;   (when (text-file? file)
+    ;     (preview/preview-file! app-atom file)))
+    )
+
+(defn handle-double-click [row path app-atom]
+  ; (.setSelectionRow (@app-atom :docs-tree) row)
+    (let [file (.. path getLastPathComponent getUserObject)]
+      (when (text-file? file)
+        (fm/new-file-tab! app-atom file))))
   
 (defn handle-right-click [row path app]
   (.setSelectionRow (app :docs-tree) row))
 
 (defn tree-listener
-  [app]
-  (let [tree (app :docs-tree)
+  [app-atom]
+  (let [app @app-atom
+        tree (app :docs-tree)
         listener (proxy [MouseAdapter] []
                     (mousePressed [e]
                       (let [sel-row (.getRowForLocation tree (.getX e) (.getY e))
@@ -402,10 +433,10 @@
                           		;; handle right click
                           		(handle-right-click sel-row sel-path app)
                           		;; handle single left click
-                            	(handle-single-click sel-row sel-path app))
+                            	(handle-single-click sel-row sel-path app-atom))
                           ;; handle double click
                           (= click-count 2)
-                            (handle-double-click sel-row sel-path app)
+                            (handle-double-click sel-row sel-path app-atom)
 
                           )))
                     (mouseClicked [e]
@@ -460,8 +491,9 @@
 ;     @()
 ;   )
 
-(defn setup-tree [app]
-  (let [tree (:docs-tree app)
+(defn setup-tree [app-atom]
+  (let [app @app-atom
+        tree (:docs-tree app)
         save #(save-expanded-paths tree)]
     (config! tree :popup (make-filetree-popup app))
     (doto tree
@@ -484,29 +516,21 @@
              ;    ;; store this text in a buffer
              ;    )
              
-             (let [f (.. e getPath getLastPathComponent
-                           getUserObject)]
-               (when (and
-                       (not= f @(app :current-file))
-                       (text-file? f))
+             ; (let [f (.. e getPath getLastPathComponent
+             ;               getUserObject)]
+             ;   (when (and
+             ;           (not= f @(app :current-file))
+             ;           (text-file? f))
                   ; (if (contains? ))
                   ; (swap! @(app :current-files) (fn [_] (.getNewLeadSelectionPath e)))
-                  (restart-doc app f)
+                  ; (restart-doc app f)
                   ; (update-editor-content app f)
-                  ))))))
-    (.addMouseListener (tree-listener app))
+                  ; )))
+           ))))
+    (.addMouseListener (tree-listener app-atom))
     )))
 
-
-; { :path nil
-;   :file-name nil
-;   :dirty false
-;   :open false
-;   :buffer nil}
-
 ;; view
-
-
 (defn file-tree
   [app-atom]
   (let [docs-tree             (tree   :model          (tree-model @app-atom)
@@ -539,8 +563,6 @@
                                       :id             :file-tree-panel
                                       :class          :file-tree
                                       :background config/file-tree-bg)]
-
-    (.setBackground (.getHorizontalScrollBar docs-tree-scroll-pane) config/file-tree-bg)
 
     (let [cell-renderer (cast DefaultTreeCellRenderer (.getCellRenderer docs-tree))]
       (.setBackgroundNonSelectionColor cell-renderer config/file-tree-bg)

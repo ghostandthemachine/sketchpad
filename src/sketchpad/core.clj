@@ -8,8 +8,11 @@
              (org.fife.ui.autocomplete.ClojureCompletionProvider)
              (org.fife.ui.autocomplete.demo.CCellRenderer)
              (java.io.File)
-             (java.util.Vector))
-    (:use [seesaw core graphics color border font]
+             (java.util.Vector)
+             (java.awt Toolkit)
+             (javax.swing UIManager JTabbedPane)
+             (javax.swing.plaf.nimbus.NimbusLookAndFeel))
+    (:use [seesaw core graphics color border font meta]
           [clojure.pprint]
           [clooj.help]
           [clooj.navigate]
@@ -17,9 +20,13 @@
           [clooj.menus]
           [clooj.dev-tools]
           [clooj.indent]
-          [sketchpad utils repl filetree editor menu edit-mode default-mode completion-builder rsyntaxtextarea])
+          [sketchpad splash-screen auto-complete tab-manager utils repl filetree editor menu edit-mode default-mode completion-builder rsyntaxtextarea])
     (:require [sketchpad.theme :as theme]
-    					[sketchpad.config :as config]))
+    					[sketchpad.config :as config]
+              [sketchpad.preview-manager :as pm]))
+
+(defn set-laf [laf-string]
+  (UIManager/setLookAndFeel laf-string))
 
 (def overtone-handlers  { :update-caret-position update-caret-position 
                           :save-caret-position save-caret-position
@@ -28,23 +35,6 @@
                           :get-selected-projects get-selected-projects
                           :apply-namespace-to-repl apply-namespace-to-repl
                           :find-file find-file})
-
-(defn create-completion-provider
-  ([] (create-completion-provider :default))
-  ([kw]
-  (let [cp (org.fife.ui.autocomplete.ClojureCompletionProvider. )]
-	  (add-all-ns-completions cp)
-    (.setParameterizedCompletionParams cp \space " " \))
-     cp)))
-     
-
-(defn install-auto-completion
-  [rta]
-  (let [provider (create-completion-provider)
-        auto-complete (org.fife.ui.autocomplete.AutoCompletion. provider)]
-    ;; load prefs from config/default.clj
-    (config/apply-auto-completion-prefs! config/default-auto-completion-prefs auto-complete)
-    (.install auto-complete rta)))
 
 (defn create-app []
   (let [app-init  (atom {})
@@ -68,71 +58,86 @@
                          :background config/app-color)
         app (merge {:current-files (atom {})
                     :current-file      (atom nil)
+                    :current-tab -1
                     :repl      (atom (create-outside-repl (@app-init :repl-out-writer) nil))
-                    :changed   false}
+                    :changed   false
+                    :doc-text-area nil
+                    :doc-scroll-pane nil}
                     @app-init
                     overtone-handlers
                     (gen-map
                       frame
                       doc-split-pane
                       split-pane))]
+    (config! doc-split-pane :background (color :black))
     app))
 
 
 (defn add-behaviors
-  [app]
+  [app-atom]
+  (let [app @app-atom]
     ;;editor
-    (add-caret-listener (app :doc-text-area) #(display-caret-position app))
-    (setup-search-text-area app)
-    (setup-temp-writer app)
+    ; (add-caret-listener (app :doc-text-area) #(display-caret-position app))
+    ; (setup-search-text-area app)
+    ; (setup-temp-writer app)
+    ; (set-input-map! (app :repl-in-text-area) (default-input-map))
 
-    ;; install auto completion
-    (install-auto-completion (app :doc-text-area))
-    (install-auto-completion (app :repl-in-text-area))
-
-    ;; set default input map
-    (set-input-map! (app :doc-text-area) (default-input-map))
-    (set-input-map! (app :repl-in-text-area) (default-input-map))
+    ;; init preview manager
+    (pm/make-preview app-atom)
 
     ;; repl
     (add-repl-input-handler app)
     ;; file tree
-    (setup-tree app)
+    (setup-tree app-atom)
+
+    (listen (app :editor-tabbed-panel) :selection (fn [e] 
+                                                  ; (pprint e)
+                                                  (let [cur-tab (cast JTabbedPane (.getSource e))
+                                                        rsta (select cur-tab [:#editor])
+                                                        ]
+                                                        (pprint cur-tab)
+                                                        (pprint (get-meta rsta :file))
+                                                        )))
     ;; global
     (add-visibility-shortcut app)
-    (dorun (map #(attach-global-action-keys % app)
-                [(app :docs-tree) 
-                 (app :doc-text-area) 
-                 (app :repl-in-text-area) 
-                 ; (app :repl-out-text-area) 
-                 (.getContentPane (app :frame))])))
+    ; (dorun (map #(attach-global-action-keys % app)
+    ;             [(app :docs-tree) 
+    ;              (app :doc-text-area) 
+    ;              (app :repl-in-text-area) 
+    ;              ; (app :repl-out-text-area) 
+    ;              (.getContentPane (app :frame))]))
+    ))
 
 ;; startup
-(defn startup-sketchpad [app]
-  (Thread/setDefaultUncaughtExceptionHandler
-    (proxy [Thread$UncaughtExceptionHandler] []
-      (uncaughtException [thread exception]
-                       (println thread) (.printStackTrace exception))))
-  ;; add behaviors                       
-  (add-behaviors app)
-  (set-text-area-preffs app)
+(defn startup-sketchpad [app-atom]
+  (let [app @app-atom]    
+    (Thread/setDefaultUncaughtExceptionHandler
+      (proxy [Thread$UncaughtExceptionHandler] []
+        (uncaughtException [thread exception]
+                         (println thread) (.printStackTrace exception))))
+    ;; add behaviors                       
+    (add-behaviors app-atom)
+    ; (set-text-area-preffs app)
 
-  ;; create menus
-  (make-sketchpad-menus app)
-  ;; load projects
-  (doall (map #(add-project app %) (load-project-set)))
-  (let [frame (app :frame)]
-    (persist-window-shape clooj-prefs "main-window" frame) 
-    (on-window-activation frame #(update-project-tree (app :docs-tree))))
-  (let [tree (app :docs-tree)]
-    (load-expanded-paths tree)
-    (load-tree-selection tree))
-  	;; load default prefs
-    (config/apply-editor-prefs! config/default-editor-prefs (:doc-text-area app))
-    (config/apply-editor-prefs! config/default-editor-prefs (:repl-in-text-area app))
-	  ; (config/apply-editor-prefs! config/default-editor-prefs (:repl-out-text-area app))
-		;; done with init
-    (app :frame))
+
+    ; (pm/make-preview app-atom)
+
+    ;; create menus
+    (make-sketchpad-menus app)
+    ;; load projects
+    (doall (map #(add-project app %) (load-project-set)))
+    (let [frame (app :frame)]
+      (persist-window-shape clooj-prefs "main-window" frame) 
+      (on-window-activation frame #(update-project-tree (app :docs-tree))))
+    (let [tree (app :docs-tree)]
+      (load-expanded-paths tree)
+      ; (load-tree-selection tree)
+      )
+    	;; load default prefs
+      (config/apply-editor-prefs! config/default-editor-prefs (:repl-in-text-area app))
+
+  		;; done with init
+      (app :frame)))
 
 (defonce current-app (atom nil))
 
@@ -147,10 +152,23 @@
   (swap! current-app (fn [app] (assoc app :frame frame)))
   (invoke-later
     (-> 
-      (startup-sketchpad @current-app) 
+      (startup-sketchpad current-app) 
       show!))))
 
 (defn -main [& args]
+  ; (set-laf "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel")
+  ; (let [
+  ;       splash (splash-screen)
+  ;       runnable (proxy [Runnable] []
+  ;         (run []
+  ;           ;; wait 3 seconds
+  ;           (. Thread (sleep 3000))
+  ;           ;; then kill the splash screen
+  ;           (.hide splash)))
+  ;       splash-thread (Thread. runnable)]
+  ;   (.show splash)
+  ;   (.start splash-thread))
+
   (reset! embedded false)
   (reset! current-app (create-app))
   (let [frame (frame :title "Sketchpad" 
@@ -162,7 +180,7 @@
   (swap! current-app (fn [app] (assoc app :frame frame)))
   (invoke-later
     (-> 
-      (startup-sketchpad @current-app)
+      (startup-sketchpad current-app)
       show!))))
 
   

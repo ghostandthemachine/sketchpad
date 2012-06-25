@@ -1,6 +1,8 @@
 (def sketchpad-prefs
 	{:clojure-version "1.3"})
 
+(def default-background-color [39 49 34])
+
 (def default-editor-prefs
 	{
 		;; load RSyntaxTextArea from xml theme file

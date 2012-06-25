@@ -1,12 +1,12 @@
 (ns sketchpad.editor
-    (:use [seesaw core graphics color font border]
+    (:use [seesaw core graphics color font border meta]
           [sketchpad utils]
           [clojure.pprint]
           [sketchpad.vim-mode]
           [sketchpad.toggle-vim-mode-action]
-          [rounded-border.core]
-          )
-    (:require [clooj.rsyntax :as rsyntax]
+          [sketchpad.tab-manager]
+          [rounded-border.core])
+    (:require [seesaw.rsyntax :as rsyntax]
               [clooj.doc-browser :as db]
               [clooj.highlighting :as h]
               [clooj.brackets :as b]
@@ -16,8 +16,11 @@
               [sketchpad.rsyntaxtextarea :as rs]
               [sketchpad.rtextarea :as ta]
               [sketchpad.gutter :as gutter]
-              [sketchpad.config :as config])
-    (:import  (java.awt.event FocusAdapter MouseAdapter KeyAdapter)))
+              [sketchpad.config :as config]
+              [sketchpad.tab-ui :as tab])
+    (:import  (java.awt.event FocusAdapter MouseAdapter KeyAdapter)
+              (javax.swing.event ChangeListener)
+              (javax.swing.UIManager)))
 
 (def highlight-agent (agent nil))
 (def arglist-agent (agent nil))
@@ -154,11 +157,22 @@
                       ))]))
 
 (defn set-text-area-preffs
-  [app]
-  (let [rta (app :doc-text-area)]
-    (.addKeyListener (:doc-text-panel app) (dirty-state-listener app))
-    (.addKeyListener (:doc-text-panel app) (command-line-key-listener))
-    ))
+  [app rta]
+  (.addKeyListener rta (dirty-state-listener app))
+  (.addKeyListener rta (command-line-key-listener))
+
+  )
+
+
+(defn doc-tab [title tip content]
+  {:title title
+   :tip tip
+   :content content})
+
+
+(defn put [laf k v]
+  (.put laf (str "TabbedPane." k) v))
+
 
 (defn editor
   [app-atom]
@@ -166,7 +180,7 @@
                                       :id             :arglist-label
                                       :class          :arg-response)
         search-text-area      (text   :visible? 	  false
-                      					    :border         (line-border :color     :grey
+                      					      :border         (line-border :color     :grey
                             			 				  				        :thickness 1)
                       							  :id             :search-text-area
                                       :class          :search-area)
@@ -175,7 +189,7 @@
                                       :id             :arg-search-panel
                                       :class          :search-panel)
         pos-label             (label  :id             :pos-label
-                                      :class          :pos-label)
+                                      :class          :label)
         position-search-panel (horizontal-panel
                                       :items          [pos-label 
                                                      [:fill-h 10]
@@ -186,60 +200,33 @@
                                       :class          :search-panel)
         editor-helpers-panel  (vertical-panel       
                                       :items [position-search-panel])
-
-        doc-label             (label  :text           "Source Editor"
-        															:border 				(empty-border :thickness 5)
-                                      :id             :doc-label
-                                      :class          :editor-comp)
-        doc-label-panel       (horizontal-panel       
-                                      :items          [doc-label
-                                                       :fill-h]
-                                      :id             :doc-label-panel
-                                      :class          :editor-comp)
         doc-text-area         (rsyntax/text-area    
-                                      :wrap-lines?    false
-                                      :syntax         :clojure
-                                      :id             :doc-text-area
-                                      :class          [:editor-comp :syntax-editor])
-        doc-scroll-pane       (sp/scroll-pane doc-text-area)
-        gutter                (.getGutter doc-scroll-pane)
+                              :syntax         :clojure)
+        editor-tabbed-panel   (tabbed-panel :placement :top
+                                            :overflow :wrap
+                                            :background (color :black)
+                                            :border (empty-border :thickness 0))
         doc-text-panel        (vertical-panel  
-                                      :items         [doc-label-panel 
-                                                      doc-scroll-pane 
+                                      :items         [editor-tabbed-panel 
                                                       editor-helpers-panel]
                                       :id             :doc-text-panel
                                       :class          :editor-comp)]
-    (config! doc-scroll-pane :background config/app-color)
+    ;; set tab ui
+    (.setUI editor-tabbed-panel (tab/sketchpad-tab-ui))
+
     (config! arglist-label :background config/app-color)
     (config! arg-search-panel :background config/app-color)
 
     (config! arg-search-panel :background config/app-color)
     (config! arglist-label :background config/app-color)
-
-    ;; editor top doc title label
-    (config! doc-label :foreground config/doc-title-color)
-    (config! doc-label :background config/app-color)
-    (config! doc-label-panel :foreground config/doc-title-color)
-    (config! doc-label-panel :background config/app-color)
-
-
-    (.setVisible (.getVerticalScrollBar doc-scroll-pane)  false)
-    (.setVisible (.getHorizontalScrollBar doc-scroll-pane)  false)
-    ; (.setWheelScrollingEnabled doc-scroll-pane  true)
-
-
 
     (swap! app-atom conj (gen-map
                             arglist-label
                             search-text-area
                             arg-search-panel
-                            ;editor-command-line
                             pos-label
                             position-search-panel 
-                            doc-label
-                            doc-text-area
-                            doc-scroll-pane
-                            doc-text-panel
-                            gutter
+                            editor-tabbed-panel 
                             editor-helpers-panel))
     doc-text-panel))
+

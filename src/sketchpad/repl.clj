@@ -22,7 +22,7 @@
         [seesaw.core] 
         [seesaw.color]
         [seesaw.border]
-        [sketchpad.app-cmd])
+        [sketchpad app-cmd auto-complete default-mode rsyntaxtextarea])
   (:require [clojure.string :as string]
             [clooj.rsyntax :as rsyntax]
             [clojure.java.io :as io]
@@ -300,11 +300,15 @@
     (send-to-repl app (str "(load-file \"" (.getAbsolutePath f) "\")"))))
 
 (defn apply-namespace-to-repl [app]
-  (when-let [current-ns (get-file-ns (config (app :doc-text-area) :text))]
-    (send-to-repl app (str "(ns " current-ns ")"))
-    (swap! repls assoc-in
-           [(-> app :repl deref :project-path) :ns]
-           current-ns)))
+  (try 
+    (when-let [current-ns (get-file-ns (config (app :doc-text-area) :text))]
+
+      (send-to-repl app (str "(ns " current-ns ")"))
+      (swap! repls assoc-in
+             [(-> app :repl deref :project-path) :ns]
+             current-ns))
+    (catch java.lang.IllegalArgumentException e
+      (println "Illegal Argument Error: could not be load file namespace into the repl"))))
 
 ; (defn restart-repl [app project-path]
 ;   (append-text (app :repl-out-text-area)
@@ -405,19 +409,6 @@
 (defn repl
   [app-atom]
   (let [
-        ; repl-out-text-area  (rsyntax/text-area 
-        ;                               :wrap-lines?    false
-        ;                               :editable?      false
-        ;                               :border         (line-border 
-        ;                               	                    :thickness 7
-        ;                               	                    :color (color "#FFFFFF" 0))
-        ;                               :id             :repl-out-text-area
-        ;                               :class          [:repl :syntax-editor])
-        ; repl-out-scroll-pane (RTextScrollPane. repl-out-text-area false) ;; default to no linenumbers
-        ; repl-output-vertical-panel (vertical-panel 
-        ;                               :items          [repl-out-scroll-pane]                                      
-        ;                               :id             :repl-output-vertical-panel
-        ;                               :class          :repl)
         repl-in-text-area (rsyntax/text-area 
                                       :syntax         "clojure"     
                                       :border         (line-border 
@@ -430,14 +421,11 @@
         repl-input-vertical-panel (vertical-panel 
                                       :items          [repl-in-scroll-pane]                                      
                                       :id             :repl-input-vertical-panel
-                                      :class          :repl)
-        ; repl-split-pane (top-bottom-split             repl-output-vertical-panel 
-        ;                                               repl-input-vertical-panel
-        ;                               :divider-location 0.66
-        ;                               :resize-weight 0.66
-        ;                               :divider-size   3)]
-        ]
+                                      :class          :repl)]
     (config! repl-in-scroll-pane :background config/app-color)
+    (install-auto-completion repl-in-text-area)
+    ;; set default input map
+    (set-input-map! repl-in-text-area (default-input-map))
     (swap! app-atom conj (gen-map
                             ; repl-out-scroll-pane
                             ; repl-out-text-area
