@@ -16,82 +16,6 @@
 (def border-color (color 150 150 150))
 (def tab-bg-color (color 0 0 0))
 
-; (defn set-color [gfx c]
-; 	(.setColor gfx c))
-
-; (defn move [path x y]
-; 	(.moveTo path x y))
-
-; (defn curve [path x1 y1 x2 y2 x3 y3]
-; 	(.curveTo path x1 y1 x2 y2 x3 y3))
-
-; (defn line-to [path x y]
-; 	(.line-toTo path x y))
-
-; (defn draw [path shape]
-; 	(.draw path shape))
-
-; (defn fill [path shape]
-; 	(.fill path shape))
-
-; (defn close [path]
-; 	(.closePath path))
-
-; (defn paint [path color]
-; 	(.setPaint path color))
-
-; (defn stroke [gfx s]
-; 	(.setStroke gfx s))
-
-; (defn basic-stroke [size]
-; 	(java.awt.BasicStroke. size))
-
-; (defn rendering-hint! [k v]
-; 	(.setRenderingHint k v))
-
-
-; ;;; tab renderer values
-; (defn browser-tab [gfx2 rects tab-index]
-; 	(let [tab-path (java.awt.geom.GeneralPath.) 
-; 				unit 8
-; 				w  (- (.getWidth (arr-get rects tab-index)) unit)
-; 				h  (.getHeight (arr-get rects tab-index))
-; 				x  [(.getX (arr-get rects tab-index)) ;; normal x starting point
-; 					  (+ (.getX (arr-get rects tab-index)) unit) ;; norm x + angle offset
-; 					  (+ (.getX (arr-get rects tab-index)) w) ;; normal x + w 
-; 					  (+ (.getX (arr-get rects tab-index)) w unit)] ;; normal x + w 
-; 				y	 [( + (.getY (arr-get rects tab-index)) h)
-; 					  (.getY (arr-get rects tab-index))
-; 					  (.getY (arr-get rects tab-index))
-; 					  ( + (.getY (arr-get rects tab-index)) h)]]
-; 		(doto tab-path
-; 			(move (get x 0) (get y 0))
-; 			(line-to (get x 1) (get y 1))
-; 			(line-to (get x 2) (get y 2))
-; 			(line-to (get x 3) (get y 3))
-; 			(close))
-; 			tab-path))
-
-; (defn browser-tab-border [gfx2 rects tab-index]
-; 	(let [tab-path (java.awt.geom.GeneralPath.) 
-; 				unit 8
-; 				w  (- (.getWidth (arr-get rects tab-index)) unit)
-; 				h  (.getHeight (arr-get rects tab-index))
-; 				x  [(.getX (arr-get rects tab-index)) ;; normal x starting point
-; 					  (+ (.getX (arr-get rects tab-index)) unit) ;; norm x + angle offset
-; 					  (+ (.getX (arr-get rects tab-index)) w) ;; normal x + w 
-; 					  (+ (.getX (arr-get rects tab-index)) w unit)] ;; normal x + w 
-; 				y	 [( + (.getY (arr-get rects tab-index)) h)
-; 					  (.getY (arr-get rects tab-index))
-; 					  (.getY (arr-get rects tab-index))
-; 					  ( + (.getY (arr-get rects tab-index)) h)]]
-; 		(doto tab-path
-; 			(move (get x 0) (get y 0))
-; 			(line-to (get x 1) (get y 1))
-; 			(line-to (get x 2) (get y 2))
-; 			(line-to (get x 3) (get y 3)))
-; 			tab-path))
-
 (defn sketchpad-tab-ui []
 	(let [bg (atom fill-color)
 				height-pad 10
@@ -114,8 +38,6 @@
 											; )
 									)
 										(paintTabBackground [gfx tab-placement tab-index x y w h selected?]
-											(println selected?)
-
 											(if selected? 
 												(swap! bg (fn [_] selected-fill-color))
 												(swap! bg (fn [_] fill-color)))

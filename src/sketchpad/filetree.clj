@@ -8,7 +8,8 @@
               [clojure.java.io :as io]
               [sketchpad.preview-manager :as preview]
               [sketchpad.file-manager :as fm])
-    (:import (java.io File StringReader BufferedWriter OutputStreamWriter FileOutputStream)
+    (:import 
+           (java.io File StringReader BufferedWriter OutputStreamWriter FileOutputStream)
            (java.awt GridLayout)
            (javax.swing JButton JTree JOptionPane JWindow)
            (javax.swing.event TreeSelectionListener
@@ -124,15 +125,15 @@
     (first (filter #(and (.exists %) (.isFile %)) file-candidates))))
 
 
-(defn file-suffix [^File f]
-  (when-lets [name (.getName f)
-             last-dot (.lastIndexOf name ".")
-             suffix (.substring name (inc last-dot))]
-    suffix))
+; (defn file-suffix [^File f]
+;   (when-lets [name (.getName f)
+;              last-dot (.lastIndexOf name ".")
+;              suffix (.substring name (inc last-dot))]
+;     suffix))
 
-(defn text-file? [f]
-  (not (some #{(file-suffix f)}
-             ["jar" "class" "dll" "jpg" "png" "bmp"])))
+; (defn text-file? [f]
+;   (not (some #{(file-suffix f)}
+;              ["jar" "class" "dll" "jpg" "png" "bmp"])))
 
 (defn tree-nodes [tree]
   (when-let [root (.. tree getModel getRoot)]
@@ -236,29 +237,6 @@
     (for [selection selections]
       (->> selection .getLastPathComponent (get-project-node tree)
            .getUserObject .getAbsolutePath))))
-
-(defn save-file [app]
-  (let [index (current-tab-index app)]
-    (if (not= index -1)
-      (try
-        (let [f (get @(app :current-files) index)
-              rsta (select (current-tab app) [:#editor])
-              ]
-          (with-open [writer (BufferedWriter.
-                               (OutputStreamWriter.
-                                 (FileOutputStream. f)
-                                 "UTF-8"))]
-            (.write rsta writer))
-            ;; left from clooj
-            ;; this doesn't seem needed and it also messes up the CellRenderer sketchpad uses
-            ; (.updateUI (app :docs-tree))
-            (mark-current-tab-clean! (app :editor-tabbed-panel)))
-        (catch Exception e 
-          (do
-            (println e)
-            (JOptionPane/showMessageDialog
-                             nil "Unable to save file."
-                             "Oops" JOptionPane/ERROR_MESSAGE)))))))
 
 (defn update-project-tree [tree]
   (let [model (project-set-to-tree-model)]
@@ -411,8 +389,8 @@
 (defn handle-double-click [row path app-atom]
   ; (.setSelectionRow (@app-atom :docs-tree) row)
     (let [file (.. path getLastPathComponent getUserObject)]
-      (when (text-file? file)
-        (fm/new-file-tab! app-atom file))))
+      (when (fm/text-file? file)
+        (new-file-tab! app-atom file))))
   
 (defn handle-right-click [row path app]
   (.setSelectionRow (app :docs-tree) row))
@@ -440,7 +418,7 @@
 
                           )))
                     (mouseClicked [e]
-                    	(pprint (.getPathForLocation tree (.getX e) (.getY e)))
+                    	; (pprint (.getPathForLocation tree (.getX e) (.getY e)))
                       (if (double-click? e)
                         (handle-filetree-double-click e app)
                        )))]

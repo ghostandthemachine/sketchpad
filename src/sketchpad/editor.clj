@@ -10,7 +10,7 @@
               [clooj.doc-browser :as db]
               [clooj.highlighting :as h]
               [clooj.brackets :as b]
-              [clooj.help :as help]
+              [sketchpad.help :as help]
               [clooj.search :as search]
               [sketchpad.rtextscrollpane :as sp]
               [sketchpad.rsyntaxtextarea :as rs]

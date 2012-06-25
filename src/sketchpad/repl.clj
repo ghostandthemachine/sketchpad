@@ -16,13 +16,13 @@
                             awt-event get-file-ns
                             append-text when-lets get-text-str get-directories)]
         [clooj.brackets :only (find-line-group find-enclosing-brackets)]
-        [clooj.help :only (get-var-maps)]
+        [sketchpad.help :only (get-var-maps)]
         [sketchpad.utils :only (gen-map get-temp-file)]
         [clj-inspector.jars :only (get-entries-in-jar jar-files)]
         [seesaw.core] 
         [seesaw.color]
         [seesaw.border]
-        [sketchpad app-cmd auto-complete default-mode rsyntaxtextarea])
+        [sketchpad app-cmd auto-complete default-mode rsyntaxtextarea tab-manager])
   (:require [clojure.string :as string]
             [clooj.rsyntax :as rsyntax]
             [clojure.java.io :as io]
@@ -112,6 +112,9 @@
 (defn outside-repl-classpath [project-path]
   (let [clojure-jar-term (when-not (clojure-jar-location project-path)
                            (find-clojure-jar (.getClassLoader clojure.lang.RT)))]
+  
+    (println clojure-jar-term)
+
     (filter identity [(str project-path "/lib/*")
                       (str project-path "/src")
                       (when clojure-jar-term
@@ -301,14 +304,14 @@
 
 (defn apply-namespace-to-repl [app]
   (try 
-    (when-let [current-ns (get-file-ns (config (app :doc-text-area) :text))]
-
+    (when-let [current-ns (get-file-ns (.getText (current-text-area app)))]
+      (println "apply-namespace-to-repl current-ns: " current-ns)
       (send-to-repl app (str "(ns " current-ns ")"))
       (swap! repls assoc-in
              [(-> app :repl deref :project-path) :ns]
              current-ns))
     (catch java.lang.IllegalArgumentException e
-      (println "Illegal Argument Error: could not be load file namespace into the repl"))))
+      (println "Illegal Argument Error: could not load file namespace into the repl"))))
 
 ; (defn restart-repl [app project-path]
 ;   (append-text (app :repl-out-text-area)

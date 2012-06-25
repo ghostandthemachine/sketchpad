@@ -1,7 +1,7 @@
 (ns sketchpad.menu
   (:use [clojure.pprint]
-        [seesaw core keystroke]
-        [sketchpad tab-manager repl utils edit-menu vim-mode default-mode edit-mode vim-mode layout-config toggle-vim-mode-action filetree completion-builder]
+        [seesaw core keystroke meta]
+        [sketchpad file-manager tab-manager repl utils edit-menu vim-mode default-mode edit-mode vim-mode layout-config toggle-vim-mode-action filetree completion-builder]
         [clooj help project dev-tools indent editor doc-browser search style indent])
   (:require 
         [sketchpad.rtextscrollpane :as sp]
@@ -70,9 +70,7 @@
                               (checkbox-menu-item :text "Code Folding"
                                                   :listen [:action (fn [_] (code-folding-action (app :doc-text-area)))])
                               (checkbox-menu-item :text "Bookmarks"
-                                                  :listen [:action (fn [_] (do 
-                                                                              (pprint (app :doc-scroll-pane))
-                                                                              (bookmarks-action (app :doc-scroll-pane))))])])
+                                                  :listen [:action (fn [_] (bookmarks-action (app :doc-scroll-pane)))])])
                 (menu :text "Project"
                       :items [])]))))
 
@@ -88,7 +86,13 @@
                 (menu-item :text "Save" 
                            :mnemonic "S" 
                            :key (keystroke "meta S") 
-                           :listen [:action (fn [_] (save-file app))])
+                           :listen [:action (fn [_] 
+                                              (let [current-tab (current-tab app)
+                                                    rsta (select current-tab [:#editor])
+                                                    tab-state (get-meta rsta :state)]
+                                                (if (not (@tab-state :clean))
+                                                  (if (save-file app (current-text-area app) (current-tab-index app))
+                                                    (mark-current-tab-clean! app)))))])
                 (separator)
                 (menu-item :text "Move/Rename" 
                            :mnemonic "M" 
@@ -244,7 +248,7 @@
                   (separator)
                   (menu-item :text "Apply file ns"
                              :mnemonic "A"
-                             :key (keystroke "meta shift A")
+                             :key (keystroke "meta control A")
                              :listen [:action  (fn [_] (apply-namespace-to-repl app))])
                   (separator)
                   (menu-item :text "Use :reload file"
@@ -303,7 +307,9 @@
                 (separator)
                 (menu-item :text "Close tab"
                            :key (keystroke "meta W")
-                           :listen [:action (fn [_] (close-current-tab app))])
+                           :listen [:action (fn [_] 
+                                              (println "Close current tab")
+                                              (close-current-tab app))])
                            ]))
 
 (defn make-help-menu

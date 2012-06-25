@@ -10,7 +10,6 @@
 (defn default-input-map
 	[]
 	"Extend the Swing InputMap class and implement key mappings"
-  (println "Create default input map")
 	(let [alt (InputEvent/ALT_MASK)
 		  shift (InputEvent/SHIFT_MASK)
 		  input-map (RSyntaxTextAreaDefaultInputMap. )

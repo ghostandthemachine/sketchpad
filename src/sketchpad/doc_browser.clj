@@ -2,7 +2,7 @@
 
     (:use     [seesaw core graphics color border]
               [clooj.highlighting]
-              [clooj.help]
+              [sketchpad.help]
               [sketchpad.utils]
               [sketchpad.layout-config]
               [clojure.repl :only (source-fn)]

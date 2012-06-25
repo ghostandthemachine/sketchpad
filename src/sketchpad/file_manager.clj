@@ -2,11 +2,10 @@
 	(:require [seesaw.bind :as bind]
 						[clojure.string :as string])
 	(:use [seesaw core dev meta]
-				[sketchpad.editor-component]
-				[sketchpad.button-tab]
-				[sketchpad.tab-manager])
-	(:import (java.io StringReader File)
-					 (java.awt.event.KeyEvent)))
+				[sketchpad.editor-component])
+	(:import (java.io File StringReader BufferedWriter OutputStreamWriter FileOutputStream)
+					 (java.awt.event.KeyEvent)
+					 (javax.swing  JOptionPane)))
 
 (defn ends-with? [file-name ext]
 	(.endsWith file-name ext))
@@ -92,56 +91,24 @@
 (defn text-file? [f]
   (not (some #{(file-suffix f)}
              ["jar" "class" "dll" "jpg" "png" "bmp"])))
+
+(defn save-file [app rsta index]
+  (try
+    (let [f (get @(app :current-files) index)]
+      (with-open [writer (BufferedWriter.
+                           (OutputStreamWriter.
+                             (FileOutputStream. f)
+                             "UTF-8"))]
+        (.write rsta writer))
+        true)
+    (catch Exception e 
+      (do
+        (println e)
+        (JOptionPane/showMessageDialog
+                         nil "Unable to save file."
+                         "Oops" JOptionPane/ERROR_MESSAGE)))))
+
 			
 (defn set-global-rsta! [app-atom comp]
 	(let [rsta (first (select comp [:.syntax-editor]))]
 		(swap! app-atom (fn [app] (assoc app :doc-text-area rsta)))))
-
-(defn mark-tab-dirty! [tabbed-panel i]
-	(title-at! tabbed-panel i (str (title-at tabbed-panel i) "*")))
-
-(defn mark-current-tab-dirty! [tabbed-panel i]
-	(mark-tab-dirty! tabbed-panel (.getSelectedIndex tabbed-panel)))
-
-(defn new-file-tab! [app-atom file]
-	(let [app @app-atom]
-		(if (text-file? file)
-			(if (open? app (file-name file))
-				;; already open so just show it
-				(show-tab! app-atom (index-of app (file-name file)) file)
-				;; otherwise create a new tab and set the syntax style
-				(do 
-					(let [tabbed-panel (app :editor-tabbed-panel)
-								container (make-editor-component)
-								new-file-name (str (file-name file))
-								rsta-comp (select container [:#editor])]
-						;; attach the file to the component for easy saving
-						(put-meta! rsta-comp :file file)
-						;; set the text area text from file
-						(let [txt (slurp file)
-			            rdr (StringReader. txt)]
-			        (.read rsta-comp rdr nil))
-						;; set the new text area syntax
-						(config! rsta-comp :syntax (file-type file))
-						(add-tab! tabbed-panel new-file-name container)
-						;; set custom tab
-						(let [index-of-new-tab (index-of app new-file-name)
-									tab (button-tab app tabbed-panel)
-									tab-label (first (select tab [:.tab-label]))
-									tab-state (get-meta rsta-comp :state)]
-    					;; add state listener to this rta
-					    (listen rsta-comp
-					      :key-typed (fn [e]
-					        (if (= :clean @tab-state)
-					          (do
-					          	(println (java.awt.event.KeyEvent/getKeyText (.getKeyCode e)))
-					          	; (println (java.awt.event.KeyEvent/getKeyModifierText (.getModifiers e)))
-					          	(mark-tab-dirty! tabbed-panel index-of-new-tab)
-				              (swap! (get-meta rsta-comp :state) (fn [_] :dirty))))))
-
-							;; set the component in the new tab
-							(.setTabComponentAt tabbed-panel index-of-new-tab tab)
-							;; add file and index to app map
-							(swap! (@app-atom :current-files) (fn [files] (assoc files index-of-new-tab file)))
-							;; bring the new tab to the front
-							(show-tab! app-atom index-of-new-tab file))))))))

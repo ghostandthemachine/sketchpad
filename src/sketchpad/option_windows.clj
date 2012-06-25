@@ -1,5 +1,5 @@
 (ns sketchpad.option-windows
-	(:import (javax.swing.JOptionPane)
+	(:import (javax.swing JButton JOptionPane JWindow)
 		(javax.swing.JDialog)))
 
 
@@ -8,15 +8,15 @@
  											"Discard Changes"
  											"Cancel"]))
 
-(defn close-or-save-option [app file-to-close-name ]
-	(let [close-alert (javax.swing.JOptionPane. (str "Do you want to save the changes you made to " file-to-close-name) javax.swing.JOptionPane/QUESTION_MESSAGE)
-				dialog (javax.swing.JDialog. (app :frame) "Unsaved Changes")]
-		(doto close-alert 
-			(.setOptions alert-options))
 
-		(doto dialog
-			(.setVisible true))
-
-		; (let [selected-value (.getValue close-alert)]
-		; 	(if (= selected-value "Discard Changes")))
-		))
+;; display a save, discard, or cancel dialogue if the window being closed is dirty
+(defn close-or-save-current-dialogue [title]
+ (when-let [answer (JOptionPane/showConfirmDialog 
+ 					 nil
+           ; (label :text (str "Do you want to save the changes you made to " title)
+           ; 				:icon (ImageIcon. "img/sketchpad-icon.png")) 
+ 					 (str "Do you want to save the changes you made to " title)
+           "Unsaved Changes"
+           JOptionPane/YES_NO_CANCEL_OPTION
+           )]
+ 	answer))

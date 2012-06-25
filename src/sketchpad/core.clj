@@ -14,7 +14,7 @@
              (javax.swing.plaf.nimbus.NimbusLookAndFeel))
     (:use [seesaw core graphics color border font meta]
           [clojure.pprint]
-          [clooj.help]
+          [sketchpad.help]
           [clooj.navigate]
           [clooj.doc-browser] 
           [clooj.menus]
@@ -91,13 +91,8 @@
     (setup-tree app-atom)
 
     (listen (app :editor-tabbed-panel) :selection (fn [e] 
-                                                  ; (pprint e)
                                                   (let [cur-tab (cast JTabbedPane (.getSource e))
-                                                        rsta (select cur-tab [:#editor])
-                                                        ]
-                                                        (pprint cur-tab)
-                                                        (pprint (get-meta rsta :file))
-                                                        )))
+                                                        rsta (select cur-tab [:#editor])])))
     ;; global
     (add-visibility-shortcut app)
     ; (dorun (map #(attach-global-action-keys % app)
