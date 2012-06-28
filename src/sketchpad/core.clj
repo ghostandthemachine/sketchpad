@@ -20,7 +20,7 @@
           [clooj.menus]
           [clooj.dev-tools]
           [clooj.indent]
-          [sketchpad splash-screen auto-complete tab-manager utils repl filetree editor menu edit-mode default-mode completion-builder rsyntaxtextarea])
+          [sketchpad prefs auto-complete tab-manager utils repl filetree editor menu edit-mode default-mode completion-builder rsyntaxtextarea])
     (:require [sketchpad.theme :as theme]
     					[sketchpad.config :as config]
               [sketchpad.preview-manager :as pm]))
@@ -45,6 +45,7 @@
         doc-split-pane (left-right-split
                          file-tree
                          editor
+                         :border (empty-border :thickness 0)
                          :divider-location 0.25
                          :resize-weight 0.25
                          :divider-size 3
@@ -55,9 +56,10 @@
                         :divider-location 0.66
                         :resize-weight 0.66
                         :divider-size 1
-                         :background config/app-color)
+                        :border (empty-border :thickness 0)
+                        :background config/app-color)
         app (merge {:current-files (atom {})
-                    :current-file      (atom nil)
+                    :current-file (atom nil)
                     :current-tab -1
                     :repl      (atom (create-outside-repl (@app-init :repl-out-writer) nil))
                     :changed   false
@@ -92,7 +94,10 @@
 
     (listen (app :editor-tabbed-panel) :selection (fn [e] 
                                                   (let [cur-tab (cast JTabbedPane (.getSource e))
-                                                        rsta (select cur-tab [:#editor])])))
+                                                        rsta (select cur-tab [:#editor])
+                                                        current-tab-index (current-tab-index app)]
+                                                    (save-tab-selections app)
+                                                    )))
     ;; global
     (add-visibility-shortcut app)
     ; (dorun (map #(attach-global-action-keys % app)
@@ -126,8 +131,10 @@
       (on-window-activation frame #(update-project-tree (app :docs-tree))))
     (let [tree (app :docs-tree)]
       (load-expanded-paths tree)
-      ; (load-tree-selection tree)
+      (load-tree-selection tree)
       )
+
+      ; (load-tab-selections app-atom)
     	;; load default prefs
       (config/apply-editor-prefs! config/default-editor-prefs (:repl-in-text-area app))
 

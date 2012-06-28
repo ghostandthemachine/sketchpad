@@ -295,6 +295,9 @@
                 (menu-item :text "Show File Tree" 
                            :key (keystroke "meta 1") 
                            :listen [:action (fn [_] (toggle-file-tree-panel app))])
+                (menu-item :text "Show REPL" 
+                           :key (keystroke "meta 2") 
+                           :listen [:action (fn [_] (toggle-repl app))])
                 (separator)
 ;                (menu-item :text "Folding"
 ;                           :listen [:action (fn [_] (fold-action (app :doc-text-area)))])

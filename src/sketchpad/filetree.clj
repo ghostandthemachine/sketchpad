@@ -1,6 +1,6 @@
 (ns sketchpad.filetree
     (:use [seesaw core keystroke border meta]
-          [sketchpad utils editor tab-manager]
+          [sketchpad utils editor tab-manager prefs]
           [clojure.pprint])
     (:require [seesaw.color :as c]
               [seesaw.chooser :as chooser]
@@ -178,7 +178,7 @@
   (write-value-to-prefs
     clooj-prefs "tree-selection"
     (tree-path-to-file path)))
-  
+
 (defn path-to-node [tree path]
   (first
     (for [node (rest (tree-nodes tree))
@@ -388,9 +388,16 @@
 
 (defn handle-double-click [row path app-atom]
   ; (.setSelectionRow (@app-atom :docs-tree) row)
+  (try 
     (let [file (.. path getLastPathComponent getUserObject)]
       (when (fm/text-file? file)
-        (new-file-tab! app-atom file))))
+        (do 
+          (new-file-tab! app-atom file)
+          (save-tree-selection tree path)
+          (save-tab-selections @app-atom))
+          ))
+    (catch java.lang.NullPointerException e 
+      )))
   
 (defn handle-right-click [row path app]
   (.setSelectionRow (app :docs-tree) row))

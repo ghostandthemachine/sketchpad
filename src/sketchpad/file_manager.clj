@@ -112,3 +112,6 @@
 (defn set-global-rsta! [app-atom comp]
 	(let [rsta (first (select comp [:.syntax-editor]))]
 		(swap! app-atom (fn [app] (assoc app :doc-text-area rsta)))))
+
+(defn get-file-state-by-tab-index [app i]
+	(@(get-meta (select (.getComponentAt (app :editor-tabbed-pane) i) [:#editor]) :state) :clean))

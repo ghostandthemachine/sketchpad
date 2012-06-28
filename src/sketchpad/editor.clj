@@ -1,12 +1,12 @@
 (ns sketchpad.editor
     (:use [seesaw core graphics color font border meta]
-          [sketchpad utils]
+          [sketchpad prefs utils]
           [clojure.pprint]
           [sketchpad.vim-mode]
           [sketchpad.toggle-vim-mode-action]
           [sketchpad.tab-manager]
           [rounded-border.core])
-    (:require [seesaw.rsyntax :as rsyntax]
+    (:require [sketchpad.rsyntax :as rsyntax]
               [clooj.doc-browser :as db]
               [clooj.highlighting :as h]
               [clooj.brackets :as b]

@@ -115,8 +115,11 @@
   
     ; (println clojure-jar-term)
 
-    (filter identity [(str project-path "/lib/*")
+    (filter identity [(str project-path "~/.m2/repository/*")
+                      (str project-path "~/.m2/repository/seesaw/seesaw/1.4.1/*")
+                      (str project-path "/lib/*")
                       (str project-path "/src")
+
                       (when clojure-jar-term
                         clojure-jar-term)])))
 
@@ -421,10 +424,11 @@
                                       :class          [:repl :syntax-editor])
         repl-out-writer   (make-repl-writer repl-in-text-area app-atom)
         repl-in-scroll-pane (RTextScrollPane. repl-in-text-area false) ;; default to no linenumbers
-        repl-input-vertical-panel (vertical-panel 
-                                      :items          [repl-in-scroll-pane]                                      
-                                      :id             :repl-input-vertical-panel
-                                      :class          :repl)]
+        ; repl-input-vertical-panel (vertical-panel 
+        ;                               :items          [repl-in-scroll-pane]                                      
+        ;                               :id             :repl-input-vertical-panel
+        ;                               :class          :repl)
+        ]
     (config! repl-in-scroll-pane :background config/app-color)
     (install-auto-completion repl-in-text-area)
     ;; set default input map
@@ -435,6 +439,6 @@
                             ; repl-split-pane
                             repl-in-text-area
                             repl-in-scroll-pane
-                            repl-input-vertical-panel
+                            ; repl-input-vertical-panel
                             repl-out-writer))
     repl-in-scroll-pane))

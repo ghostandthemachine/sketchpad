@@ -152,34 +152,77 @@
 					(org.fife.ui.autocomplete.ParameterizedCompletion$Parameter. " " (str arg)))))
 	  param-list))
 
+;;; from clj-inspector sample
+(defn var-type
+  "Determing the type (var, function, macro) of a var from the metadata and
+return it as a string. (Borrowed from autodoc.)"
+  [v]
+  (cond (:macro (meta v)) "macro"
+        (= (:tag (meta v)) clojure.lang.MultiFn) "multimethod"
+        (:arglists (meta v)) "function"
+        :else "var"))
+
 (defn add-function-completion
   [provider sym var]    
   (let [var-meta (meta var)
-  			completion-list (java.util.Vector. )]
-    (if (fn? (var-get var))
-    	(let [completion (ClojureFunctionCompletion. provider (str (:name var-meta)) (str \space))
-            arglists (into [] (:arglists var-meta))]
-  	    (doseq [arg-list arglists]
-  		    ;; convert params
-  		    (.setParams completion (create-params-list arg-list))
-  		    ;; doc/description
-  		    (.setReturnValueDescription completion (:doc var-meta))
-  		    (if (repl/source-fn sym)
-            (.setReturnValueSourceDescription 
-    		    		completion 
-    		    		(s/replace
-    		    			(repl/source-fn sym)
-    		    			(str "\n")
-    		    			(str "<br/>"))))
-					(.setDefinedIn completion (str (:ns var-meta)))
-          (if (not (.contains completion-list completion))  
-            (.add completion-list completion)))
-  		    (.addCompletions provider completion-list))
+        completion-list (java.util.Vector. )
+        var-type (var-type var)]
+    (cond
+     (= var-type "function")
+      (do
+        (let [completion (ClojureFunctionCompletion. provider (str (:name var-meta)) (str \space))
+              arglists (into [] (:arglists var-meta))]
+          (doseq [arg-list arglists]
+            ;; convert params
+            (.setParams completion (create-params-list arg-list))
+            ;; doc/description
+            (.setReturnValueDescription completion (:doc var-meta))
+            (if (repl/source-fn sym)
+              (.setReturnValueSourceDescription 
+                  completion 
+                  (s/replace
+                    (repl/source-fn sym)
+                    (str "\n")
+                    (str "<br/>"))))
+            (.setDefinedIn completion (str (:ns var-meta)))
+            (if (not (.contains completion-list completion))  
+              (.add completion-list completion)))
+            (.addCompletions provider completion-list)))
+      (= var-type "var")
+        (do
+          (let [var-completion (VariableCompletion. provider (str (:name var-meta)) (str \space))]
+            (.setDefinedIn var-completion (str (:ns var-meta)))
+            ;; doc/description
+            (.addCompletion provider var-completion))))))
 
-  		(let [var-completion (VariableCompletion. provider (str (:name var-meta)) (str \space))]
-        (.setDefinedIn var-completion (str (:ns var-meta)))
-  			;; doc/description
-  		  (.addCompletion provider var-completion)))))
+; (defn add-function-completion
+;   [provider sym var]    
+;   (let [var-meta (meta var)
+;   			completion-list (java.util.Vector. )]
+;     (if (fn? (var-get var))
+;     	(let [completion (ClojureFunctionCompletion. provider (str (:name var-meta)) (str \space))
+;             arglists (into [] (:arglists var-meta))]
+;   	    (doseq [arg-list arglists]
+;   		    ;; convert params
+;   		    (.setParams completion (create-params-list arg-list))
+;   		    ;; doc/description
+;   		    (.setReturnValueDescription completion (:doc var-meta))
+;   		    (if (repl/source-fn sym)
+;             (.setReturnValueSourceDescription 
+;     		    		completion 
+;     		    		(s/replace
+;     		    			(repl/source-fn sym)
+;     		    			(str "\n")
+;     		    			(str "<br/>"))))
+; 					(.setDefinedIn completion (str (:ns var-meta)))
+;           (if (not (.contains completion-list completion))  
+;             (.add completion-list completion)))
+;   		    (.addCompletions provider completion-list))
+
+;   		(let [var-completion (VariableCompletion. provider (str (:name var-meta)) (str \space))]
+;         (.setDefinedIn var-completion (str (:ns var-meta)))
+;   			;; doc/description
+;   		  (.addCompletion provider var-completion)))))
     
 (defn add-completions-from-ns
   [provider ns]

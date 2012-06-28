@@ -1,7 +1,8 @@
 (ns sketchpad.layout-config
   (:use [seesaw.core]))
-(def show-file-tree (atom true))
-(def show-help-panel (atom true))
+(defonce show-file-tree (atom true))
+(defonce file-tree-divider-position (atom nil))
+(defonce show-help-panel (atom true))
 
 (defn toggle-file-tree-panel
   ([app] (toggle-file-tree-panel app :tree))
@@ -11,11 +12,13 @@
     (do 
       (if @show-file-tree
         (do 
+          (swap! file-tree-divider-position (fn [_] (.getDividerLocation (app :doc-split-pane))))
           (swap! show-file-tree (fn [_] false))
           (remove! (app :doc-split-pane) (app :docs-tree-panel)))
         (do 
           (swap! show-file-tree (fn [_] true))
-          (add! (app :doc-split-pane) (app :docs-tree-panel))
+          (.setLeftComponent (app :doc-split-pane) (app :docs-tree-panel))
+          (.setDividerLocation (app :doc-split-pane) @file-tree-divider-position)
           (.requestFocus (app :docs-tree) true))))
     (= kw :help)
     (do 
@@ -39,15 +42,21 @@
       (swap! show-editor (fn [_] true))
       (add! (app :doc-split-pane) (app :doc-text-panel)))))
 
-(def show-repl (atom true))
+(defonce show-repl (atom true))
+(defonce repl-divider-position (atom nil))
 
 (defn toggle-repl
   [app]
-  (if @show-file-tree
+  (if @show-repl
     (do 
       (swap! show-repl (fn [_] false))
-      (remove! (app :split-pane) (app :repl-split-pane)))
+      (swap! repl-divider-position (fn [_] (.getDividerLocation (app :split-pane))))
+      (.remove (app :split-pane) (app :repl-in-scroll-pane)))
     (do 
       (swap! show-repl (fn [_] true))
-      (add! (app :split-pane) (app :repl-split-pane)))))
+      (.setBottomComponent (app :split-pane) (app :repl-in-scroll-pane))
+      (.setDividerLocation (app :split-pane) @repl-divider-position)
+      ; (.setDividerLocation (app :doc-split-pane) @file-tree-divider-position)
+      (.requestFocus (app :repl-in-scroll-pane) true)
+      )))
 
