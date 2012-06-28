@@ -28,31 +28,6 @@
 				left-step-size step-size
 				right-step-size (- 0 step-size)
 
-				; x1 (- x step-size)
-				; y1 (+ y h)
-
-				; x2 (+ x third-unit)
-				; y2 (- (+ y h) qrtr-unit)
-
-				; x3 (- (+ x left-step-size) qrtr-unit)
-				; y3 (+ y qrtr-unit)
-
-				; x4 (+ x1 step-size qrtr-unit)
-				; y4 y
-
-				; x5 (- (+ x w) (+ step-size qrtr-unit))
-				; y5 y4
-
-				; x6 (- (+ x w qrtr-unit) step-size)
-				; y6 y3
-
-				; x7 (- (+ x w) qrtr-unit)
-				; y7 y2
-
-				; x8 (+ x w step-size)
-				; y8 y1
-
-
 				x1 (- x step-size)
 				y1 (+ y h)
 
@@ -141,19 +116,19 @@
 
 									(paintTab [gfx tab-placement rects tab-index icon-rect text-rect]
 										
+										(proxy-super paintTab gfx tab-placement rects tab-index icon-rect text-rect)
 
 
-										(let [current-rect (arr-get rects tab-index)
-													orig-color (.getColor gfx)
-											 		gfx2 (cast java.awt.Graphics2D gfx)
-											 		tab-shape (tab-shape current-rect)
-											 		gradient (rect-gradient current-rect 0.3 base-color base-color2)]
-											(draw gfx
-												tab-shape
-												(style :foreground :gray :background base-color))
-										; (proxy-super paintTab gfx tab-placement rects tab-index icon-rect text-rect)
+										; (let [current-rect (arr-get rects tab-index)
+										; 			orig-color (.getColor gfx)
+										; 	 		gfx2 (cast java.awt.Graphics2D gfx)
+										; 	 		tab-shape (tab-shape current-rect)
+										; 	 		gradient (rect-gradient current-rect 0.3 base-color base-color2)]
+										; 	(draw gfx
+										; 		tab-shape
+										; 		(style :foreground :gray :background base-color))
 
-											)
+										; 	)
 									)
 									(paintTabBackground [gfx tab-placement tab-index x y w h selected?]
 										(if selected? 
@@ -162,27 +137,27 @@
 													(swap! bg (fn [_] fill-color))
 													(push gfx
 														(draw gfx
-															tab-shape
-															(style :background :gray))))
+															(tab-shape (java.awt.Rectangle. x y w h))
+															(style :background base-color))))
 												(do 
 													(push gfx	
 														(draw gfx
-														tab-shape
-														(style :background :blue))))
+														(tab-shape (java.awt.Rectangle. x y w h))
+														(style :background base-color2))))
 										))
 									
 									(calculateTabHeight [placement index font-height]
 										(+ font-height height-pad))
 
-									; (paintTabBorder [gfx placement index x y w h selected]
-									; 	; (println "paintTabBorder")
-									; 	; (println gfx placement index x y w h selected)
-									; 	; (if (not selected)
-									; 	; 	(push gfx	
-									; 	; 		(draw gfx 
-									; 	; 			(line x (+ y h) (+ x w) (+ y h))
-									; 	; 			(style :foreground :white :stroke 1))))
-									; 	)
+									(paintTabBorder [gfx placement index x y w h selected]
+										; (println "paintTabBorder")
+										; (println gfx placement index x y w h selected)
+										(if (not selected)
+											(push gfx	
+												(draw gfx 
+													(line x (+ y h) (+ x w) (+ y h))
+													(style :foreground :white :stroke 1))))
+										)
 									(getContentBorderInsets [placement]
 										(Insets. 2 0 0 0))
 
@@ -196,7 +171,7 @@
 
 									(getTabInsets [placement index]
 										(let [insets (proxy-super getTabInsets placement index)
-												h-pad 0
+												h-pad 4
 												v-pad 4
 												t (+ v-pad (.top insets))
 												l (+ h-pad (.left insets))
