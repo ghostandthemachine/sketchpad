@@ -1,6 +1,6 @@
 (ns sketchpad.filetree
     (:use [seesaw core keystroke border meta]
-          [sketchpad utils editor tab-manager prefs]
+          [sketchpad utils editor tab-builder prefs]
           [clojure.pprint])
     (:require [seesaw.color :as c]
               [seesaw.chooser :as chooser]
@@ -394,7 +394,8 @@
         (do 
           (new-file-tab! app-atom file)
           (save-tree-selection tree path)
-          (save-tab-selections @app-atom))
+          ; (save-tab-selections @app-atom)
+          )
           ))
     (catch java.lang.NullPointerException e 
       )))

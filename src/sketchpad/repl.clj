@@ -16,13 +16,13 @@
                             awt-event get-file-ns
                             append-text when-lets get-text-str get-directories)]
         [clooj.brackets :only (find-line-group find-enclosing-brackets)]
-        [sketchpad.help :only (get-var-maps)]
+        [clooj.help :only (get-var-maps)]
         [sketchpad.utils :only (gen-map get-temp-file)]
         [clj-inspector.jars :only (get-entries-in-jar jar-files)]
         [seesaw.core] 
         [seesaw.color]
         [seesaw.border]
-        [sketchpad app-cmd auto-complete default-mode rsyntaxtextarea tab-manager])
+        [sketchpad.app-cmd])
   (:require [clojure.string :as string]
             [clooj.rsyntax :as rsyntax]
             [clojure.java.io :as io]
@@ -112,14 +112,8 @@
 (defn outside-repl-classpath [project-path]
   (let [clojure-jar-term (when-not (clojure-jar-location project-path)
                            (find-clojure-jar (.getClassLoader clojure.lang.RT)))]
-  
-    ; (println clojure-jar-term)
-
-    (filter identity [(str project-path "~/.m2/repository/*")
-                      (str project-path "~/.m2/repository/seesaw/seesaw/1.4.1/*")
-                      (str project-path "/lib/*")
+    (filter identity [(str project-path "/lib/*")
                       (str project-path "/src")
-
                       (when clojure-jar-term
                         clojure-jar-term)])))
 
@@ -255,7 +249,7 @@
   (let [ta (app :doc-text-area)
         region (selected-region ta)
         txt (:text region)]
-	  (if-not (and txt (correct-expression? txt))
+    (if-not (and txt (correct-expression? txt))
         (.setText (app :arglist-label) "Malformed expression")
          (let [line (.getLineOfOffset ta (:start region))]
            (send-to-repl app txt (relative-file app) line)))))
@@ -306,15 +300,11 @@
     (send-to-repl app (str "(load-file \"" (.getAbsolutePath f) "\")"))))
 
 (defn apply-namespace-to-repl [app]
-  (try 
-    (when-let [current-ns (get-file-ns (.getText (current-text-area app)))]
-      (println "apply-namespace-to-repl current-ns: " current-ns)
-      (send-to-repl app (str "(ns " current-ns ")"))
-      (swap! repls assoc-in
-             [(-> app :repl deref :project-path) :ns]
-             current-ns))
-    (catch java.lang.IllegalArgumentException e
-      (println "Illegal Argument Error: could not load file namespace into the repl"))))
+  (when-let [current-ns (get-file-ns (config (app :doc-text-area) :text))]
+    (send-to-repl app (str "(ns " current-ns ")"))
+    (swap! repls assoc-in
+           [(-> app :repl deref :project-path) :ns]
+           current-ns)))
 
 ; (defn restart-repl [app project-path]
 ;   (append-text (app :repl-out-text-area)
@@ -380,9 +370,9 @@
                   (let [cmd-type (cmd-prefix? txt)]
                     (cond
                       ;; handle an application command
-  				            (= :app-cmd cmd-type)
-                    	  (do
-                    	    ;(println txt)
+                      (= :app-cmd cmd-type)
+                        (do
+                          ;(println txt)
                           )
                       ;; handle a normal command
                       (= :repl-cmd cmd-type)
@@ -414,8 +404,7 @@
 
 (defn repl
   [app-atom]
-  (let [
-        repl-in-text-area (rsyntax/text-area 
+  (let [repl-in-text-area (rsyntax/text-area 
                                       :syntax         "clojure"     
                                       :border         (line-border 
                                                             :thickness 4
@@ -424,21 +413,15 @@
                                       :class          [:repl :syntax-editor])
         repl-out-writer   (make-repl-writer repl-in-text-area app-atom)
         repl-in-scroll-pane (RTextScrollPane. repl-in-text-area false) ;; default to no linenumbers
-        ; repl-input-vertical-panel (vertical-panel 
-        ;                               :items          [repl-in-scroll-pane]                                      
-        ;                               :id             :repl-input-vertical-panel
-        ;                               :class          :repl)
+        repl-input-vertical-panel (vertical-panel 
+                                      :items          [repl-in-scroll-pane]                                      
+                                      :id             :repl-input-vertical-panel
+                                      :class          :repl)
         ]
     (config! repl-in-scroll-pane :background config/app-color)
-    (install-auto-completion repl-in-text-area)
-    ;; set default input map
-    (set-input-map! repl-in-text-area (default-input-map))
     (swap! app-atom conj (gen-map
-                            ; repl-out-scroll-pane
-                            ; repl-out-text-area
-                            ; repl-split-pane
                             repl-in-text-area
                             repl-in-scroll-pane
-                            ; repl-input-vertical-panel
+                            repl-input-vertical-panel
                             repl-out-writer))
     repl-in-scroll-pane))

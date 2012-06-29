@@ -203,7 +203,7 @@
         doc-text-area         (rsyntax/text-area    
                               :syntax         :clojure)
         editor-tabbed-panel   (tabbed-panel :placement :top
-                                            :overflow :wrap
+                                            ; :overflow :wrap
                                             :background (color :black)
                                             :border (empty-border :thickness 0))
         doc-text-panel        (vertical-panel  

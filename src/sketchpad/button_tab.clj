@@ -79,7 +79,7 @@
 											(.getTitleAt tabbed-pane index)
 											nil))))]
 		(config! btn-tab :items[label btn])
-		(config! label :foreground (color :white)
+		(config! label :foreground (color :white) :focusable? false
 									 :class [:tab-label])
 		;; constructor updates
 		(doto btn-tab

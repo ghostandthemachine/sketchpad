@@ -41,6 +41,7 @@
         editor    (editor app-init)
         file-tree (file-tree app-init)
         repl      (repl app-init)
+        
         doc-nav   (doc-nav app-init)
         doc-split-pane (left-right-split
                          file-tree
@@ -62,6 +63,7 @@
                     :current-file (atom nil)
                     :current-tab -1
                     :repl      (atom (create-outside-repl (@app-init :repl-out-writer) nil))
+                    :repls (atom {})
                     :changed   false
                     :doc-text-area nil
                     :doc-scroll-pane nil}
@@ -82,7 +84,7 @@
     ; (add-caret-listener (app :doc-text-area) #(display-caret-position app))
     ; (setup-search-text-area app)
     ; (setup-temp-writer app)
-    ; (set-input-map! (app :repl-in-text-area) (default-input-map))
+    (set-input-map! (app :repl-in-text-area) (default-input-map))
 
     ;; init preview manager
     (pm/make-preview app-atom)
@@ -95,7 +97,7 @@
     (listen (app :editor-tabbed-panel) :selection (fn [e] 
                                                   (let [cur-tab (cast JTabbedPane (.getSource e))
                                                         rsta (select cur-tab [:#editor])
-                                                        current-tab-index (current-tab-index app)]
+                                                        current-tab-index (current-tab-index (app :editor-tabbed-panel))]
                                                     (save-tab-selections app)
                                                     )))
     ;; global
