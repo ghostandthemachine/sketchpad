@@ -1,5 +1,5 @@
 (ns sketchpad.preview-manager
-	(:use [sketchpad.tab-manager]
+	(:use [sketchpad tab-manager tab-builder]
 				[seesaw.core])
 	(:require [sketchpad.rsyntax :as rsyntax]
             [sketchpad.rtextscrollpane :as sp]
@@ -155,7 +155,7 @@
     	(show-preview! app-atom file)
     	;; other wise we need to create a temp container
     	(do 
-    		(new-editor-tab! @app-atom (ec/make-editor-component))
+    		(new-file-tab! @app-atom (ec/make-editor-component))
     		(show-preview! app-atom file)))))
 
 
