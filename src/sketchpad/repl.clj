@@ -212,7 +212,9 @@
             ;; with one repl panel we just want to go to the next line
             (append-text (app :repl-in-text-area) (str \newline))
           (= src-key :file)
-            (append-text (app :repl-in-text-area) cmd-ln))
+            (append-text (app :repl-in-text-area) (str \newline))
+            ; (append-text (app :repl-in-text-area) cmd-ln)
+            )
       (let [cmd-str (cmd-attach-file-and-line cmd file line)]
         (binding [*out* (:input-writer @(app :repl))]
           (println cmd-str)
