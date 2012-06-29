@@ -3,7 +3,7 @@
 					(java.io File StringReader BufferedWriter OutputStreamWriter FileOutputStream)
 					(javax.swing JButton JOptionPane JWindow ImageIcon)
 					(javax.swing.event DocumentListener))
-	(:use [sketchpad tab-manager main-background option-windows editor-component file-manager button-tab prefs]
+	(:use [sketchpad tab-manager option-windows editor-component file-manager button-tab prefs]
 				[clojure pprint string]
 				[seesaw meta core border])
 	)
