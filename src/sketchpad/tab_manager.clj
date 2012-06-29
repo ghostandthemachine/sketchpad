@@ -4,12 +4,11 @@
     (java.io File StringReader BufferedWriter OutputStreamWriter FileOutputStream)
 		(javax.swing JButton JOptionPane JWindow ImageIcon)
 		(javax.swing.event DocumentListener))
-	(:use [sketchpad main-background option-windows file-manager button-tab prefs]
+	(:use [sketchpad option-windows file-manager button-tab prefs]
 				[clojure pprint string]
 				[seesaw meta core border])
 	)
 
-; (defonce bg-panel (background-comp))
 
 (defn chop
   "Removes the last character of string."
