@@ -1,6 +1,6 @@
 (ns sketchpad.editor-component
     (:use [seesaw core border meta color]
-          [sketchpad auto-complete rsyntaxtextarea default-mode scrollbar-ui scroll-pane-ui])
+          [sketchpad auto-complete rsyntaxtextarea default-mode scroll-bar-ui scroll-pane-ui])
     (:import (java.awt Adjustable Font)
       (javax.swing JScrollBar UIManager))
     (:require [sketchpad.rsyntax :as rsyntax]
@@ -12,7 +12,8 @@
 
 (defn sketchpad-scroll-bar []
   (let [scroll-bar (JScrollBar. )]
-    (.setUI scroll-bar (sketchpad-scrollbar-ui))))
+    (.setUI scroll-bar (sketchpad-scroll-bar-ui))
+    scroll-bar))
 
 (defn make-editor-component []
 	(let [state (atom {:clean true
@@ -38,7 +39,7 @@
     (.setFont doc-text-area (Font. "Menlo" Font/BOLD 14))
 
     ;; setup sketchpad scrollbar
-    (.setVerticalScrollBar doc-scroll-pane (sketchpad-scroll-bar))
+    ; (.setVerticalScrollBar doc-scroll-pane (sketchpad-scroll-bar))
 
 
     ; (.setUI doc-scroll-pane (sketchpad-scroll-pane-ui))
