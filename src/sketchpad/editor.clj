@@ -20,7 +20,7 @@
               [sketchpad.tab-ui :as tab])
     (:import  (java.awt.event FocusAdapter MouseAdapter KeyAdapter)
               (javax.swing.event ChangeListener)
-              (javax.swing.UIManager)))
+              (javax.swing UIManager)))
 
 (def highlight-agent (agent nil))
 (def arglist-agent (agent nil))
@@ -203,7 +203,7 @@
         doc-text-area         (rsyntax/text-area    
                               :syntax         :clojure)
         editor-tabbed-panel   (tabbed-panel :placement :top
-                                            ; :overflow :wrap
+                                            :overflow :wrap
                                             :background (color :black)
                                             :border (empty-border :thickness 0))
         doc-text-panel        (vertical-panel  
@@ -212,7 +212,16 @@
                                       :id             :doc-text-panel
                                       :class          :editor-comp)]
     ;; set tab ui
-    (.setUI editor-tabbed-panel (tab/sketchpad-tab-ui))
+    (.setUI editor-tabbed-panel (tab/sketchpad-tab-ui editor-tabbed-panel))
+
+    ; (listen editor-tabbed-panel :selection 
+    ;   (fn [e] 
+    ;     (let [num-tabs (tab-count editor-tabbed-panel)
+    ;           selected-index (current-tab editor-tabbed-panel)]
+    ;       (dotimes [n num-tabs]
+    ;         (if (= (- n 1) selected-index)
+    ;           ()
+    ;           ))))
 
     (config! arglist-label :background config/app-color)
     (config! arg-search-panel :background config/app-color)

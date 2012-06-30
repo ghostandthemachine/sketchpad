@@ -21,20 +21,12 @@
 (defn paint-tab-button [c g]
 	"custom renderer for tab x"
   (let [;; this gets the parent JTabbedPane via component -> BasicTabbedPaneUI -> JTabbedPane
-  			tabbed-pane (.. c getParent getParent getParent) 
-  			; current-tab-index (.getSelectedIndex tabbed-pane)
-  			; tab-index (@(get-meta c :state) :index)
-  			clean? (@(get-meta c :state) :clean)
-  			w          (width c)
+		tabbed-pane (.. c getParent getParent getParent) 
+		clean? (@(get-meta c :state) :clean)
+		w          (width c)
         h          (height c)
         line-style (style :foreground base-color :stroke 2 :cap :round)
         ellipse-style (style :foreground base-color :background base-color :stroke 2 :cap :round)
-        ; line-style (if (= tab-index current-tab-index)
-        ; 							(style :foreground @current-tab-color :stroke 2 :cap :round)
-        ; 							(style :foreground base-color :stroke 2 :cap :round))
-        ; ellipse-style (if (= tab-index current-tab-index)
-        ; 							(style :foreground @current-tab-color :background @current-tab-color :stroke 2 :cap :round)
-        ; 							(style :foreground base-color :background base-color :stroke 2 :cap :round))
         d 2]
     (cond
      	clean?
@@ -52,8 +44,8 @@
 (defn tab-button [tabbed-pane parent-tab app state]
 	(let [btn (button :focusable? false
 										:tip "close this tab"
-										:minimum-size [10 :by 10]
-										:size [10 :by 10]
+										:minimum-size [8 :by 8]
+										:size [8 :by 8]
 										:id :close-button
 										; :border (empty-border :thickness 1)
 										:paint paint-tab-button)]
@@ -65,22 +57,25 @@
 		(put-meta! btn :state state)
 		btn))
 
-(defn button-tab [app tabbed-pane i]
+(defn button-tab [app tabbed-panel i]
 	(let [rta (text-area-from-index app i)
 				state (get-meta rta :state)
 				btn-tab (flow-panel :align :right
 														; :border (empty-border :thickness 5)
 														)
-				btn (tab-button tabbed-pane btn-tab app state)
+				btn (tab-button tabbed-panel btn-tab app state)
 				label (proxy [JLabel] []
 								(getText []
-									(let [index (.indexOfTabComponent tabbed-pane btn-tab)]
+									(let [index (.indexOfTabComponent tabbed-panel btn-tab)]
+										(if (= (.getSelectedIndex tabbed-panel) i)
+											(config! this :foreground :white)
+											(config! this :foreground (color 155 155 155)))
 										(if (not= -1 index)
-											(.getTitleAt tabbed-pane index)
+											(.getTitleAt tabbed-panel index)
 											nil))))]
 		(config! btn-tab :items[label btn])
 		(config! label :foreground (color :white) :focusable? false
-									 :class [:tab-label])
+									 :id (symbol (str "[:tab-label-" i "]")))
 		;; constructor updates
 		(doto btn-tab
 			(.setOpaque false)

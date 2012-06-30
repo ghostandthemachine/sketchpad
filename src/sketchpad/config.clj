@@ -42,7 +42,7 @@
 		:matched-bracket-bg-color 	    (fn [rta pref] (.setMatchedBracketBGColor rta (apply c/color pref)))
 		:matched-bracket-border-color 	(fn [rta pref] (.setMatchedBracketBorderColor rta (apply c/color pref)))
 		:tab-lines-enabled 				(fn [rta pref] (.setPaintTabLines rta pref))
-		:tab-line-color 			    (fn [rta pref] (.setTabeLineColor rta (c/color pref)))
+		:tab-lines-color 			    (fn [rta pref] (.setTabLineColor rta (apply c/color pref)))
 		; :templates-enabled 				(fn [rta pref] (.setTemplatesEnabled rta pref))
 		:close-curly-braces 			(fn [rta pref] (.setCloseCurlyBraces rta pref))
 		:rsta-theme 					(fn [rta pref] (try 

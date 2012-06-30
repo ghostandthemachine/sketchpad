@@ -1,3 +1,5 @@
+
+
 (def sketchpad-prefs
 	{:clojure-version "1.3"})
 
@@ -16,7 +18,7 @@
 	:code-folding true
 	:auto-indent true
 	:eol-marker false
-;		:font "Monaco"	;; override if you don't want default based on OS
+	; :font ["Menlo" Font/BOLD 14]
 	:tab-size 				2
 	:hyper-links-enabled false
 	:mark-occurences false
@@ -24,7 +26,8 @@
 	:paint-mark-occurences-border false
 	:matched-bracket-bg-color [80 240 70 50]
 	:matched-bracket-border-color [80 240 70 100]
-	:tab-lines-enabled false
+	:tab-lines-enabled true
+	:tab-lines-color [100 100 100 100]
 	:close-curly-braces true
 	})
 

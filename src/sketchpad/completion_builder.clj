@@ -195,35 +195,7 @@ return it as a string. (Borrowed from autodoc.)"
             ;; doc/description
             (.addCompletion provider var-completion))))))
 
-; (defn add-function-completion
-;   [provider sym var]    
-;   (let [var-meta (meta var)
-;   			completion-list (java.util.Vector. )]
-;     (if (fn? (var-get var))
-;     	(let [completion (ClojureFunctionCompletion. provider (str (:name var-meta)) (str \space))
-;             arglists (into [] (:arglists var-meta))]
-;   	    (doseq [arg-list arglists]
-;   		    ;; convert params
-;   		    (.setParams completion (create-params-list arg-list))
-;   		    ;; doc/description
-;   		    (.setReturnValueDescription completion (:doc var-meta))
-;   		    (if (repl/source-fn sym)
-;             (.setReturnValueSourceDescription 
-;     		    		completion 
-;     		    		(s/replace
-;     		    			(repl/source-fn sym)
-;     		    			(str "\n")
-;     		    			(str "<br/>"))))
-; 					(.setDefinedIn completion (str (:ns var-meta)))
-;           (if (not (.contains completion-list completion))  
-;             (.add completion-list completion)))
-;   		    (.addCompletions provider completion-list))
 
-;   		(let [var-completion (VariableCompletion. provider (str (:name var-meta)) (str \space))]
-;         (.setDefinedIn var-completion (str (:ns var-meta)))
-;   			;; doc/description
-;   		  (.addCompletion provider var-completion)))))
-    
 (defn add-completions-from-ns
   [provider ns]
     (doseq [[k v] (ns-publics ns)]

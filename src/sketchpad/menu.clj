@@ -87,12 +87,12 @@
                            :mnemonic "S" 
                            :key (keystroke "meta S") 
                            :listen [:action (fn [_] 
-                                              (let [current-tab (current-tab app)
+                                              (let [current-tab (current-tab (app :editor-tabbed-panel))
                                                     rsta (select current-tab [:#editor])
                                                     tab-state (get-meta rsta :state)]
                                                 (if (not (@tab-state :clean))
-                                                  (if (save-file app (current-text-area app) (current-tab-index app))
-                                                    (mark-current-tab-clean! app)))))])
+                                                  (if (save-file app (current-text-area (app :editor-tabbed-panel)) (current-tab-index (app :editor-tabbed-panel)))
+                                                    (mark-current-tab-clean! (app :editor-tabbed-panel))))))])
                 (separator)
                 (menu-item :text "Move/Rename" 
                            :mnemonic "M" 

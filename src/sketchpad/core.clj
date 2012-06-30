@@ -161,17 +161,7 @@
 
 (defn -main [& args]
   ; (set-laf "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel")
-  ; (let [
-  ;       splash (splash-screen)
-  ;       runnable (proxy [Runnable] []
-  ;         (run []
-  ;           ;; wait 3 seconds
-  ;           (. Thread (sleep 3000))
-  ;           ;; then kill the splash screen
-  ;           (.hide splash)))
-  ;       splash-thread (Thread. runnable)]
-  ;   (.show splash)
-  ;   (.start splash-thread))
+
 
   (reset! embedded false)
   (reset! current-app (create-app))
