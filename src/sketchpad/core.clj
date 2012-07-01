@@ -87,7 +87,7 @@
     (set-input-map! (app :repl-in-text-area) (default-input-map))
 
     ;; init preview manager
-    (pm/make-preview app-atom)
+    ; (pm/make-preview app-atom)
 
     ;; repl
     (add-repl-input-handler app)

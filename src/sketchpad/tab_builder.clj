@@ -4,8 +4,9 @@
 					(javax.swing JButton JOptionPane JWindow ImageIcon)
 					(javax.swing.event DocumentListener))
 	(:use [sketchpad tab-manager option-windows editor-component file-manager button-tab prefs]
-				[clojure pprint string]
+				[clojure pprint]
 				[seesaw meta core border])
+	(:require [clojure.string :as str])
 	)
 
 
