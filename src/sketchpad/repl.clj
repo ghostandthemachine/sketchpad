@@ -30,7 +30,7 @@
 
 (def repl-history {:items (atom nil) :pos (atom 0) :last-end-pos (atom 0)})
 
-(def editor-repl-history {:items (atom ()) :pos (atom 0)})	
+(def editor-repl-history {:items (atom (list "")) :pos (atom 0)})	
 
 (def repls (atom {}))
 
@@ -153,8 +153,8 @@
         (println "Could not create outside REPL for path: " project-path)))))
 
 (defn append-text-update [rsta s]
-  (append-text rsta (str s))
-  (.. rsta getLastVisibleOffset setCaretPosition))
+  (append-text rsta (str " " s))
+  (.setCaretPosition rsta (.getLastVisibleOffset rsta)))
 
 (defn sketchpad-reader [q prompt exit]
     (read-string (.take q))
@@ -335,12 +335,12 @@
         last-pos @(:last-end-pos repl-history)
         items @(:items repl-history)]
     (when (pos? (count items))
-      (println "last-pos: " last-pos " last-visible-offset: " (.getLastVisibleOffset rsta) " last-pos - last-string-size: " (- last-pos (count (nth items (- @(:pos repl-history) 1)))) )
+      ; (println "last-pos: " last-pos " last-visible-offset: " (.getLastVisibleOffset rsta) " last-pos - last-string-size: " (- last-pos (count (nth items (- @(:pos repl-history) 1)))) )
       ; (println (- (.getLastVisibleOffset rsta) last-pos))
       ;; clear the last history if needed
       (if (> (- (.getLastVisibleOffset rsta) last-pos) 0)
         (do 
-        (println "remove last string from: " (- last-pos (count (nth items (- @(:pos repl-history) 1)))))
+        ; (println "remove last string from: " (- last-pos (count (nth items (- @(:pos repl-history) 1)))))
           ; (.remove (.. rsta getDocument) (- last-pos (count (nth items (- @(:pos repl-history) 1)))) (count (nth items (- @(:pos repl-history) 1))))
           ;; insert the text
            (.insert rsta 
@@ -356,7 +356,7 @@
           )
           )
         )
-      (println "insert repl histoy string: " (nth items @(:pos repl-history)) (- last-pos (count (nth items (- @(:pos repl-history) 1)))))
+      ; (println "insert repl histoy string: " (nth items @(:pos repl-history)) (- last-pos (count (nth items (- @(:pos repl-history) 1)))))
       ))
 
 (defn show-previous-repl-entry [app]
@@ -384,14 +384,6 @@
            [(-> app :repl deref :project-path) :ns]
            current-ns)))
 
-; (defn restart-repl [app project-path]
-;   (append-text (app :repl-out-text-area)
-;                (str "\n=== RESTARTING " project-path " REPL ===\n"))
-;   (when-let [proc (-> app :repl deref :proc)]
-;     (.destroy proc))
-;   (reset! (:repl app) (create-outside-repl (app :repl-out-writer) project-path))
-;   (apply-namespace-to-repl app))
-
 (defn restart-repl [app project-path]
   (append-text (app :repl-in-text-area)
                (str "\n=== RESTARTING " project-path " REPL ===\n"))
@@ -399,15 +391,6 @@
     (.destroy proc))
   (reset! (:repl app) (create-outside-repl (app :repl-out-writer) project-path))
   (apply-namespace-to-repl app))
-
-; (defn switch-repl [app project-path]
-;   (when (and project-path
-;              (not= project-path (-> app :repl deref :project-path)))
-;     (append-text (app :repl-out-text-area)
-;                  (str "\n\n=== Switching to " project-path " REPL ===\n"))
-;     (let [repl (or (get @repls project-path)
-;                    (create-outside-repl (app :repl-out-writer) project-path))]
-;       (reset! (:repl app) repl))))
 
 (defn switch-repl [app project-path]
   (when (and project-path
@@ -418,96 +401,38 @@
                    (create-outside-repl (app :repl-out-writer) project-path))]
       (reset! (:repl app) repl))))
 
-(defn get-last-cmd [app]
-  (let [rta (app :repl-in-text-area)
-        text (config rta :text)]
+(defn get-last-cmd [rta]
+  (let [text (config rta :text)]
     (last (string/split text #"=>"))))
 
+(defn clear-repl-input [rsta]
+  (let [end (rsta/last-visible-offset rsta)
+        trim-str (get-last-cmd rsta)
+        start (- end (count trim-str))]
+    (rsta/replace-range! rsta nil start end)))
 
-; (defn get-last-cmd [app]
-;   (let [rta (app :repl-in-text-area)
-;         last-char (kit/text rta (kit/last-visible-offset rta) 1)
-;         start (if (= ")" last-char)
-;                 ;; if we are ending with a close paren then eval 
-;                 ;; from the last matching opening paren
-;                 (kit/matching-bracket-position rta)
-;                 ;; otherwise go for hack match of last pos
-;                 ;; FIX THIS 
-;                 @(:last-end-pos repl-history))
-;         len (- (kit/last-visible-offset rta) start)]
-;         (kit/text rta start len)))
-
-
-
-; (defn editor-repl-handler [app]
-;   (let [ta-in (app :repl-in-text-area)
-;         get-caret-pos #(.getCaretPosition ta-in)
-;         ready #(let [caret-pos (get-caret-pos)
-;                      txt (.getText ta-in)
-;                      trim-txt (string/trimr txt)]
-;                  (and
-;                    (pos? (.length trim-txt))
-;                    (<= (.length trim-txt)
-;                        caret-pos)
-;                    (= -1 (first (find-enclosing-brackets
-;                                   txt
-;                                   caret-pos)))))
-;         submit #(when-let [txt (get-last-cmd app)]
-;                   (let [cmd-type (cmd-prefix? txt)]
-;                     (cond
-;                       ;; handle an application command
-;                       (= :app-cmd cmd-type)
-;                         (do
-;                           ;(println txt)
-;                           )
-;                       ;; handle a normal command
-;                       (= :repl-cmd cmd-type)
-;                         (do
-;                           ;(println txt)
-;                           (if (correct-expression? txt)
-;                             (do 
-;                               (send-to-repl app txt)
-;                               )))
-;                       :else
-;                         (.setText (app :arglist-label) "Malformed expression"))))
-;         at-top #(zero? (.getLineOfOffset ta-in (get-caret-pos)))
-;         at-bottom #(= (.getLineOfOffset ta-in (get-caret-pos))
-;                       (.getLineOfOffset ta-in (.. ta-in getText length)))
-;         prev-hist #(show-previous-repl-entry app)
-;         next-hist #(show-next-repl-entry app)]
-;     (attach-child-action-keys ta-in ["control UP" at-top prev-hist]
-;                                     ["control DOWN" at-bottom next-hist]
-;                                     ["ENTER" ready submit])
-;     ; (attach-action-keys ta-in ["cmd1 UP" prev-hist]
-;     ;                           ["cmd1 DOWN" next-hist]
-;     ;                           ["cmd1 ENTER" submit])
-;     ))
+(defn append-history-text [rsta m]
+  (let [pos @(m :pos)
+        history-str (str (nth @(m :items) pos))]
+    (append-text-update rsta history-str)))
 
 (defn update-repl-history-display-position [app kw]
-	(cond 
-		(= kw :inc)
-			(if (< pos (count @(editor-repl-history :items)))
-				(do 
-					(swap! (editor-repl-history :pos) (fn [pos] (+ pos 1)))
-					(println "increase repl history display position: " (+ pos 1))
-				)
-				(do
-					(swap! (editor-repl-history :pos) (fn [pos] 0)) ;; go back to start of list
-					
-					(println "reset repl history display position: " 0)
-					;pos ;; stay put
-				))
-		(= kw :dec)
-			(if (> pos 0)
-				(do 
-					(swap! (editor-repl-history :pos) (fn [pos] (- pos 1)))
-					(println "decrease repl history display position: " (- pos 1))
-				)
-				(do
-					(swap! (editor-repl-history :pos) (fn [pos] (count @(editor-repl-history :items)))) ;; go to end of list
-					(println "reset repl history to last display position: " (count @(editor-repl-history :items)))
-					;pos ;; stay put
-				))))
+	(let [rsta (app :repl-in-text-area)
+        history-pos @(editor-repl-history :pos)
+        cmd (get-last-cmd rsta)]
+    (cond 
+  		(= kw :dec)
+  			(if (< history-pos (- (count @(editor-repl-history :items)) 1))
+  					(swap! (editor-repl-history :pos) (fn [pos] (+ pos 1)))
+  					(swap! (editor-repl-history :pos) (fn [pos] 0)) ;; go back to start of list
+  					)
+  		(= kw :inc)
+  			(if (> history-pos 1)
+  					(swap! (editor-repl-history :pos) (fn [pos] (- pos 1)))
+  					(swap! (editor-repl-history :pos) (fn [pos] (- (count @(editor-repl-history :items)) 1))) ;; go to end of list
+  					))
+    (clear-repl-input rsta)
+    (append-history-text rsta editor-repl-history)))
 
 (defn add-repl-input-handler [app]
   (rsta/set-input-map! (app :repl-in-text-area) (default-input-map))
@@ -524,7 +449,7 @@
                    (= -1 (first (find-enclosing-brackets
                                   txt
                                   caret-pos)))))
-        submit #(when-let [txt (get-last-cmd app)]
+        submit #(when-let [txt (get-last-cmd (:repl-in-text-area app))]
                   (let [cmd-type (cmd-prefix? txt)]
                     (cond
                       ;; handle an application command
@@ -539,6 +464,7 @@
                           (if (correct-expression? txt)
                             (do 
                               (send-to-editor-repl app txt)
+                              (reset! (editor-repl-history :pos) 0)
                               )))
                       :else
                         (.setText (app :arglist-label) "Malformed expression"))))

@@ -1100,6 +1100,16 @@
   [obj x]
   (RSyntaxTextArea. obj x))
 
+(defn replace-range! [rsta s start end]
+  "Replaces text from the indicated start to end position with the new text specified. Does nothing if the model is null. Simply does a delete if the new string is null or empty.
+This method is thread safe, although most Swing methods are not. Please see Threads and Swing for more information.
+Parameters:
+str - the text to use as the replacement
+start - the start position >= 0
+end - the end position >= start
+"
+  (.replaceRange rsta s start end))
+
 (defn input-map 
   [rta]
   (.getInputMap rta))
