@@ -240,15 +240,9 @@
         (offer! (app :repl-que) cmd-str)
         )
       (when (not= cmd-trim (second @(:items editor-repl-history)))
-        (do 
         	(swap! (:items editor-repl-history)
           	     replace-first cmd-trim)
-          (println "update repl history items: " @(:items editor-repl-history)))
-        (do
-        	
         	(swap! (:items editor-repl-history) conj ""))
-        	(println "update repl history items: " @(:items editor-repl-history))
-        	)
       (reset! (:pos editor-repl-history) 0)
       ))))
 
@@ -478,7 +472,8 @@
                                     ["ENTER" ready submit])
     (attach-action-keys ta-in ["cmd1 UP" prev-hist]
                               ["cmd1 DOWN" next-hist]
-                              ["cmd1 ENTER" submit])
+                              ;["cmd1 ENTER" submit] ;; blocks dumb completion
+                              )
     ))
 
 (defn print-stack-trace [app]
