@@ -20,7 +20,7 @@
           [clooj.menus]
           [clooj.dev-tools]
           [clooj.indent]
-          [sketchpad prefs auto-complete tab-manager utils repl filetree editor menu edit-mode default-mode completion-builder rsyntaxtextarea])
+          [sketchpad editor-info prefs auto-complete tab-manager utils repl filetree editor menu edit-mode default-mode completion-builder rsyntaxtextarea])
     (:require [sketchpad.theme :as theme]
     					[sketchpad.config :as config]
               [sketchpad.preview-manager :as pm]))
@@ -38,14 +38,18 @@
 
 (defn create-app []
   (let [app-init  (atom {})
+        ;; editor-info MUST init before editor so it is selectable
+        editor-info (editor-info app-init)
         editor    (editor app-init)
+
         file-tree (file-tree app-init)
         repl      (repl app-init)
         
         doc-nav   (doc-nav app-init)
+        editor-panel (vertical-panel :border nil :items [editor editor-info])
         doc-split-pane (left-right-split
                          file-tree
-                         editor
+                         editor-panel
                          :border (empty-border :thickness 0)
                          :divider-location 0.25
                          :resize-weight 0.25
@@ -81,14 +85,10 @@
   [app-atom]
   (let [app @app-atom]
     ;;editor
-    ; (add-caret-listener (app :doc-text-area) #(display-caret-position app))
     ; (setup-search-text-area app)
     ; (setup-temp-writer app)
-    (set-input-map! (app :repl-in-text-area) (default-input-map))
-
     ;; init preview manager
     ; (pm/make-preview app-atom)
-
     ;; repl
     (add-repl-input-handler app)
     ;; file tree
@@ -161,8 +161,6 @@
 
 (defn -main [& args]
   ; (set-laf "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel")
-
-
   (reset! embedded false)
   (reset! current-app (create-app))
   (let [frame (frame :title "Sketchpad" 

@@ -261,18 +261,27 @@
 
 (defn delete-file [app]
   (let [path (get-selected-file-path app)]
-    (when (confirmed? "Are you sure you want to delete this file?\nDeleting cannot be undone." path)
-      (loop [f (File. path)]
-        (when (and (empty? (.listFiles f))
-                   (let [p (-> f .getParentFile .getAbsolutePath)]
-                     (or (.contains p (str File/separator "src" File/separator))
-                         (.endsWith p (str File/separator "src")))))
-          (.delete f)
-          (recur (.getParentFile f))))
+    (when (confirmed? (str 
+                        "Are you sure you want to delete " 
+                        path
+                        " ?\n"
+                        "Deleting cannot be undone.") path)
+      (let [f (File. path)]
+        (println "Delete file: " f)
+        (.delete f))
+      ; (loop [f (File. path)]
+      ;   (when (and (empty? (.listFiles f))
+      ;              (let [p (-> f .getParentFile .getAbsolutePath)]
+      ;                (or (.contains p (str File/separator "src" File/separator))
+      ;                    (.endsWith p (str File/separator "src")))))
+      ;     (println f)
+      ;     (.delete f)
+      ;     (recur (.getParentFile f))))
       (update-project-tree (app :docs-tree)))))
 
 (defn create-file [app project-dir default-namespace]
    (when-let [file-name (file-name-choose project-dir "Create a new file")]
+    (println file-name)
     ))
 
 ; (defn create-file [app project-dir default-namespace]

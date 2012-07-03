@@ -26,15 +26,15 @@
 				;; otherwise create a new tab and set the syntax style
 				(do 
 					(let [tabbed-panel (app :editor-tabbed-panel)
-								container (make-editor-component)
+								container (make-editor-component app-atom)
 								new-file-name (str (file-name file))
 								rsta (select container [:#editor])]
 						;; attach the file to the component for easy saving
 						(put-meta! rsta :file file)
 						;; set the text area text from file
 						(let [txt (slurp file)
-			            rdr (StringReader. txt)]
-			        (.read rsta rdr nil))
+				              rdr (StringReader. txt)]
+				        	  (.read rsta rdr nil))
 						;; set the new text area syntax
 						(config! rsta :syntax (file-type file))
 						;; check if this is a new tab or loading a tab from prefs
@@ -107,6 +107,11 @@
 							(swap! (@app-atom :current-files) (fn [files] (assoc files index-of-new-tab file)))
 							;; update the current global focussed file
 							(swap! (@app-atom :current-file) (fn [_] file))
+							;; set caret to start
+							(.setDot (.getCaret rsta) 0)
+							;; finally discard all undo supported edits (which include loading the text!)
+							;; this prevents the undo action from undoing the initial load
+							(.discardAllEdits rsta)
 							;; bring the new tab to the front
 							(show-tab! tabbed-panel index-of-new-tab)
 							))))))))	

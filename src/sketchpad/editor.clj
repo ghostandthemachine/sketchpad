@@ -4,7 +4,7 @@
           [clojure.pprint]
           [sketchpad.vim-mode]
           [sketchpad.toggle-vim-mode-action]
-          [sketchpad.tab-manager]
+          [sketchpad editor-info tab-manager]
           [rounded-border.core])
     (:require [sketchpad.rsyntax :as rsyntax]
               [clooj.doc-browser :as db]
@@ -214,14 +214,14 @@
     ;; set tab ui
     (.setUI editor-tabbed-panel (tab/sketchpad-tab-ui editor-tabbed-panel))
 
-    ; (listen editor-tabbed-panel :selection 
-    ;   (fn [e] 
-    ;     (let [num-tabs (tab-count editor-tabbed-panel)
-    ;           selected-index (current-tab editor-tabbed-panel)]
-    ;       (dotimes [n num-tabs]
-    ;         (if (= (- n 1) selected-index)
-    ;           ()
-    ;           ))))
+    (listen editor-tabbed-panel :selection 
+       (fn [e] 
+         (let [num-tabs (tab-count editor-tabbed-panel)]
+          ; (println "num-tabs: " num-tabs)
+          (if (> 0 num-tabs)
+            ;; update the current rsta  
+	   				(swap! app-atom (fn [app] (assoc app :doc-text-area (current-text-area (app :editor-tabbed-panel)))))            
+            ))))
 
     (config! arglist-label :background config/app-color)
     (config! arg-search-panel :background config/app-color)

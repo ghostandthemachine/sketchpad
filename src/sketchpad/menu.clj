@@ -1,8 +1,8 @@
 (ns sketchpad.menu
   (:use [clojure.pprint]
         [seesaw core keystroke meta]
-        [sketchpad file-manager tab-manager repl utils edit-menu vim-mode default-mode edit-mode vim-mode layout-config toggle-vim-mode-action filetree completion-builder]
-        [clooj help project dev-tools indent editor doc-browser search style indent])
+        [sketchpad help file-manager tab-manager repl utils edit-menu vim-mode default-mode edit-mode vim-mode layout-config toggle-vim-mode-action filetree completion-builder]
+        [clooj project dev-tools indent editor doc-browser search style indent])
   (:require 
         [sketchpad.rtextscrollpane :as sp]
         [sketchpad.rsyntaxtextarea :as cr]
@@ -117,12 +117,10 @@
             :mnemonic "E"
         :items [(menu-item :text "Undo" 
                            :mnemonic "U" 
-                           :key (keystroke "meta Z") 
-                           :listen [:action (fn [_] ())])
+                           :key (keystroke "meta Z"))
                 (menu-item :text "Redo" 
                            :mnemonic "Y" 
-                           :key (keystroke "meta shift Z") 
-                           :listen [:action (fn [_] (rt/redo-last-action (app :doc-text-area)))])
+                           :key (keystroke "meta shift Z"))
                 (separator)
                 (menu-item :text "Copy" 
                            :mnemonic "C" 
@@ -192,23 +190,23 @@
                            :key (keystroke "meta OPEN_BRACKET") 
                            :listen [:action (fn [_] (indent (:doc-text-area app)))])
                 (separator)
-                (menu-item :text "Find" 
-                           :mnemonic "F" 
-                           :key (keystroke "meta F") 
-                           :listen [:action (fn [_] (start-find app))])
-                (menu-item :text "Find next" 
-                           :mnemonic "N" 
-                           :key (keystroke "meta G") 
-                           :listen [:action (fn [_] (highlight-step app false))])
-                (menu-item :text "Find prev" 
-                           :mnemonic "P" 
-                           :key (keystroke "meta shift G") 
-                           :listen [:action (fn [_] (highlight-step app true))])
-                (menu-item :text "Name search/docs"
-                           :mnemonic "S" 
-                           :key (keystroke "alt TAB") 
-                           :listen [:action (fn [_] (show-tab-help app (find-focused-text-pane app) inc toggle-file-tree-panel))])
-                (separator)
+               (menu-item :text "Find" 
+                          :mnemonic "F" 
+                          :key (keystroke "meta F") 
+                          :listen [:action (fn [_] (start-find app))])
+               (menu-item :text "Find next" 
+                          :mnemonic "N" 
+                          :key (keystroke "meta G") 
+                          :listen [:action (fn [_] (highlight-step app false))])
+               (menu-item :text "Find prev" 
+                          :mnemonic "P" 
+                          :key (keystroke "meta shift G") 
+                          :listen [:action (fn [_] (highlight-step app true))])
+               (menu-item :text "Name search/docs"
+                          :mnemonic "S" 
+                          :key (keystroke "alt TAB") 
+                          :listen [:action (fn [_] (show-tab-help app (find-focused-text-pane app) inc toggle-file-tree-panel))])
+               (separator)
                 (menu-item :text "Begin recording macro..." 
                            :key (keystroke "ctrl Q") 
                            :listen [:action (fn [_] (toggle-macro-recording! app))])
@@ -223,7 +221,7 @@
   [app]
   (if (= "ns" (str (first (current-ns-form app))))
     (do 
-      (send-to-repl app (str "(use :reload " \' (str (second (current-ns-form app))) ")"))
+      (send-to-editor-repl app (str "(use :reload " \' (str (second (current-ns-form app))) ")"))
 ;      (add-completions-from-ns (quote (second (current-ns-form app))))
       )))
 
@@ -231,7 +229,15 @@
   [app]
   (if (= "ns" (str (first (current-ns-form app))))
     (do 
-      (send-to-repl app (str "(require :reload " \' (str (second(current-ns-form app))) ")")))))
+      ; (println "try to reload: " (str "(require :reload " \' (str (second(current-ns-form app))) ")"))
+      (send-to-editor-repl app (str "(require :reload " \' (str (second(current-ns-form app))) ")")))))
+
+(defn in-ns-current-file-ns
+  [app]
+  (if (= "ns" (str (first (current-ns-form app))))
+    (do 
+      (send-to-editor-repl app (str "(in-ns " \' (str (second (current-ns-form app))) ")"))
+      )))
 
 (defn make-repl-menu
   [app]
@@ -259,11 +265,10 @@
                              :mnemonic "R"
                              :key (keystroke "meta shift R")
                              :listen [:action (fn [_] (require-reload-current-file-ns app))])
-                  (separator)
-                  (menu-item :text "Clear output"
-                             :mnemonic "P"
-                             :key (keystroke "meta P")
-                             :listen [:action (fn [_] (.setText (app :repl-out-text-area) ""))])
+                  (menu-item :text "Switch to current file ns"
+                             :mnemonic "I"
+                             :key (keystroke "meta shift I")
+                             :listen [:action (fn [_] (in-ns-current-file-ns app))])
                   (separator)
                   (menu-item :text "Restart"
                              :mnemonic "R"

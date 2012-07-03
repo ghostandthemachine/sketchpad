@@ -1,5 +1,4 @@
-(ns sketchpad.default-mode
-	; (:use [sketchpad.edit-mode])
+(ns sketchpad.repl-input)
 	(:import (java.awt Toolkit)
 			 (java.awt.event InputEvent KeyEvent)
 			 (javax.swing InputMap KeyStroke)
@@ -29,10 +28,10 @@
 				(javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_LEFT
 				(bit-or default-modifier shift))	   
 				DefaultEditorKit/selectionBeginLineAction)
-			(.put 
-				(javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_UP
-				default-modifier)	       		   
-				DefaultEditorKit/beginAction)
+;			(.put 
+;				(javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_UP
+;				default-modifier)	       		   
+;				DefaultEditorKit/beginAction)
 			(.put 
 				(javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_UP
 				(bit-or default-modifier shift))	   
@@ -45,10 +44,10 @@
 				(javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_RIGHT
 				(bit-or default-modifier shift))	   
 				DefaultEditorKit/selectionEndLineAction)
-			(.put 
-				(javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_DOWN
-				default-modifier)	       		   
-				DefaultEditorKit/endAction)
+;			(.put 
+;				(javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_DOWN
+;				default-modifier)	       		   
+;				DefaultEditorKit/endAction)
 			(.put 
 				(javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_DOWN
 				(bit-or default-modifier shift))	   
@@ -228,8 +227,8 @@
 				shift)					   		   
 				DefaultEditorKit/insertBreakAction)
 			(.put 
-				(javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_ENTER
-				default-modifier)		           
+				(javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_SPACE
+				shift)		           
 				RTextAreaEditorKit/rtaDumbCompleteWordAction)
 
 			(.put 
@@ -237,8 +236,8 @@
 				default-modifier)                   
 				RTextAreaEditorKit/rtaUndoAction)
 			(.put 
-				(javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_Z
-				(bit-or default-modifier shift))                   
+				(javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_Y
+				default-modifier)                   
 				RTextAreaEditorKit/rtaRedoAction)
 
 			(.put 

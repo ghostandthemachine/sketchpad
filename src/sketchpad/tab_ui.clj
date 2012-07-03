@@ -102,9 +102,7 @@
 												(.paintIcon bg-img comp gfx x y))))
 
 									(paintTab [gfx tab-placement rects tab-index icon-rect text-rect]
-										
 										(proxy-super paintTab gfx tab-placement rects tab-index icon-rect text-rect)
-
 									)
 
 									(paintTabBackground [gfx tab-placement tab-index x y w h selected?]
@@ -162,6 +160,11 @@
 
 									(getTabsOverlapBorder []
 										true)
+
+									(calculteTabWidth [placement]
+										(/ (width tabbed-panel) (.getTabCount tabbed-panel))
+										(println (/ (width tabbed-panel) (.getTabCount tabbed-panel)))
+										)
 
 									(paintFocusIndicator [gfx tab-placement rects tab-index icon-rect text-rect is-selected]
 										)

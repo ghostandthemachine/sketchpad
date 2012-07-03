@@ -5,8 +5,9 @@
 		(javax.swing JButton JOptionPane JWindow ImageIcon)
 		(javax.swing.event DocumentListener))
 	(:use [sketchpad option-windows file-manager button-tab prefs]
-				[clojure pprint string]
+				[clojure pprint]
 				[seesaw meta core border])
+	(:require [clojure.string :as string])
 	)
 
 
@@ -166,3 +167,6 @@
 
 (defn get-file-from-tab-index [app i]
 	(i @(app :current-files)))
+
+(defn get-tab-rsta [tabbed-panel i]
+	(select (component-at tabbed-panel i) [:#editor]))
