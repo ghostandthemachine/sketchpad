@@ -20,7 +20,7 @@
           [clooj.menus]
           [clooj.dev-tools]
           [clooj.indent]
-          [sketchpad editor-info prefs auto-complete tab-manager utils repl filetree editor menu edit-mode default-mode completion-builder rsyntaxtextarea])
+          [sketchpad search editor-info prefs auto-complete tab-manager utils repl filetree editor menu edit-mode default-mode completion-builder rsyntaxtextarea])
     (:require [sketchpad.theme :as theme]
     					[sketchpad.config :as config]
               [sketchpad.preview-manager :as pm]))
@@ -40,6 +40,8 @@
   (let [app-init  (atom {})
         ;; editor-info MUST init before editor so it is selectable
         editor-info (editor-info app-init)
+        search-toolbar (search-toolbar app-init)
+        ; info-panel (vertical-panel :items [editor-info])
         editor    (editor app-init)
 
         file-tree (file-tree app-init)
@@ -84,16 +86,10 @@
 (defn add-behaviors
   [app-atom]
   (let [app @app-atom]
-    ;;editor
-    ; (setup-search-text-area app)
-    ; (setup-temp-writer app)
-    ;; init preview manager
-    ; (pm/make-preview app-atom)
     ;; repl
     (add-repl-input-handler app)
     ;; file tree
     (setup-tree app-atom)
-
     (listen (app :editor-tabbed-panel) :selection (fn [e] 
                                                   (let [cur-tab (cast JTabbedPane (.getSource e))
                                                         rsta (select cur-tab [:#editor])
@@ -102,12 +98,6 @@
                                                     )))
     ;; global
     (add-visibility-shortcut app)
-    ; (dorun (map #(attach-global-action-keys % app)
-    ;             [(app :docs-tree) 
-    ;              (app :doc-text-area) 
-    ;              (app :repl-in-text-area) 
-    ;              ; (app :repl-out-text-area) 
-    ;              (.getContentPane (app :frame))]))
     ))
 
 ;; startup
@@ -137,8 +127,8 @@
       )
 
       ; (load-tab-selections app-atom)
-    	;; load default prefs
-      (config/apply-editor-prefs! config/default-editor-prefs (:repl-in-text-area app))
+    	; ;; load default prefs
+     ;  (config/apply-editor-prefs! config/default-editor-prefs (:repl-in-text-area app))
 
   		;; done with init
       (app :frame)))

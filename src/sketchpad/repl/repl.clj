@@ -30,7 +30,11 @@
 
 (def repl-history {:items (atom nil) :pos (atom 0) :last-end-pos (atom 0)})
 
-(def editor-repl-history {:items (atom (list "")) :pos (atom 0)})	
+(def editor-repl-history {:items (atom (list "")) :pos (atom 0)}) 
+
+(def repl-history (atom {}))	
+
+; (defn creatae-new-repl-history [])
 
 (def repls (atom {}))
 
@@ -189,7 +193,7 @@
 
 (defn update-repl-history [app]
   (swap! (:items repl-history) replace-first
-         (get-text-str (app :repl-in-text-area))))
+         (get-text-str (app :editor-repl))))
 
 (defn correct-expression? [cmd]
   (when-not (empty? (.trim cmd))
@@ -231,10 +235,10 @@
       (cond
           (= src-key :repl)
             ;; with one repl panel we just want to go to the next line
-            (append-text (app :repl-in-text-area) (str \newline))
+            (append-text (app :editor-repl) (str \newline))
           (= src-key :file)
-            (append-text (app :repl-in-text-area) (str \newline))
-            ; (append-text (app :repl-in-text-area) cmd-ln)
+            (append-text (app :editor-repl) (str \newline))
+            ; (append-text (app :editor-repl) cmd-ln)
             )
       (let [cmd-str (cmd-attach-file-and-line cmd file line)]
         (offer! (app :repl-que) cmd-str)
@@ -256,10 +260,10 @@
       (cond
           (= src-key :repl)
             ;; with one repl panel we just want to go to the next line
-            (append-text (app :repl-in-text-area) (str \newline))
+            (append-text (app :editor-repl) (str \newline))
           (= src-key :file)
-            (append-text (app :repl-in-text-area) (str \newline))
-            ; (append-text (app :repl-in-text-area) cmd-ln)
+            (append-text (app :editor-repl) (str \newline))
+            ; (append-text (app :editor-repl) cmd-ln)
             )
       (let [cmd-str (cmd-attach-file-and-line cmd file line)]
         (binding [*out* (:input-writer @(app :repl))]
@@ -325,7 +329,7 @@
     (PrintWriter. true)))
   
 (defn update-repl-text [app]
-  (let [rsta (:repl-in-text-area app)
+  (let [rsta (:editor-repl app)
         last-pos @(:last-end-pos repl-history)
         items @(:items repl-history)]
     (when (pos? (count items))
@@ -379,7 +383,7 @@
            current-ns)))
 
 (defn restart-repl [app project-path]
-  (append-text (app :repl-in-text-area)
+  (append-text (app :editor-repl)
                (str "\n=== RESTARTING " project-path " REPL ===\n"))
   (when-let [proc (-> app :repl deref :proc)]
     (.destroy proc))
@@ -389,7 +393,7 @@
 (defn switch-repl [app project-path]
   (when (and project-path
              (not= project-path (-> app :repl deref :project-path)))
-    (append-text (app :repl-in-text-area)
+    (append-text (app :editor-repl)
                  (str "\n\n=== Switching to " project-path " REPL ===\n"))
     (let [repl (or (get @repls project-path)
                    (create-outside-repl (app :repl-out-writer) project-path))]
@@ -411,7 +415,7 @@
     (append-text-update rsta history-str)))
 
 (defn update-repl-history-display-position [app kw]
-	(let [rsta (app :repl-in-text-area)
+	(let [rsta (app :editor-repl)
         history-pos @(editor-repl-history :pos)
         cmd (get-last-cmd rsta)]
     (cond 
@@ -429,9 +433,9 @@
     (append-history-text rsta editor-repl-history)))
 
 (defn add-repl-input-handler [app]
-  (rsta/set-input-map! (app :repl-in-text-area) (default-input-map))
+  (rsta/set-input-map! (app :editor-repl) (default-input-map))
 
-  (let [ta-in (app :repl-in-text-area)
+  (let [ta-in (app :editor-repl)
         get-caret-pos #(.getCaretPosition ta-in)
         ready #(let [caret-pos (get-caret-pos)
                      txt (.getText ta-in)
@@ -443,7 +447,7 @@
                    (= -1 (first (find-enclosing-brackets
                                   txt
                                   caret-pos)))))
-        submit #(when-let [txt (get-last-cmd (:repl-in-text-area app))]
+        submit #(when-let [txt (get-last-cmd (:editor-repl app))]
                   (let [cmd-type (cmd-prefix? txt)]
                     (cond
                       ;; handle an application command
@@ -483,27 +487,32 @@
 
 (defn repl
   [app-atom]
-  (let [repl-in-text-area (rsyntax/text-area 
+  (let [editor-repl (rsyntax/text-area 
                                       :syntax         "clojure"     
-                                      :border         (line-border 
-                                                            :thickness 4
-                                                            :color (color "#FFFFFF" 0))                                
-                                      :id             :repl-text-area
+                                      :border          nil                          
+                                      :id             :editor-repl-text-area
                                       :class          [:repl :syntax-editor])
-        repl-out-writer   (make-repl-writer repl-in-text-area app-atom)
-        repl-in-scroll-pane (RTextScrollPane. repl-in-text-area false) ;; default to no linenumbers
+
+				
+                                      
+        repl-out-writer   (make-repl-writer editor-repl app-atom)
+        repl-in-scroll-pane (RTextScrollPane. editor-repl false) ;; default to no linenumbers
         repl-input-vertical-panel (vertical-panel 
                                       :items          [repl-in-scroll-pane]                                      
                                       :id             :repl-input-vertical-panel
                                       :class          :repl)
         repl-undo-count (atom 0)
-        repl-que (create-editor-repl repl-in-text-area)]
-    ; (put-meta! repl-in-text-area repl-undo-count)
+        repl-que (create-editor-repl editor-repl)]
+    ; (put-meta! editor-repl repl-undo-count)
     (config! repl-in-scroll-pane :background config/app-color)
-    (install-auto-completion repl-in-text-area)
+    (install-auto-completion editor-repl)
+    (set-input-map! doc-text-area (default-input-map))
+    (config/apply-editor-prefs! config/default-editor-prefs editor-repl)
+    
+
     (swap! app-atom conj (gen-map
                             repl-que
-                            repl-in-text-area
+                            editor-repl
                             repl-in-scroll-pane
                             repl-input-vertical-panel
                             repl-out-writer))

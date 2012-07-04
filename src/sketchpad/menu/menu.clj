@@ -180,10 +180,10 @@
                            :key (keystroke "meta shift SEMICOLON") 
                            :listen [:action (fn [_] (uncomment-out (:doc-text-area app)))])
                 (separator)
-               ; (menu-item :text "Find" 
-               ;            :mnemonic "F" 
-               ;            :key (keystroke "meta F") 
-               ;            :listen [:action (fn [_] (start-find app))])
+               (menu-item :text "Find" 
+                          :mnemonic "F" 
+                          :key (keystroke "meta F") 
+                          :listen [:action (fn [_] (println "toggle search") (toggle-search app))])
                ; (menu-item :text "Find next" 
                ;            :mnemonic "N" 
                ;            :key (keystroke "meta G") 
