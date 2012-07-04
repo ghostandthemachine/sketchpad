@@ -37,7 +37,7 @@
   (let [app-init  (atom {})
         ;; editor-info MUST init before editor so it is selectable
         editor-info (editor-info app-init)
-        search-toolbar (search-toolbar app-init)
+        ; search-toolbar (search-toolbar app-init)
         ; info-panel (vertical-panel :items [editor-info])
         editor    (editor app-init)
 
