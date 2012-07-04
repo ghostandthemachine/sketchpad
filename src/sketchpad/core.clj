@@ -14,13 +14,10 @@
              (javax.swing.plaf.nimbus.NimbusLookAndFeel))
     (:use [seesaw core graphics color border font meta]
           [clojure.pprint]
-          [sketchpad.help]
           [clooj.navigate]
-          [clooj.doc-browser] 
-          [clooj.menus]
           [clooj.dev-tools]
           [clooj.indent]
-          [sketchpad search editor-info prefs auto-complete tab-manager utils repl filetree editor menu edit-mode default-mode completion-builder rsyntaxtextarea])
+          [sketchpad editor-info prefs auto-complete tab-manager utils repl filetree editor menu edit-mode default-mode completion-builder rsyntaxtextarea help])
     (:require [sketchpad.theme :as theme]
     					[sketchpad.config :as config]
               [sketchpad.preview-manager :as pm]))
@@ -47,7 +44,6 @@
         file-tree (file-tree app-init)
         repl      (repl app-init)
         
-        doc-nav   (doc-nav app-init)
         editor-panel (vertical-panel :border nil :items [editor editor-info])
         doc-split-pane (left-right-split
                          file-tree
