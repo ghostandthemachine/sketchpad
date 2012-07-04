@@ -16,6 +16,7 @@
                  [language-builder "1.0.0-SNAPSHOT"]
                  [auto-complete "0.1.0-SNAPSHOT"]
                  ; [com.github.insubstantial/substance "7.1"]
+                 [com.cemerick/pomegranate "0.0.13"]
                  [timbre "0.5.1-SNAPSHOT"]
                  ]
   :jvm-opts ~(if (= (System/getProperty "os.name") "Mac OS X") ["-Xdock:name=Sketchpad"] []))

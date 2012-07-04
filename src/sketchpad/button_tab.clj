@@ -11,6 +11,10 @@
 (defn text-area-from-index [app i]
 	(select (.getComponentAt (app :editor-tabbed-panel) i) [:#editor]))
 
+; (defn text-area-from-index [app i]
+; 	(get-meta (.getComponentAt (app :editor-tabbed-panel) i) :editor))
+
+
 (def mouse-over-color (color 200 200 200))
 (def base-color (color 150 150 150))
 (def pressed-color (color 255 255 255))

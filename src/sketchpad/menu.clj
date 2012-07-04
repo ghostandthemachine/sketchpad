@@ -20,6 +20,9 @@
       (swap! macro-recording-state (fn [_] true))
       (rt/begin-recording-macro! (:doc-text-area app)))))
 
+(defn playback-last-macro [app]
+  (rt/playback-last-macro! (:doc-text-area app)))
+
 (defn fold-action
   [ta] 
   (action :name "fold-action"
@@ -177,35 +180,22 @@
                            :key (keystroke "meta shift SEMICOLON") 
                            :listen [:action (fn [_] (uncomment-out (:doc-text-area app)))])
                 (separator)
-                (menu-item :text "Fix indentation" 
-                           :mnemonic "F" 
-                           :key (keystroke "meta BACK_SLASH") 
-                           :listen [:action (fn [_] (fix-indent-selected-lines (:doc-text-area app)))])
-                (menu-item :text "Indent lines"
-                           :mnemonic "I" 
-                           :key (keystroke "meta CLOSE_BRACKET") 
-                           :listen [:action (fn [_] (indent (:doc-text-area app)))])
-                (menu-item :text "Unindent lines"
-                           :mnemonic "D" 
-                           :key (keystroke "meta OPEN_BRACKET") 
-                           :listen [:action (fn [_] (indent (:doc-text-area app)))])
-                (separator)
-               (menu-item :text "Find" 
-                          :mnemonic "F" 
-                          :key (keystroke "meta F") 
-                          :listen [:action (fn [_] (start-find app))])
-               (menu-item :text "Find next" 
-                          :mnemonic "N" 
-                          :key (keystroke "meta G") 
-                          :listen [:action (fn [_] (highlight-step app false))])
-               (menu-item :text "Find prev" 
-                          :mnemonic "P" 
-                          :key (keystroke "meta shift G") 
-                          :listen [:action (fn [_] (highlight-step app true))])
-               (menu-item :text "Name search/docs"
-                          :mnemonic "S" 
-                          :key (keystroke "alt TAB") 
-                          :listen [:action (fn [_] (show-tab-help app (find-focused-text-pane app) inc toggle-file-tree-panel))])
+               ; (menu-item :text "Find" 
+               ;            :mnemonic "F" 
+               ;            :key (keystroke "meta F") 
+               ;            :listen [:action (fn [_] (start-find app))])
+               ; (menu-item :text "Find next" 
+               ;            :mnemonic "N" 
+               ;            :key (keystroke "meta G") 
+               ;            :listen [:action (fn [_] (highlight-step app false))])
+               ; (menu-item :text "Find prev" 
+               ;            :mnemonic "P" 
+               ;            :key (keystroke "meta shift G") 
+               ;            :listen [:action (fn [_] (highlight-step app true))])
+               ; (menu-item :text "Name search/docs"
+               ;            :mnemonic "S" 
+               ;            :key (keystroke "alt TAB") 
+               ;            :listen [:action (fn [_] (show-tab-help app (find-focused-text-pane app) inc toggle-file-tree-panel))])
                (separator)
                 (menu-item :text "Begin recording macro..." 
                            :key (keystroke "ctrl Q") 
@@ -215,7 +205,7 @@
                            :listen [:action (fn [_] (toggle-macro-recording! app))])
                 (menu-item :text "Playback last macro..." 
                            :key (keystroke "ctrl shift Q") 
-                           :listen [:action (fn [_] (rt/playback-last-macro! (:doc-text-area app)))])]))
+                           :listen [:action (fn [_] (playback-last-macro app))])]))
 
 (defn use-reload-current-file-ns
   [app]
@@ -335,5 +325,7 @@
                                       (make-repl-menu app)
                                       (make-view-menu app)
                                       (make-help-menu app)])))
+
+
 
 

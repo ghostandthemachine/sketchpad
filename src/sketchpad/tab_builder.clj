@@ -27,8 +27,11 @@
 				(do 
 					(let [tabbed-panel (app :editor-tabbed-panel)
 								container (make-editor-component app-atom)
+								; container (make-layered-editor-component app-atom)
 								new-file-name (str (file-name file))
-								rsta (select container [:#editor])]
+								; rsta (get-meta container :editor)
+								rsta (select container [:#editor])
+								]
 						;; attach the file to the component for easy saving
 						(put-meta! rsta :file file)
 						;; set the text area text from file

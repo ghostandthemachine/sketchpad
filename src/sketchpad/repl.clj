@@ -418,12 +418,12 @@
   		(= kw :dec)
   			(if (< history-pos (- (count @(editor-repl-history :items)) 1))
   					(swap! (editor-repl-history :pos) (fn [pos] (+ pos 1)))
-  					(swap! (editor-repl-history :pos) (fn [pos] 0)) ;; go back to start of list
+  					(swap! (editor-repl-history :pos) (fn [pos] pos)) ;; go back to start of list
   					)
   		(= kw :inc)
   			(if (> history-pos 1)
   					(swap! (editor-repl-history :pos) (fn [pos] (- pos 1)))
-  					(swap! (editor-repl-history :pos) (fn [pos] (- (count @(editor-repl-history :items)) 1))) ;; go to end of list
+  					(swap! (editor-repl-history :pos) (fn [pos] pos)) ;; go to end of list
   					))
     (clear-repl-input rsta)
     (append-history-text rsta editor-repl-history)))
@@ -471,9 +471,9 @@
                                     ;["control DOWN" at-bottom next-hist]
                                     ["ENTER" ready submit])
     (attach-action-keys ta-in ["cmd1 UP" prev-hist]
-                              ["cmd1 DOWN" next-hist]
-                              ;["cmd1 ENTER" submit] ;; blocks dumb completion
-                              )
+                              ["cmd1 DOWN" next-hist])
+                              ; ["cmd1 ENTER" submit] ;; blocks dumb completion
+                              ; )
     ))
 
 (defn print-stack-trace [app]
