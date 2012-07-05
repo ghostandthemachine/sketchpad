@@ -50,7 +50,7 @@
     (config/apply-editor-prefs! config/default-editor-prefs rsta)
 
     ;; no line numbers (this should be done in prefs probably)
-    (line-numbers-enabled repl-scroll-pane false)
+    (sp/line-numbers-enabled repl-scroll-pane false)
 
     repl-container
  		))
