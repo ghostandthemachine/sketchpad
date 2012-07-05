@@ -64,7 +64,7 @@
 	[obj x]
 	(.setViewportView obj x))
 
-(defn line-numbers-enabled?
+(defn line-numbers-enabled
 "
         args:  [boolean]
        flags:  :public

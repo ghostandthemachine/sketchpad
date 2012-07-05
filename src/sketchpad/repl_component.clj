@@ -48,6 +48,10 @@
     (install-auto-completion rsta)
     (set-input-map! rsta (default-input-map))
     (config/apply-editor-prefs! config/default-editor-prefs rsta)
+
+    ;; no line numbers (this should be done in prefs probably)
+    (line-numbers-enabled repl-scroll-pane false)
+
     repl-container
  		))
 
