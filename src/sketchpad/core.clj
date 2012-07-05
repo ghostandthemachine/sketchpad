@@ -17,10 +17,11 @@
           [clooj.navigate]
           [clooj.dev-tools]
           [clooj.indent]
-          [sketchpad editor-info prefs auto-complete tab-manager utils repl filetree editor menu edit-mode default-mode completion-builder rsyntaxtextarea help])
+          [sketchpad editor-info prefs auto-complete tab-manager utils filetree editor menu edit-mode default-mode completion-builder rsyntaxtextarea help])
     (:require [sketchpad.theme :as theme]
     					[sketchpad.config :as config]
-              [sketchpad.preview-manager :as pm]))
+              [sketchpad.preview-manager :as pm]
+              [sketchpad.repl :as srepl]))
 
 (defn set-laf [laf-string]
   (UIManager/setLookAndFeel laf-string))
@@ -28,9 +29,9 @@
 (def overtone-handlers  { :update-caret-position update-caret-position 
                           :save-caret-position save-caret-position
                           :setup-autoindent setup-autoindent
-                          :switch-repl switch-repl
+                          ; :switch-repl switch-repl
                           :get-selected-projects get-selected-projects
-                          :apply-namespace-to-repl apply-namespace-to-repl
+                          ; :apply-namespace-to-repl apply-namespace-to-repl
                           :find-file find-file})
 
 (defn create-app []
@@ -42,7 +43,7 @@
         editor    (editor app-init)
 
         file-tree (file-tree app-init)
-        repl      (repl app-init)
+        repl      (srepl/repl app-init)
         
         editor-panel (vertical-panel :border nil :items [editor editor-info])
         doc-split-pane (left-right-split
@@ -64,7 +65,7 @@
         app (merge {:current-files (atom {})
                     :current-file (atom nil)
                     :current-tab -1
-                    :repl      (atom (create-outside-repl (@app-init :repl-out-writer) nil))
+                    ; :repl      (atom (create-outside-repl (@app-init :repl-out-writer) nil))
                     :repls (atom {})
                     :changed   false
                     :doc-text-area nil
@@ -82,8 +83,6 @@
 (defn add-behaviors
   [app-atom]
   (let [app @app-atom]
-    ;; repl
-    (add-repl-input-handler app)
     ;; file tree
     (setup-tree app-atom)
     (listen (app :editor-tabbed-panel) :selection (fn [e] 
@@ -115,16 +114,12 @@
     ;; load projects
     (doall (map #(add-project app %) (load-project-set)))
     (let [frame (app :frame)]
-      (persist-window-shape clooj-prefs "main-window" frame) 
+      (persist-window-shape sketchpad-prefs "main-window" frame) 
       (on-window-activation frame #(update-project-tree (app :docs-tree))))
     (let [tree (app :docs-tree)]
       (load-expanded-paths tree)
       (load-tree-selection tree)
       )
-
-      ; (load-tab-selections app-atom)
-    	; ;; load default prefs
-     ;  (config/apply-editor-prefs! config/default-editor-prefs (:repl-in-text-area app))
 
   		;; done with init
       (app :frame)))
