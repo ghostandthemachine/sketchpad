@@ -19,12 +19,12 @@
         [sketchpad rsyntaxtextarea tab-manager auto-complete app-cmd default-mode sketchpad-repl]
         [clojure.tools.nrepl.server :only (start-server stop-server)])
   (:require [clojure.string :as string]
-            [clooj.rsyntax :as rsyntax]
+            [sketchpad.rsyntax :as rsyntax]
             [clojure.java.io :as io]
             [sketchpad.editor-kit :as kit]
             [sketchpad.config :as config]
-            [sketchpad.tab-ui :as tab]
-            [sketchpad.rsyntaxtextarea :as rsta]
+            [sketchpad.repl-tab-ui :as rtab]
+            [sketchpad.rtextscrollpane :as sp]
             [clojure.tools.nrepl :as repl])
   (:import (org.fife.ui.rtextarea RTextScrollPane)
            (java.io.IOException)))
@@ -261,10 +261,10 @@
    (string/trim (last (string/split text #"=>")))))
 
 (defn clear-repl-input [rsta]
-  (let [end (rsta/last-visible-offset rsta)
+  (let [end (last-visible-offset rsta)
         trim-str (get-last-cmd rsta)
         start (- end (count trim-str))]
-    (rsta/replace-range! rsta nil start end)))
+    (replace-range! rsta nil start end)))
 
 (defn append-history-text [rsta m]
   (let [pos @(m :pos)
@@ -590,10 +590,10 @@
                                             :background (color :black)
                                             :border nil)
         editor-repl (rsyntax/text-area 
-                                      :syntax         "clojure"     
+                                      :syntax          :clojure    
                                       :border          nil                          
-                                      :id             :editor-repl-text-area
-                                      :class          [:repl :syntax-editor])
+                                      :id             :editor
+                                      :class          :repl)
 
 			 	repl-history {:items (atom nil) :pos (atom 0) :last-end-pos (atom 0)}
                                       
@@ -609,7 +609,7 @@
  		(put-meta! editor-repl :repl-history repl-history)
  		(put-meta! editor-repl :repl-que repl-que)
             ;; set tab ui
-    (.setUI repl-tabbed-panel (tab/sketchpad-tab-ui repl-tabbed-panel))
+    (.setUI repl-tabbed-panel (rtab/sketchpad-repl-tab-ui repl-tabbed-panel))
     (listen repl-tabbed-panel :selection 
        (fn [e] 
          (let [num-tabs (tab-count repl-tabbed-panel)]
@@ -622,11 +622,20 @@
     ;; add the default repl tab
     (add-tab! repl-tabbed-panel "sketchpad" repl-container)
 
-    ; (put-meta! editor-repl repl-undo-count)
+    ; (config! repl-in-scroll-pane :background config/app-color)
+    ; (install-auto-completion editor-repl)
+    ; (set-input-map! editor-repl (default-input-map))
+    ; (config/apply-editor-prefs! config/default-editor-prefs editor-repl)
+    ;; apply config prefs
     (config! repl-in-scroll-pane :background config/app-color)
-    (install-auto-completion editor-repl)
-    (set-input-map! editor-repl (default-input-map))
     (config/apply-editor-prefs! config/default-editor-prefs editor-repl)
+    ;;input map
+    (set-input-map! editor-repl (default-input-map))
+    ;; attach handlers
+    (add-repl-input-handler editor-repl)
+    ;; auto completion
+    (install-auto-completion editor-repl)
+
     (swap! app-atom conj (gen-map
                             repl-tabbed-panel
                             repl-que
@@ -634,7 +643,6 @@
                             repl-in-scroll-pane
                             repl-container
                             ))
-    (add-repl-input-handler editor-repl)
     repl-tabbed-panel
     ))
 

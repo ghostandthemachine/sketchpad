@@ -54,3 +54,8 @@
 	:line-number-start-index 1
 	; :show-collapsed-region-tool-tips true
    })
+
+  (def default-project-style-prefs
+  	{
+			:indicator-colors [:orange :green :yellow :blue :red :purple :pink]
+  	})

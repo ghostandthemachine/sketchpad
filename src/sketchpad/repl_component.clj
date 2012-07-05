@@ -9,7 +9,8 @@
              [sketchpad.rtextscrollpane :as sp]
              [sketchpad.config :as config]
              [clojure.string :as string])
-   (:import (java.io BufferedReader BufferedWriter PipedReader PipedWriter PrintWriter Writer
+   (:import (org.fife.ui.rtextarea RTextScrollPane)
+            (java.io BufferedReader BufferedWriter PipedReader PipedWriter PrintWriter Writer
                             StringReader PushbackReader)))
 
 (defn make-repl-writer [ta-out]
@@ -36,7 +37,7 @@
  																					:id 		:editor
  																					:class 	:repl)
         repl-history {:items (atom nil) :pos (atom 0) :last-end-pos (atom 0)}
- 				repl-scroll-pane (sp/scroll-pane rsta)
+ 				repl-scroll-pane (RTextScrollPane. rsta false)
         repl-writer (make-repl-writer rsta)
         repl (create-outside-repl repl-writer project-path)
         repl-container (vertical-panel :items [repl-scroll-pane] :class :repl-container)]
@@ -45,12 +46,11 @@
  		(put-meta! rsta :repl-history repl-history)
     ;; apply config prefs
     (config! repl-scroll-pane :background config/app-color)
-    (install-auto-completion rsta)
-    (set-input-map! rsta (default-input-map))
     (config/apply-editor-prefs! config/default-editor-prefs rsta)
-
-    ;; no line numbers (this should be done in prefs probably)
-    (sp/line-numbers-enabled repl-scroll-pane false)
+    ;; input map
+    (set-input-map! rsta (default-input-map))
+    ;; auto completion
+    (install-auto-completion rsta)
 
     repl-container
  		))

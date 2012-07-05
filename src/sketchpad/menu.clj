@@ -211,7 +211,7 @@
   [app]
   (if (= "ns" (str (first (current-ns-form app))))
     (do 
-      (send-to-editor-repl app (str "(use :reload " \' (str (second (current-ns-form app))) ")"))
+      (send-to-editor-repl (current-text-area (app :editor-tabbed-panel)) (str "(use :reload " \' (str (second (current-ns-form app))) ")"))
 ;      (add-completions-from-ns (quote (second (current-ns-form app))))
       )))
 
@@ -220,13 +220,13 @@
   (if (= "ns" (str (first (current-ns-form app))))
     (do 
       ; (println "try to reload: " (str "(require :reload " \' (str (second(current-ns-form app))) ")"))
-      (send-to-editor-repl app (str "(require :reload " \' (str (second(current-ns-form app))) ")")))))
+      (send-to-editor-repl (current-text-area (app :editor-tabbed-panel)) (str "(require :reload " \' (str (second(current-ns-form app))) ")")))))
 
 (defn in-ns-current-file-ns
   [app]
   (if (= "ns" (str (first (current-ns-form app))))
     (do 
-      (send-to-editor-repl app (str "(in-ns " \' (str (second (current-ns-form app))) ")"))
+      (send-to-editor-repl (current-text-area (app :editor-tabbed-panel)) (str "(in-ns " \' (str (second (current-ns-form app))) ")"))
       )))
 
 (defn make-repl-menu

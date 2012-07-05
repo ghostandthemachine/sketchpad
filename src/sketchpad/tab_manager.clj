@@ -35,12 +35,15 @@
 	(.addTab tabbed-panel title comp))
 
 (defn remove-tab! [tabbed-panel index]
-	(.removeTabAt tabbed-panel index)
-	;; not sure if this is the best way to do this....
-	; (if (not (tabs? (app :editor-tabbed-panel)))
-	; 	(let [container (app :doc-split-pane)]
-	; 		(.setRightComponent container bg-panel)))
-	)
+	(.removeTabAt tabbed-panel index))
+
+(defn remove-repl-tab! [tabbed-panel index]
+	(let [rsta (select (component-at tabbed-panel index) [:#editor])
+		  repl (get-meta rsta :repl)]
+		;;destroy to process
+		(.destroy (repl :proc))
+	(.removeTabAt tabbed-panel index)))
+
 
 (defn index-of-component [tabbed-panel comp]
 	(.indexOfComponent tabbed-panel comp))
