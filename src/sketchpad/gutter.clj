@@ -217,7 +217,7 @@
 	[obj x]
 	(.setFoldBackground obj x))
 
-(defn line-numbers-enabled?
+(defn line-numbers-enabled
 "
         args:  [boolean]
        flags:  

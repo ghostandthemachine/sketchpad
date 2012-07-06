@@ -3,7 +3,7 @@
 					(java.io File StringReader BufferedWriter OutputStreamWriter FileOutputStream)
 					(javax.swing JButton JOptionPane JWindow ImageIcon)
 					(javax.swing.event DocumentListener))
-	(:use [sketchpad repl utils tab-manager repl-component button-tab prefs]
+	(:use [sketchpad option-windows repl utils tab-manager repl-component repl-button-tab prefs]
 				[clojure pprint]
 				[seesaw meta core border])
 	(:require [clojure.string :as str])
@@ -21,7 +21,7 @@
  		(add-tab! tabbed-panel tab-title repl-component)
  		;; set custom tab
  		(let [index-of-new-tab (index-of tabbed-panel tab-title)
- 					tab (button-tab app tabbed-panel index-of-new-tab)
+ 					tab (repl-button-tab app tabbed-panel index-of-new-tab)
  					close-button (select tab [:#close-button])
  					tab-label (first (select tab [:.tab-label]))]
  					;; link the tab for this component for updating clean indicator
@@ -30,10 +30,12 @@
  			;; to include the button tab ns. This avoids the cyclic loading
  			(listen close-button :mouse-entered (fn [e] (swap! current-tab-color (fn [_] mouse-over-color))))
  			(listen close-button :mouse-exited (fn [e] (swap! current-tab-color (fn [_] base-color))))
- 			(listen close-button :mouse-clicked (fn [e]
- 																						(let [idx (index-of-component tabbed-panel repl-component)]
-																							(swap! (app :repls) (fn [repls] (dissoc repls rsta)))
- 																							(remove-tab! tabbed-panel idx))))
+ 			(listen close-button :mouse-clicked (fn [e] (let [idx (index-of-component tabbed-panel repl-component)
+ 															  yes-no-option (close-repl-dialogue)]
+															(if (= yes-no-option 0)
+																(remove-repl-tab! tabbed-panel idx)
+
+																))))
 
  			;; set the component in the new tab
  			(.setTabComponentAt tabbed-panel index-of-new-tab tab)

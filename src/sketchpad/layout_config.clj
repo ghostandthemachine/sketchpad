@@ -51,12 +51,12 @@
     (do 
       (swap! show-repl (fn [_] false))
       (swap! repl-divider-position (fn [_] (.getDividerLocation (app :split-pane))))
-      (.remove (app :split-pane) (app :repl-in-scroll-pane)))
+      (.remove (app :split-pane) (app :repl-tabbed-panel)))
     (do 
       (swap! show-repl (fn [_] true))
-      (.setBottomComponent (app :split-pane) (app :repl-in-scroll-pane))
+      (.setBottomComponent (app :split-pane) (app :repl-tabbed-panel))
       (.setDividerLocation (app :split-pane) @repl-divider-position)
       ; (.setDividerLocation (app :doc-split-pane) @file-tree-divider-position)
-      (.requestFocus (app :repl-in-scroll-pane) true)
+      (.requestFocus (app :repl-tabbed-panel) true)
       )))
 
