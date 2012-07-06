@@ -590,7 +590,7 @@
                                             :background (color :black)
                                             :border nil)
         editor-repl (rsyntax/text-area 
-                                      :syntax         "clojure"     
+                                      :syntax         :clojure     
                                       :border          nil                          
                                       :id             :editor-repl-text-area
                                       :class          [:repl :syntax-editor])
