@@ -11,18 +11,14 @@
 (defn text-area-from-index [tabbed-panel i]
 	(select (.getComponentAt tabbed-panel i) [:#editor]))
 
-(def mouse-over-color (color 200 200 200))
-(def base-color (color 150 150 150))
-(def pressed-color (color 255 255 255))
-
-(def current-tab-color (atom base-color))
+(def repl-button-base-color (color 150 150 150))
 
 
 (defn paint-tab-button [proj-color c g]
 	"custom renderer for tab x"
   (let [w          (width c)
         h          (height c)
-        line-style (style :foreground base-color :stroke 2 :cap :round)
+        line-style (style :foreground repl-button-base-color :stroke 2 :cap :round)
         border-style (style :foreground proj-color :stroke 0.5)
         d 3
         lp 7]
