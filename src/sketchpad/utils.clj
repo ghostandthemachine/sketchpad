@@ -21,7 +21,7 @@
            (javax.swing.event CaretListener DocumentListener UndoableEditListener)
            (javax.swing.undo UndoManager)
            (org.fife.ui.rsyntaxtextarea RSyntaxDocument))
-  (:use [sketchpad.prefs]
+  (:use [sketchpad buffer-edit prefs]
         [seesaw.core :only (config config!)]))
 
 ;; general
@@ -96,9 +96,10 @@
         length (- (.getLineEndOffset text-pane line) start)]
     (.. text-pane getDocument (getText start length))))
 
-(defn append-text [text-pane text]
-  (when-let [doc (.getDocument text-pane)]
-    (.insertString doc (.getLength doc) text nil)))
+;; move to buffer edit
+; (defn append-text [text-pane text]
+;   (when-let [doc (.getDocument text-pane)]
+;     (.insertString doc (.getLength doc) text nil)))
 
 (defn get-coords [text-comp offset]
   (let [row (.getLineOfOffset text-comp offset)

@@ -11,6 +11,12 @@
 
 (def bg [39 40 34])
 
+;; currently editor components store seesaw meta
+;; for these components
+;; :file - the Document object for this buffer
+;; :project - this buffers parent project
+;; :state - this buffers dirty state
+
 (defn sketchpad-scroll-bar []
   (let [scroll-bar (JScrollBar. )]
     (.setUI scroll-bar (sketchpad-scroll-bar-ui))
@@ -30,18 +36,17 @@
                                                 :items [doc-scroll-pane] :class :rsta-scroller)
         doc-scroller-gutter     (.getGutter doc-scroll-pane)
         doc-container  			    (vertical-panel :border nil
-                                                :items [doc-scroller-container] :class :container)
-        undo-count (atom 0)]
+                                                :items [doc-scroller-container] :class :container)]
     (put-meta! doc-text-area :state state )
-    (put-meta! doc-text-area :undo-count undo-count)
-    (config/apply-editor-prefs! config/default-editor-prefs doc-text-area)
-    (install-auto-completion doc-text-area)
     (.setBorderColor doc-scroller-gutter (color 0 0 0 0))
     (.setBorder doc-scroll-pane (empty-border :thickness 0))
 
     (.setFont doc-text-area (Font. "Menlo" Font/BOLD 14))
     ;; attach caret listener to editor info component
-    (attach-caret-handler doc-text-area app-atom)
+    ; (attach-caret-handler doc-text-area app-atom)
         ;; set default input map
     (set-input-map! doc-text-area (default-input-map))
+    (config/apply-editor-prefs! config/default-editor-prefs doc-text-area)
+    (install-auto-completion doc-text-area)
+
     doc-container))

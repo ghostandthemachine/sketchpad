@@ -1,6 +1,7 @@
 (ns sketchpad.config
 	(:use [clojure.pprint]
-		  [clojure.java.io])
+		  [clojure.java.io]
+		  [sketchpad repl-communication])
 	(:require [seesaw.color :as c]
 			  [seesaw.keystroke :as key]
 			  [sketchpad.theme :as theme])
@@ -77,3 +78,11 @@
 	(doseq [[k pref] default-auto-completion-prefs]
 ;		(println k pref)
 		((k auto-completion-handlers) ac pref)))
+
+(defn load-initial-editor-ns [rsta]
+	(println "load initial editor repl namespaces\n" )
+	(doseq [ucmd default-initial-use-namespaces]
+		(send-to-editor-repl rsta (str "'" ucmd)))
+	(doseq [rcmd default-initial-require-namespaces]
+		(send-to-editor-repl rsta (str "'" rcmd))))
+

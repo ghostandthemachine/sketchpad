@@ -1,5 +1,5 @@
 (ns sketchpad.repl-writer
-	(:use [sketchpad.utils])
+	(:use [sketchpad buffer-edit utils])
 	(:require [sketchpad.repl :as srepl])
 	(:import [java.io.StringWriter])
 	)

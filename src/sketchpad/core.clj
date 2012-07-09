@@ -17,11 +17,12 @@
           [clooj.navigate]
           [clooj.dev-tools]
           [clooj.indent]
-          [sketchpad editor-info prefs auto-complete tab-manager utils filetree editor menu edit-mode default-mode completion-builder rsyntaxtextarea help])
+          [sketchpad prefs auto-complete tab-manager utils filetree editor menu edit-mode default-mode completion-builder rsyntaxtextarea help])
     (:require [sketchpad.theme :as theme]
     					[sketchpad.config :as config]
               [sketchpad.preview-manager :as pm]
-              [sketchpad.repl :as srepl]))
+              [sketchpad.repl :as srepl]
+              [sketchpad.project-manager :as project]))
 
 (defn set-laf [laf-string]
   (UIManager/setLookAndFeel laf-string))
@@ -37,23 +38,32 @@
 (defn create-app []
   (let [app-init  (atom {})
         ;; editor-info MUST init before editor so it is selectable
-        editor-info (editor-info app-init)
+        ; editor-info (editor-info app-init)
         ; search-toolbar (search-toolbar app-init)
-        ; info-panel (vertical-panel :items [editor-info])
         editor    (editor app-init)
 
         file-tree (file-tree app-init)
         repl      (srepl/repl app-init)
         
-        editor-panel (vertical-panel :border nil :items [editor editor-info])
+        ; info-panel (top-bottom-split search-toolbar editor-info)
+      
         doc-split-pane (left-right-split
                          file-tree
-                         editor-panel
+                         editor
                          :border (empty-border :thickness 0)
                          :divider-location 0.25
                          :resize-weight 0.25
                          :divider-size 3
                          :background config/app-color)
+        ; doc-info-split-pane (top-bottom-split 
+        ;               doc-split-pane
+        ;               info-panel
+        ;               ; :divider-location 0.66
+        ;               ; :resize-weight 0.66
+        ;               :divider-size 1
+        ;               :border (empty-border :thickness 0)
+        ;               :background config/app-color)
+
         split-pane (top-bottom-split 
                         doc-split-pane 
                         repl
@@ -74,6 +84,7 @@
                     overtone-handlers
                     (gen-map
                       frame
+                      ;info-panel
                       doc-split-pane
                       split-pane))]
     (config! doc-split-pane :background (color :black))
@@ -110,9 +121,9 @@
     ; (pm/make-preview app-atom)
 
     ;; create menus
-    (make-sketchpad-menus app)
+    (make-sketchpad-menus app-atom)
     ;; load projects
-    (doall (map #(add-project app %) (load-project-set)))
+    (doall (map #(project/add-project app %) (load-project-set)))
     (let [frame (app :frame)]
       (persist-window-shape sketchpad-prefs "main-window" frame) 
       (on-window-activation frame #(update-project-tree (app :docs-tree))))

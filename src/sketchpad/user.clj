@@ -1,4 +1,5 @@
 (ns sketchpad.user
+	(:use [sketchpad buffer-edit])
 	(:require [sketchpad.tab-manager :as tab]
 			  [sketchpad.rsyntaxtextarea :as rsta]
 			  [sketchpad.core :as core])
@@ -47,15 +48,10 @@
 
 	})
 
-(defn cur-rsta []
+(defn current-rsta []
 	(:current component-look-up-table))
 
 (defn make-icon []
 	
 )
 
-(defn append [kw value]
-	(when-let [doc (.getDocument (kw component-look-up-table))]
-    (.insertString doc (.getLength doc) (str value) nil)))
-	
-	

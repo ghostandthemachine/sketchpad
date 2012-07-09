@@ -30,7 +30,7 @@
           (swap! show-help-panel (fn [_] true))
           (add! (app :doc-split-pane) (app :docs-tree-panel))))))))
   
-(def show-editor (atom true))
+(defonce show-editor (atom true))
 
 (defn toggle-editor
   [app]
@@ -57,6 +57,18 @@
       (.setBottomComponent (app :split-pane) (app :repl-tabbed-panel))
       (.setDividerLocation (app :split-pane) @repl-divider-position)
       ; (.setDividerLocation (app :doc-split-pane) @file-tree-divider-position)
-      (.requestFocus (app :repl-tabbed-panel) true)
-      )))
+      (.requestFocus (app :repl-tabbed-panel) true))))
 
+(defonce show-search-panel (atom true))
+
+(defn toggle-search
+  [app-atom]
+  (if @show-search-panel
+    (do 
+      (swap! show-search-panel (fn [_] false))
+      (.remove (@app-atom :info-panel) (@app-atom :search-toolbar)))
+    (do 
+      (swap! show-search-panel (fn [_] true))
+      (.setTopComponent (@app-atom :info-panel) (@app-atom :search-toolbar))
+      (.requestFocus (@app-atom :search-toolbar) true)))
+      (println "toggle search: " @show-search-panel))

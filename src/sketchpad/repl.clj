@@ -6,17 +6,15 @@
                     StringReader PushbackReader)
            (clojure.lang LineNumberingPushbackReader)
            (java.awt Rectangle)
-           (java.util.concurrent LinkedBlockingDeque)
            (java.net URL URLClassLoader URLDecoder))
   (:use [sketchpad.utils :only (attach-child-action-keys attach-action-keys
-                            awt-event get-file-ns
-                            append-text when-lets get-text-str get-directories)]
+                            gen-map get-temp-file awt-event get-file-ns
+                            when-lets get-text-str get-directories)]
         [clooj.brackets :only (find-line-group find-enclosing-brackets)]
         [clooj.help :only (get-var-maps)]
-        [sketchpad.utils :only (gen-map get-temp-file)]
         [clj-inspector.jars :only (get-entries-in-jar jar-files)]
         [seesaw core color border meta]
-        [sketchpad rsyntaxtextarea tab-manager auto-complete app-cmd default-mode sketchpad-repl]
+        [sketchpad buffer-edit config repl-communication editor-repl rsyntaxtextarea tab-manager auto-complete app-cmd default-mode sketchpad-repl]
         [clojure.tools.nrepl.server :only (start-server stop-server)])
   (:require [clojure.string :as string]
             [sketchpad.rsyntax :as rsyntax]
@@ -33,7 +31,6 @@
 
 (def repl-history {:items (atom nil) :pos (atom 0) :last-end-pos (atom 0)})
 
-(def editor-repl-history {:items (atom (list "")) :pos (atom 0)}) 
 
 (def repl-history (atom {}))	
 
@@ -41,29 +38,29 @@
 
 (def repls (atom {}))
 
-(defn offer! 
-  "adds x to the back of queue q"
-  [q x] (.offer q x) q)
+; (defn offer! 
+;   "adds x to the back of queue q"
+;   [q x] (.offer q x) q)
 
-(defn take! 
-  "takes from the front of queue q.  blocks if q is empty"
-  [q] (.take q))
+; (defn take! 
+;   "takes from the front of queue q.  blocks if q is empty"
+;   [q] (.take q))
 
 (def ^:dynamic *printStackTrace-on-error* false)
 
-(defn tokens
-  "Finds all the tokens in a given string."
-  [text]
-  (re-seq #"[\w/\.]+" text))
+; (defn tokens
+;   "Finds all the tokens in a given string."
+;   [text]
+;   (re-seq #"[\w/\.]+" text))
 
-(defn namespaces-from-code
-  "Take tokens from text and extract namespace symbols."
-  [text]
-  (->> text tokens (filter #(.contains % "/"))
-       (map #(.split % "/"))
-       (map first)
-       (map #(when-not (empty? %) (symbol %)))
-       (remove nil?)))
+; (defn namespaces-from-code
+;   "Take tokens from text and extract namespace symbols."
+;   [text]
+;   (->> text tokens (filter #(.contains % "/"))
+;        (map #(.split % "/"))
+;        (map first)
+;        (map #(when-not (empty? %) (symbol %)))
+;        (remove nil?)))
 
 (defn is-eof-ex? [throwable]
   (and (instance? clojure.lang.LispReader$ReaderException throwable)
@@ -124,8 +121,7 @@
 (defn outside-repl-classpath [project-path]
   (let [clojure-jar-term (when-not (clojure-jar-location project-path)
                            (find-clojure-jar (.getClassLoader clojure.lang.RT)))]
-    (filter identity [(str project-path "lib/*")
-                      (str project-path "/src")
+    (filter identity [(str project-path "/src")
                       (when clojure-jar-term
                         clojure-jar-term)])))
 
@@ -136,6 +132,7 @@
         java (str (System/getProperty "java.home")
                   File/separator "bin" File/separator "java")
         classpath (outside-repl-classpath project-path)
+        _ (println classpath)
         classpath-str (apply str (interpose File/pathSeparatorChar classpath))
         _ (println classpath-str)
         builder (ProcessBuilder.
@@ -160,8 +157,8 @@
         (println "Could not create outside REPL for path: " project-path)))))
 
 
-(defn replace-first [coll x]
-  (cons x (next coll)))
+; (defn replace-first [coll x]
+;   (cons x (next coll)))
 
 (defn update-repl-history [app]
   (swap! (:items repl-history) replace-first
@@ -175,173 +172,14 @@
            (catch IllegalArgumentException e true) ;explicitly show duplicate keys etc.
            (catch Exception e false)))))
 
-(defn read-string-at [source-text start-line]
-  `(let [sr# (java.io.StringReader. ~source-text)
-         rdr# (proxy [clojure.lang.LineNumberingPushbackReader] [sr#]
-               (getLineNumber []
-                              (+ ~start-line (proxy-super getLineNumber))))]
-     (take-while #(not= % :EOF_REACHED)
-                 (repeatedly #(try (read rdr#)
-                                   (catch Exception e# :EOF_REACHED))))))
-
-(defn cmd-attach-file-and-line [cmd file line]
-  (let [read-string-code (read-string-at cmd line)
-        short-file (last (.split file "/"))
-        namespaces (namespaces-from-code cmd)]
-    ;(println namespaces)
-    (pr-str
-      `(do
-         (dorun (map #(try (require %) (catch Exception _#)) '~namespaces))
-         (binding [*source-path* ~short-file
-                   *file* ~file]
-           (last (map eval ~read-string-code)))))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;; Sketchpad ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn- get-classpath []
-   (sort (map (memfn getPath) 
-              (seq (.getURLs (java.lang.ClassLoader/getSystemClassLoader))))))
-
-;(def nrepl-index (atom 7000))
-;(defn next-nrepl-index [] 
-;	(swap! nrepl-index inc)
-;	@nrepl-index)
-;
-;(defn create-nrepl-server []
-;	(let [server-port (next-nrepl-index)
-;				classpath-str (get-classpath)
-;				server (start-server :port server-port)
-;				nrepl-server {:server server :port server-port :class-path classpath-str}]
-;		nrepl-server))
-;
-;(defn close-nrepl-server [server]
-;	(stop-server server))
-;	
-;(defn nrepl-cmd [port form] 
-;	(with-open [conn (repl/connect :port port)]
-;		(-> (repl/client conn 1000)    ; message receive timeout required
-;		    (repl/message {:op :eval :code (str form)})
-;		    repl/response-values)))
-
-;; editor repl functions
-(defn append-text-update [rsta s]
-  (append-text rsta (str s))
-  (.setCaretPosition rsta (.getLastVisibleOffset rsta)))
-
-(defn sketchpad-reader [q prompt exit]
-    (read-string (.take q))
-  )
-
-(defn sketchpad-prompt [rsta]
-  (append-text rsta (str \newline (ns-name *ns*) "=> "))
-  (.setCaretPosition rsta (.getLastVisibleOffset rsta)))
-
-(defn sketchpad-printer [rsta value]
-  ;; append text area
-  (append-text rsta (str value)))
-
-(defn create-editor-repl [repl-rsta]
-  (let [editor-repl-q (LinkedBlockingDeque. )
-        reader (partial sketchpad-reader editor-repl-q)
-        printer (partial sketchpad-printer repl-rsta)
-        prompt (partial sketchpad-prompt repl-rsta)]
-    (future 
-      (sketchpad-repl repl-rsta
-        :read reader
-        :print printer
-        :prompt prompt))
-    editor-repl-q))
-;; /editor-repl
-
-    
-(defn get-last-cmd [rta]
-  (let [text (config rta :text)]
-   (string/trim (last (string/split text #"=>")))))
-
-(defn clear-repl-input [rsta]
-  (let [end (last-visible-offset rsta)
-        trim-str (get-last-cmd rsta)
-        start (- end (count trim-str))]
-    (replace-range! rsta nil start end)))
-
-(defn append-history-text [rsta m]
-  (let [pos @(m :pos)
-        history-str (string/trim (str (nth @(m :items) pos)))]
-    (append-text-update rsta history-str)))
-
-(defn update-repl-history-display-position [rsta kw]
-  (let [repl-history (get-meta rsta :repl-history)
-        history-pos (repl-history :pos)
-        cmd (get-last-cmd rsta)]
-    (cond 
-      (= kw :dec)
-        (if (< @history-pos (- (count @(repl-history :items)) 1))
-            (swap! history-pos (fn [pos] (+ pos 1)))
-            (swap! history-pos (fn [pos] pos))) ;; go back to start of list
-      (= kw :inc)
-        (if (> @history-pos 1)
-						(swap! history-pos (fn [pos] (- pos 1)))
-            (swap! history-pos (fn [pos] pos)) ;; go to end of list
-            ))
-    (clear-repl-input rsta)
-    (append-history-text rsta repl-history)))
-
-      
-(defn send-to-project-repl
-  ([rsta cmd] (send-to-project-repl rsta cmd "NO_SOURCE_PATH" 0))
-  ([rsta cmd file line]
-  (awt-event
-    (let [cmd-ln (str \newline (.trim cmd) \newline)
-          cmd-trim (.trim cmd)]
-
-			;; go to next line
-      (append-text-update rsta (str \newline))
-			
-      (let [repl (get-meta rsta :repl)
-            repl-history (get-meta rsta :repl-history)
-            items (repl-history :items)
-            cmd-str (cmd-attach-file-and-line (get-last-cmd rsta) file line)]
-        ; (println "history items: -" @(@repl-history :items))
-        (binding [*out* (:input-writer repl)]
-          (println cmd-str)
-          (flush))
-       (when (not= cmd-trim (first @items))
-          (swap! items
-                 replace-first cmd-trim)
-          (swap! items conj ""))
-      	(swap! (repl-history :pos) (fn [pos] 0)) 
-      )))))
-
-
-(defn send-to-editor-repl
-  ([rsta cmd] (send-to-editor-repl rsta cmd "NO_SOURCE_PATH" 0) :repl)
-  ([rsta cmd file line] (send-to-editor-repl rsta cmd file line :file))
-  ([rsta cmd file line src-key]
-   (awt-event   
-    (let [repl-history (get-meta rsta :repl-history)
-          cmd-ln (str \newline (.trim cmd) \newline)
-          cmd-trim (.trim cmd)
-          items (repl-history :items)]
-   ; (println (repl-history :items))
-
-      ;; go to next line
-      (append-text-update rsta (str \newline))
-      
-      (let [cmd-str (cmd-attach-file-and-line cmd file line)
-      			repl-history (get-meta rsta :repl-history)]
-        (offer! (get-meta rsta :repl-que) cmd-str))
-        (when (not= cmd-trim (first @items))
-          (swap! items
-                 replace-first cmd-trim)
-          (swap! items conj ""))
-        (swap! (repl-history :pos) (fn [pos] 0))
-      	; (println "history: " repl-history)
-      ))))
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;; / Sketchpad ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; (defn read-string-at [source-text start-line]
+;   `(let [sr# (java.io.StringReader. ~source-text)
+;          rdr# (proxy [clojure.lang.LineNumberingPushbackReader] [sr#]
+;                (getLineNumber []
+;                               (+ ~start-line (proxy-super getLineNumber))))]
+;      (take-while #(not= % :EOF_REACHED)
+;                  (repeatedly #(try (read rdr#)
+;                                    (catch Exception e# :EOF_REACHED))))))
 
 
 (defn send-to-repl
@@ -572,7 +410,6 @@
 (defn print-stack-trace [app]
     (send-to-repl app "(.printStackTrace *e)"))
 
-
 (defn repl
   [app-atom]
   (let [repl-tabbed-panel   (tabbed-panel :placement :top
@@ -596,6 +433,7 @@
         repl-undo-count (atom 0)
         repl-que (create-editor-repl editor-repl)]
 
+		;; setup editor repl component
  		(put-meta! editor-repl :repl-history repl-history)
  		(put-meta! editor-repl :repl-que repl-que)
             ;; set tab ui
@@ -611,21 +449,16 @@
 
     ;; add the default repl tab
     (add-tab! repl-tabbed-panel "sketchpad" repl-container)
-
-    ; (config! repl-in-scroll-pane :background config/app-color)
-    ; (install-auto-completion editor-repl)
-    ; (set-input-map! editor-repl (default-input-map))
-    ; (config/apply-editor-prefs! config/default-editor-prefs editor-repl)
-    ;; apply config prefs
-    (config! repl-in-scroll-pane :background config/app-color)
-    (config/apply-editor-prefs! config/default-editor-prefs editor-repl)
     ;;input map
     (set-input-map! editor-repl (default-input-map))
     ;; attach handlers
     (add-repl-input-handler editor-repl)
     ;; auto completion
     (install-auto-completion editor-repl)
-
+    ;; apply config prefs
+    (config! repl-in-scroll-pane :background config/app-color)
+    (config/apply-editor-prefs! config/default-editor-prefs editor-repl)
+    ; (load-initial-editor-ns editor-repl)
     (swap! app-atom conj (gen-map
                             repl-tabbed-panel
                             repl-que

@@ -1,7 +1,7 @@
+(use '[seesaw color])
 
-
-(def sketchpad-prefs
-	{:clojure-version "1.3"})
+; (def sketchpad-prefs
+; 	{:clojure-version "1.3"})
 
 (def default-background-color [39 49 34])
 
@@ -39,7 +39,7 @@
   	:auto-complete-single-choice false
   	:show-description-window true
   	:description-window-size [600 300]
-	:parameter-assistance true
+		:parameter-assistance true
   	:trigger-key "control SPACE"
   	})
 
@@ -56,6 +56,13 @@
    })
 
   (def default-project-style-prefs
-  	{
-			:indicator-colors [:orange :green :yellow :blue :red :purple :pink]
-  	})
+  	[(color :orange) (color :green) (color :yellow) (color :blue) (color :red) (color :purple) (color :pink)]
+  	)
+
+  (def default-initial-use-namespaces
+  	"[sketchpad.user
+  	  clojure.pprint]")
+
+  (def default-initial-require-namespaces
+  	"[clojure.string :as string]")
+  	 

@@ -1,6 +1,6 @@
 (ns sketchpad.rsyntaxtextarea
-  (:import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea
-           javax.swing.JComponent))
+  (:import (org.fife.ui.rsyntaxtextarea RSyntaxTextArea)
+           (javax.swing JComponent)))
 
 (defn background-for-token-type
 "wrapper type:  :getter
@@ -243,7 +243,7 @@
   interop fn:  Rsyntaxtextarea.
  return-type:  "
   [obj x]
-  (RSyntaxTextArea. obj x))
+  (RSyntaxTextArea. x))
 
 (defn rsyntaxtextarea
 "wrapper type:  :constructor
@@ -252,7 +252,7 @@
   interop fn:  Rsyntaxtextarea.
  return-type:  "
   [obj x y z]
-  (RSyntaxTextArea. obj x y z))
+  (RSyntaxTextArea. x y z))
 
 (defn syntax-scheme-property
 "wrapper type:  :unknown
@@ -684,7 +684,7 @@
   interop fn:  Rsyntaxtextarea.
  return-type:  "
   [obj x]
-  (RSyntaxTextArea. obj x))
+  (RSyntaxTextArea. x))
 
 (defn add-parser!
 "wrapper type:  :should-have-bang
@@ -909,7 +909,7 @@
   interop fn:  Rsyntaxtextarea.
  return-type:  "
   [obj x y]
-  (RSyntaxTextArea. obj x y))
+  (RSyntaxTextArea. x y))
 
 (defn rsyntaxtextarea
 "wrapper type:  :constructor
@@ -918,7 +918,7 @@
   interop fn:  Rsyntaxtextarea.
  return-type:  "
   [obj]
-  (RSyntaxTextArea. obj))
+  (RSyntaxTextArea.))
 
 (defn match
 "wrapper type:  :unknown
@@ -1098,7 +1098,7 @@
   interop fn:  Rsyntaxtextarea.
  return-type:  "
   [obj x]
-  (RSyntaxTextArea. obj x))
+  (RSyntaxTextArea. x))
 
 (defn replace-range! [rsta s start end]
   "Replaces text from the indicated start to end position with the new text specified. Does nothing if the model is null. Simply does a delete if the new string is null or empty.

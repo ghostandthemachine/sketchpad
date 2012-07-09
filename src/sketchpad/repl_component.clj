@@ -1,9 +1,9 @@
  (ns sketchpad.repl-component
    (:use [seesaw core border meta color]
-       [sketchpad repl auto-complete rsyntaxtextarea default-mode]
+       [sketchpad buffer-edit repl auto-complete rsyntaxtextarea default-mode]
        [sketchpad.utils :only (attach-child-action-keys attach-action-keys
                             awt-event get-file-ns
-                            append-text when-lets get-text-str get-directories)]
+                            when-lets get-text-str get-directories)]
        )
    (:require [sketchpad.rsyntax :as rsyntax]
              [sketchpad.rtextscrollpane :as sp]
@@ -44,6 +44,7 @@
     (put-meta! rsta :state state)
     (put-meta! rsta :repl repl)
  		(put-meta! rsta :repl-history repl-history)
+    (put-meta! rsta :project-path project-path)
     ;; apply config prefs
     (config! repl-scroll-pane :background config/app-color)
     (config/apply-editor-prefs! config/default-editor-prefs rsta)

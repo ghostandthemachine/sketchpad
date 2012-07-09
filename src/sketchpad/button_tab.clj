@@ -18,7 +18,7 @@
 (def current-tab-color (atom base-color))
 
 
-(defn paint-tab-button [c g]
+(defn paint-tab-button [proj-color c g]
 	"custom renderer for tab x"
   (let [;; this gets the parent JTabbedPane via component -> BasicTabbedPaneUI -> JTabbedPane
 		tabbed-pane (.. c getParent getParent getParent) 
@@ -26,29 +26,34 @@
 		w          (width c)
         h          (height c)
         line-style (style :foreground base-color :stroke 2 :cap :round)
-        ellipse-style (style :foreground base-color :background base-color :stroke 2 :cap :round)
-        d 2]
+        border-style (style :foreground proj-color :stroke 0.5)
+        ellipse-style (style :foreground base-color :background base-color :stroke 1 :cap :round)
+        d 3
+        lp 7]
     (cond
      	clean?
 	    ;; in clean state draw an X to close the tab
-	    (draw g
-	      (line d d (- w d) (- h d)) line-style
-	      (line d (- h d) (- w d) d) line-style)
+	    (do 
+	    	(draw g
+	      		(line lp lp (- w lp) (- h lp)) line-style
+	      		(line lp (- h lp) (- w lp) lp) line-style
+	      		(rounded-rect d d (- w d d) (- h d d) 5 5) border-style))
     	(not clean?)
     	;; in dirty state draw circle to indicate 
-    	(draw g
-	      (ellipse d d (- w d d) (- h d d)) ellipse-style)
-    	)
-    ))
+    	(do 
+    		(draw g
+	      		(ellipse lp lp (- w lp lp) (- h lp lp)) ellipse-style
+	      		(rounded-rect d d (- w d d) (- h d d) 5 5) border-style)))
+    	))
 
-(defn tab-button [tabbed-pane parent-tab app state]
+(defn tab-button [tabbed-pane parent-tab app state c]
 	(let [btn (button :focusable? false
 										:tip "close this tab"
-										:minimum-size [8 :by 8]
-										:size [8 :by 8]
+										:minimum-size [20 :by 20]
+										:size [20 :by 20]
 										:id :close-button
 										; :border (empty-border :thickness 1)
-										:paint paint-tab-button)]
+										:paint (partial paint-tab-button c))]
 		(doto btn
 			(.setBorderPainted false)
 			; (.setContentAreaFilled false)
@@ -57,13 +62,13 @@
 		(put-meta! btn :state state)
 		btn))
 
-(defn button-tab [app tabbed-panel i]
+(defn button-tab [app tabbed-panel i c]
 	(let [rta (text-area-from-index tabbed-panel i)
 				state (get-meta rta :state)
 				btn-tab (flow-panel :align :right
 														; :border (empty-border :thickness 5)
 														)
-				btn (tab-button tabbed-panel btn-tab app state)
+				btn (tab-button tabbed-panel btn-tab app state c)
 				label (proxy [JLabel] []
 								(getText []
 									(let [index (.indexOfTabComponent tabbed-panel btn-tab)]

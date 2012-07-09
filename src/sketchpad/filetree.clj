@@ -1,13 +1,15 @@
 (ns sketchpad.filetree
     (:use [seesaw core keystroke border meta]
-          [sketchpad utils editor tab-builder prefs]
+          [sketchpad utils editor tab-builder prefs buffer-edit]
           [clojure.pprint])
     (:require [seesaw.color :as c]
               [seesaw.chooser :as chooser]
               [sketchpad.config :as config]
               [clojure.java.io :as io]
+              [clojure.string :as string]
               [sketchpad.preview-manager :as preview]
-              [sketchpad.file-manager :as fm])
+              [sketchpad.file-manager :as fm]
+              [sketchpad.project-manager :as project])
     (:import 
            (java.io File StringReader BufferedWriter OutputStreamWriter FileOutputStream)
            (java.awt GridLayout)
@@ -24,9 +26,6 @@
 (def project-map (atom {}))
 ;; setup
 
-(defn add-project [app project-path]
-  (swap! project-set conj project-path)
-  (swap! project-map (fn [pm] (assoc pm project-path {:repls nil :tabs nil}))))
 
 (defn save-project-set []
   (write-value-to-prefs sketchpad-prefs "project-set" @project-set))
@@ -331,7 +330,7 @@
   (when-let [dir (choose-directory (app :f) "Choose a project directory")]
     (let [project-dir (if (= (.getName dir) "src") (.getParentFile dir) dir)]
       (write-value-to-prefs sketchpad-prefs "last-open-dir" (.getAbsolutePath (.getParentFile project-dir)))
-      (add-project app (.getAbsolutePath project-dir))
+      (project/add-project app (.getAbsolutePath project-dir))
       (update-project-tree (:docs-tree app))
       (when-let [clj-file (or (-> (File. project-dir "src")
                                  .getAbsolutePath
@@ -347,7 +346,7 @@
         (let [path (.getAbsolutePath dir)]
           (.mkdirs (File. dir "src"))
           (new-project-clj app dir)
-          (add-project app path)
+          (project/add-project app path)
           (update-project-tree (:docs-tree app))
           (set-tree-selection (app :docs-tree) path)
           (create-file app dir (str (.getName dir) ".core")))))
@@ -400,6 +399,7 @@
   [e]
   (= (.getClickCount e) 2))
 
+
 (defn handle-filetree-double-click
   [e app]
   (let [tree (:docs-tree app)
@@ -432,10 +432,12 @@
 (defn handle-double-click [row path app-atom]
   ; (.setSelectionRow (@app-atom :docs-tree) row)
   (try 
-    (let [file (.. path getLastPathComponent getUserObject)]
+    (let [file (.. path getLastPathComponent getUserObject)
+    			proj (.getPathComponent path 1)
+    			proj-str (trim-parens (last (string/split (.toString proj) #"   ")))]
       (when (fm/text-file? file)
         (do 
-          (new-file-tab! app-atom file)
+          (new-file-tab! app-atom file proj-str)
           (save-tree-selection tree path)
           ; (save-tab-selections @app-atom)
           )
@@ -598,6 +600,8 @@
       )
 
     (swap! app-atom conj (gen-map
+                            project-set
+                            project-map
                             docs-tree
                             docs-tree-scroll-pane
                             docs-tree-label

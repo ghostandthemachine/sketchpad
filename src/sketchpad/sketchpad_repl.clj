@@ -1,6 +1,6 @@
 (ns sketchpad.sketchpad-repl
 	(:use [clojure.main]
-		  [sketchpad.utils])
+		  [sketchpad buffer-edit utils])
 	(:import [clojure.lang LineNumberingPushbackReader])
 	; (:require [clojure.main :as main])
 )
@@ -11,7 +11,7 @@
 	[rsta]
 	(let [writer (proxy [java.io.StringWriter] []
 		(append 
-		([^java.lang.CharSequence csq]
+		([csq]
 			(proxy-super append csq))
 		([csq arg]	
 			(proxy-super append csq arg))
@@ -30,17 +30,14 @@
 
 		(toString [] 
 			(proxy-super toString))
-
-		
-
+			
 		(write 
 		([c]
-			(append-text rsta (str c))
+			(append-text rsta c)
 			(proxy-super write c))
 		([cbuf off len]
 			(append-text rsta (str cbuf))
-			(proxy-super write cbuf off len)))
-	)]
+			(proxy-super write cbuf off len))))]
 		writer))
 
 		

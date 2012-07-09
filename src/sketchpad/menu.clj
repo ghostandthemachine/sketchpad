@@ -1,8 +1,8 @@
 (ns sketchpad.menu
   (:use [clojure.pprint]
         [seesaw core keystroke meta]
-        [sketchpad repl-tab-builder tab-builder help file-manager tab-manager repl utils edit-menu vim-mode default-mode edit-mode vim-mode layout-config toggle-vim-mode-action filetree completion-builder]
-        [clooj project dev-tools indent editor doc-browser search style indent])
+        [sketchpad repl-tab-builder tab-builder help file-manager tab-manager repl-communication utils edit-menu vim-mode default-mode edit-mode vim-mode layout-config toggle-vim-mode-action filetree completion-builder]
+        [clooj project dev-tools indent editor doc-browser style indent])
   (:require 
         [sketchpad.rtextscrollpane :as sp]
         [sketchpad.rsyntaxtextarea :as cr]
@@ -168,22 +168,22 @@
                            :listen [:action (fn [_] (remove-project app))])]))
 
 (defn make-source-menu
-  [app]
+  [app-atom]
   (menu :text "Source"
         :mnemonic "U"
         :items [(menu-item :text "Comment-out" 
                            :mnemonic "C" 
                            :key (keystroke "meta SEMICOLON") 
-                           :listen [:action (fn [_] (comment-out (:doc-text-area app)))])
+                           :listen [:action (fn [_] (comment-out (:doc-text-area @app-atom)))])
                 (menu-item :text "Uncomment-out" 
                            :mnemonic "U" 
                            :key (keystroke "meta shift SEMICOLON") 
-                           :listen [:action (fn [_] (uncomment-out (:doc-text-area app)))])
+                           :listen [:action (fn [_] (uncomment-out (:doc-text-area @app-atom)))])
                 (separator)
-               ; (menu-item :text "Find" 
-               ;            :mnemonic "F" 
-               ;            :key (keystroke "meta F") 
-               ;            :listen [:action (fn [_] (println "toggle search") (toggle-search app))])
+                (menu-item :text "Find" 
+                           :mnemonic "F" 
+                           :key (keystroke "meta F") 
+                           :listen [:action (fn [_] (toggle-search app-atom))])
                ; (menu-item :text "Find next" 
                ;            :mnemonic "N" 
                ;            :key (keystroke "meta G") 
@@ -199,13 +199,13 @@
                (separator)
                 (menu-item :text "Begin recording macro..." 
                            :key (keystroke "ctrl Q") 
-                           :listen [:action (fn [_] (toggle-macro-recording! app))])
+                           :listen [:action (fn [_] (toggle-macro-recording! @app-atom))])
                 (menu-item :text "End recording macro..." 
                            :key (keystroke "ctrl Q") 
-                           :listen [:action (fn [_] (toggle-macro-recording! app))])
+                           :listen [:action (fn [_] (toggle-macro-recording! @app-atom))])
                 (menu-item :text "Playback last macro..." 
                            :key (keystroke "ctrl shift Q") 
-                           :listen [:action (fn [_] (playback-last-macro app))])]))
+                           :listen [:action (fn [_] (playback-last-macro @app-atom))])]))
 
 (defn use-reload-current-file-ns
   [app]
@@ -230,49 +230,50 @@
       )))
 
 (defn make-repl-menu
-  [app]
+  [app-atom]
   (menu :text "REPL"
         :mnemonic "R"
         :items [  (menu-item :text "Create new REPL" 
                              :mnemonic "N" 
                              :key (keystroke "meta control R") 
-                             :listen [:action (fn [_] (new-repl-tab! app))])
-        					(menu-item :text "Evaluate form" 
-                             :mnemonic "E" 
-                             :key (keystroke "meta shift ENTER") 
-                             :listen [:action (fn [_] (send-selected-to-repl app))])
-                  (menu-item :text "Evaluate entire file" 
-                             :mnemonic "F" 
-                             :key (keystroke "meta shift E")
-                             :listen [:action (fn [_] (send-doc-to-repl app))])
-                  (separator)
-                  (menu-item :text "Apply file ns"
-                             :mnemonic "A"
-                             :key (keystroke "meta control A")
-                             :listen [:action  (fn [_] (apply-namespace-to-repl app))])
-                  (separator)
-                  (menu-item :text "Use :reload file"
-                             :mnemonic "U"
-                             :key (keystroke "meta shift U")
-                             :listen [:action (fn [_] (use-reload-current-file-ns app))])
-                  (menu-item :text "Require :reload file"
-                             :mnemonic "R"
-                             :key (keystroke "meta shift R")
-                             :listen [:action (fn [_] (require-reload-current-file-ns app))])
-                  (menu-item :text "Switch to current file ns"
-                             :mnemonic "I"
-                             :key (keystroke "meta shift I")
-                             :listen [:action (fn [_] (in-ns-current-file-ns app))])
+                             :listen [:action (fn [_] (new-repl-tab! app-atom))])
+        					; (menu-item :text "Evaluate form" 
+             ;                 :mnemonic "E" 
+             ;                 :key (keystroke "meta shift ENTER") 
+             ;                 :listen [:action (fn [_] (send-selected-to-repl app))])
+             ;      (menu-item :text "Evaluate entire file" 
+             ;                 :mnemonic "F" 
+             ;                 :key (keystroke "meta shift E")
+             ;                 :listen [:action (fn [_] (send-doc-to-repl app))])
+             ;      (separator)
+             ;      (menu-item :text "Apply file ns"
+             ;                 :mnemonic "A"
+             ;                 :key (keystroke "meta control A")
+             ;                 :listen [:action  (fn [_] (apply-namespace-to-repl app))])
+             ;      (separator)
+             ;      (menu-item :text "Use :reload file"
+             ;                 :mnemonic "U"
+             ;                 :key (keystroke "meta shift U")
+             ;                 :listen [:action (fn [_] (use-reload-current-file-ns app))])
+             ;      (menu-item :text "Require :reload file"
+             ;                 :mnemonic "R"
+             ;                 :key (keystroke "meta shift R")
+             ;                 :listen [:action (fn [_] (require-reload-current-file-ns app))])
+             ;      (menu-item :text "Switch to current file ns"
+             ;                 :mnemonic "I"
+             ;                 :key (keystroke "meta shift I")
+             ;                 :listen [:action (fn [_] (in-ns-current-file-ns app))])
                   (separator)
 ;                  (menu-item :text "Restart"
 ;                             :mnemonic "R"
 ;                             :key (keystroke "meta R")
 ;                             :listen [:action (fn [_] (restart-repl app (first (get-selected-projects app))))])
 ;                  (separator)
-                  (menu-item :text "Print stack trace for last error"
-                             :mnemonic "T"
-                             :key (keystroke "meta T")
-                             :listen [:action (fn [_] (print-stack-trace app))])]))
+                  ; (menu-item :text "Print stack trace for last error"
+                  ;            :mnemonic "T"
+                  ;            :key (keystroke "meta T")
+                  ;            :listen [:action (fn [_] (print-stack-trace app))])
+                  ]))
 
 (defn make-view-menu
   [app]
@@ -319,16 +320,17 @@
         :items []))
 
 (defn make-sketchpad-menus
-  [app]
-  (config! 
-    (:frame app) :menubar 
-                    (menubar :items [ (make-file-menu app)
-                                      (make-edit-menu app)
-                                      (make-project-menu app)
-                                      (make-source-menu app)
-                                      (make-repl-menu app)
-                                      (make-view-menu app)
-                                      (make-help-menu app)])))
+  [app-atom]
+  (let [app @app-atom]
+    (config! 
+      (:frame @app-atom) :menubar 
+                      (menubar :items [ (make-file-menu app)
+                                        (make-edit-menu app)
+                                        (make-project-menu app)
+                                        (make-source-menu app-atom)
+                                        (make-repl-menu app-atom)
+                                        (make-view-menu app)
+                                        (make-help-menu app)]))))
 
 
 
