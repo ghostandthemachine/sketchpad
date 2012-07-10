@@ -14,7 +14,7 @@
         [clooj.help :only (get-var-maps)]
         [clj-inspector.jars :only (get-entries-in-jar jar-files)]
         [seesaw core color border meta]
-        [sketchpad buffer-edit config repl-communication editor-repl rsyntaxtextarea tab-manager auto-complete app-cmd default-mode sketchpad-repl]
+        [sketchpad repl-dep-loader buffer-edit config repl-communication editor-repl rsyntaxtextarea tab-manager auto-complete app-cmd default-mode sketchpad-repl]
         [clojure.tools.nrepl.server :only (start-server stop-server)])
   (:require [clojure.string :as string]
             [sketchpad.rsyntax :as rsyntax]
@@ -32,35 +32,13 @@
 (def repl-history {:items (atom nil) :pos (atom 0) :last-end-pos (atom 0)})
 
 
-(def repl-history (atom {}))	
+(def repl-history (atom {}))  
 
 ; (defn creatae-new-repl-history [])
 
 (def repls (atom {}))
 
-; (defn offer! 
-;   "adds x to the back of queue q"
-;   [q x] (.offer q x) q)
-
-; (defn take! 
-;   "takes from the front of queue q.  blocks if q is empty"
-;   [q] (.take q))
-
 (def ^:dynamic *printStackTrace-on-error* false)
-
-; (defn tokens
-;   "Finds all the tokens in a given string."
-;   [text]
-;   (re-seq #"[\w/\.]+" text))
-
-; (defn namespaces-from-code
-;   "Take tokens from text and extract namespace symbols."
-;   [text]
-;   (->> text tokens (filter #(.contains % "/"))
-;        (map #(.split % "/"))
-;        (map first)
-;        (map #(when-not (empty? %) (symbol %)))
-;        (remove nil?)))
 
 (defn is-eof-ex? [throwable]
   (and (instance? clojure.lang.LispReader$ReaderException throwable)
@@ -131,12 +109,10 @@
   (let [clojure-jar (clojure-jar-location project-path)
         java (str (System/getProperty "java.home")
                   File/separator "bin" File/separator "java")
-        classpath (outside-repl-classpath project-path)
-        _ (println classpath)
-        classpath-str (apply str (interpose File/pathSeparatorChar classpath))
-        _ (println classpath-str)
+        pomegranate-path (str "~/.m2/repository/com/cemerick/pomegranate/pomegranate-0.0.13.jar")
+        classpath (str clojure-jar ":" project-path "/src" ":" pomegranate-path)
         builder (ProcessBuilder.
-                  [java "-cp" classpath-str "clojure.main"])]
+                  [java "-cp" classpath "clojure.main"])]
     (.redirectErrorStream builder true)
     (.directory builder (File. (or project-path ".")))
     (try
@@ -156,10 +132,6 @@
       (catch java.io.IOException e
         (println "Could not create outside REPL for path: " project-path)))))
 
-
-; (defn replace-first [coll x]
-;   (cons x (next coll)))
-
 (defn update-repl-history [app]
   (swap! (:items repl-history) replace-first
          (get-text-str (app :editor-repl))))
@@ -171,16 +143,6 @@
            true
            (catch IllegalArgumentException e true) ;explicitly show duplicate keys etc.
            (catch Exception e false)))))
-
-; (defn read-string-at [source-text start-line]
-;   `(let [sr# (java.io.StringReader. ~source-text)
-;          rdr# (proxy [clojure.lang.LineNumberingPushbackReader] [sr#]
-;                (getLineNumber []
-;                               (+ ~start-line (proxy-super getLineNumber))))]
-;      (take-while #(not= % :EOF_REACHED)
-;                  (repeatedly #(try (read rdr#)
-;                                    (catch Exception e# :EOF_REACHED))))))
-
 
 (defn send-to-repl
   ([app cmd] (send-to-repl app cmd "NO_SOURCE_PATH" 0) :repl)
@@ -243,52 +205,25 @@
   (let [text (->> app :doc-text-area .getText)]
     (send-to-repl app text (relative-file app) 0)))
 
-; (defn make-repl-writer [ta-out]
-;   (->
-;     (let [buf (agent (StringBuffer.))]
-;       (proxy [Writer] []
-;         (write
-;           ([char-array offset length]
-;             ; (println "char array:" (apply str char-array) (count char-array))
-;             (awt-event 
-;               (append-text-update ta-out (apply str char-array))
-;               ; (swap! (:last-end-pos repl-history) (fn [_] (.getLastVisibleOffset ta-out)))
-;               ))
-;           ([^Integer t]
-;             ; (println "Integer: " t (type t))
-;             (awt-event (append-text-update ta-out (str (char t))))))
-;         (flush [] (awt-event (scroll-to-last ta-out)))
-;         (close [] nil)))
-;     (PrintWriter. true)))
-  
 (defn update-repl-text [app]
   (let [rsta (:editor-repl app)
         last-pos @(:last-end-pos repl-history)
         items @(:items repl-history)]
     (when (pos? (count items))
-      ; (println "last-pos: " last-pos " last-visible-offset: " (.getLastVisibleOffset rsta) " last-pos - last-string-size: " (- last-pos (count (nth items (- @(:pos repl-history) 1)))) )
-      ; (println (- (.getLastVisibleOffset rsta) last-pos))
       ;; clear the last history if needed
       (if (> (- (.getLastVisibleOffset rsta) last-pos) 0)
         (do 
-        ; (println "remove last string from: " (- last-pos (count (nth items (- @(:pos repl-history) 1)))))
-          ; (.remove (.. rsta getDocument) (- last-pos (count (nth items (- @(:pos repl-history) 1)))) (count (nth items (- @(:pos repl-history) 1))))
           ;; insert the text
            (.insert rsta 
                 (nth items @(:pos repl-history))
                 (- last-pos (count (nth items (- @(:pos repl-history) 1)))))
         )
         (do 
-          ; (println "remove last string from: " last-pos " of length: " (- (.getLastVisibleOffset rsta) last-pos))
+           (println "remove last string from: " last-pos " of length: " (- (.getLastVisibleOffset rsta) last-pos))
           ;; insert the text
           (.insert rsta 
             (nth items @(:pos repl-history))
-            last-pos)
-          )
-          )
-        )
-      ; (println "insert repl histoy string: " (nth items @(:pos repl-history)) (- last-pos (count (nth items (- @(:pos repl-history) 1)))))
-      ))
+            last-pos))))))
 
 (defn show-previous-repl-entry [app]
   (when (zero? @(:pos repl-history))
@@ -334,7 +269,7 @@
 
 (defn add-repl-input-handler [rsta]
   (let [ta-in rsta
-  			editor-repl-history (get-meta rsta :repl-history)
+        editor-repl-history (get-meta rsta :repl-history)
         get-caret-pos #(.getCaretPosition ta-in)
         ready #(let [caret-pos (get-caret-pos)
                      txt (.getText ta-in)
@@ -360,8 +295,6 @@
                       (.getLineOfOffset ta-in (.. ta-in getText length)))
         prev-hist #(update-repl-history-display-position ta-in :dec)
         next-hist #(update-repl-history-display-position ta-in :inc)]
-
-        ; (println editor-repl-history)
     (attach-child-action-keys ta-in ;["control UP" at-top prev-hist]
                                     ;["control DOWN" at-bottom next-hist]
                                     ["ENTER" ready submit])
@@ -422,9 +355,7 @@
                                       :id             :editor
                                       :class          :repl)
 
-			 	repl-history {:items (atom nil) :pos (atom 0) :last-end-pos (atom 0)}
-                                      
-        ; repl-out-writer   (make-repl-writer editor-repl app-atom)
+        repl-history {:items (atom nil) :pos (atom 0) :last-end-pos (atom 0)}
         repl-in-scroll-pane (RTextScrollPane. editor-repl false) ;; default to no linenumbers
         repl-container (vertical-panel 
                                       :items          [repl-in-scroll-pane]                                      
@@ -433,15 +364,14 @@
         repl-undo-count (atom 0)
         repl-que (create-editor-repl editor-repl)]
 
-		;; setup editor repl component
- 		(put-meta! editor-repl :repl-history repl-history)
- 		(put-meta! editor-repl :repl-que repl-que)
+    ;; setup editor repl component
+    (put-meta! editor-repl :repl-history repl-history)
+    (put-meta! editor-repl :repl-que repl-que)
             ;; set tab ui
     (.setUI repl-tabbed-panel (rtab/sketchpad-repl-tab-ui repl-tabbed-panel))
     (listen repl-tabbed-panel :selection 
        (fn [e] 
          (let [num-tabs (tab-count repl-tabbed-panel)]
-          ; (println "num-tabs: " num-tabs)
           (if (> 0 num-tabs)
             ;; update the current rsta  
             (swap! app-atom (fn [app] (assoc app :current-repl (current-text-area (app :repl-tabbed-panel)))))            
@@ -464,11 +394,8 @@
                             repl-que
                             editor-repl
                             repl-in-scroll-pane
-                            repl-container
-                            ))
-    repl-tabbed-panel
-    ))
-
+                            repl-container))
+    repl-tabbed-panel))
 
 
 

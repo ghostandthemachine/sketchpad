@@ -3,7 +3,7 @@
 					(java.io File StringReader BufferedWriter OutputStreamWriter FileOutputStream)
 					(javax.swing JButton JOptionPane JWindow ImageIcon)
 					(javax.swing.event DocumentListener))
-	(:use [sketchpad tab-manager project-manager option-windows editor-component file-manager button-tab prefs]
+	(:use [sketchpad styles tab-manager project-manager option-windows editor-component file-manager button-tab prefs]
 				[clojure pprint]
 				[seesaw meta core border])
 	(:require [clojure.string :as str]
@@ -49,7 +49,8 @@
 									close-button (select tab [:#close-button])
 									tab-label (first (select tab [:.tab-label]))
 									tab-state (get-meta rsta :state)
-									clean (@tab-state :clean)]
+									clean (@tab-state :clean)
+									current-tab-color (atom base-color)]
 									;; link the tab for this component for updating clean indicator
 									(put-meta! rsta :tab tab)
 									;; set the tab index in the editor component state map

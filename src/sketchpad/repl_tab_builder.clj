@@ -3,17 +3,11 @@
 					(java.io File StringReader BufferedWriter OutputStreamWriter FileOutputStream)
 					(javax.swing JButton JOptionPane JWindow ImageIcon)
 					(javax.swing.event DocumentListener))
-	(:use [sketchpad project-manager buffer-edit option-windows repl utils tab-manager repl-component repl-button-tab prefs]
+	(:use [sketchpad styles project-manager buffer-edit option-windows repl utils tab-manager repl-component repl-button-tab prefs]
 				[clojure pprint]
 				[seesaw meta core border color])
 	(:require [clojure.string :as str])
 	)
-
-(def mouse-over-color (color 200 200 200))
-(def base-color (color 150 150 150))
-(def pressed-color (color 255 255 255))
-
-(def current-tab-color (atom base-color))
 
 (defn add-mouse-handlers [app-atom panel rsta btn repl-component current-tab-color]
 	;; add tab listeners here because they use tab-manager functions and we need
@@ -38,7 +32,7 @@
  				cur-project-path (get-current-project app-atom)
  				project-map (app :project-map)
  				tabbed-panel (app :repl-tabbed-panel)
-		 		repl-component (make-repl-component app nil)
+		 		repl-component (make-repl-component app cur-project-path)
 		 		rsta (select repl-component [:#editor])
 		 		tab-title (str "REPL# " (+ (tab-count tabbed-panel) 1))
 		 		cur-buffer (current-text-area (app :editor-tabbed-panel))

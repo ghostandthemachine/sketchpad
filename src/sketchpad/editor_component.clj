@@ -38,15 +38,43 @@
         doc-container  			    (vertical-panel :border nil
                                                 :items [doc-scroller-container] :class :container)]
     (put-meta! doc-text-area :state state )
-    (.setBorderColor doc-scroller-gutter (color 0 0 0 0))
     (.setBorder doc-scroll-pane (empty-border :thickness 0))
 
-    (.setFont doc-text-area (Font. "Menlo" Font/BOLD 14))
+    (.setFont doc-text-area (Font. "Menlo" Font/BOLD 13))
     ;; attach caret listener to editor info component
     ; (attach-caret-handler doc-text-area app-atom)
         ;; set default input map
     (set-input-map! doc-text-area (default-input-map))
     (config/apply-editor-prefs! config/default-editor-prefs doc-text-area)
     (install-auto-completion doc-text-area)
-
+		(.setBorderColor doc-scroller-gutter (color 0 0 0 0))
+		(.setFoldIndicatorEnabled (.getGutter doc-scroll-pane) true)
+		(.toggleBookmark (.getGutter doc-scroll-pane) 10)
     doc-container))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    

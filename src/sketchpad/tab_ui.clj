@@ -189,16 +189,6 @@
 												(line x2 y2 x3 y3)
 												(style :foreground selected-border-color :stroke 3))))))
 
-									; (paintContentBorderLeftEdge [gfx placement index x y w h]
-									; 	)
-
-									; (paintContentBorderRightEdge [gfx placement index x y w h]
-									; 	)
-
-									; (paintContentBorderBottomEdge [gfx placement index x y w h]
-									; 	)
-									; (paintContentBorder [gfx placement selected])
-
 									(getTabInsets [placement index]
 										(let [insets (proxy-super getTabInsets placement index)
 												h-pad 0

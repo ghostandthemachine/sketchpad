@@ -1,6 +1,6 @@
 (ns sketchpad.repl-button-tab
 	(:use [seesaw core color border graphics meta]
-				[sketchpad option-windows])
+				[sketchpad styles option-windows])
 	(:import (javax.swing JPanel JLabel BorderFactory AbstractButton JButton)
 					 (javax.swing.plaf.basic.BasicButtonUI)
 					 (java.awt.event ActionListener MouseListener)
@@ -11,14 +11,11 @@
 (defn text-area-from-index [tabbed-panel i]
 	(select (.getComponentAt tabbed-panel i) [:#editor]))
 
-(def repl-button-base-color (color 150 150 150))
-
-
 (defn paint-tab-button [proj-color c g]
 	"custom renderer for tab x"
   (let [w          (width c)
         h          (height c)
-        line-style (style :foreground repl-button-base-color :stroke 2 :cap :round)
+        line-style (style :foreground base-color :stroke 2 :cap :round)
         border-style (style :foreground proj-color :stroke 0.5)
         d 3
         lp 7]
