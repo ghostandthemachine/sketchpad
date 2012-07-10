@@ -14,8 +14,8 @@
                  [rsyntax-clojars "0.1.0-SNAPSHOT"]
                  [language-builder "1.0.0-SNAPSHOT"]
                  [auto-complete "0.1.0-SNAPSHOT"]
-                 [com.cemerick/pomegranate "0.0.13"]
-                 [org.clojars.stevelindsay/tools.nrepl "0.2.0-b2"]
+								 [leiningen-core "2.0.0-SNAPSHOT"]
+								 [classlojure "0.6.5"]
                  [timbre "0.5.1-SNAPSHOT"]
                  ]
   :jvm-opts ~(if (= (System/getProperty "os.name") "Mac OS X") ["-Xdock:name=Sketchpad"] []))

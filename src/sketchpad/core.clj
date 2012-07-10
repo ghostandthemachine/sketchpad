@@ -72,10 +72,16 @@
                         :divider-size 1
                         :border (empty-border :thickness 0)
                         :background config/app-color)
+        frame (frame :title "Sketchpad" 
+                     :width 950 
+                     :height 700 
+                     :on-close :exit
+                     :minimum-size [500 :by 350]
+                     :content split-pane)
+
         app (merge {:current-files (atom {})
                     :current-file (atom nil)
                     :current-tab -1
-                    ; :repl      (atom (create-outside-repl (@app-init :repl-out-writer) nil))
                     :repls (atom {})
                     :changed   false
                     :doc-text-area nil
@@ -84,7 +90,6 @@
                     overtone-handlers
                     (gen-map
                       frame
-                      ;info-panel
                       doc-split-pane
                       split-pane))]
     (config! doc-split-pane :background (color :black))
@@ -100,11 +105,9 @@
                                                   (let [cur-tab (cast JTabbedPane (.getSource e))
                                                         rsta (select cur-tab [:#editor])
                                                         current-tab-index (current-tab-index (app :editor-tabbed-panel))]
-                                                    (save-tab-selections app)
-                                                    )))
+                                                    (save-tab-selections app))))
     ;; global
-    (add-visibility-shortcut app)
-    ))
+    (add-visibility-shortcut app)))
 
 ;; startup
 (defn startup-sketchpad [app-atom]
@@ -113,58 +116,33 @@
       (proxy [Thread$UncaughtExceptionHandler] []
         (uncaughtException [thread exception]
                          (println thread) (.printStackTrace exception))))
-    ;; add behaviors                       
     (add-behaviors app-atom)
-    ; (set-text-area-preffs app)
-
-
-    ; (pm/make-preview app-atom)
-
-    ;; create menus
     (make-sketchpad-menus app-atom)
-    ;; load projects
     (doall (map #(project/add-project app %) (load-project-set)))
     (let [frame (app :frame)]
       (persist-window-shape sketchpad-prefs "main-window" frame) 
       (on-window-activation frame #(update-project-tree (app :docs-tree))))
     (let [tree (app :docs-tree)]
       (load-expanded-paths tree)
-      (load-tree-selection tree)
-      )
-
-  		;; done with init
+      (load-tree-selection tree))
       (app :frame)))
 
 (defonce current-app (atom nil))
 
 (defn show []
   (reset! embedded false)
-  (reset! current-app (create-app))
-  (let [frame (frame :title "Sketchpad" 
-                     :width 950 
-                     :height 700 
-                     :minimum-size [500 :by 350]
-                     :content (@current-app :split-pane))]
-  (swap! current-app (fn [app] (assoc app :frame frame)))
   (invoke-later
+  (reset! current-app (create-app))
     (-> 
       (startup-sketchpad current-app) 
-      show!))))
+      show!)))
 
 (defn -main [& args]
-  ; (set-laf "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel")
   (reset! embedded false)
-  (reset! current-app (create-app))
-  (let [frame (frame :title "Sketchpad" 
-                     :width 950 
-                     :height 700 
-                     :on-close :exit
-                     :minimum-size [500 :by 350]
-                     :content (@current-app :split-pane))]
-  (swap! current-app (fn [app] (assoc app :frame frame)))
   (invoke-later
+    (reset! current-app (create-app))
     (-> 
       (startup-sketchpad current-app)
-      show!))))
+      show!)))
 
   

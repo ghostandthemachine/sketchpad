@@ -2,9 +2,10 @@
 	(:import (org.fife.ui.rtextarea SearchContext)))
 
 (defn regular-expression?
-"Returns whether only \"whole word\" matches should be returned. A match is considered to be "whole word" if the character on either side of the matched text is a non-word character, or if there is no character on one side of the word, such as when it's at the beginning or end of a line.\n
+"Returns whether only \"whole word\" matches should be returned. A match is considered to be \"whole word\" if the character on either side of the matched text is a non-word character, or if there is no character on one side of the word, such as when it's at the beginning or end of a line.\n
 \tReturns:\n
-\tWhether only "whole word" matches should be returned."
+\tWhether only \"whole word\" matches should be returned."
+  [obj]
 	(.isRegularExpression obj))
 
 (defn replace-with!
@@ -57,7 +58,7 @@ Parameters:\n
 	(.setSearchForward obj x))
 
 (defn whole-word!
-  "Sets whether only \"whole word\" matches should be returned. A match is considered to be "whole word" if the character on either side of the matched text is a non-word character, or if there is no character on one side of the word, such as when it's at the beginning or end of a line.\n
+  "Sets whether only \"whole word\" matches should be returned. A match is considered to be \"whole word\" if the character on either side of the matched text is a non-word character, or if there is no character on one side of the word, such as when it's at the beginning or end of a line.\n
   Parameters:\n
   \twholeWord - Whether only \"whole word\" matches should be returned."
 	[obj x]
@@ -71,7 +72,7 @@ Parameters:\n
 	(.setMatchCase obj x))
 
 (defn whole-word?
-  "Returns whether only \"whole word\" matches should be returned. A match is considered to be "whole word" if the character on either side of the matched text is a non-word character, or if there is no character on one side of the word, such as when it's at the beginning or end of a line.\n
+  "Returns whether only \"whole word\" matches should be returned. A match is considered to be \"whole word\" if the character on either side of the matched text is a non-word character, or if there is no character on one side of the word, such as when it's at the beginning or end of a line.\n
   Returns:\n
   \tWhether only \"whole word\" matches should be returned."
 	[obj]
@@ -102,7 +103,6 @@ Parameters:\n
   "Creates a new search context. Specifies a forward search, case-insensitive, not whole-word, not a regular expression."
 	[]
 	(SearchContext. ))
-
 
 (defn search-context
   "Creates a new search context. Specifies a forward search, case-insensitive, not whole-word, not a regular expression.\n
