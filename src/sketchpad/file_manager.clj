@@ -92,9 +92,9 @@
   (not (some #{(file-suffix f)}
              ["jar" "class" "dll" "jpg" "png" "bmp"])))
 
-(defn save-file [app rsta index]
+(defn save-file [rsta]
   (try
-    (let [f (get @(app :current-files) index)]
+    (let [f (get-meta rsta :file)]
       (with-open [writer (BufferedWriter.
                            (OutputStreamWriter.
                              (FileOutputStream. f)
