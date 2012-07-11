@@ -15,13 +15,13 @@
   (if @macro-recording-state
     (do 
       (swap! macro-recording-state (fn [_] false))
-      (rt/end-recording-macro! (:doc-text-area app)))
+      (rt/end-recording-macro! (current-text-area (:editor-tabbed-panel app))))
     (do
       (swap! macro-recording-state (fn [_] true))
-      (rt/begin-recording-macro! (:doc-text-area app)))))
+      (rt/begin-recording-macro! (current-text-area (:editor-tabbed-panel app))))))
 
 (defn playback-last-macro [app]
-  (rt/playback-last-macro! (:doc-text-area app)))
+  (rt/playback-last-macro! (current-text-area (:editor-tabbed-panel app))))
 
 (defn fold-action
   [ta] 

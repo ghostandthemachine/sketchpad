@@ -57,3 +57,4 @@
   	:error_number_format {:fg "E0E2E4" :bg "2E2E2C"}
   	:error_string_double {:fg "E0E2E4" :bg "04790e"}
   	:error_char {:fg "E0E2E4" :bg "04790e"}})
+  	
