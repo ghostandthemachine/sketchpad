@@ -40,10 +40,8 @@
 (defn remove-repl-tab! [tabbed-panel index]
 	(let [rsta (select (component-at tabbed-panel index) [:#editor])
 		  repl (get-meta rsta :repl)]
-		;;destroy to process
 		(.destroy (repl :proc))
 	(.removeTabAt tabbed-panel index)))
-
 
 (defn index-of-component [tabbed-panel comp]
 	(.indexOfComponent tabbed-panel comp))
@@ -78,18 +76,15 @@
 (defn mark-tab-state! [tabbed-panel i kw]
 	(let [rsta (select (component-at tabbed-panel i) [:#editor])
 				tab (get-meta rsta :tab)
-				; indicator (select tab [:#indicator])
 				file-state (get-meta rsta :state)]
 		(cond
 			(= kw :clean)
 				(do
 					(swap! file-state (fn [state] (assoc state :clean true)))
-					;; update the tab paint so the indicator shows with out needing a mouseover
 					(.repaint tabbed-panel))
 			(= kw :dirty)
 				(do
 					(swap! file-state (fn [state] (assoc state :clean false)))
-					;; update the tab paint so the indicator shows with out needing a mouseover
 					(.repaint tabbed-panel)))))
 
 (defn mark-tab-clean! [tabbed-panel i] (mark-tab-state! tabbed-panel i :clean))
@@ -128,7 +123,6 @@
 	(mark-tab-dirty! tabbed-panel (.getSelectedIndex tabbed-panel)))
 
 (defn save-tab-selections [app]
-	; (println "save-tab-selections")
 	(let [current-index (current-tab-index (app :editor-tabbed-panel))]
 	  (write-value-to-prefs sketchpad-prefs "current-files" @(app :current-files))
   	  (write-value-to-prefs sketchpad-prefs "current-tab" current-index)))
@@ -141,29 +135,20 @@
 					container (current-tab (app :editor-tabbed-panel))
 					rsta (select container [:#editor])
 					tab-state (get-meta rsta :state)]
-			;; CHECK FOR SAVE FIRST!!!!!!!
 			(if (@tab-state :clean)
 				(remove-tab! (app :editor-tabbed-panel) idx)
 				(do 
 					(let [answer (close-or-save-current-dialogue (title-at tabbed-panel idx))]
-						;; if the tab which is being close is dirty
 						(cond 
-							;; save and close
 							(= answer 0)
 								(do
 									(save-file app rsta idx) 
 									(swap! (app :current-files) (fn [files] (dissoc files idx)))
-									(remove-tab! (app :editor-tabbed-panel) idx)
-									)
-							;; don't save and close
+									(remove-tab! (app :editor-tabbed-panel) idx))
 							(= answer 1)
 								(do 
 									(swap! (app :current-files) (fn [files] (dissoc files idx)))
-									(remove-tab! (app :editor-tabbed-panel) idx)
-									)
-							;; just close
-							; (= answer 2)
-							)))))))
+									(remove-tab! (app :editor-tabbed-panel) idx)))))))))
 
 (defn get-file-from-tab-index [app i]
 	(i @(app :current-files)))

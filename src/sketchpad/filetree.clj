@@ -24,8 +24,6 @@
 (def project-set (atom (sorted-set)))
 
 (def project-map (atom {}))
-;; setup
-
 
 (defn save-project-set []
   (write-value-to-prefs sketchpad-prefs "project-set" @project-set))
@@ -35,13 +33,11 @@
                             (read-value-from-prefs sketchpad-prefs "project-set"))))
 
 (defn save-project-map []
-  (write-value-to-prefs sketchpad-prefs "project-map" @project-map)
-  )
+  (write-value-to-prefs sketchpad-prefs "project-map" @project-map))
     
 (defn load-project-map []
   (reset! project-map (into {}
-                            (read-value-from-prefs sketchpad-prefs "project-map")))
-  )
+                            (read-value-from-prefs sketchpad-prefs "project-map"))))
 
 (defn get-project-root [path]
   (let [f (File. path)
@@ -135,17 +131,6 @@
                           classpath-dirs)]
     (first (filter #(and (.exists %) (.isFile %)) file-candidates))))
 
-
-; (defn file-suffix [^File f]
-;   (when-lets [name (.getName f)
-;              last-dot (.lastIndexOf name ".")
-;              suffix (.substring name (inc last-dot))]
-;     suffix))
-
-; (defn text-file? [f]
-;   (not (some #{(file-suffix f)}
-;              ["jar" "class" "dll" "jpg" "png" "bmp"])))
-
 (defn tree-nodes [tree]
   (when-let [root (.. tree getModel getRoot)]
     (tree-seq (complement #(.isLeaf %))
@@ -224,16 +209,6 @@
                                 project)))
      model))
 
-; (defn project-set-to-tree-model []
-;    (let [model (DefaultTreeModel. (DefaultMutableTreeNode. "projects"))
-;          root (.getRoot model)]
-;      (doseq [project (sort-by #(.getName (File. %)) (@project-map :projects))]
-;        (add-file-tree (add-node root
-;                                 (str (-> project File. .getName) 
-;                                      "   (" project ")")
-;                                 project)))
-;      model))
-
 (defn get-project-node [tree node]
   (let [parent-node (.getParent node)]
     (if (= parent-node
@@ -258,17 +233,6 @@
     (for [selection selections]
       (->> selection .getLastPathComponent (get-project-node tree)
            .getUserObject .getAbsolutePath))))
-
-; (defn update-project-tree [tree]
-;   (let [model (project-set-to-tree-model)]
-;     (awt-event
-;       (.setModel tree model)
-;       (save-project-set)
-
-;       (load-expanded-paths tree)
-;       (load-tree-selection tree)
-;       (save-expanded-paths tree))))
-
 
 (defn update-project-tree [tree]
   (let [model (project-set-to-tree-model)]
@@ -302,29 +266,11 @@
       (let [f (File. path)]
         (println "Delete file: " f)
         (.delete f))
-      ; (loop [f (File. path)]
-      ;   (when (and (empty? (.listFiles f))
-      ;              (let [p (-> f .getParentFile .getAbsolutePath)]
-      ;                (or (.contains p (str File/separator "src" File/separator))
-      ;                    (.endsWith p (str File/separator "src")))))
-      ;     (println f)
-      ;     (.delete f)
-      ;     (recur (.getParentFile f))))
       (update-project-tree (app :docs-tree)))))
 
 (defn create-file [app project-dir default-namespace]
    (when-let [file-name (file-name-choose project-dir "Create a new file")]
-    (println file-name)
-    ))
-
-; (defn create-file [app project-dir default-namespace]
-;    (when-let [[file namespace] (specify-source project-dir
-;                                           "Create a new file"
-;                                           default-namespace)]
-;      (let [tree (:docs-tree app)]
-;        (spit file (str "(ns " namespace ")\n"))
-;        (update-project-tree (:docs-tree app))
-;        (set-tree-selection tree (.getAbsolutePath file)))))
+    (println file-name)))
 
 (defn open-project [app]
   (when-let [dir (choose-directory (app :f) "Choose a project directory")]
@@ -384,12 +330,8 @@
             (update-project-tree (:docs-tree app))
             (restart-doc app f))))))
 
-; (defn is-active-tab? [app path]
-;   (conatins? path (app :editor-tabbed-panel)))
-
 (defn save-file-state
-  [app] 
-  )
+  [app] )
 
 (defn popup-trigger?
   [e]
@@ -405,32 +347,12 @@
   (let [tree (:docs-tree app)
         path (.getPathForLocation tree (.getX e) (.getY e))]
     (awt-event
-      (save-tree-selection tree path)
-      ; (if (dirty? @(app :current-file-path))
-      ;    ;; store this text in a buffer
-      ;    )
-
-      ; (let [f (.. path getLastPathComponent
-      ;              getUserObject)]
-      ;  (when (and
-      ;          (not= f @(app :current-file))
-      ;          (text-file? f))
-          ; (if (contains? ))
-          ; (swap! @(app :current-files) (fn [_] (.getNewLeadSelectionPath e)))
-          ; (restart-doc app f)
-
-          ; (update-editor-content app f)
-            )))
+      (save-tree-selection tree path))))
 
 (defn handle-single-click [row path app-atom]
-    (.setSelectionRow (@app-atom :docs-tree) row)
-    ; (let [file (.. path getLastPathComponent getUserObject)]
-    ;   (when (text-file? file)
-    ;     (preview/preview-file! app-atom file)))
-    )
+    (.setSelectionRow (@app-atom :docs-tree) row))
 
 (defn handle-double-click [row path app-atom]
-  ; (.setSelectionRow (@app-atom :docs-tree) row)
   (try 
     (let [file (.. path getLastPathComponent getUserObject)
     			proj (.getPathComponent path 1)
@@ -438,12 +360,8 @@
       (when (fm/text-file? file)
         (do 
           (new-file-tab! app-atom file proj-str)
-          (save-tree-selection tree path)
-          ; (save-tab-selections @app-atom)
-          )
-          ))
-    (catch java.lang.NullPointerException e 
-      )))
+          (save-tree-selection tree path))))
+    (catch java.lang.NullPointerException e)))
   
 (defn handle-right-click [row path app]
   (.setSelectionRow (app :docs-tree) row))
@@ -458,31 +376,20 @@
                             sel-path (.getPathForLocation tree (.getX e) (.getY e))
                             click-count (.getClickCount e)]
                         (cond
-                          ;; handle single click 
                           (= click-count 1)
                           	(if (.isMetaDown e)
-                          		;; handle right click
                           		(handle-right-click sel-row sel-path app)
-                          		;; handle single left click
                             	(handle-single-click sel-row sel-path app-atom))
-                          ;; handle double click
                           (= click-count 2)
-                            (handle-double-click sel-row sel-path app-atom)
-
-                          )))
+                            (handle-double-click sel-row sel-path app-atom))))
                     (mouseClicked [e]
-                    	; (pprint (.getPathForLocation tree (.getX e) (.getY e)))
                       (if (double-click? e)
-                        (handle-filetree-double-click e app)
-                       )))]
+                        (handle-filetree-double-click e app))))]
         listener))
 
 
 (defn tree-model [app]
   (let [model (DefaultTreeModel. nil)]
-    ; (doto 
-    ;   model
-    ;   (.addTreeModelListener (tree-listener app)))
     model))
 
 (defn make-filetree-popup
@@ -492,9 +399,7 @@
     :class :popup
     :items [(menu-item :text "New File" 
                       :listen [:action (fn [_] (create-file app (first (get-selected-projects app)) ""))])
-            (menu-item :text "New Folder" 
-                      ; :listen [:action (fn [_] (create-folder app))]
-                      )
+            (menu-item :text "New Folder" )
             (separator)
             (menu-item :text "New Project" 
                       :mnemonic "N" 
@@ -517,11 +422,6 @@
             (menu-item :text "Delete" 
                       :listen [:action (fn [_] (delete-file app))])]))
 
-; (defn dirty? [tree-path app]
-;   (if (>= 5 (.getPathCount tree-path))
-;     @()
-;   )
-
 (defn setup-tree [app-atom]
   (let [app @app-atom
         tree (:docs-tree app)
@@ -540,28 +440,9 @@
        (reify TreeSelectionListener
          (valueChanged [this e]
            (awt-event
-             (save-tree-selection tree (.getNewLeadSelectionPath e))
-             ; (println (.toString (.getNewLeadSelectionPath e)))
+             (save-tree-selection tree (.getNewLeadSelectionPath e))))))
+    (.addMouseListener (tree-listener app-atom)))))
 
-             ; (if (dirty? @(app :current-file-path))
-             ;    ;; store this text in a buffer
-             ;    )
-             
-             ; (let [f (.. e getPath getLastPathComponent
-             ;               getUserObject)]
-             ;   (when (and
-             ;           (not= f @(app :current-file))
-             ;           (text-file? f))
-                  ; (if (contains? ))
-                  ; (swap! @(app :current-files) (fn [_] (.getNewLeadSelectionPath e)))
-                  ; (restart-doc app f)
-                  ; (update-editor-content app f)
-                  ; )))
-           ))))
-    (.addMouseListener (tree-listener app-atom))
-    )))
-
-;; view
 (defn file-tree
   [app-atom]
   (let [docs-tree             (tree   :model          (tree-model @app-atom)
@@ -578,8 +459,6 @@
                                       											 :border (empty-border :thickness 5))]
                                       :id             :file-tree-label
                                       :class          :file-tree
-                                      ; :size           [200 :by 15]
-                                      ; :vgap           5
                                       :background config/file-tree-bg)
         docs-tree-label-panel (horizontal-panel       
                                       :items          [docs-tree-label
@@ -596,9 +475,7 @@
                                       :background config/file-tree-bg)]
 
     (let [cell-renderer (cast DefaultTreeCellRenderer (.getCellRenderer docs-tree))]
-      (.setBackgroundNonSelectionColor cell-renderer config/file-tree-bg)
-      )
-
+      (.setBackgroundNonSelectionColor cell-renderer config/file-tree-bg))
     (swap! app-atom conj (gen-map
                             project-set
                             project-map

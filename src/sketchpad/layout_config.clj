@@ -56,7 +56,6 @@
       (swap! show-repl (fn [_] true))
       (.setBottomComponent (app :split-pane) (app :repl-tabbed-panel))
       (.setDividerLocation (app :split-pane) @repl-divider-position)
-      ; (.setDividerLocation (app :doc-split-pane) @file-tree-divider-position)
       (.requestFocus (app :repl-tabbed-panel) true))))
 
 (defonce show-search-panel (atom true))

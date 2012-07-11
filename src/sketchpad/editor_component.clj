@@ -11,12 +11,6 @@
 
 (def bg [39 40 34])
 
-;; currently editor components store seesaw meta
-;; for these components
-;; :file - the Document object for this buffer
-;; :project - this buffers parent project
-;; :state - this buffers dirty state
-
 (defn sketchpad-scroll-bar []
   (let [scroll-bar (JScrollBar. )]
     (.setUI scroll-bar (sketchpad-scroll-bar-ui))

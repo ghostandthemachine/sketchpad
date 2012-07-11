@@ -7,18 +7,13 @@
 	(.getEditorKit (.getUI rta) rta))
 
 (defn delete-rest-of-line-action
-"
-        args:  
+"        args:  
        flags:  :static :public :final
   interop fn:  .rtaDeleteRestOfLineAction
  return-type:  "
 	[rta]
 	(let [editor-kit (editor-kit rta)] 
 		(org.fife.ui.rtextarea.RTextAreaEditorKit$DeleteRestOfLineAction. )))
-
-
-
-;; helper functions for dealing with text in sketchpad
 
 (defn text 
 	"Fetches a portion of the text represented by the component. Returns an empty string if length is 0."

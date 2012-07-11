@@ -34,8 +34,6 @@
 
 (def repl-history (atom {}))  
 
-; (defn creatae-new-repl-history [])
-
 (def repls (atom {}))
 
 (def ^:dynamic *printStackTrace-on-error* false)
@@ -141,7 +139,7 @@
     (let [rdr (-> cmd StringReader. PushbackReader.)]
       (try (while (read rdr nil nil))
            true
-           (catch IllegalArgumentException e true) ;explicitly show duplicate keys etc.
+           (catch IllegalArgumentException e true)
            (catch Exception e false)))))
 
 (defn send-to-repl
@@ -153,12 +151,9 @@
           cmd-trim (.trim cmd)]
       (cond
           (= src-key :repl)
-            ;; with one repl panel we just want to go to the next line
             (append-text (app :doc-text-area) (str \newline))
           (= src-key :file)
-            (append-text (app :doc-text-area) (str \newline))
-            ; (append-text rsta cmd-ln)
-            )
+            (append-text (app :doc-text-area) (str \newline)))
       (let [cmd-str (cmd-attach-file-and-line cmd file line)]
         (binding [*out* (:input-writer @(app :repl))]
           (println cmd-str)
@@ -210,17 +205,14 @@
         last-pos @(:last-end-pos repl-history)
         items @(:items repl-history)]
     (when (pos? (count items))
-      ;; clear the last history if needed
       (if (> (- (.getLastVisibleOffset rsta) last-pos) 0)
         (do 
-          ;; insert the text
            (.insert rsta 
                 (nth items @(:pos repl-history))
                 (- last-pos (count (nth items (- @(:pos repl-history) 1)))))
         )
         (do 
            (println "remove last string from: " last-pos " of length: " (- (.getLastVisibleOffset rsta) last-pos))
-          ;; insert the text
           (.insert rsta 
             (nth items @(:pos repl-history))
             last-pos))))))
@@ -286,24 +278,16 @@
                     (if (correct-expression? txt)
                       (do 
                         (send-to-editor-repl rsta txt)
-                        (swap! pos (fn [p] 0))
-;                        (.setText (app :arglist-label) "Malformed expression")
-                        ))))
+                        (swap! pos (fn [p] 0))))))
 
         at-top #(zero? (.getLineOfOffset ta-in (get-caret-pos)))
         at-bottom #(= (.getLineOfOffset ta-in (get-caret-pos))
                       (.getLineOfOffset ta-in (.. ta-in getText length)))
         prev-hist #(update-repl-history-display-position ta-in :dec)
         next-hist #(update-repl-history-display-position ta-in :inc)]
-    (attach-child-action-keys ta-in ;["control UP" at-top prev-hist]
-                                    ;["control DOWN" at-bottom next-hist]
-                                    ["ENTER" ready submit])
+    (attach-child-action-keys ta-in ["ENTER" ready submit])
     (attach-action-keys ta-in ["cmd1 UP" prev-hist]
-                              ["cmd1 DOWN" next-hist])
-                              ; ["cmd1 ENTER" submit] ;; blocks dumb completion
-                              ; )
-    ))
-
+                              ["cmd1 DOWN" next-hist])))
 
 (defn add-repl-rsta-input-handler [rsta]
   (let [ta-in rsta
@@ -331,14 +315,9 @@
         prev-hist #(update-repl-history-display-position rsta :dec)
         next-hist #(update-repl-history-display-position rsta :inc)
         ]
-    (attach-child-action-keys ta-in ;["control UP" at-top prev-hist]
-                                    ;["control DOWN" at-bottom next-hist]
-                                    ["ENTER" ready submit])
+    (attach-child-action-keys ta-in ["ENTER" ready submit])
     (attach-action-keys ta-in ["cmd1 UP" prev-hist]
-                              ["cmd1 DOWN" next-hist])
-                              ;["cmd1 ENTER" submit] ;; blocks dumb completion
-                              ; )
-    ))
+                              ["cmd1 DOWN" next-hist])))
 
 (defn print-stack-trace [app]
     (send-to-repl app "(.printStackTrace *e)"))
@@ -364,31 +343,21 @@
         repl-undo-count (atom 0)
         repl-que (create-editor-repl editor-repl)]
 
-    ;; setup editor repl component
     (put-meta! editor-repl :repl-history repl-history)
     (put-meta! editor-repl :repl-que repl-que)
-            ;; set tab ui
     (.setUI repl-tabbed-panel (rtab/sketchpad-repl-tab-ui repl-tabbed-panel))
     (listen repl-tabbed-panel :selection 
        (fn [e] 
          (let [num-tabs (tab-count repl-tabbed-panel)]
           (if (> 0 num-tabs)
-            ;; update the current rsta  
-            (swap! app-atom (fn [app] (assoc app :current-repl (current-text-area (app :repl-tabbed-panel)))))            
-            ))))
+            (swap! app-atom (fn [app] (assoc app :current-repl (current-text-area (app :repl-tabbed-panel)))))))))
 
-    ;; add the default repl tab
     (add-tab! repl-tabbed-panel "sketchpad" repl-container)
-    ;;input map
     (set-input-map! editor-repl (default-input-map))
-    ;; attach handlers
     (add-repl-input-handler editor-repl)
-    ;; auto completion
     (install-auto-completion editor-repl)
-    ;; apply config prefs
     (config! repl-in-scroll-pane :background config/app-color)
     (config/apply-editor-prefs! config/default-editor-prefs editor-repl)
-    ; (load-initial-editor-ns editor-repl)
     (swap! app-atom conj (gen-map
                             repl-tabbed-panel
                             repl-que

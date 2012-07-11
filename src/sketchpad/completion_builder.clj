@@ -13,12 +13,10 @@
 				ns-keys (keys ns-pubs)
 				ns-vars (vals ns-pubs)
 				meta-data (map meta ns-vars)]
-;		(reduce (fn [m vs] (assoc-in m [(str (:orig-ns vs)) (:name vs)] vs)) {} meta-data)
 		[ns-keys
 		 ns-vars
 		 meta-data]))
 
-;(def clj-lang-start (str (slurp "resources/clojure-header.txt")))
 (def clj-lang-start "")
 
 (def clj-lang-end
@@ -58,7 +56,6 @@
         (str "\t<param type=" (dbl-q "function") " name=" (dbl-q param) "/>\n")
       (= "&" param)
       (str "")
-;        (str "\t<param type=" (dbl-q "function") " name=" (dbl-q "&amp;") "/>\n")
       (= "[&" (take-str 2 param))    
          (str "\t<param type=" 
               (dbl-q "function")
@@ -88,18 +85,14 @@
           (if allowed?
             (concat s 
               (str
-                ;; def keyword
                 (keyword-s var)
-                ;; convert params
                 "\t<params>\n"
                 (parse-params (nth arglists n)) "\n"
                 "\t</params>\n"      
-                ;; doc/description
                 "\t<desc><![CDATA["
                 (str "\t" (:doc var))
                 "]]></desc>\n"   
           
-                ;; wrap up keyword def
                 "</keyword>\n")))))))
        (str (s/join @return-string))))
 
@@ -144,15 +137,12 @@
         (swap! opts? (fn [_] true))
         (swap! opts? (fn [_] false)))
 	  	(if opts?
-	  		;; prepend & on opt arg
 	      (.add param-list
 					(org.fife.ui.autocomplete.ParameterizedCompletion$Parameter. " " (str arg)))
-	    	;; non opt arg
 	    	(.add param-list
 					(org.fife.ui.autocomplete.ParameterizedCompletion$Parameter. " " (str arg)))))
 	  param-list))
 
-;;; from clj-inspector sample
 (defn var-type
   "Determing the type (var, function, macro) of a var from the metadata and
 return it as a string. (Borrowed from autodoc.)"
@@ -173,9 +163,7 @@ return it as a string. (Borrowed from autodoc.)"
         (let [completion (ClojureFunctionCompletion. provider (str (:name var-meta)) (str \space))
               arglists (into [] (:arglists var-meta))]
           (doseq [arg-list arglists]
-            ;; convert params
             (.setParams completion (create-params-list arg-list))
-            ;; doc/description
             (.setReturnValueDescription completion (:doc var-meta))
             (if (repl/source-fn sym)
               (.setReturnValueSourceDescription 
@@ -192,9 +180,7 @@ return it as a string. (Borrowed from autodoc.)"
         (do
           (let [var-completion (VariableCompletion. provider (str (:name var-meta)) (str \space))]
             (.setDefinedIn var-completion (str (:ns var-meta)))
-            ;; doc/description
             (.addCompletion provider var-completion))))))
-
 
 (defn add-completions-from-ns
   [provider ns]

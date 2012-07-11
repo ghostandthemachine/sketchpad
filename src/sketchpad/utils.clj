@@ -510,10 +510,7 @@
   (let [frame (app :frame)
         text-area (app :doc-text-area)
         temp-file (get-temp-file file)
-        file-to-open (if (and temp-file (.exists temp-file)) temp-file file)
-        ; doc-label (app :doc-label)
-        ]
-    ;(remove-text-change-listeners text-area)
+        file-to-open (if (and temp-file (.exists temp-file)) temp-file file)]
     (reset! changing-file true)
     ((app :save-caret-position) app)
     (.. text-area getHighlighter removeAllHighlights)
@@ -521,13 +518,11 @@
       (do (let [txt (slurp file-to-open)
                 rdr (StringReader. txt)]
             (.read text-area rdr nil))
-          ; (.setText doc-label (str "Source Editor \u2014 " (.getName file)))
           (config! text-area :editable?  true)
           (if (.endsWith (.getName file-to-open) ".clj")
             (config! text-area :syntax  :clojure)
             (config! text-area :syntax  :none)))
       (do (.setText text-area no-project-txt)
-          ; (.setText doc-label (str "Source Editor (No file selected)"))
           (.setEditable text-area false)))
     ((app :update-caret-position) text-area)
     ((app :setup-autoindent) text-area)

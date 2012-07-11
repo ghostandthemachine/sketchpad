@@ -21,13 +21,12 @@
 (def pad 4)
 
 (defn tab-shape [rect kw]
-	(let [		ow  (+ pad (.getWidth rect))  ;; the pad value is the tab overlap amount
+	(let [		ow  (+ pad (.getWidth rect))
 				h  (.getHeight rect)
 				step-size (/ h 2)
 				unit (/ step-size 6)
-				x  (- (+ (/ step-size 2) (.getX rect)) pad pad)  ;; the pad value is the tab overlap amount
+				x  (- (+ (/ step-size 2) (.getX rect)) pad pad)
 		 		y  (.getY rect)
-		 		; w (- ow step-size)
 		 		w ow
 
 				x0 (- x step-size)
@@ -102,18 +101,11 @@
 												(.paintIcon bg-img comp gfx x y))))
 
 									(paintTab [gfx tab-placement rects tab-index icon-rect text-rect]
-										(proxy-super paintTab gfx tab-placement rects tab-index icon-rect text-rect)
-									)
-
+										(proxy-super paintTab gfx tab-placement rects tab-index icon-rect text-rect))
+										
 									(paintTabBackground [gfx tab-placement tab-index x y w h selected?]
-
-										(let [
-											; label (select tabbed-panel [(symbol (str ":#tab-label-" tab-index))])
-											]
-													; (println (config label :text))
 											(if selected? 
 												(do 
-													; (config! label :foreground :white)
 													(swap! bg (fn [_] selected-fill-color))
 													(swap! bg (fn [_] fill-color))
 													(push gfx
@@ -121,12 +113,10 @@
 															(tab-shape (java.awt.Rectangle. x y w h) :closed)
 															(style :background (selected-tab-graient x (+ y h) x y)))))
 												(do 
-													; (config! label :foreground :gray)
 													(push gfx	
 														(draw gfx
 														(tab-shape (java.awt.Rectangle. x y w h) :closed)
-														(style :background (unselected-tab-graient x (+ y h) x y)))))
-										)))
+														(style :background (unselected-tab-graient x (+ y h) x y)))))))
 										
 									(calculateTabHeight [placement index font-height]
 										(+ font-height height-pad))
@@ -147,10 +137,7 @@
 												(push gfx	
 													(draw gfx
 													(tab-shape (java.awt.Rectangle. x y w h) :open)
-													(style :foreground (color 20 20 20 100) :thickness 1))))
-
-											)
-										)
+													(style :foreground (color 20 20 20 100) :thickness 1))))))
 
 									(getTabAreaInsets [placement]
 										(Insets. 5 10 0 10))
@@ -163,11 +150,9 @@
 
 									(calculteTabWidth [placement]
 										(/ (width tabbed-panel) (.getTabCount tabbed-panel))
-										(println (/ (width tabbed-panel) (.getTabCount tabbed-panel)))
-										)
+										(println (/ (width tabbed-panel) (.getTabCount tabbed-panel))))
 
-									(paintFocusIndicator [gfx tab-placement rects tab-index icon-rect text-rect is-selected]
-										)
+									(paintFocusIndicator [gfx tab-placement rects tab-index icon-rect text-rect is-selected])
 
 									(paintContentBorderTopEdge [gfx placement index x y w h]
 										(if (not= -1 index)
@@ -197,7 +182,5 @@
 												l (+ h-pad (.left insets))
 												b (+ v-pad (.bottom insets))
 												r (+ h-pad (.right insets))]
-										(java.awt.Insets. t l b r)
-										))
-									)]
+										(java.awt.Insets. t l b r))))]
 		tab-ui))

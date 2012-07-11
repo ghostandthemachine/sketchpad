@@ -14,43 +14,24 @@
 	(let [scrollbar-ui 
 		(proxy [javax.swing.plaf.basic.BasicScrollPaneUI	] []
 			(paintTrack [gfx c bounds]
-				(println "paintTrack")
-				; (draw gfx
-				; 	(rect (.getX bounds) (.getY bounds) (.getWidth bounds) (.getHeight bounds)))
-				)
+				(println "paintTrack"))
 			(paintThumb [gfx c bounds]
-				(println "paintThumb")
-				)
-			; (paint [gfx c]
-			; 	; (println c)
-			; 	; (println (.getParent c))
-			; 	; (draw gfx
-			; 	; 	(rect 0 0 100 2000)
-			; 	; 	(style :background (color 39 40 34)))
-			; 	)
+				(println "paintThumb"))
 
 			(getMaximumSize [c]
 				(println "getMaximumSize")
 				(Dimension. 0 0))
 
 			(getTrackBounds []
-				(println "getTrackBounds")
-				)
+				(println "getTrackBounds"))
 			(paintIncreaseHighlight [gfx]
 				(println "paintIncreaseHighlight"))
 
-			(getCorners [k]
-				)
-
-
-
-
-			)]
-	scrollbar-ui))
+			(getCorners [k]))]
+				scrollbar-ui))
 										
 (defn s-scroll-bar []
 	(let [scroll-bar 
 			(proxy [JScrollBar] []
-				(paint [gfx c]
-					))]
+				(paint [gfx c]))]
 		scroll-bar))

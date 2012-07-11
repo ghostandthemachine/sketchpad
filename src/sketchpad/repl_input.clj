@@ -28,10 +28,6 @@
 				(javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_LEFT
 				(bit-or default-modifier shift))	   
 				DefaultEditorKit/selectionBeginLineAction)
-;			(.put 
-;				(javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_UP
-;				default-modifier)	       		   
-;				DefaultEditorKit/beginAction)
 			(.put 
 				(javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_UP
 				(bit-or default-modifier shift))	   
@@ -44,10 +40,6 @@
 				(javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_RIGHT
 				(bit-or default-modifier shift))	   
 				DefaultEditorKit/selectionEndLineAction)
-;			(.put 
-;				(javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_DOWN
-;				default-modifier)	       		   
-;				DefaultEditorKit/endAction)
 			(.put 
 				(javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_DOWN
 				(bit-or default-modifier shift))	   

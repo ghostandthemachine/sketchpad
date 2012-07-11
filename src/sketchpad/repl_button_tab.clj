@@ -19,7 +19,6 @@
         border-style (style :foreground proj-color :stroke 0.5)
         d 3
         lp 7]
-	    ;; in clean state draw an X to close the tab
 	    (draw g
 	      (line lp lp (- w lp) (- h lp)) line-style
 	      (line lp (- h lp) (- w lp) lp) line-style)
@@ -35,7 +34,6 @@
 										:paint (partial paint-tab-button c))]
 		(doto btn
 			(.setBorderPainted false)
-			; (.setContentAreaFilled false)
 			(.setRolloverEnabled false)
 			(.setFocusable false))
 		(put-meta! btn :state state)
@@ -44,9 +42,7 @@
 (defn repl-button-tab [app tabbed-panel i project-color]
 	(let [rta (text-area-from-index tabbed-panel i)
 				state (get-meta rta :state)
-				btn-tab (flow-panel :align :right
-														; :border (empty-border :thickness 5)
-														)
+				btn-tab (flow-panel :align :right)
 				btn (tab-button tabbed-panel btn-tab app state project-color)
 				label (proxy [JLabel] []
 								(getText []
@@ -60,10 +56,7 @@
 		(config! btn-tab :items[label btn])
 		(config! label :foreground (color :white) :focusable? false
 									 :id (symbol (str "[:tab-label-" i "]")))
-		;; constructor updates
 		(doto btn-tab
 			(.setOpaque false)
 			(.setBorder (javax.swing.BorderFactory/createEmptyBorder 0 0 0 0))
-			(.setMinimumSize (Dimension. 300 20))
-			)
-		))
+			(.setMinimumSize (Dimension. 300 20)))))

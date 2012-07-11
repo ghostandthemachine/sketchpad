@@ -1,6 +1,3 @@
-; (load-file "config/default.clj")
-; (load-file "config/user.clj")
-; (println (:clojure-version sketchpad-prefs))
 
 (defproject sketchpad "0.0.1-SNAPSHOT"
   :description "A light weight IDE for programming with Overtone and Clojure"
@@ -17,5 +14,6 @@
 								 [leiningen-core "2.0.0-SNAPSHOT"]
 								 [classlojure "0.6.5"]
                  [timbre "0.5.1-SNAPSHOT"]
+                 [org.lpetit/paredit.clj "0.12.4.STABLE01"]
                  ]
   :jvm-opts ~(if (= (System/getProperty "os.name") "Mac OS X") ["-Xdock:name=Sketchpad"] []))

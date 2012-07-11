@@ -17,10 +17,7 @@
 
 (defn get-project-theme-color [id]
 	(if (= id -1)
-		;; default tab close button border color for repl with 
-		;; no tabs open
 		(color :gray)
-		;; otherwise get a project indicator color from project id
 		(get default-project-style-prefs id)))
 
 

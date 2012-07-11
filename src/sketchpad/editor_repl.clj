@@ -2,20 +2,18 @@
   (:require [clojure.string :as string])
   (:use [sketchpad repl-communication buffer-edit sketchpad-repl]
         [seesaw meta])
-  (:import (java.util.concurrent LinkedBlockingDeque))
-  )
+  (:import (java.util.concurrent LinkedBlockingDeque)))
+  
 (def editor-repl-history {:items (atom (list "")) :pos (atom 0)}) 
 
 (defn sketchpad-reader [q prompt exit]
-    (read-string (.take q))
-  )
+    (read-string (.take q)))
 
 (defn sketchpad-prompt [rsta]
   (append-text rsta (str \newline (ns-name *ns*) "=> "))
   (.setCaretPosition rsta (.getLastVisibleOffset rsta)))
 
 (defn sketchpad-printer [rsta value]
-  ;; append text area
   (append-text rsta (str value)))
 
 (defn create-editor-repl [repl-rsta]
@@ -39,7 +37,6 @@
   (let [repl-history (get-meta rsta :repl-history)
         history-pos (repl-history :pos)
         cmd (get-last-cmd rsta)]
-    ;; if needed, add the unentered command to the history
     (if (= @(repl-history :pos) 0)
       (when-let [items (repl-history :items)]
           (swap! items replace-first cmd)))
@@ -47,12 +44,11 @@
       (= kw :dec)
         (if (< @history-pos (- (count @(repl-history :items)) 1))
             (swap! history-pos (fn [pos] (+ pos 1)))
-            (swap! history-pos (fn [pos] pos))) ;; go back to start of list
+            (swap! history-pos (fn [pos] pos)))
       (= kw :inc)
         (if (> @history-pos 1)
             (swap! history-pos (fn [pos] (- pos 1)))
-            (swap! history-pos (fn [pos] pos)) ;; go to end of list
-            ))
+            (swap! history-pos (fn [pos] pos))))
     (clear-repl-input rsta)
     (append-history-text rsta repl-history)))
 

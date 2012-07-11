@@ -1,22 +1,15 @@
 (ns sketchpad.repl-writer
 	(:use [sketchpad buffer-edit utils])
 	(:require [sketchpad.repl :as srepl])
-	(:import [java.io.StringWriter])
-	)
-
-
+	(:import [java.io.StringWriter]))
 
 (defn repl-writer [rsta]
 	(let [writer (proxy [java.io.StringWriter] []
 		(append [c]
-;			(proxy-super append c)
-			(append-text rsta (str c))
-			)
+			(append-text rsta (str c)))
 
 		(append [csq]
-;			(proxy-super append csq)
-			(append-text rsta (str csq))
-			)
+			(append-text rsta (str csq)))
 
 		(close []
 			(proxy-super close))

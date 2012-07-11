@@ -45,15 +45,10 @@
     (put-meta! rsta :repl repl)
  		(put-meta! rsta :repl-history repl-history)
     (put-meta! rsta :project-path project-path)
-    ;; apply config prefs
     (config! repl-scroll-pane :background config/app-color)
     (config/apply-editor-prefs! config/default-editor-prefs rsta)
-    ;; input map
     (set-input-map! rsta (default-input-map))
-    ;; auto completion
     (install-auto-completion rsta)
-
-    repl-container
- 		))
+    repl-container))
 
 

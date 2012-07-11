@@ -13,7 +13,6 @@
 (defn file-name [file]
 	(.getName file))
 
-;;; convert file extension to supported rsyntax text area symbol
 (defn file-type [file]
 	(let [file-name (file-name file)]
 		(cond 

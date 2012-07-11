@@ -5,14 +5,12 @@
                 ObjectInputStream ObjectOutputStream
                 OutputStream Writer PrintStream)))
 
-;; define a UUID for clooj preferences
 (def sketchpad-prefs (.. Preferences userRoot
                      (node "clooj") (node "c6833c87-9631-44af-af83-f417028ea7aa")))
 
 (def sketchpad-prefs (.. Preferences userRoot
   (node "sketchpad") (node "c6833c87-9631-44af-af83-f417028ea7aa")))
 
-;; preferences
 (defn partition-str [n s]
   (let [l (.length s)]
     (for [i (range 0 l n)]
@@ -23,7 +21,6 @@
 (defn write-value-to-prefs
   "Writes a pure clojure data structure to Preferences object."
   [prefs key value]
-  ; (println prefs key value)
   (let [chunks (partition-str pref-max-bytes (with-out-str (pr value)))
         node (. prefs node key)]
     (.clear node)

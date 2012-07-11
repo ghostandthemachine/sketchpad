@@ -8,7 +8,6 @@
            (org.fife.ui.rtextarea RecordableTextAction RTextAreaEditorKit)
            (org.fife.ui.rsyntaxtextarea RSyntaxTextAreaDefaultInputMap)))
 
-;; edit modes [:default :vim]
 (def editor-mode (atom :default))
 
 (defn- get-default-modifier
@@ -31,21 +30,16 @@
   (let [default-input-map-name "RTextAreaUI.inputMap"
         default-action-map-name "RTextAreaUI.actionMap"
         action-map (cast ActionMap (UIManager/get default-action-map-name))
-        ; rta-input-map (cast InputMap (UIManager/get default-input-map-name))
-        rta-input-map (default-input-map)
-        ]
+        rta-input-map (default-input-map)]
     (cond 
       (= kw :default)
         (do 
     		(swap! editor-mode (fn [_] :default))
-;          (set-action-map! rta action-map)
           (.setKeymap rta (create-keymap))
           (set-input-map! rta (input-map rta))
-          ; (remove-vim-listener rta)         
         	(println "edit mode to default"))
       (= kw :vim)
       	(do
       	     (swap! editor-mode (fn [_] :vim))
       		(set-input-map! rta input-map)
-      		; (add-vim-listener rta)
           (println "edit mode to vim")))))

@@ -27,19 +27,15 @@
 (defn make-preview [app-atom]
 	(let [app @app-atom
 				new-preview (preview)]
-		;; create the preview component
 		(swap! new-preview (fn [preview] (assoc preview :preview-comp (preview-component))))
-		;; and add it to the app map
 		(swap! app-atom (fn [app] (assoc app :preview new-preview)))))
 
-(defn load-file-into-rta! [file rta]
-	)
+(defn load-file-into-rta! [file rta])
 
 (defn preview-file-name! [app name]
 	(let [preview (app :preview)]
 		(swap! preview (fn [p] (assoc :preview-file-name name p)))))
 
-;; update preview clean/dirt state
 (defn set-preview-state [kw preview]
 	(swap! preview (fn [p] (assoc p :state kw))))
 
@@ -69,11 +65,8 @@
 
 
 (defn remove-editor-from-container [container preview]
-	;; seesaw select this tabs rsta
 	(let [rsta-scroller (select container [:.rsta-scroller])]
-		;; update the preview maps currently hidden component to this rsta scroller
 		(swap! preview (fn [p] (assoc p :hidden-comp rsta-scroller)))
-		;; remove the scroller from the tab
 		(remove! container rsta-scroller)))
 
 (defn set-blocked-tab-index! [preview index]
@@ -86,7 +79,6 @@
 		(swap! app-atom (fn [a] (assoc a :doc-text-area (select preview-scroller [:#preview-rsta]))))))
 
 (defn add-preview-comp! [current-tab preview-comp]
-	; (let [container (select current-tab [:.container])]
 		(add! current-tab preview-comp))
 
 
@@ -102,22 +94,14 @@
 					tab-container (if (nil? container)
 													(select current-tab [:.container])
 													container)]
-			; (remove-editor-from-container tab-container preview)
 			(set-blocked-tab-index! preview current-tab-index)
-			;; set global focussed rta to the preview
 			(set-global-rsta-to-preview! app-atom)
-			;; show the preview component
 			(add-preview-comp! current-tab preview-comp)
-
-			;; set the text area text from file
 			(let [txt (slurp file)
             rdr (StringReader. txt)
             preview-rta (first (select preview-comp [:.syntax-editor]))]
            	(.read preview-rta rdr nil))
-			
-			;; init in a clean state
 			(clean! preview)
-			;; set visible-state
 			(visible-state! preview :true)))))
 
 (defn reset-original-comp! [app-atom]
@@ -133,11 +117,8 @@
 				preview (app :preview)
 				preview-comp (@preview :preview-comp)
 				tabbed-panel (app :editor-tabbed-panel)]
-		;; remove preview from current container
 		(clear-preview! preview)
-		;; mark it clean
 		(clean! preview)
-		;; put original component back in this tabs container
 		(reset-original-comp! app-atom)
 		(visible-state! preview false)))
 
@@ -145,30 +126,12 @@
 	(let [preview (app :preview)
 				preview-comp (@preview :preview-rta)
 				tabbed-panel (app :editor-tabbed-panel)
-				current-tab-index (current-tab-index app)]
-))
+				current-tab-index (current-tab-index app)]))
 
 (defn preview-file! [app-atom file]
   (let [file-name (fm/file-name file)]
   	(if (tabs? (@app-atom :editor-tabbed-panel))
-    	;; if there are tabs we can take the focused one over and display there
     	(show-preview! app-atom file)
-    	;; other wise we need to create a temp container
     	(do 
     		(new-file-tab! @app-atom (ec/make-editor-component))
     		(show-preview! app-atom file)))))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -30,7 +30,6 @@
   (->> (clojure.reflect/reflect SyntaxConstants)
     :members
     (map :name)
-    ; there's gotta be a better way
     (map (fn [n]
            [(normalize-style-name n) (eval `(. SyntaxConstants ~n))]))
     (into {})))

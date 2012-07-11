@@ -34,8 +34,6 @@
         :items [(checkbox-menu-item :text "Code Folding"
                                     :listen [:action #(fold-action ta)])]))
 
-;;actions
-
 (defn about-action
   [ta]
   (action :name "About Sketchpad..."
@@ -181,18 +179,6 @@
                            :mnemonic "F" 
                            :key (keystroke "meta F") 
                            :listen [:action (fn [_] (toggle-search app-atom))])
-               ; (menu-item :text "Find next" 
-               ;            :mnemonic "N" 
-               ;            :key (keystroke "meta G") 
-               ;            :listen [:action (fn [_] (highlight-step app false))])
-               ; (menu-item :text "Find prev" 
-               ;            :mnemonic "P" 
-               ;            :key (keystroke "meta shift G") 
-               ;            :listen [:action (fn [_] (highlight-step app true))])
-               ; (menu-item :text "Name search/docs"
-               ;            :mnemonic "S" 
-               ;            :key (keystroke "alt TAB") 
-               ;            :listen [:action (fn [_] (show-tab-help app (find-focused-text-pane app) inc toggle-file-tree-panel))])
                (separator)
                 (menu-item :text "Begin recording macro..." 
                            :key (keystroke "ctrl Q") 
@@ -208,15 +194,12 @@
   [app]
   (if (= "ns" (str (first (current-ns-form app))))
     (do 
-      (send-to-editor-repl (current-text-area (app :editor-tabbed-panel)) (str "(use :reload " \' (str (second (current-ns-form app))) ")"))
-;      (add-completions-from-ns (quote (second (current-ns-form app))))
-      )))
+      (send-to-editor-repl (current-text-area (app :editor-tabbed-panel)) (str "(use :reload " \' (str (second (current-ns-form app))) ")")))))
 
 (defn require-reload-current-file-ns
   [app]
   (if (= "ns" (str (first (current-ns-form app))))
     (do 
-      ; (println "try to reload: " (str "(require :reload " \' (str (second(current-ns-form app))) ")"))
       (send-to-editor-repl (current-text-area (app :editor-tabbed-panel)) (str "(require :reload " \' (str (second(current-ns-form app))) ")")))))
 
 (defn in-ns-current-file-ns
@@ -234,43 +217,7 @@
                              :mnemonic "N" 
                              :key (keystroke "meta control R") 
                              :listen [:action (fn [_] (new-repl-tab! app-atom))])
-        					; (menu-item :text "Evaluate form" 
-             ;                 :mnemonic "E" 
-             ;                 :key (keystroke "meta shift ENTER") 
-             ;                 :listen [:action (fn [_] (send-selected-to-repl app))])
-             ;      (menu-item :text "Evaluate entire file" 
-             ;                 :mnemonic "F" 
-             ;                 :key (keystroke "meta shift E")
-             ;                 :listen [:action (fn [_] (send-doc-to-repl app))])
-             ;      (separator)
-             ;      (menu-item :text "Apply file ns"
-             ;                 :mnemonic "A"
-             ;                 :key (keystroke "meta control A")
-             ;                 :listen [:action  (fn [_] (apply-namespace-to-repl app))])
-             ;      (separator)
-             ;      (menu-item :text "Use :reload file"
-             ;                 :mnemonic "U"
-             ;                 :key (keystroke "meta shift U")
-             ;                 :listen [:action (fn [_] (use-reload-current-file-ns app))])
-             ;      (menu-item :text "Require :reload file"
-             ;                 :mnemonic "R"
-             ;                 :key (keystroke "meta shift R")
-             ;                 :listen [:action (fn [_] (require-reload-current-file-ns app))])
-             ;      (menu-item :text "Switch to current file ns"
-             ;                 :mnemonic "I"
-             ;                 :key (keystroke "meta shift I")
-             ;                 :listen [:action (fn [_] (in-ns-current-file-ns app))])
-                  (separator)
-;                  (menu-item :text "Restart"
-;                             :mnemonic "R"
-;                             :key (keystroke "meta R")
-;                             :listen [:action (fn [_] (restart-repl app (first (get-selected-projects app))))])
-;                  (separator)
-                  ; (menu-item :text "Print stack trace for last error"
-                  ;            :mnemonic "T"
-                  ;            :key (keystroke "meta T")
-                  ;            :listen [:action (fn [_] (print-stack-trace app))])
-                  ]))
+                  (separator)]))
 
 (defn make-view-menu
   [app]
@@ -296,8 +243,6 @@
                            :key (keystroke "meta 2") 
                            :listen [:action (fn [_] (toggle-repl app))])
                 (separator)
-;                (menu-item :text "Folding"
-;                           :listen [:action (fn [_] (fold-action (app :doc-text-area)))])
                 (menu-item :text "Next tab"
                 					 :key (keystroke "meta alt RIGHT")
                 					 :listen [:action (fn [_] (select-next-tab (app :editor-tabbed-panel)))])
@@ -307,8 +252,7 @@
                 (separator)
                 (menu-item :text "Close tab"
                            :key (keystroke "meta W")
-                           :listen [:action (fn [_] (close-current-tab app))])
-                           ]))
+                           :listen [:action (fn [_] (close-current-tab app))])]))
 
 (defn make-help-menu
   [app]

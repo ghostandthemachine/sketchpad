@@ -63,7 +63,6 @@
   (let [read-string-code (read-string-at cmd line)
         short-file (last (.split file "/"))
         namespaces (namespaces-from-code cmd)]
-    ;(println namespaces)
     (pr-str
       `(do
          (dorun (map #(try (require %) (catch Exception _#)) '~namespaces))
@@ -78,7 +77,6 @@
   (awtevent
     (let [cmd-ln (str \newline (.trim cmd) \newline)
           cmd-trim (.trim cmd)]
-			;; go to next line
       (append-text-update rsta (str \newline))
       (let [repl (get-meta rsta :repl)
             repl-history (get-meta rsta :repl-history)

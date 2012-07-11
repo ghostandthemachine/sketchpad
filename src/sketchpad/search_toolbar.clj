@@ -2,8 +2,7 @@
 	(:use [sketchpad tab-manager]
 		  [seesaw core]))
 
-(defn find-field-listener [app]
-	)
+(defn find-field-listener [app])
 
 (defn search-toolbar [app-atom]
 	(let [app @app-atom
@@ -14,8 +13,6 @@
 			info-label (label)
 			search-bar (toolbar :floatable?  false :orientation :horizontal)]
 
-		;; create the find button listener here so we can acces other
-		;; search panel options
 		(listen 
 			find-btn :action 
 			(fn [e]
@@ -39,8 +36,7 @@
 								:text text-not-found)
 							(.provideErrorFeedback (UIManager/getLookAndFeel ) find-field))))))
 	(swap! app-atom (fn [app] (assoc app :search-bar search-bar)))
-	search-bar
-))
+	search-bar))
 
 
 (defn show-find-panel [app]

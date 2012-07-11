@@ -15,6 +15,5 @@
 (defn install-auto-completion
   [rta]
   (let [auto-complete (org.fife.ui.autocomplete.AutoCompletion. provider)]
-    ;; load prefs from config/default.clj
     (config/apply-auto-completion-prefs! config/default-auto-completion-prefs auto-complete)
     (.install auto-complete rta)))

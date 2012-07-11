@@ -26,7 +26,6 @@
 (def arglist-agent (agent nil))
 (def caret-position (atom nil))
 
-; caret finding
 (defn save-caret-position [app]
   (when-lets [text-area (app :doc-text-area)
               pos (get @caret-position text-area)
@@ -89,8 +88,6 @@
                         (awt-event (.setText (:arglist-label app) arglist-text)))))
                   (catch Throwable t (.printStackTrace t)))))))
 
-;; double-click paren to select form
-
 (defn double-click-selector [text-comp]
   (.addMouseListener text-comp
     (proxy [MouseAdapter] []
@@ -102,8 +99,6 @@
                                 (#{\) \] \} \"} c) pos)
                       [a b] (b/find-enclosing-brackets (get-text-str text-comp) pos)]
             (set-selection text-comp a (inc b))))))))
-
-;; search 
 
 (defn setup-search-text-area [app]
   (let [sta (doto (app :search-text-area)
@@ -120,8 +115,6 @@
     (attach-action-keys sta ["ENTER" #(search/highlight-step app false)]
                             ["shift ENTER" #(search/highlight-step app true)]
                             ["ESCAPE" #(search/escape-find app)])))
-
-;; view
 
 (defn setup-text-area-font
   [app]
@@ -153,15 +146,12 @@
 (defn dirty-state-listener
   [app]
   (let [listener (proxy [KeyAdapter] []
-                    (keyTyped [e]
-                      ))]))
+                    (keyTyped [e]))]))
 
 (defn set-text-area-preffs
   [app rta]
   (.addKeyListener rta (dirty-state-listener app))
-  (.addKeyListener rta (command-line-key-listener))
-
-  )
+  (.addKeyListener rta (command-line-key-listener)))
 
 
 (defn doc-tab [title tip content]
@@ -211,17 +201,13 @@
                                                       editor-helpers-panel]
                                       :id             :doc-text-panel
                                       :class          :editor-comp)]
-    ;; set tab ui
     (.setUI editor-tabbed-panel (tab/sketchpad-tab-ui editor-tabbed-panel))
 
     (listen editor-tabbed-panel :selection 
        (fn [e] 
          (let [num-tabs (tab-count editor-tabbed-panel)]
-          ; (println "num-tabs: " num-tabs)
           (if (> 0 num-tabs)
-            ;; update the current rsta  
-	   				(swap! app-atom (fn [app] (assoc app :doc-text-area (current-text-area (app :editor-tabbed-panel)))))            
-            ))))
+	   				(swap! app-atom (fn [app] (assoc app :doc-text-area (current-text-area (app :editor-tabbed-panel)))))))))
 
     (config! arglist-label :background config/app-color)
     (config! arg-search-panel :background config/app-color)
