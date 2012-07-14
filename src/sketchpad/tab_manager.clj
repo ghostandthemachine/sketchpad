@@ -38,9 +38,9 @@
 	(.removeTabAt tabbed-panel index))
 
 (defn remove-repl-tab! [tabbed-panel index]
-	(let [rsta (select (component-at tabbed-panel index) [:#editor])
-		  repl (get-meta rsta :repl)]
-		(.destroy (repl :proc))
+	(let [rsta (select (component-at tabbed-panel index) [:#editor])]
+		(if-let [repl (get-meta rsta :repl)]
+			(.destroy (repl :proc)))
 	(.removeTabAt tabbed-panel index)))
 
 (defn index-of-component [tabbed-panel comp]

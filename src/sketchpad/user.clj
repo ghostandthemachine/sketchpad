@@ -1,7 +1,20 @@
 (ns sketchpad.user
+	(:use [sketchpad search buffer-info]
+				[seesaw meta])
 	(:require [sketchpad.tab-manager :as tab]
 			  [sketchpad.rsyntaxtextarea :as rsta]
-			  [sketchpad.core :as core]))
+			  [sketchpad.buffer-search :as search]
+			  [sketchpad.core :as core]
+			  [leiningen.core.project :as project])
+	(:import (org.fife.ui.rsyntaxtextarea RSyntaxTextAreaEditorKit)
+			 		(org.fife.ui.rtextarea RTextAreaEditorKit)
+			 		(java.awt.event ActionEvent)))
+
+(defn action-event [c]
+	(ActionEvent. c 0 "buffer-info-action-event"))
+
+(defn perform-action [action e rta]
+	(.actionPerformedImpl action e rta))
 
 (def app @core/current-app)
 
@@ -33,16 +46,307 @@
 (defn preflect [obj]
 	(clojure.pprint/pprint (clojure.reflect/reflect obj)))
 
-(def component-look-up-table 
-	{
-	:current (tab/current-text-area (:editor-tabbed-panel app))
-	:repl (:editor-repl app)})
-
-(defn current-text-area []
-	(:current component-look-up-table))
+(defn current-repl-rta [] (tab/current-text-area (:repl-tabbed-panel app)))
+(defn current-buffer [] (tab/current-text-area (:editor-tabbed-panel app)))
 
 (defn text []
-	(.getText (:current component-look-up-table)))
+	(.getText (current-buffer)))
+
+(defn current-project [] (get-meta (current-buffer) :project))
+(defn current-lein-project [] (project/read (str (current-project) "/project.clj")))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; RTextArea Actions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defn current-text-area [] (current-buffer))
+(defn undo
+([] (undo (current-text-area)))
+([rta]
+	(perform-action 
+		(org.fife.ui.rtextarea.RTextAreaEditorKit$UndoAction. )
+		(action-event rta) 
+		rta)))
+		
+(defn redo
+([] (redo (current-text-area)))
+([rta]
+	(perform-action 
+		(org.fife.ui.rtextarea.RTextAreaEditorKit$RedoAction. )
+		(action-event rta) 
+		rta)))
+
+(defn u 
+([]
+	(undo))
+([rta]
+	(undo rta)))
+
+(defn r
+([]
+	(redo))
+([rta]
+	(redo rta)))
+
+(defn beep 
+([] (beep (current-text-area)))
+([rta]
+	(perform-action 
+		(org.fife.ui.rtextarea.RTextAreaEditorKit$BeepAction.)
+		(action-event rta) 
+		rta)))
+
+(defn goto-next-word 
+([] (goto-next-word (current-text-area)))
+([rta]
+	(perform-action 
+		(org.fife.ui.rtextarea.RTextAreaEditorKit$NextWordAction. "goto-next-word" false)
+		(action-event rta) 
+		rta)))
+
+(defn select-next-word 
+([] (select-next-word (current-text-area)))
+([rta]
+	(perform-action 
+		(org.fife.ui.rtextarea.RTextAreaEditorKit$NextWordAction. "select-next-word" true)
+		(action-event rta) 
+		rta)))
+
+(defn goto-beginning 
+([] (goto-beginning (current-text-area)))
+([rta]
+(perform-action 
+	(org.fife.ui.rtextarea.RTextAreaEditorKit$BeginAction. "goto-beginning" true)
+	(action-event rta) 
+	rta)))
+
+(defn goto-line-beginning
+([] (goto-line-beginning (current-text-area)))
+([rta]
+(perform-action 
+	(org.fife.ui.rtextarea.RTextAreaEditorKit$BeginLineAction. "goto-line-beginning" false)
+	(action-event rta) 
+	rta)))
+
+(defn goto-line-beginning
+([] (goto-line-beginning (current-text-area)))
+([rta]
+(perform-action 
+	(org.fife.ui.rtextarea.RTextAreaEditorKit$BeginLineAction. "goto-line-beginning" false)
+	(action-event rta) 
+	rta)))
+
+(defn goto-line-end
+([] (goto-line-end (current-text-area)))
+([rta]
+(perform-action 
+	(org.fife.ui.rtextarea.RTextAreaEditorKit$EndAction. "goto-line-end" false)
+	(action-event rta) 
+	rta)))
+
+(defn select-to-line-end
+([] (select-to-line-end (current-text-area)))
+([rta]
+(perform-action 
+	(org.fife.ui.rtextarea.RTextAreaEditorKit$EndAction. "select-to-line-beginning" true)
+	(action-event rta) 
+	rta)))
+
+(defn select-to-line-beginning
+([] (select-to-line-beginning (current-text-area)))
+([rta]
+(perform-action 
+	(org.fife.ui.rtextarea.RTextAreaEditorKit$BeginLineAction. "select-to-line-beginning" true)
+	(action-event rta) 
+	rta)))
+
+(defn delete-line
+([] (delete-line (current-text-area)))
+([rta]
+(perform-action 
+	(org.fife.ui.rtextarea.RTextAreaEditorKit$DeleteLineAction. )
+	(action-event rta) 
+	rta)))
+
+(defn delete-next-char
+([] (delete-next-char (current-text-area)))
+([rta]
+(perform-action 
+	(org.fife.ui.rtextarea.RTextAreaEditorKit$DeleteNextCharAction. )
+	(action-event rta) 
+	rta)))
+
+(defn delete-prev-char
+([] (delete-prev-char (current-text-area)))
+([rta]
+(perform-action 
+	(org.fife.ui.rtextarea.RTextAreaEditorKit$DeletePrevCharAction. )
+	(action-event rta) 
+	rta)))
+
+(defn delete-prev-word-char
+([] (delete-prev-word-char (current-text-area)))
+([rta]
+(perform-action 
+	(org.fife.ui.rtextarea.RTextAreaEditorKit$DeletePrevWordAction. )
+	(action-event rta) 
+	rta)))
+
+(defn delete-rest-of-line
+([] (delete-rest-of-line (current-text-area)))
+([rta]
+(perform-action 
+	(org.fife.ui.rtextarea.RTextAreaEditorKit$DeleteRestOfLineAction. )
+	(action-event rta) 
+	rta)))
+
+
+
+
+
+;(defn goto-word-beginning
+;([] (goto-word-beginning (current-text-area)))
+;([rta]
+;(perform-action 
+;	(org.fife.ui.rtextarea.RTextAreaEditorKit$BeginWordAction. "goto-word-beginning" false)
+;	(action-event rta) 
+;	rta)))
+;
+;(defn select-to-word-beginning
+;([] (select-to-word-beginning (current-text-area)))
+;([rta]
+;(perform-action 
+;	(org.fife.ui.rtextarea.RTextAreaEditorKit$BeginWordAction. "select-to-word-beginning" true)
+;	(action-event rta) 
+;	rta)))
+
+(defn start-macro!
+([] (start-macro! (current-text-area)))
+([rta] 
+(perform-action 
+	(org.fife.ui.rtextarea.RTextAreaEditorKit$BeginRecordingMacroAction. )
+	(action-event rta) 
+	rta))
+([rta name-str desc]
+(perform-action 
+	(org.fife.ui.rtextarea.RTextAreaEditorKit$BeginRecordingMacroAction. )
+	(action-event rta) 
+	rta))
+([rta name-str desc accelerator]
+(perform-action 
+	(org.fife.ui.rtextarea.RTextAreaEditorKit$BeginRecordingMacroAction. name-str nil desc nil accelerator)
+	(action-event rta) 
+	rta)))
+
+(defn end-macro!
+([] (end-macro! (current-text-area)))
+([rta] 
+(perform-action 
+	(org.fife.ui.rtextarea.RTextAreaEditorKit$EndRecordingMacroAction. )
+	(action-event rta) 
+	rta))
+([rta name-str desc]
+(perform-action 
+	(org.fife.ui.rtextarea.RTextAreaEditorKit$EndRecordingMacroAction. )
+	(action-event rta) 
+	rta))
+([rta name-str desc  accelerator]
+(perform-action 
+	(org.fife.ui.rtextarea.RTextAreaEditorKit$EndRecordingMacroAction. name-str nil desc nil accelerator)
+	(action-event rta) 
+	rta)))
+
+(defn play-macro
+([] (play-macro (current-text-area)))
+([rta] 
+(perform-action 
+	(org.fife.ui.rtextarea.RTextAreaEditorKit$PlaybackLastMacroAction. )
+	(action-event rta) 
+	rta))
+([rta name-str desc]
+(perform-action 
+	(org.fife.ui.rtextarea.RTextAreaEditorKit$PlaybackLastMacroAction. )
+	(action-event rta) 
+	rta))
+([rta name-str desc  accelerator]
+(perform-action 
+	(org.fife.ui.rtextarea.RTextAreaEditorKit$PlaybackLastMacroAction. name-str nil desc nil accelerator)
+	(action-event rta) 
+	rta)))
+
+
+(defn copy
+([] (copy (current-text-area)))
+([rta]
+(perform-action 
+	(org.fife.ui.rtextarea.RTextAreaEditorKit$CopyAction. )
+	(action-event rta) 
+	rta)))
+
+(defn cut
+([] (cut (current-text-area)))
+([rta]
+(perform-action 
+	(org.fife.ui.rtextarea.RTextAreaEditorKit$CutAction. )
+	(action-event rta) 
+	rta)))
+
+(defn increase-font-size
+([] (cut (current-text-area)))
+([rta]
+(perform-action
+	(org.fife.ui.rtextarea.RTextAreaEditorKit$IncreaseFontSizeAction. )
+	(action-event rta) 
+	rta)))
+
+(defn decrease-font-size
+([] (cut (current-text-area)))
+([rta]
+(perform-action
+	(org.fife.ui.rtextarea.RTextAreaEditorKit$DecreaseFontSizeAction. )
+	(action-event rta) 
+	rta)))
+
+(defn previous-occurence
+([] (previous-occurence (current-text-area)))
+([rta]
+(perform-action
+	(org.fife.ui.rtextarea.RTextAreaEditorKit$PreviousOccurrenceAction. "previous-occurence")
+	(action-event rta) 
+	rta)))
+	
+(defn next-occurence
+([] (next-occurence (current-text-area)))
+([rta]
+(perform-action
+	(org.fife.ui.rtextarea.RTextAreaEditorKit$NextOccurrenceAction. "next-occurence")
+	(action-event rta) 
+	rta)))
+		
+(defn prev-occurence
+([] (prev-occurence (current-text-area)))
+([rta]
+(perform-action
+	(org.fife.ui.rtextarea.RTextAreaEditorKit$PreviousOccurrenceAction. "next-occurence")
+	(action-event rta) 
+	rta)))
+
+(defn macro 
+([f] (macro f (current-text-area)))
+([f rta]
+	(start-macro! rta)
+	(f rta)
+	(end-macro! rta))
+([f rta file-name] (macro f rta file-name nil))
+([f rta file-name ks]
+	(start-macro! rta nil nil ks)
+	(f rta)
+	(end-macro! rta)
+	(let[m (.getCurrentMacro rta)]
+		(.saveToFile m file-name)
+		;; log created new macro file
+	)))
+	
+ 
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Cursor and mark position
@@ -64,8 +368,7 @@
 
 (defn set-cursor-pos!
   "Set the position of the cursor."
-  [col line]
-  )
+  [col line])
 
 (defn current-col
   "Return the column number of the cursor in the current buffer."
@@ -77,9 +380,9 @@
   []
   (second (cursor-pos)))
 
-(defn goto-pattern
-  [regex-pattern]
-  (search regex-pattern))
+;(defn goto-pattern
+;  [regex-pattern]
+;  (search (str regex-pattern)))
 
 (defn goto-next-char
   []
@@ -92,9 +395,6 @@
 (defn goto-nth-char
   [n]
   (buffer-goto-prev-char (current-text-area) n))
-
-(defn goto-next-word
-  [])
 
 (defn goto-prev-word
   [])
@@ -213,4 +513,14 @@
 ; Create popup at current cursor location (or given location)
 ; set, add, remove contents of popup
 ; move, delete popup
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Shorthand. mostly for dev
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn f [s] (search/search s))
+(defn fr [s r] (search/search-replace s r))
+(defn fra [s r] (search/search-replace-all s r))
+
+
 

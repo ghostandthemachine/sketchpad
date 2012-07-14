@@ -15,6 +15,7 @@
 								 [classlojure "0.6.5"]
                  [timbre "0.5.1-SNAPSHOT"]
                  [org.lpetit/paredit.clj "0.12.4.STABLE01"]
+                 [reply "0.1.0-beta8"]
                  [clj-http "0.4.2"]
                  ]
   :jvm-opts ~(if (= (System/getProperty "os.name") "Mac OS X") ["-Xdock:name=Sketchpad"] []))

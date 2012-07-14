@@ -23,7 +23,8 @@
             [sketchpad.config :as config]
             [sketchpad.repl-tab-ui :as rtab]
             [sketchpad.rtextscrollpane :as sp]
-            [clojure.tools.nrepl :as repl])
+            [clojure.tools.nrepl :as repl]
+            [leiningen.core.project :as lein])
   (:import (org.fife.ui.rtextarea RTextScrollPane)
            (java.io.IOException)))
 
@@ -100,6 +101,34 @@
     (filter identity [(str project-path "/src")
                       (when clojure-jar-term
                         clojure-jar-term)])))
+
+(defn create-outside-lein-repl
+  "This function creates an outside process with a clojure repl."
+  [result-writer project-path]
+  (let [clojure-jar (clojure-jar-location project-path)
+        java (str (System/getProperty "java.home")
+                  File/separator "bin" File/separator "java")
+        classpath (str clojure-jar ":" project-path)
+        builder (ProcessBuilder.
+                  [java "-cp" classpath "lein.repl"])]
+    (.redirectErrorStream builder true)
+    (.directory builder (File. (or project-path ".")))
+    (try
+      (let [proc (.start builder)
+            input-writer  (-> proc .getOutputStream (PrintWriter. true))
+            repl {:input-writer input-writer
+                  :project-path project-path
+                  :thread nil
+                  :proc proc
+                  :var-maps (agent nil)
+                  :last-start-line 1}
+            is (.getInputStream proc)]
+        (send-off (repl :var-maps) #(merge % (get-var-maps project-path classpath)))
+        (future (io/copy is result-writer :buffer-size 1))
+        repl)
+      (catch java.io.IOException e
+        (println "Could not create outside REPL for path: " project-path)
+        (println e)))))
 
 (defn create-outside-repl
   "This function creates an outside process with a clojure repl."
@@ -259,6 +288,30 @@
                    (create-outside-repl (app :repl-out-writer) project-path))]
       (reset! (:repl app) repl))))
 
+
+
+(defn attach-lein-repl-handler [rsta]
+  (let [ta-in rsta
+        editor-repl-history (get-meta rsta :repl-history)
+        repl (get-meta :repl rsta)
+        get-caret-pos #(.getCaretPosition ta-in)
+        ready #(let [caret-pos (get-caret-pos)
+                     txt (.getText ta-in)
+                     trim-txt (string/trimr txt)]
+                 (and
+                   (pos? (.length trim-txt))
+                   (<= (.length trim-txt)
+                       caret-pos)
+                   (= -1 (first (find-enclosing-brackets
+                                  txt
+                                  caret-pos)))))
+        submit #(when-let [txt (get-last-cmd rsta)]
+                  (let [pos (editor-repl-history :pos)]
+                    (if (correct-expression? txt)
+                      (do 
+                        (send-to-lein-project-repl rsta txt)
+                        (swap! pos (fn [p] 0))))))]))
+
 (defn add-repl-input-handler [rsta]
   (let [ta-in rsta
         editor-repl-history (get-meta rsta :repl-history)
@@ -365,18 +418,4 @@
                             repl-in-scroll-pane
                             repl-container))
     repl-tabbed-panel))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
