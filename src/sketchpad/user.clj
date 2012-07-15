@@ -1,10 +1,10 @@
 (ns sketchpad.user
-	(:use [sketchpad search buffer-info]
+	(:use [sketchpad buffer-info]
 				[seesaw meta])
 	(:require [sketchpad.tab-manager :as tab]
 			  [sketchpad.rsyntaxtextarea :as rsta]
-			  [sketchpad.buffer-search :as search]
 			  [sketchpad.core :as core]
+			  [sketchpad.buffer-search :as buffer-search]
 			  [leiningen.core.project :as project])
 	(:import (org.fife.ui.rsyntaxtextarea RSyntaxTextAreaEditorKit)
 			 		(org.fife.ui.rtextarea RTextAreaEditorKit)
@@ -16,32 +16,7 @@
 (defn perform-action [action e rta]
 	(.actionPerformedImpl action e rta))
 
-(def app @core/current-app)
-
-(defn help 
-([]
-	(println)
-	(println "Sketchapd Help")
-	(println)
-	(println "useful commands:")
-	(println)
-	(println  "\t :file")
-	(println  "\t :project"))
-([kw]
-	(println)
-	(println "Sketchapd Help")
-	(println)
-	(cond
-		(= kw :file)
-			(println "file helper functions:")
-			(println)
-			(println "\t :open/:o")
-			(println "\t :close/:c")
-		(= kw :project)
-			(println "project helper functions:")
-			(println)
-			(println "\t :open/:o")
-			(println "\t :close/:c"))))
+(def app @sketchpad.core/current-app)
 
 (defn preflect [obj]
 	(clojure.pprint/pprint (clojure.reflect/reflect obj)))
@@ -49,11 +24,15 @@
 (defn current-repl-rta [] (tab/current-text-area (:repl-tabbed-panel app)))
 (defn current-buffer [] (tab/current-text-area (:editor-tabbed-panel app)))
 
-(defn text []
+(defn current-text []
 	(.getText (current-buffer)))
 
 (defn current-project [] (get-meta (current-buffer) :project))
-(defn current-lein-project [] (project/read (str (current-project) "/project.clj")))
+
+(defn lein-project [path] (project/read (str (current-project) "/project.clj")))
+
+(defn current-lein-project [] (lein-project (current-project)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; RTextArea Actions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -518,9 +497,9 @@
 ;; Shorthand. mostly for dev
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn f [s] (search/search s))
-(defn fr [s r] (search/search-replace s r))
-(defn fra [s r] (search/search-replace-all s r))
+(defn f [s] (sketchpad.buffer-search/search (current-text-area) s))
+(defn fr [s r] (sketchpad.buffer-search/search-replace (current-text-area) s r))
+(defn fra [s r] (sketchpad.buffer-search/search-replace-all (current-text-area) s r))
 
 
 

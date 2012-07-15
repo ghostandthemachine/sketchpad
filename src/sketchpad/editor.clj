@@ -116,8 +116,7 @@
                             ["shift ENTER" #(search/highlight-step app true)]
                             ["ESCAPE" #(search/escape-find app)])))
 
-(defn setup-text-area-font
-  [app]
+(defn setup-text-area-font [app]
     (cond 
       (is-mac)
       (do 
@@ -136,20 +135,17 @@
 
 (def key-stack (atom []))
 
-(defn command-line-key-listener
-  []
+(defn command-line-key-listener []
   (let [global-key-listener (proxy [KeyAdapter] []
                               (keyTyped [e]
                                 (swap! key-stack (fn [s] (conj e s)))
                                 (pprint @key-stack)))]))
 
-(defn dirty-state-listener
-  [app]
+(defn dirty-state-listener [app]
   (let [listener (proxy [KeyAdapter] []
                     (keyTyped [e]))]))
 
-(defn set-text-area-preffs
-  [app rta]
+(defn set-text-area-preffs [app rta]
   (.addKeyListener rta (dirty-state-listener app))
   (.addKeyListener rta (command-line-key-listener)))
 
@@ -163,9 +159,20 @@
 (defn put [laf k v]
   (.put laf (str "TabbedPane." k) v))
 
+(defn attach-tab-change-handler [app-atom editor-tabbed-panel]
+  (listen editor-tabbed-panel :selection 
+       (fn [e] 
+         (let [num-tabs (tab-count editor-tabbed-panel)
+               i (current-tab-index editor-tabbed-panel)]
+          (if (> 0 num-tabs)
+            (do
+              (swap! app-atom assoc :doc-text-area (current-text-area editor-tabbed-panel))
+              (swap! app-atom (fn [app] (assoc app :current-tab i))))
+            (do
+              (swap! app-atom assoc :doc-text-area nil)
+              (swap! app-atom (fn [app] (assoc app :current-tab i)))))))))
 
-(defn editor
-  [app-atom]
+(defn editor [app-atom]
   (let [arglist-label         (label  :foreground     (color :blue)
                                       :id             :arglist-label
                                       :class          :arg-response)
@@ -203,17 +210,10 @@
                                       :class          :editor-comp)]
     (.setUI editor-tabbed-panel (tab/sketchpad-tab-ui editor-tabbed-panel))
 
-    (listen editor-tabbed-panel :selection 
-       (fn [e] 
-         (let [num-tabs (tab-count editor-tabbed-panel)]
-          (if (> 0 num-tabs)
-	   				(swap! app-atom (fn [app] (assoc app :doc-text-area (current-text-area (app :editor-tabbed-panel)))))))))
+    (attach-tab-change-handler app-atom editor-tabbed-panel)
 
     (config! arglist-label :background config/app-color)
     (config! arg-search-panel :background config/app-color)
-
-    (config! arg-search-panel :background config/app-color)
-    (config! arglist-label :background config/app-color)
 
     (swap! app-atom conj (gen-map
                             arglist-label

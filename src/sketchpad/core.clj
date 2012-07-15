@@ -125,7 +125,7 @@
     (let [tree (app :docs-tree)]
       (load-expanded-paths tree)
       (load-tree-selection tree))
-      (app :frame)))
+    (app :frame)))
 
 (defonce current-app (atom nil))
 

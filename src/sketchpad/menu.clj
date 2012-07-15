@@ -6,7 +6,9 @@
   (:require 
         [sketchpad.rtextscrollpane :as sp]
         [sketchpad.rsyntaxtextarea :as cr]
-        [sketchpad.rtextarea :as rt]))
+        [sketchpad.rtextarea :as rt]
+        [sketchpad.tab-manager :as tab-manager]
+        [sketchpad.lein-manager :as lein]))
 
 (def macro-recording-state (atom false))
 
@@ -15,13 +17,13 @@
   (if @macro-recording-state
     (do 
       (swap! macro-recording-state (fn [_] false))
-      (rt/end-recording-macro! (current-text-area (:editor-tabbed-panel app))))
+      (rt/end-recording-macro! (tab-manager/current-text-area (:editor-tabbed-panel app))))
     (do
       (swap! macro-recording-state (fn [_] true))
-      (rt/begin-recording-macro! (current-text-area (:editor-tabbed-panel app))))))
+      (rt/begin-recording-macro! (tab-manager/current-text-area (:editor-tabbed-panel app))))))
 
 (defn playback-last-macro [app]
-  (rt/playback-last-macro! (current-text-area (:editor-tabbed-panel app))))
+  (rt/playback-last-macro! (tab-manager/current-text-area (:editor-tabbed-panel app))))
 
 (defn fold-action
   [ta] 
@@ -88,8 +90,8 @@
                            :mnemonic "S" 
                            :key (keystroke "meta S") 
                            :listen [:action (fn [_] 
-                                              (let [rsta (current-text-area (app :editor-tabbed-panel))]
-                                                  (if (save-file (current-text-area (app :editor-tabbed-panel)))
+                                              (let [rsta (tab-manager/current-text-area (:editor-tabbed-panel app))]
+                                                  (if (save-file (tab-manager/current-text-area (:editor-tabbed-panel app)))
                                                     (mark-current-tab-clean! (app :editor-tabbed-panel)))))])
                 (separator)
                 (menu-item :text "Move/Rename" 
@@ -194,19 +196,19 @@
   [app]
   (if (= "ns" (str (first (current-ns-form app))))
     (do 
-      (send-to-editor-repl (current-text-area (app :editor-tabbed-panel)) (str "(use :reload " \' (str (second (current-ns-form app))) ")")))))
+      (send-to-editor-repl (tab-manager/current-text-area (:editor-tabbed-panel app)) (str "(use :reload " \' (str (second (current-ns-form app))) ")")))))
 
 (defn require-reload-current-file-ns
   [app]
   (if (= "ns" (str (first (current-ns-form app))))
     (do 
-      (send-to-editor-repl (current-text-area (app :editor-tabbed-panel)) (str "(require :reload " \' (str (second(current-ns-form app))) ")")))))
+      (send-to-editor-repl (tab-manager/current-text-area (:editor-tabbed-panel app)) (str "(require :reload " \' (str (second(current-ns-form app))) ")")))))
 
 (defn in-ns-current-file-ns
   [app]
   (if (= "ns" (str (first (current-ns-form app))))
     (do 
-      (send-to-editor-repl (current-text-area (app :editor-tabbed-panel)) (str "(in-ns " \' (str (second (current-ns-form app))) ")"))
+      (send-to-editor-repl (tab-manager/current-text-area (:editor-tabbed-panel app)) (str "(in-ns " \' (str (second (current-ns-form app))) ")"))
       )))
 
 (defn make-repl-menu
@@ -216,8 +218,10 @@
         :items [  (menu-item :text "Create new REPL" 
                              :mnemonic "N" 
                              :key (keystroke "meta control R") 
-                             :listen [:action (fn [_] (new-repl-tab! app-atom))])
-                  (separator)]))
+                             :listen [:action (fn [_] 
+                                              (new-repl-tab! 
+                                                app-atom))])
+                    (separator)]))
 
 (defn make-view-menu
   [app]

@@ -25,7 +25,7 @@
   (let [id (get-project-id!)]
 	  (swap! (app :project-set) conj project-path)
 	  (swap! (app :project-map) 
-	  		(fn [m] (assoc m project-path {:id id :project-color (get-project-theme-color id) :active-repls (atom #{}) :active-buffers (atom nil)})))))
+	  		(fn [m] (assoc m project-path {:path project-path :id id :project-color (get-project-theme-color id) :active-repls (atom #{}) :active-buffers (atom nil)})))))
 
 (defn add-buffer-to-project! [app-atom proj title rsta] 
 	(let [projects-map @(@app-atom :project-map)

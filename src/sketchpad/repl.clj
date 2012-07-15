@@ -309,8 +309,16 @@
                   (let [pos (editor-repl-history :pos)]
                     (if (correct-expression? txt)
                       (do 
-                        (send-to-lein-project-repl rsta txt)
-                        (swap! pos (fn [p] 0))))))]))
+                        (send-to-lein-repl rsta txt)
+                        (swap! pos (fn [p] 0))))))
+        at-top #(zero? (.getLineOfOffset ta-in (get-caret-pos)))
+        at-bottom #(= (.getLineOfOffset ta-in (get-caret-pos))
+                      (.getLineOfOffset ta-in (.. ta-in getText length)))
+        prev-hist #(update-repl-history-display-position ta-in :dec)
+        next-hist #(update-repl-history-display-position ta-in :inc)]
+    (attach-child-action-keys ta-in ["ENTER" ready submit])
+    (attach-action-keys ta-in ["control UP" prev-hist]
+                              ["control DOWN" next-hist])))
 
 (defn add-repl-input-handler [rsta]
   (let [ta-in rsta
@@ -339,38 +347,8 @@
         prev-hist #(update-repl-history-display-position ta-in :dec)
         next-hist #(update-repl-history-display-position ta-in :inc)]
     (attach-child-action-keys ta-in ["ENTER" ready submit])
-    (attach-action-keys ta-in ["cmd1 UP" prev-hist]
-                              ["cmd1 DOWN" next-hist])))
-
-(defn add-repl-rsta-input-handler [rsta]
-  (let [ta-in rsta
-        editor-repl-history (get-meta rsta :repl-history)
-        get-caret-pos #(.getCaretPosition ta-in)
-        ready #(let [caret-pos (get-caret-pos)
-                     txt (.getText ta-in)
-                     trim-txt (string/trimr txt)]
-                 (and
-                   (pos? (.length trim-txt))
-                   (<= (.length trim-txt)
-                       caret-pos)
-                   (= -1 (first (find-enclosing-brackets
-                                  txt
-                                  caret-pos)))))
-        submit #(when-let [txt (get-last-cmd rsta)]
-                  (if (correct-expression? txt)
-                    (do 
-                      (send-to-project-repl rsta txt)
-                      (swap! (editor-repl-history :pos) (fn [pos] 0)))))
-
-        at-top #(zero? (.getLineOfOffset ta-in (get-caret-pos)))
-        at-bottom #(= (.getLineOfOffset ta-in (get-caret-pos))
-                      (.getLineOfOffset ta-in (.. ta-in getText length)))
-        prev-hist #(update-repl-history-display-position rsta :dec)
-        next-hist #(update-repl-history-display-position rsta :inc)
-        ]
-    (attach-child-action-keys ta-in ["ENTER" ready submit])
-    (attach-action-keys ta-in ["cmd1 UP" prev-hist]
-                              ["cmd1 DOWN" next-hist])))
+    (attach-action-keys ta-in ["control UP" prev-hist]
+                              ["control DOWN" next-hist])))
 
 (defn print-stack-trace [app]
     (send-to-repl app "(.printStackTrace *e)"))
@@ -411,6 +389,9 @@
     (install-auto-completion editor-repl)
     (config! repl-in-scroll-pane :background config/app-color)
     (config/apply-editor-prefs! config/default-editor-prefs editor-repl)
+
+		(send-to-editor-repl editor-repl "(use 'sketchpad.user)")
+    
     (swap! app-atom conj (gen-map
                             repl-tabbed-panel
                             repl-que

@@ -62,10 +62,10 @@
 					(let [tabbed-panel (app :editor-tabbed-panel)
 								container (make-editor-component app-atom)
 								new-file-name (str (file-name file))
-								rsta (select container [:#editor])
-								]
+								rsta (select container [:#editor])]
 						(put-meta! rsta :file file)
 						(put-meta! rsta :project proj)
+						(put-meta! rsta :project-path proj)
 						(let [txt (slurp file)
 				              rdr (StringReader. txt)]
 				        	  (.read rsta rdr nil))

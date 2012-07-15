@@ -72,43 +72,51 @@
            (last (map eval ~read-string-code)))))))
 
 
-(defn send-to-project-repl
-  ([rsta cmd] (send-to-project-repl rsta cmd "NO_SOURCE_PATH" 0))
-  ([rsta cmd file line]
-  (awtevent
-    (let [cmd-ln (str \newline (.trim cmd) \newline)
-          cmd-trim (.trim cmd)]
-      (append-text-update rsta (str \newline))
-      (let [repl (get-meta rsta :repl)
-            repl-history (get-meta rsta :repl-history)
-            items (repl-history :items)
-            cmd-str (cmd-attach-file-and-line (get-last-cmd rsta) file line)]
-        (binding [*out* (:input-writer repl)]
-          (println cmd-str)
-          (flush))
-       (when (not= cmd-trim (first @items))
-          (swap! items
-                 replace-first cmd-trim)
-          (swap! items conj ""))
-      	(swap! (repl-history :pos) (fn [pos] 0)))))))
+; (defn send-to-project-repl
+;   ([rsta cmd] (send-to-project-repl rsta cmd "NO_SOURCE_PATH" 0))
+;   ([rsta cmd file line]
+;   (awtevent
+;     (println "send-to-project-repl cmd: " cmd)
+;     (let [cmd-ln (str \newline (.trim cmd) \newline)
+;           cmd-trim (.trim cmd)]
+;       (append-text-update rsta (str \newline))
+;       (let [repl (get-meta rsta :repl)
+;             repl-history (get-meta rsta :repl-history)
+;             items (repl-history :items)
+;             cmd-str (cmd-attach-file-and-line (get-last-cmd rsta) file line)]
+;         (binding [*out* (:input-writer repl)]
+;           (println cmd-str)
+;           (flush))
+;        (when (not= cmd-trim (first @items))
+;           (swap! items
+;                  replace-first cmd-trim)
+;           (swap! items conj ""))
+;       	(swap! (repl-history :pos) (fn [pos] 0)))))))
 
   
-(defn send-to-lein-project-repl
-  ([rsta cmd] (send-to-project-repl rsta cmd "NO_SOURCE_PATH" 0))
+(defn send-to-lein-repl
+  ([rsta cmd] (send-to-lein-repl rsta cmd "NO_SOURCE_PATH" 0))
   ([rsta cmd file line]
   (awtevent
     (let [cmd-ln (str \newline (.trim cmd) \newline)
           cmd-trim (.trim cmd)]
       (append-text-update rsta (str \newline))
-      (let [repl (get-meta rsta :repl)
+      (let [repl-server (get-meta rsta :repl-server)
             repl-history (get-meta rsta :repl-history)
             items (repl-history :items)
             cmd-str (cmd-attach-file-and-line (get-last-cmd rsta) file line)
-						server-port (repl :server-port) 
-					  client (repl :client)
-					  session-id (repl :session-id)
-        		msg (nrepl/message client {:op :eval :code cmd-str})]
-       (append-text-update rsta msg)
+						server-port (repl-server :port)]
+				(with-open [conn (nrepl/connect :port server-port)]
+		     (let [response (-> (nrepl/client conn 1000)    ; message receive timeout required
+									       (nrepl/message {:op :eval :code cmd})
+									       nrepl/response-values)
+              response-str (str (first response))
+              prompt-ns (-> (nrepl/client conn 1000)    ; message receive timeout required
+                         (nrepl/message {:op :eval :code "(ns-name *ns*)"})
+                         nrepl/response-values)
+              promp-str (str \newline (first prompt-ns) "=> ")]
+		       (append-text-update rsta response-str)
+           (append-text-update rsta promp-str)))
        (when (not= cmd-trim (first @items))
           (swap! items
                  replace-first cmd-trim)

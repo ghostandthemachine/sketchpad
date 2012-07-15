@@ -10,7 +10,7 @@
 			 [java.awt.Image]
 			 [java.awt.image.BufferedImage]
 			 [javax.imageio.ImageIO]))
-
+ 
 
 (load-file "config/default.clj")
 
