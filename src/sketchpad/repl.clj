@@ -390,7 +390,7 @@
     (config! repl-in-scroll-pane :background config/app-color)
     (config/apply-editor-prefs! config/default-editor-prefs editor-repl)
 
-		(send-to-editor-repl editor-repl "(in-ns 'sketchpad.user)")
+		(send-to-editor-repl editor-repl "(require 'sketchpad.user)(in-ns 'sketchpad.user)")
     
     (swap! app-atom conj (gen-map
                             repl-tabbed-panel
