@@ -57,9 +57,17 @@
 	(let [port (repl-port project)
         server (nrepl.server/start-server :port port)
 				s-port (server-port server)]
-      ; (eval/eval-in-project
-      ;   project
-      ;   `(nrepl.server/start-server :port port)
-      ;   '(require [clojure.tools.nrepl.server :as nrepl.server]))
+			(eval/eval-in-project
+	      project
+	      `(nrepl.server/start-server :port port)
+	      '(require [clojure.tools.nrepl.server :as nrepl.server]))
 		{:port s-port
      :server server}))
+;
+;(defn project-repl-server [project]
+;	(let [port (repl-port project)]
+;	    (eval/eval-in-project
+;	      project
+;	      `(nrepl.server/start-server :port port)
+;	      '(require [clojure.tools.nrepl.server :as nrepl.server]))
+;		port))
