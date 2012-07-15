@@ -39,6 +39,11 @@
 (require '[leiningen.core.user :as user])
 (require '[sketchpad.user :as u]))
 
+(def port-ids (atom 0))
+(def base-port-number 2000)
+(defn next-repl-port! [] (+ base-port-number (swap! port-ids inc)))
+
+
 (defn repl-port [project]
   (Integer. (or (System/getenv "LEIN_REPL_PORT")
                 (-> project :repl-options :port)
@@ -53,16 +58,17 @@
                    (-> project :repl-options :ack-port))]
     (Integer. p)))
 
+
 (defn project-repl-server [project]
-	(let [port (repl-port project)
-        server (nrepl.server/start-server :port port)
-				s-port (server-port server)]
-			(eval/eval-in-project
-	      project
-	      `(nrepl.server/start-server :port port)
-	      '(require [clojure.tools.nrepl.server :as nrepl.server]))
-		{:port s-port
-     :server server}))
+	(let [port (next-repl-port!)]
+		(.start
+			(Thread. 
+				(bound-fn []
+					(eval/eval-in-project
+			      project
+			      `(nrepl.server/start-server :port ~port)
+			      '(require [clojure.tools.nrepl.server :as nrepl.server])))))
+		{:port port}))
 ;
 ;(defn project-repl-server [project]
 ;	(let [port (repl-port project)]
