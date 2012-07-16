@@ -5,7 +5,7 @@ The text editor component contains the active buffers in tabs. A tab is opened b
 ####File tree
 Standard file tree for opening, closing, and creating projects and files. Can be hidden with cmd+1
 ####REPL
-From manipulating buffers and creating executable macros, to managing project file structures and Leiningen projects, the Sketchpad editor REPL is a powerful tool for working with Clojure projects. The editor REPL defaults to load the sketchpad.user namespace, which provides functions for interacting with projects. Project repls will ultimately be created in outside processes via Leiningen, nrepl, and pomegranate. 
+From manipulating buffers and creating executable macros, to managing project file structures and Leiningen projects, the Sketchpad editor REPL is a powerful tool for working with Clojure projects. The editor REPL defaults to load the sketchpad.user namespace, which provides functions for interacting with projects. Project repls will ultimately be created in outside processes via Leiningen, nrepl, and pomegranate. Can be hidden with cmd+2
 ####User namespace
 The goal is to have the user namespace provide access and functionality as powerful as vim and emacs but in digestible Clojure code. Scripting macros and custom tools is simple and logical. Since Sketchpad is written in Clojure, the user namespace can also deal directly with Leiningen projects, the editor application it self, and much more.
 ####Projects and Leiningen
