@@ -88,8 +88,10 @@
     suffix))
 
 (defn text-file? [f]
-  (not (some #{(file-suffix f)}
-             ["jar" "class" "dll" "jpg" "png" "bmp"])))
+  (and 
+  	(not (some #{(file-suffix f)}
+             ["jar" "class" "dll" "jpg" "png" "bmp"]))
+    (> 1 (count (string/split (.getAbsolutePath f) #"\.")))))
 
 (defn save-file [rsta]
   (try
