@@ -1,4 +1,5 @@
 (ns sketchpad.user
+	(:refer-clojure :exclude [find replace])
 	(:use [sketchpad buffer-info]
 				[seesaw meta])
 	(:require [sketchpad.tab-manager :as tab]

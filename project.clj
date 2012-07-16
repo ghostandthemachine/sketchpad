@@ -12,7 +12,7 @@
                  [language-builder "1.0.0-SNAPSHOT"]
                  [auto-complete "0.1.0-SNAPSHOT"]
 								 [leiningen-core "2.0.0-SNAPSHOT"]
-								 [classlojure "0.6.5"]
+								 ; [classlojure "0.6.5"]
                  [timbre "0.5.1-SNAPSHOT"]
                  [org.lpetit/paredit.clj "0.12.4.STABLE01"]
                  [reply "0.1.0-beta8"]

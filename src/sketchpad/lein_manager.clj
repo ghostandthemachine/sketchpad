@@ -60,12 +60,13 @@
 
 
 (defn project-repl-server [project]
-	(let [port (next-repl-port!)]
+	(let [port (next-repl-port!)
+				non-prep-task-project (dissoc :prep-tasks)]
 		(.start
 			(Thread. 
 				(bound-fn []
 					(eval/eval-in-project
-			      project
+			      non-prep-task-project
 			      `(nrepl.server/start-server :port ~port)
 			      '(require [clojure.tools.nrepl.server :as nrepl.server])))))
 		{:port port}))
