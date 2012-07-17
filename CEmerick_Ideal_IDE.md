@@ -18,7 +18,7 @@
 
 	+ ~~Should have visibility to locally-defined vars/bindings, those that are :required or :used, as well as stuff in core~~
 	+ Host (Java) interop completion should be key off of the type hints in the surrounding code, and do what it can with imports and such
-	+ ~~In all cases, provide associated docs as well as parameter hints (that are bolded, etc. as you go along adding parameters)~~
+	+ ~~In all cases, provide associated docs as well as parameter hints (that are bolded, etc. as you go along adding parameters)~~	
 
 - in-place popup macroexpansion
 - generation of deftype/defrecord/extend-type/gen-class/proxy method scaffolding
@@ -98,5 +98,5 @@
 
 - ~~&#8220;Zero-config&#8221;~~
 
-	+ ~~All clojure projects (whether maven- or lein-based) have clojure as a dependency, so requiring any special &#8220;clojure setup&#8221; or creation of a &#8220;clojure platform&#8221; is either pointless or dangerous (the latter if you are unwittingly using a statically-defined &#8220;clojure platform&#8221; while your project&#8217;s POM is explicitly declaring a different version of clojure as a dependency) <sup> <a href="#fn2"> 2 </a> </sup>
-	+ The one area where having a default set of Clojure libraries available (as a &#8220;platform&#8221;, if it must be called that) is to start a REPL for a non-Clojure project, which <strong>is</strong> very convenient.~~
+	+ ~~All clojure projects (whether maven- or lein-based) have clojure as a dependency, so requiring any special &#8220;clojure setup&#8221; or creation of a &#8220;clojure platform&#8221; is either pointless or dangerous (the latter if you are unwittingly using a statically-defined &#8220;clojure platform&#8221; while your project&#8217;s POM is explicitly declaring a different version of clojure as a dependency) <sup> <a href="#fn2"> 2 </a> </sup>~~
+	+ ~~The one area where having a default set of Clojure libraries available (as a &#8220;platform&#8221;, if it must be called that) is to start a REPL for a non-Clojure project, which <strong>is</strong> very convenient.~~
