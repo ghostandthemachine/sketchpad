@@ -49,6 +49,7 @@
     			(mark-tab-dirty! (app :editor-tabbed-panel) (index-of-component (app :editor-tabbed-panel) container))))))
 
 (defn new-file-tab! 
+	([app-atom file] (new-file-tab! app-atom file (get-current-project app-atom) -1))
 	([app-atom file proj] (new-file-tab! app-atom file proj -1))
 	([app-atom file proj i]
 	(let [app @app-atom

@@ -108,11 +108,12 @@
       (.mkdirs the-dir)
       [(File. the-dir (str name ".clj")) namespace])))
 
-(defn file-name-choose [project-dir title]
+(defn file-name-choose [app-atom project-dir title]
   (chooser/choose-file :type :save
                :dir project-dir
                :success-fn (fn [fc file] (do 
                															(spit (File. (.getAbsolutePath file)) "") 
+                                            (new-file-tab! app-atom file project-dir)
                															(println "Createded file " (.getAbsolutePath file))))))
 
 
@@ -268,9 +269,25 @@
         (.delete f))
       (update-project-tree (app :docs-tree)))))
 
-(defn create-file [app project-dir default-namespace]
-   (when-let [file-name (file-name-choose project-dir "Create a new file")]
+(defn create-file [app-atom project-dir default-namespace]
+   (when-let [file-name (file-name-choose app-atom project-dir "New file")]
     (println file-name)))
+
+(defn new-file [app-atom project-dir]
+  (let [app @app-atom]
+    (try
+      (when-let [new-file (choose-file (@app-atom :frame) "New file" project-dir false)]
+        (awt-event
+          (let [path (.getAbsolutePath new-file)]
+            (spit path "")
+            (println "create new file " path)
+            (update-project-tree (app :docs-tree)))
+          (new-file-tab! app-atom new-file project-dir))
+          new-file)
+        (catch Exception e (do (JOptionPane/showMessageDialog nil
+                                 "Unable to create file."
+                                 "Oops" JOptionPane/ERROR_MESSAGE)
+                             (.printStackTrace e))))))
 
 (defn open-project [app]
   (when-let [dir (choose-directory (app :f) "Choose a project directory")]
@@ -285,24 +302,25 @@
                               project-dir)]
         (awt-event (set-tree-selection (app :docs-tree) (.getAbsolutePath clj-file)))))))
 
-(defn new-project [app]
-  (try
-    (when-let [dir (choose-file (app :frame) "Create a project directory" "" false)]
-      (awt-event
-        (let [path (.getAbsolutePath dir)]
-          (.mkdirs (File. dir "src"))
-          (new-project-clj app dir)
-          (project/add-project app path)
-          (update-project-tree (:docs-tree app))
-          (set-tree-selection (app :docs-tree) path)
-          (create-file app dir (str (.getName dir) ".core")))))
-      (catch Exception e (do (JOptionPane/showMessageDialog nil
-                               "Unable to create project."
-                               "Oops" JOptionPane/ERROR_MESSAGE)
-                           (.printStackTrace e)))))
+(defn new-project [app-atom]
+  (let [app @app-atom]
+    (try
+      (when-let [dir (choose-file (@app-atom :frame) "Create a project directory" nil false)]
+        (awt-event
+          (let [path (.getAbsolutePath dir)]
+            (.mkdirs (File. dir "src"))
+            (new-project-clj app dir)
+            (project/add-project app path)
+            (update-project-tree (:docs-tree app))
+            (set-tree-selection (app :docs-tree) path)
+            (create-file app-atom dir (str (.getName dir) ".core")))))
+        (catch Exception e (do (JOptionPane/showMessageDialog nil
+                                 "Unable to create project."
+                                 "Oops" JOptionPane/ERROR_MESSAGE)
+                             (.printStackTrace e))))))
 
 (defn rename-project [app]
-  (when-let [dir (choose-file (app :frame) "Move/rename project directory" "" false)]
+  (when-let [dir (choose-file (app :frame) "Move/rename project directory" nil false)]
     (let [old-project (first (get-selected-projects app))]
       (if (.renameTo (File. old-project) dir)
         (do
@@ -393,40 +411,41 @@
     model))
 
 (defn make-filetree-popup
-  [app]
-  (popup 
-    :id :filetree-popup
-    :class :popup
-    :items [(menu-item :text "New File" 
-                      :listen [:action (fn [_] (create-file app (first (get-selected-projects app)) ""))])
-            (menu-item :text "New Folder" )
-            (separator)
-            (menu-item :text "New Project" 
-                      :mnemonic "N" 
-                      :key (keystroke "meta shift N") 
-                      :listen [:action (fn [_] (new-project app))])
-            (menu-item :text "Open Project" 
-                      :mnemonic "O" 
-                      :key (keystroke "meta shift O") 
-                      :listen [:action (fn [_] (open-project app))])
-            (separator)
-            (menu-item :text "Remove" 
-                      :mnemonic "M" 
-                      :listen [:action (fn [_] (remove-project app))])
-            (menu-item :text "Rename Project" 
-                      :listen [:action (fn [_] (rename-project app))])
-            (separator)
-            (menu-item :text "Move/Rename" 
-                      :listen [:action (fn [_] (rename-file app))])
-            (separator)
-            (menu-item :text "Delete" 
-                      :listen [:action (fn [_] (delete-file app))])]))
+  [app-atom]
+  (let [app @app-atom]
+    (popup 
+      :id :filetree-popup
+      :class :popup
+      :items [(menu-item :text "New File" 
+                        :listen [:action (fn [_] (new-file app-atom (first (get-selected-projects app)) ""))])
+              (menu-item :text "New Folder" )
+              (separator)
+              (menu-item :text "New Project" 
+                        :mnemonic "N" 
+                        :key (keystroke "meta shift N") 
+                        :listen [:action (fn [_] (new-project app))])
+              (menu-item :text "Open Project" 
+                        :mnemonic "O" 
+                        :key (keystroke "meta shift O") 
+                        :listen [:action (fn [_] (open-project app))])
+              (separator)
+              (menu-item :text "Remove" 
+                        :mnemonic "M" 
+                        :listen [:action (fn [_] (remove-project app))])
+              (menu-item :text "Rename Project" 
+                        :listen [:action (fn [_] (rename-project app))])
+              (separator)
+              (menu-item :text "Move/Rename" 
+                        :listen [:action (fn [_] (rename-file app))])
+              (separator)
+              (menu-item :text "Delete" 
+                        :listen [:action (fn [_] (delete-file app))])])))
 
 (defn setup-tree [app-atom]
   (let [app @app-atom
         tree (:docs-tree app)
         save #(save-expanded-paths tree)]
-    (config! tree :popup (make-filetree-popup app))
+    (config! tree :popup (make-filetree-popup app-atom))
     (doto tree
       (.setRootVisible false)
       (.setShowsRootHandles true)

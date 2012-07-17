@@ -77,15 +77,19 @@
                 (menu :text "Project"
                       :items [])]))))
 
+(defn create-new-file [app-atom]
+  (when-let [new-file (new-file app-atom (first (get-selected-projects @app-atom)))]))
+
 (defn make-file-menu
-  [app]
-  (menu :text "File"
+  [app-atom]
+  (let [app @app-atom]
+    (menu :text "File"
         :mnemonic "F"
         :items [
                 (menu-item :text "New" 
                            :mnemonic "N" 
                            :key (keystroke "meta N") 
-                           :listen [:action (fn [_] (create-file app (first (get-selected-projects app)) ""))])
+                           :listen [:action (fn [_] (create-new-file app-atom))])
                 (menu-item :text "Save" 
                            :mnemonic "S" 
                            :key (keystroke "meta S") 
@@ -108,8 +112,7 @@
                     (menu-item :text "Quit"
                                :mnemonic "Q"
                                :key (keystroke "meta Q")
-                               :listen [:action (fn [_] (System/exit 0))])))
-                ]))
+                               :listen [:action (fn [_] (System/exit 0))])))])))
 
 (defn make-edit-menu
   [app]
@@ -269,7 +272,7 @@
   (let [app @app-atom]
     (config! 
       (:frame @app-atom) :menubar 
-                      (menubar :items [ (make-file-menu app)
+                      (menubar :items [ (make-file-menu app-atom)
                                         (make-edit-menu app)
                                         (make-project-menu app)
                                         (make-source-menu app-atom)

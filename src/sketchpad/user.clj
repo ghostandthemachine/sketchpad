@@ -1,16 +1,29 @@
 (ns sketchpad.user
 	(:refer-clojure :exclude [find replace])
 	(:use [sketchpad buffer-info]
-				[seesaw meta])
+				[seesaw meta]
+			  [clojure.repl])
 	(:require [sketchpad.tab-manager :as tab]
-			  [sketchpad.rsyntaxtextarea :as rsta]
-			  [sketchpad.core :as core]
-			  [sketchpad.buffer-search :as buffer-search]
-			  [leiningen.core.project :as project])
+					  [sketchpad.rsyntaxtextarea :as rsta]
+					  [sketchpad.core :as core]
+					  [sketchpad.buffer-search :as buffer-search]
+					  [leiningen.core.project :as project]
+					  [clojure.pprint :as pprint]
+					  [clojure.stacktrace :as stack-trace]
+					  [seesaw.dev :as seesaw.dev])
 	(:import (org.fife.ui.rsyntaxtextarea RSyntaxTextAreaEditorKit)
 			 		(org.fife.ui.rtextarea RTextAreaEditorKit)
 			 		(java.awt.event ActionEvent)))
 
+(defn pp [& args]
+	(pprint/pprint args))
+
+(defn stack-trace []
+	(stack-trace/print-stack-trace *e))
+
+(defn st []
+	(stack-trace))
+	
 (defn action-event [c]
 	(ActionEvent. c 0 "buffer-info-action-event"))
 
@@ -178,26 +191,6 @@
 	(action-event rta) 
 	rta)))
 
-
-
-
-
-;(defn goto-word-beginning
-;([] (goto-word-beginning (current-text-area)))
-;([rta]
-;(perform-action 
-;	(org.fife.ui.rtextarea.RTextAreaEditorKit$BeginWordAction. "goto-word-beginning" false)
-;	(action-event rta) 
-;	rta)))
-;
-;(defn select-to-word-beginning
-;([] (select-to-word-beginning (current-text-area)))
-;([rta]
-;(perform-action 
-;	(org.fife.ui.rtextarea.RTextAreaEditorKit$BeginWordAction. "select-to-word-beginning" true)
-;	(action-event rta) 
-;	rta)))
-
 (defn start-macro!
 ([] (start-macro! (current-text-area)))
 ([rta] 
@@ -324,8 +317,6 @@
 		(.saveToFile m file-name)
 		;; log created new macro file
 	)))
-	
- 
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -493,6 +484,20 @@
 ; Create popup at current cursor location (or given location)
 ; set, add, remove contents of popup
 ; move, delete popup
+
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Seesaw helpers
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn show-opts [c]
+"show seesaw widget optoins for the given component"
+	(seesaw.dev/show-options c))
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Shorthand. mostly for dev

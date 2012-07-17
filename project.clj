@@ -5,7 +5,7 @@
   :dependencies [[org.clojure/clojure-contrib "1.2.0"]
                  [org.clojure/clojure "1.3.0"]
         	       [overtone "0.6.0"]
-        		     [franks42/seesaw "1.4.2-SNAPSHOT"]
+								 [ghostandthemachine/seesaw "1.4.2-SNAPSHOT"]
         		     [clooj "0.3.4.2-SNAPSHOT"]
                  [rounded-border "0.0.1-SNAPSHOT"]
                  [rsyntax-clojars "0.1.0-SNAPSHOT"]

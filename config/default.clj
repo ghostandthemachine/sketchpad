@@ -11,7 +11,7 @@
 	:rsta-theme "themes/dark.xml"
 	;; params after this point will overide those set by the theme selection above
 	:whitespace-visible false
-	:line-wrap 				false
+	:line-wrap 	false
 	:rounded-selection-edges true
 	:animate-bracket-matching true
 	:anti-aliasing true

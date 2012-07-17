@@ -330,13 +330,14 @@
 
 ;; file handling
 
-(defn choose-file [parent title suffix load]
+(defn choose-file [parent title dir load]
   (let [dialog
     (doto (FileDialog. parent title
             (if load FileDialog/LOAD FileDialog/SAVE))
-      (.setFilenameFilter
-        (reify FilenameFilter
-          (accept [this _ name] (. name endsWith suffix))))
+      ; (.setFilenameFilter
+      ;   (reify FilenameFilter
+      ;     (accept [this _ name] (. name endsWith suffix))))
+      (if dir (.setDirectory dir))
       (.setVisible true))
     d (.getDirectory dialog)
     n (.getFile dialog)]
@@ -348,7 +349,7 @@
     (let [dirs-on #(System/setProperty
                      "apple.awt.fileDialogForDirectories" (str %))]
       (dirs-on true)
-        (let [dir (choose-file parent title "" true)]
+        (let [dir (choose-file parent title nil true)]
           (dirs-on false)
           dir))
     (let [fc (JFileChooser.)
