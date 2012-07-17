@@ -375,7 +375,7 @@
     (let [file (.. path getLastPathComponent getUserObject)
     			proj (.getPathComponent path 1)
     			proj-str (trim-parens (last (string/split (.toString proj) #"   ")))]
-      (when (fm/text-file? file)
+      (when (fm/text-file? file) ;; handle if dir is selected instead of file
         (do 
           (new-file-tab! app-atom file proj-str)
           (save-tree-selection tree path))))
