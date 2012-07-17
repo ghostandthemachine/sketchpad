@@ -10,3 +10,5 @@ From manipulating buffers and creating executable macros, to managing project fi
 The goal is to have the user namespace provide access and functionality as powerful as vim and emacs but in digestible Clojure code. Scripting macros and custom tools is simple and logical. Since Sketchpad is written in Clojure, the user namespace can also deal directly with Leiningen projects, the editor application it self, and much more.
 ####Projects and Leiningen
 This part of the project is still young but will be a central cog in the Sketchpad architecture. Leiningen has quickly become one the most popular Clojure project management tools and with the release of 2.0 it will only be more widely used. The goal is to leverage all of the Leiningen features from managing dependencies and projects to publishing projects to clojars all from Sketchpad and in Clojure. 
+----------------
+![Sketchpad screen shot](/img/Sketchpad-screenshot.png)
