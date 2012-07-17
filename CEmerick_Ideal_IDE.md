@@ -4,7 +4,7 @@
 
 	+ More than just s-expressions and typical values: regex literals, <a href="http://cemerick.com/2009/12/04/string-interpolation-in-clojure/">interpolated strings</a>, etc
 
-- <strike>Brace, bracket, paren matching</strike>
+- ~~Brace, bracket, paren matching~~
 - paredit equivalency
 - Easily-togglable rainbow parens (I usually hate them, but then end up thinking they&#8217;d be handy for ~5 seconds)
 - s-expression navigation
@@ -16,9 +16,9 @@
 
 - code completion
 
-	+ <strike>Should have visibility to locally-defined vars/bindings, those that are :required or :used, as well as stuff in core</strike>
+	+ ~~Should have visibility to locally-defined vars/bindings, those that are :required or :used, as well as stuff in core~~
 	+ Host (Java) interop completion should be key off of the type hints in the surrounding code, and do what it can with imports and such
-	+ <strike>In all cases, provide associated docs as well as parameter hints (that are bolded, etc. as you go along adding parameters</strike>)
+	+ ~~In all cases, provide associated docs as well as parameter hints (that are bolded, etc. as you go along adding parameters)~~
 
 - in-place popup macroexpansion
 - generation of deftype/defrecord/extend-type/gen-class/proxy method scaffolding
@@ -35,15 +35,15 @@
 
 - maven (and eventually, clojure <a href="http://polyglot.sonatype.org/">polyglot maven</a>) support
 
-- <strike>ensure that project settings, REPL configuration, etc. etc. are all driven from the POM</strike>
+- ~~ensure that project settings, REPL configuration, etc. etc. are all driven from the POM~~
 
-- <strike>insofar as lein becomes a mainstay of clojure development, support will be needed for it as well</strike>
+- ~~insofar as lein becomes a mainstay of clojure development, support will be needed for it as well~~
 
 - Refactoring (rarely needed, but when needed, it would be <strong>incredibly</strong>helpful)
 
-	+ <strike>This would almost certainly be limited in static usage – local renames, and such.</strike>
-	+ <strike>Given an open REPL that&#8217;s had my entire application loaded (and therefore should be able to use function/var metadata to its fullest), I should be able to do damn near anything you can do in a top-notch Java IDE (within the bounds of what&#8217;s relevant, anyway).
-	+ the equivalent of Java IDEs&#8217; &#8220;organize imports&#8221; in clojure ns use/import/require clauses</strike>
+	+ ~~This would almost certainly be limited in static usage – local renames, and such.~~
+	+ ~~Given an open REPL that&#8217;s had my entire application loaded (and therefore should be able to use function/var metadata to its fullest), I should be able to do damn near anything you can do in a top-notch Java IDE (within the bounds of what&#8217;s relevant, anyway).
+	+ the equivalent of Java IDEs&#8217; &#8220;organize imports&#8221; in clojure ns use/import/require clauses~~
 
 - Static analysis
 
@@ -63,7 +63,7 @@
 - Sane UI/UX
 
 	+ progressive disclosure, discoverability of functionality, familiar help systems, etc
-	+ <strike>Supporting, nay, embracing mousing. Yes, I use the mouse (actually, a trackball) in addition to the keyboard, get over it. Much of my time spent &#8220;programming&#8221; is actually spent doing things other than typing (thank goodness), and many of these tasks are not best done with the keyboard.</strike>
+	+ ~~Supporting, nay, embracing mousing. Yes, I use the mouse (actually, a trackball) in addition to the keyboard, get over it. Much of my time spent &#8220;programming&#8221; is actually spent doing things other than typing (thank goodness), and many of these tasks are not best done with the keyboard.~~
 	+ All of this <strong>should</strong> go without saying IMO, but emacs seems to put a stake in the ground that much of the above is unnecessary or undesirable. The issue of progressive disclosure and discovery of functionality is a particular sore spot for me. Many of the most important features of a development environment (or perhaps any class of nontrivial software) are the most esoteric that might go untouched for weeks or months (debuggers, profilers, code coverage tools, configuration settings, etc), and one must be able to <strong>effectively</strong> stumble through them for the first time, and after having not touched them for a long time. I don&#8217;t want to have to learn, remember, or google for the <tt>M-x run-clojure-debugger</tt> command or somesuch along with 200, 500, 1000? others.
 
 
@@ -75,11 +75,11 @@
 	+ connect to running REPL servers on any IP/port from the dev environment, making all REPL-enabled functionality available regardless of where the host REPL process is running
 
 - REPL history persistent across IDE restarts
-- </strike>Support for multiple REPLs (i.e. load code into the last focused REPL)</strike>
-- <strike>Full editor capability in the REPL – highlighting, symbol completion, formatting, etc.</strike>
-- <strike>Browsable/searchable REPL history</strike>
+- ~~Support for multiple REPLs (i.e. load code into the last focused REPL)~~
+- ~~Full editor capability in the REPL – highlighting, symbol completion, formatting, etc.~~
+- ~~Browsable/searchable REPL history~~
 
-	+ <strike>Prior expressions accessible via standard command history (Ctrl-up/down, etc), as well as by clicking on expressions still shown in the REPL window</strike>
+	+ ~~Prior expressions accessible via standard command history (Ctrl-up/down, etc), as well as by clicking on expressions still shown in the REPL window~~
 
 - Runtime namespace browser, with the same usage characteristics as the static one, but tied to the focused REPL
 - Configurable pretty-printing of output
@@ -89,14 +89,14 @@
 
 - Ability to check status of and kill long-running REPL invocations
 - Optional (likely default) separation of input, *out*, and *err* content
-- <strike>Automatic generation and configuration of the classpath for local REPLs; this includes (almost certainly in this order!):</strike>
+- ~~Automatic generation and configuration of the classpath for local REPLs; this includes (almost certainly in this order!):~~
 
-	+ <strike>all current-project source paths (this ensures that changes source files are loaded before same-named files or AOT&#8217;ed classfiles from the project&#8217;s artifact(s))</strike>
-	+ <strike>all <strong>other</strong> projects&#8217; source paths (this allows me to load changes I&#8217;ve made to code across my &#8220;main&#8221; project&#8217;s dependencies)</strike>
-	+ <strike>all project dependencies (no-brainer)</strike>
-	+ <strike>the project&#8217;s artifact(s) (or perhaps <tt>target/classes</tt> (in the case of maven projects) is enough – obviously necessary in order to have access to classfiles from other languages/tools that generate them)</strike>
+	+ ~~all current-project source paths (this ensures that changes source files are loaded before same-named files or AOT&#8217;ed classfiles from the project&#8217;s artifact(s))~~
+	+ ~~all <strong>other</strong> projects&#8217; source paths (this allows me to load changes I&#8217;ve made to code across my &#8220;main&#8221; project&#8217;s dependencies)~~
+	+ ~~all project dependencies (no-brainer)~~
+	+ ~~the project&#8217;s artifact(s) (or perhaps <tt>target/classes</tt> (in the case of maven projects) is enough – obviously necessary in order to have access to classfiles from other languages/tools that generate them)~~
 
-- <strike>&#8220;Zero-config&#8221;</strike>
+- ~~&#8220;Zero-config&#8221;~~
 
-	+ <strike>All clojure projects (whether maven- or lein-based) have clojure as a dependency, so requiring any special &#8220;clojure setup&#8221; or creation of a &#8220;clojure platform&#8221; is either pointless or dangerous (the latter if you are unwittingly using a statically-defined &#8220;clojure platform&#8221; while your project&#8217;s POM is explicitly declaring a different version of clojure as a dependency) <sup> <a href="#fn2"> 2 </a> </sup>
-	+ The one area where having a default set of Clojure libraries available (as a &#8220;platform&#8221;, if it must be called that) is to start a REPL for a non-Clojure project, which <strong>is</strong> very convenient.</strike>
+	+ ~~All clojure projects (whether maven- or lein-based) have clojure as a dependency, so requiring any special &#8220;clojure setup&#8221; or creation of a &#8220;clojure platform&#8221; is either pointless or dangerous (the latter if you are unwittingly using a statically-defined &#8220;clojure platform&#8221; while your project&#8217;s POM is explicitly declaring a different version of clojure as a dependency) <sup> <a href="#fn2"> 2 </a> </sup>
+	+ The one area where having a default set of Clojure libraries available (as a &#8220;platform&#8221;, if it must be called that) is to start a REPL for a non-Clojure project, which <strong>is</strong> very convenient.~~
