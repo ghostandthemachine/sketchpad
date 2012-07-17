@@ -6,7 +6,8 @@
 (ns sketchpad.utils
   (:require [clojure.string :as string :only (join split)]
             [sketchpad.file-manager :as fm]
-            [sketchpad.preview-manager :as preview])
+            [sketchpad.preview-manager :as preview]
+            [sketchpad.rsyntaxtextarea :as rsyntaxtextarea])
 	(:import (java.util UUID)
            (java.awt FileDialog Point Window)
            (java.awt.event ActionListener MouseAdapter)
@@ -225,8 +226,8 @@
 (defn get-keystroke [key-shortcut]
   (KeyStroke/getKeyStroke
     (-> key-shortcut
-      (.replace "cmd1" (if (is-mac) "meta" "ctrl"))
-      (.replace "cmd2" (if (is-mac) "ctrl" "alt")))))
+      (.replace "cmd1" (if (rsyntaxtextarea/is-osx?) "meta" "ctrl"))
+      (.replace "cmd2" (if (rsyntaxtextarea/is-osx?) "ctrl" "alt")))))
 
 ;; actions
 
@@ -282,7 +283,7 @@
     (let [menu-item (JMenuItem. item-name)]  
       (when key-accelerator
         (.setAccelerator menu-item (get-keystroke key-accelerator)))
-      (when (and (not (is-mac)) key-mnemonic)
+      (when (and (not (rsyntaxtextarea/is-osx?)) key-mnemonic)
         (.setMnemonic menu-item (.getKeyCode (get-keystroke key-mnemonic))))
       (.addActionListener menu-item
                           (reify ActionListener
@@ -299,7 +300,7 @@
   it executes."
   [menu-bar title key-mnemonic & item-tuples]
   (let [menu (JMenu. title)]
-    (when (and (not (is-mac)) key-mnemonic)
+    (when (and (not (rsyntaxtextarea/is-osx?)) key-mnemonic)
       (.setMnemonic menu (.getKeyCode (get-keystroke key-mnemonic))))
     (doall (map #(apply add-menu-item menu %) item-tuples))
     (.add menu-bar menu)
@@ -345,7 +346,7 @@
       (File. d n))))
 
 (defn choose-directory [parent title]
-  (if (is-mac)
+  (if (rsyntaxtextarea/is-osx?)
     (let [dirs-on #(System/setProperty
                      "apple.awt.fileDialogForDirectories" (str %))]
       (dirs-on true)

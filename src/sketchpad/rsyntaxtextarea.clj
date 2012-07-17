@@ -1126,3 +1126,6 @@ end - the end position >= start
 (defn set-action-map! 
   [rta im]
   (.setActionMap rta im))
+
+(defn is-osx? []
+  (RSyntaxTextArea/isOSX ))

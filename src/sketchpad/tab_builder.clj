@@ -7,8 +7,7 @@
 				[clojure pprint]
 				[seesaw meta core border])
 	(:require [clojure.string :as str]
-			[sketchpad.project-manager :as project])
-	)
+			[sketchpad.project-manager :as project]))
 
 (defn add-rsta-mouse-handlers [app-atom proj rsta tab-state btn container tab-color file-name]
 	(let [app @app-atom]

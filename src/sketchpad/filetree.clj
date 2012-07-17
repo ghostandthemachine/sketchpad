@@ -289,6 +289,21 @@
                                  "Oops" JOptionPane/ERROR_MESSAGE)
                              (.printStackTrace e))))))
 
+(defn save-file-as [app-atom file-path file]
+  (let [app @app-atom]
+    (try
+      (when-let [new-file (choose-file (@app-atom :frame) "Save file as" file-path false)]
+        (awt-event
+          (let [path (.getAbsolutePath new-file)]
+            (spit path "")
+            (update-project-tree (app :docs-tree)))
+          (new-file-tab! app-atom new-file file-path))
+          new-file)
+        (catch Exception e (do (JOptionPane/showMessageDialog nil
+                                 "Unable to create file."
+                                 "Oops" JOptionPane/ERROR_MESSAGE)
+                             (.printStackTrace e))))))
+
 (defn open-project [app]
   (when-let [dir (choose-directory (app :f) "Choose a project directory")]
     (let [project-dir (if (= (.getName dir) "src") (.getParentFile dir) dir)]

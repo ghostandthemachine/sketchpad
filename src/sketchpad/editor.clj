@@ -118,7 +118,7 @@
 
 (defn setup-text-area-font [app]
     (cond 
-      (is-mac)
+      (rs/is-osx?)
       (do 
         (config! (app :doc-text-area) 
                       :font (font :name "MENLO"

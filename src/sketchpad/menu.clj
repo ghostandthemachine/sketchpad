@@ -8,7 +8,8 @@
         [sketchpad.rsyntaxtextarea :as cr]
         [sketchpad.rtextarea :as rt]
         [sketchpad.tab-manager :as tab-manager]
-        [sketchpad.lein-manager :as lein]))
+        [sketchpad.lein-manager :as lein]
+        [sketchpad.menu.file :as sketchpad.menu.file]))
 
 (def macro-recording-state (atom false))
 
@@ -77,42 +78,42 @@
                 (menu :text "Project"
                       :items [])]))))
 
-(defn create-new-file [app-atom]
-  (when-let [new-file (new-file app-atom (first (get-selected-projects @app-atom)))]))
-
-(defn make-file-menu
-  [app-atom]
-  (let [app @app-atom]
-    (menu :text "File"
-        :mnemonic "F"
-        :items [
-                (menu-item :text "New" 
-                           :mnemonic "N" 
-                           :key (keystroke "meta N") 
-                           :listen [:action (fn [_] (create-new-file app-atom))])
-                (menu-item :text "Save" 
-                           :mnemonic "S" 
-                           :key (keystroke "meta S") 
-                           :listen [:action (fn [_] 
-                                              (let [rsta (tab-manager/current-text-area (:editor-tabbed-panel app))]
-                                                  (if (save-file (tab-manager/current-text-area (:editor-tabbed-panel app)))
-                                                    (mark-current-tab-clean! (app :editor-tabbed-panel)))))])
-                (separator)
-                (menu-item :text "Move/Rename" 
-                           :mnemonic "M" 
-                           :listen [:action (fn [_] (rename-file app))])
-                (menu-item :text "Revert" 
-                           :mnemonic "R" 
-                           :listen [:action (fn [_] (revert-file app))])
-                (menu-item :text "Delete" 
-                           :listen [:action (fn [_] (delete-file app))])
-                (if (is-mac)
-                  (do 
-                  	(separator)
-                    (menu-item :text "Quit"
-                               :mnemonic "Q"
-                               :key (keystroke "meta Q")
-                               :listen [:action (fn [_] (System/exit 0))])))])))
+; (defn create-new-file [app-atom]
+;   (when-let [new-file (new-file app-atom (first (get-selected-projects @app-atom)))]))
+; 
+; (defn make-file-menu
+;   [app-atom]
+;   (let [app @app-atom]
+;     (menu :text "File"
+;         :mnemonic "F"
+;         :items [
+;                 (menu-item :text "New" 
+;                            :mnemonic "N" 
+;                            :key (keystroke "meta N") 
+;                            :listen [:action (fn [_] (create-new-file app-atom))])
+;                 (menu-item :text "Save" 
+;                            :mnemonic "S" 
+;                            :key (keystroke "meta S") 
+;                            :listen [:action (fn [_] 
+;                                               (let [rsta (tab-manager/current-text-area (:editor-tabbed-panel app))]
+;                                                   (if (save-file (tab-manager/current-text-area (:editor-tabbed-panel app)))
+;                                                     (mark-current-tab-clean! (app :editor-tabbed-panel)))))])
+;                 (separator)
+;                 (menu-item :text "Move/Rename" 
+;                            :mnemonic "M" 
+;                            :listen [:action (fn [_] (rename-file app))])
+;                 (menu-item :text "Revert" 
+;                            :mnemonic "R" 
+;                            :listen [:action (fn [_] (revert-file app))])
+;                 (menu-item :text "Delete" 
+;                            :listen [:action (fn [_] (delete-file app))])
+;                 (if (is-mac)
+;                   (do 
+;                   	(separator)
+;                     (menu-item :text "Quit"
+;                                :mnemonic "Q"
+;                                :key (keystroke "meta Q")
+;                                :listen [:action (fn [_] (System/exit 0))])))])))
 
 (defn make-edit-menu
   [app]
@@ -272,7 +273,7 @@
   (let [app @app-atom]
     (config! 
       (:frame @app-atom) :menubar 
-                      (menubar :items [ (make-file-menu app-atom)
+                      (menubar :items [ (sketchpad.menu.file/make-file-menu app-atom)
                                         (make-edit-menu app)
                                         (make-project-menu app)
                                         (make-source-menu app-atom)

@@ -14,7 +14,9 @@
 
 (defn append-text [text-pane text]
   (when-let [doc (.getDocument text-pane)]
-    (.insertString doc (.getLength doc) text nil)))
+    (try
+      (.insertString doc (.getLength doc) text nil)
+      (catch java.lang.ClassCastException e ))))
 
 (defn append-text-update [rsta s]
   (append-text rsta (str s))
