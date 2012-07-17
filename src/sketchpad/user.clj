@@ -52,8 +52,11 @@
 		proj))
 
 (defn current-lein-project [] 
-	(when-let [lein-proj (lein-project (current-project))]
-		lein-proj))
+	(try
+		(when-let [lein-proj (lein-project (current-project))]
+		lein-proj)
+	(catch java.lang.IllegalArgumentException e
+		(println "no project open in buffer"))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; RTextArea Actions
