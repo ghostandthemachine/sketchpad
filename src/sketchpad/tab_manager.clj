@@ -16,8 +16,16 @@
   [s]
   (subs s 0 (dec (count s))))
 
+(defn tab-count [tabbed-panel]
+	(let [tabbed-panel tabbed-panel]
+		(.getTabCount tabbed-panel)))
+
+(defn tabs? [tabbed-panel]
+	(> (tab-count tabbed-panel) 0))
+
 (defn component-at [tabbed-panel index]
-	(.getComponentAt tabbed-panel index))
+	(when (tabs? tabbed-panel)
+		(.getComponentAt tabbed-panel index)))
 
 (defn component-at! [tabbed-panel index comp]
 	(.setComponentAt tabbed-panel index comp))
@@ -45,13 +53,6 @@
 
 (defn index-of-component [tabbed-panel comp]
 	(.indexOfComponent tabbed-panel comp))
-
-(defn tab-count [tabbed-panel]
-	(let [tabbed-panel tabbed-panel]
-		(.getTabCount tabbed-panel)))
-
-(defn tabs? [tabbed-panel]
-	(> (tab-count tabbed-panel) 0))
 
 (defn current-tab-index [tabbed-panel]
 	(.getSelectedIndex tabbed-panel))

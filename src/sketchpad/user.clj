@@ -36,16 +36,24 @@
 	(clojure.pprint/pprint (clojure.reflect/reflect obj)))
 
 (defn current-repl-rta [] (tab/current-text-area (:repl-tabbed-panel app)))
-(defn current-buffer [] (tab/current-text-area (:editor-tabbed-panel app)))
+(defn current-buffer [] 
+	(when-let [cur-buf (tab/current-text-area (:editor-tabbed-panel app))]
+		cur-buf))
 
 (defn current-text []
 	(.getText (current-buffer)))
 
-(defn current-project [] (get-meta (current-buffer) :project))
+(defn current-project [] 
+	(when-let [cur-project (get-meta (current-buffer) :project)]
+		cur-project))
 
-(defn lein-project [path] (project/read (str (current-project) "/project.clj")))
+(defn lein-project [path] 
+	(when-let [proj (project/read (str (current-project) "/project.clj"))]
+		proj))
 
-(defn current-lein-project [] (lein-project (current-project)))
+(defn current-lein-project [] 
+	(when-let [lein-proj (lein-project (current-project))]
+		lein-proj))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; RTextArea Actions
