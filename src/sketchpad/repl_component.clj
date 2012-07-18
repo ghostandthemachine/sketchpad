@@ -1,19 +1,18 @@
- (ns sketchpad.repl-component
-   (:use [seesaw core border meta color]
-       [sketchpad buffer-edit repl auto-complete rsyntaxtextarea default-mode]
-       [sketchpad.utils :only (attach-child-action-keys attach-action-keys
-                            awt-event get-file-ns
-                            when-lets get-text-str get-directories)]
-       )
-   (:require [sketchpad.rsyntax :as rsyntax]
-             [sketchpad.rtextscrollpane :as sp]
-             [sketchpad.config :as config]
-             [sketchpad.lein-manager :as lein]
-             [sketchpad.tab-manager :as tab-manager]
-             [clojure.string :as string])
-   (:import (org.fife.ui.rtextarea RTextScrollPane)
-            (java.io BufferedReader BufferedWriter PipedReader PipedWriter PrintWriter Writer
-                            StringReader PushbackReader)))
+(ns sketchpad.repl-component
+  (:use [seesaw core border meta color]
+        [sketchpad buffer-edit repl auto-complete rsyntaxtextarea default-mode]
+        [sketchpad.utils :only (attach-child-action-keys attach-action-keys
+                                                         awt-event get-file-ns
+                                                         when-lets get-text-str get-directories)])
+  (:require [sketchpad.rsyntax :as rsyntax]
+            [sketchpad.rtextscrollpane :as sp]
+            [sketchpad.config :as config]
+            [sketchpad.lein-manager :as lein]
+            [sketchpad.tab-manager :as tab-manager]
+            [clojure.string :as string])
+  (:import (org.fife.ui.rtextarea RTextScrollPane)
+           (java.io BufferedReader BufferedWriter PipedReader PipedWriter PrintWriter Writer
+                    StringReader PushbackReader)))
 
 (defn- init-prompt [rta]
   (append-text rta "user=> "))

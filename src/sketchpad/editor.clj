@@ -1,26 +1,27 @@
 (ns sketchpad.editor
-    (:use [seesaw core graphics color font border meta]
-          [sketchpad prefs utils]
-          [clojure.pprint]
-          [sketchpad.vim-mode]
-          [sketchpad.toggle-vim-mode-action]
-          [sketchpad editor-info tab-manager]
-          [rounded-border.core])
-    (:require [sketchpad.rsyntax :as rsyntax]
-              [clooj.doc-browser :as db]
-              [clooj.highlighting :as h]
-              [clooj.brackets :as b]
-              [sketchpad.help :as help]
-              [clooj.search :as search]
-              [sketchpad.rtextscrollpane :as sp]
-              [sketchpad.rsyntaxtextarea :as rs]
-              [sketchpad.rtextarea :as ta]
-              [sketchpad.gutter :as gutter]
-              [sketchpad.config :as config]
-              [sketchpad.tab-ui :as tab])
-    (:import  (java.awt.event FocusAdapter MouseAdapter KeyAdapter)
-              (javax.swing.event ChangeListener)
-              (javax.swing UIManager)))
+  (:use [seesaw core graphics color font border meta]
+        [sketchpad prefs utils]
+        [clojure.pprint]
+        [sketchpad.vim-mode]
+        [sketchpad.toggle-vim-mode-action]
+        [sketchpad editor-info tab-manager]
+        [rounded-border.core])
+  (:require [sketchpad.rsyntax :as rsyntax]
+            [clooj.doc-browser :as db]
+            [clooj.highlighting :as h]
+            [clooj.brackets :as b]
+            [sketchpad.help :as help]
+            [clooj.search :as search]
+            [sketchpad.rtextscrollpane :as sp]
+            [sketchpad.rsyntaxtextarea :as rs]
+            [sketchpad.rtextarea :as ta]
+            [sketchpad.gutter :as gutter]
+            [sketchpad.config :as config]
+            [sketchpad.tab-ui :as tab]
+            [sketchpad.editor-tab-change-manager :as sketchpad.editor-tab-change-manager])
+  (:import  (java.awt.event FocusAdapter MouseAdapter KeyAdapter)
+           (javax.swing.event ChangeListener)
+           (javax.swing UIManager)))
 
 (def highlight-agent (agent nil))
 (def arglist-agent (agent nil))
@@ -30,20 +31,20 @@
   (when-lets [text-area (app :doc-text-area)
               pos (get @caret-position text-area)
               file @(:current-file app)]
-    (when-not (.isDirectory file)
-      (let [key-str (str "caret_" (.hashCode (.getAbsolutePath file)))]
-        (write-value-to-prefs sketchpad-prefs key-str pos)))))
+             (when-not (.isDirectory file)
+               (let [key-str (str "caret_" (.hashCode (.getAbsolutePath file)))]
+                 (write-value-to-prefs sketchpad-prefs key-str pos)))))
 
 (defn load-caret-position [app]
   (when-lets [text-area (app :doc-text-area)
               file @(:current-file app)]
-    (when-not (.isDirectory file)
-      (when-lets [key-str (str "caret_" (.hashCode (.getAbsolutePath file)))
-                  pos (read-value-from-prefs sketchpad-prefs key-str)]
-        (let [length (.. text-area getDocument getLength)
-              pos2 (Math/min pos length)]
-          (.setCaretPosition text-area pos2)
-          (scroll-to-caret text-area))))))
+             (when-not (.isDirectory file)
+               (when-lets [key-str (str "caret_" (.hashCode (.getAbsolutePath file)))
+                           pos (read-value-from-prefs sketchpad-prefs key-str)]
+                          (let [length (.. text-area getDocument getLength)
+                                pos2 (Math/min pos length)]
+                            (.setCaretPosition text-area pos2)
+                            (scroll-to-caret text-area))))))
 
 (defn update-caret-position [text-comp]
   (swap! caret-position assoc text-comp (.getCaretPosition text-comp)))
@@ -51,12 +52,12 @@
 (defn display-caret-position [app]
   (let [{:keys [row col]} (get-caret-coords (:doc-text-area app))]
     (.setText (:pos-label app) (str " " (inc row) "|" (inc col)))))
-     
+
 (defn help-handle-caret-move [app text-comp]
   (awt-event
     (when (@db/help-state :visible)
-      (let [[start _] (db/local-token-location (get-text-str text-comp) 
-                                            (.getCaretPosition text-comp))]
+      (let [[start _] (db/local-token-location (get-text-str text-comp)
+                                               (.getCaretPosition text-comp))]
         (if-not (= start (@db/help-state :pos))
           (db/hide-tab-help app)
           (db/show-tab-help app text-comp identity))))))
@@ -78,7 +79,7 @@
                         (h/highlight-brackets text-comp good-enclosures bad-brackets)))))
                 (catch Throwable t (.printStackTrace t)))))
   (when ns
-    (send-off arglist-agent 
+    (send-off arglist-agent
               (fn [old-pos]
                 (try
                   (let [pos (@caret-position text-comp)
@@ -90,48 +91,48 @@
 
 (defn double-click-selector [text-comp]
   (.addMouseListener text-comp
-    (proxy [MouseAdapter] []
-      (mouseClicked [e]
-        (when (== 2 (.getClickCount e))
-          (when-lets [pos (.viewToModel text-comp (.getPoint e))
-                      c (.. text-comp getDocument (getText pos 1) (charAt 0))
-                      pos (cond (#{\( \[ \{ \"} c) (inc pos)
-                                (#{\) \] \} \"} c) pos)
-                      [a b] (b/find-enclosing-brackets (get-text-str text-comp) pos)]
-            (set-selection text-comp a (inc b))))))))
+                     (proxy [MouseAdapter] []
+                       (mouseClicked [e]
+                         (when (== 2 (.getClickCount e))
+                           (when-lets [pos (.viewToModel text-comp (.getPoint e))
+                                       c (.. text-comp getDocument (getText pos 1) (charAt 0))
+                                       pos (cond (#{\( \[ \{ \"} c) (inc pos)
+                                                 (#{\) \] \} \"} c) pos)
+                                       [a b] (b/find-enclosing-brackets (get-text-str text-comp) pos)]
+                                      (set-selection text-comp a (inc b))))))))
 
 (defn setup-search-text-area [app]
   (let [sta (doto (app :search-text-area)
-      (.addFocusListener (proxy [FocusAdapter] [] (focusLost [_] (search/stop-find app)))))]
+              (.addFocusListener (proxy [FocusAdapter] [] (focusLost [_] (search/stop-find app)))))]
     (add-text-change-listener sta #(search/update-find-highlight app false))
     (attach-action-keys sta ["ENTER" #(search/highlight-step app false)]
-                            ["shift ENTER" #(search/highlight-step app true)]
-                            ["ESCAPE" #(search/escape-find app)])))
+                        ["shift ENTER" #(search/highlight-step app true)]
+                        ["ESCAPE" #(search/escape-find app)])))
 
 
 (defn setup-cmd-line-area [app]
   (let [sta (doto (app :editor-command-line)
-      (.addFocusListener (proxy [FocusAdapter] [] (focusLost [_] (search/stop-find app)))))]
+              (.addFocusListener (proxy [FocusAdapter] [] (focusLost [_] (search/stop-find app)))))]
     (attach-action-keys sta ["ENTER" #(search/highlight-step app false)]
-                            ["shift ENTER" #(search/highlight-step app true)]
-                            ["ESCAPE" #(search/escape-find app)])))
+                        ["shift ENTER" #(search/highlight-step app true)]
+                        ["ESCAPE" #(search/escape-find app)])))
 
 (defn setup-text-area-font [app]
-    (cond 
-      (rs/is-osx?)
-      (do 
-        (config! (app :doc-text-area) 
-                      :font (font :name "MENLO"
-                                  :style :bold
-                                  :size 14)))
-      (is-win)
-      (config! (app :doc-text-area) :font (font 
-                             :name "COURIER-NEW"
-                             :size 14))
-      :else 
-      (config! (app :doc-text-area) :font (font 
-                             :name "MONOSPACED"
-                             :size 14))))
+  (cond
+    (rs/is-osx?)
+    (do
+      (config! (app :doc-text-area)
+               :font (font :name "MENLO"
+                           :style :bold
+                           :size 14)))
+    (is-win)
+    (config! (app :doc-text-area) :font (font
+                                          :name "COURIER-NEW"
+                                          :size 14))
+    :else
+    (config! (app :doc-text-area) :font (font
+                                          :name "MONOSPACED"
+                                          :size 14))))
 
 (def key-stack (atom []))
 
@@ -143,7 +144,7 @@
 
 (defn dirty-state-listener [app]
   (let [listener (proxy [KeyAdapter] []
-                    (keyTyped [e]))]))
+                   (keyTyped [e]))]))
 
 (defn set-text-area-preffs [app rta]
   (.addKeyListener rta (dirty-state-listener app))
@@ -159,69 +160,56 @@
 (defn put [laf k v]
   (.put laf (str "TabbedPane." k) v))
 
-(defn attach-tab-change-handler [app-atom editor-tabbed-panel]
-  (listen editor-tabbed-panel :selection 
-       (fn [e] 
-         (let [num-tabs (tab-count editor-tabbed-panel)
-               i (current-tab-index editor-tabbed-panel)]
-          (if (> 0 num-tabs)
-            (do
-              (swap! app-atom assoc :doc-text-area (current-text-area editor-tabbed-panel))
-              (swap! app-atom (fn [app] (assoc app :current-tab i))))
-            (do
-              (swap! app-atom assoc :doc-text-area nil)
-              (swap! app-atom (fn [app] (assoc app :current-tab i)))))))))
-
 (defn editor [app-atom]
-  (let [arglist-label         (label  :foreground     (color :blue)
-                                      :id             :arglist-label
-                                      :class          :arg-response)
-        search-text-area      (text   :visible? 	  false
-                      					      :border         (line-border :color     :grey
-                            			 				  				        :thickness 1)
-                      							  :id             :search-text-area
-                                      :class          :search-area)
-        arg-search-panel      (horizontal-panel 
-                                      :items          [arglist-label search-text-area]
-                                      :id             :arg-search-panel
-                                      :class          :search-panel)
-        pos-label             (label  :id             :pos-label
-                                      :class          :label)
+  (let [arglist-label         (label :foreground     (color :blue)
+                                     :id             :arglist-label
+                                     :class          :arg-response)
+        search-text-area      (text  :visible? 	  false
+                                    :border         (line-border :color     :grey
+                                                                 :thickness 1)
+                                    :id             :search-text-area
+                                    :class          :search-area)
+        arg-search-panel      (horizontal-panel
+                                :items          [arglist-label search-text-area]
+                                :id             :arg-search-panel
+                                :class          :search-panel)
+        pos-label             (label :id             :pos-label
+                                     :class          :label)
         position-search-panel (horizontal-panel
-                                      :items          [pos-label 
-                                                     [:fill-h 10]
-                                                       arg-search-panel
-                                                      :fill-h]
-                                      :maximum-size   [2000 :by 15]
-                                      :id             :position-search-panel
-                                      :class          :search-panel)
-        editor-helpers-panel  (vertical-panel       
-                                      :items [position-search-panel])
-        doc-text-area         (rsyntax/text-area    
-                              :syntax         :clojure)
+                                :items          [pos-label
+                                                 [:fill-h 10]
+                                                 arg-search-panel
+                                                 :fill-h]
+                                :maximum-size   [2000 :by 15]
+                                :id             :position-search-panel
+                                :class          :search-panel)
+        editor-helpers-panel  (vertical-panel
+                                :items [position-search-panel])
+        doc-text-area         (rsyntax/text-area
+                                :syntax         :clojure)
         editor-tabbed-panel   (tabbed-panel :placement :top
                                             :overflow :wrap
                                             :background (color :black)
                                             :border (empty-border :thickness 0))
-        doc-text-panel        (vertical-panel  
-                                      :items         [editor-tabbed-panel 
-                                                      editor-helpers-panel]
-                                      :id             :doc-text-panel
-                                      :class          :editor-comp)]
+        doc-text-panel        (vertical-panel
+                                :items         [editor-tabbed-panel
+                                                editor-helpers-panel]
+                                :id             :doc-text-panel
+                                :class          :editor-comp)]
     (.setUI editor-tabbed-panel (tab/sketchpad-tab-ui editor-tabbed-panel))
 
-    (attach-tab-change-handler app-atom editor-tabbed-panel)
+    (sketchpad.editor-tab-change-manager/attach-tab-change-handler app-atom editor-tabbed-panel)
 
     (config! arglist-label :background config/app-color)
     (config! arg-search-panel :background config/app-color)
 
     (swap! app-atom conj (gen-map
-                            arglist-label
-                            search-text-area
-                            arg-search-panel
-                            pos-label
-                            position-search-panel 
-                            editor-tabbed-panel 
-                            editor-helpers-panel))
+                           arglist-label
+                           search-text-area
+                           arg-search-panel
+                           pos-label
+                           position-search-panel
+                           editor-tabbed-panel
+                           editor-helpers-panel))
     doc-text-panel))
 

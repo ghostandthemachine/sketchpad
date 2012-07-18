@@ -13,6 +13,13 @@
         [sketchpad.menu.edit :as sketchpad.menu.edit]
         [sketchpad.menu.view :as sketchpad.menu.view]))
 
+<<<<<<< HEAD
+=======
+(defn update-menu-state [tabbed-panel]
+"Based on the state of the tabbed panel, set active menu items"
+  
+)
+>>>>>>> master
 
 (defn make-help-menu
   []
@@ -20,12 +27,28 @@
         :mnemonic "H"
         :items []))
 
+(defn make-repl-menu
+  [app-atom]
+  (menu :text "REPL"
+        :mnemonic "R"
+        :items [  (menu-item :text "Create new REPL" 
+                             :mnemonic "N" 
+                             :key (keystroke "meta control R") 
+                             :listen [:action (fn [_] 
+                                              (new-repl-tab! 
+                                                app-atom))])
+                    (separator)]))
+
 (defn make-menus
   [app-atom]
   (let [app @app-atom
         file-menu (sketchpad.menu.file/make-file-menu app-atom)
         edit-menu (sketchpad.menu.edit/make-edit-menu app-atom)
         view-menu (sketchpad.menu.view/make-view-menu app-atom)
+<<<<<<< HEAD
+=======
+        repl-menu (make-repl-menu app-atom)
+>>>>>>> master
         help-menu (make-help-menu)]
     (config! 
       (:frame @app-atom) :menubar 
@@ -33,6 +56,10 @@
                                         edit-menu
                                         ; (make-source-menu app-atom)
                                         view-menu
+<<<<<<< HEAD
+=======
+                                        repl-menu
+>>>>>>> master
                                         help-menu]))))
 
 

@@ -1,6 +1,6 @@
 (ns sketchpad.filetree
     (:use [seesaw core keystroke border meta]
-          [sketchpad utils editor tab-builder prefs buffer-edit]
+          [sketchpad utils tab-builder prefs buffer-edit]
           [clojure.pprint])
     (:require [seesaw.color :as c]
               [seesaw.chooser :as chooser]

@@ -1,5 +1,5 @@
 (ns sketchpad.edit-mode
-	(:use [sketchpad.rsyntaxtextarea]
+  (:use [sketchpad.rsyntaxtextarea]
         [clojure.pprint]
         [sketchpad.default-mode])
   (:import (java.awt Toolkit)
@@ -21,9 +21,9 @@
 (defn create-keymap
   []
   (let [m (atom (JTextComponent/getKeymap RTEXTAREA_KEYMAP_NAME))]
-      (let [parent (JTextComponent/getKeymap JTextComponent/DEFAULT_KEYMAP)]
-            (swap! m (fn [_] (JTextComponent/addKeymap RTEXTAREA_KEYMAP_NAME parent)))
-          )@m))
+    (let [parent (JTextComponent/getKeymap JTextComponent/DEFAULT_KEYMAP)]
+      (swap! m (fn [_] (JTextComponent/addKeymap RTEXTAREA_KEYMAP_NAME parent)))
+      )@m))
 
 (defn edit-mode!
   [kw rta input-map]
@@ -31,15 +31,15 @@
         default-action-map-name "RTextAreaUI.actionMap"
         action-map (cast ActionMap (UIManager/get default-action-map-name))
         rta-input-map (default-input-map)]
-    (cond 
+    (cond
       (= kw :default)
-        (do 
-    		(swap! editor-mode (fn [_] :default))
-          (.setKeymap rta (create-keymap))
-          (set-input-map! rta (input-map rta))
-        	(println "edit mode to default"))
+      (do
+        (swap! editor-mode (fn [_] :default))
+        (.setKeymap rta (create-keymap))
+        (set-input-map! rta (input-map rta))
+        (println "edit mode to default"))
       (= kw :vim)
-      	(do
-      	     (swap! editor-mode (fn [_] :vim))
-      		(set-input-map! rta input-map)
-          (println "edit mode to vim")))))
+      (do
+        (swap! editor-mode (fn [_] :vim))
+        (set-input-map! rta input-map)
+        (println "edit mode to vim")))))
