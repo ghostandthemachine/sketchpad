@@ -55,14 +55,5 @@
 	; :show-collapsed-region-tool-tips true
    })
 
-  (def default-project-style-prefs
-  	[(color :orange) (color :green) (color :yellow) (color :blue) (color :red) (color :purple) (color :pink)]
-  	)
-
-  (def default-initial-use-namespaces
-  	"[sketchpad.user
-  	  clojure.pprint]")
-
-  (def default-initial-require-namespaces
-  	"[clojure.string :as string]")
-  	 
+(def default-project-style-prefs
+	[(color :white) (color :orange) (color :green) (color :yellow) (color :blue) (color :red) (color :purple) (color :pink)])

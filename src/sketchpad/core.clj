@@ -17,12 +17,13 @@
           [clooj.navigate]
           [clooj.dev-tools]
           [clooj.indent]
-          [sketchpad prefs auto-complete tab-manager utils filetree editor menu edit-mode default-mode completion-builder rsyntaxtextarea help])
+          [sketchpad prefs auto-complete tab-manager utils filetree editor edit-mode default-mode completion-builder rsyntaxtextarea help])
     (:require [sketchpad.theme :as theme]
     					[sketchpad.config :as config]
               [sketchpad.preview-manager :as pm]
               [sketchpad.repl :as srepl]
-              [sketchpad.project-manager :as project]))
+              [sketchpad.project-manager :as project]
+              [sketchpad.menu.menu-bar :as menu]))
 
 (defn set-laf [laf-string]
   (UIManager/setLookAndFeel laf-string))
@@ -117,7 +118,8 @@
         (uncaughtException [thread exception]
                          (println thread) (.printStackTrace exception))))
     (add-behaviors app-atom)
-    (make-sketchpad-menus app-atom)
+    (menu/make-menus app-atom)
+    (project/setup-non-project-map app-atom)
     (doall (map #(project/add-project app %) (load-project-set)))
     (let [frame (app :frame)]
       (persist-window-shape sketchpad-prefs "main-window" frame) 

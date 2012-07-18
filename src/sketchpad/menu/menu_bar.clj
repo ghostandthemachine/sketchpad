@@ -222,15 +222,18 @@
 
 (defn make-menus
   [app-atom]
-  (let [app @app-atom]
+  (let [app @app-atom
+        file-menu (sketchpad.menu.file/make-file-menu app-atom)
+        edit-menu (sketchpad.menu.edit/make-edit-menu app-atom)]
     (config! 
       (:frame @app-atom) :menubar 
-                      (menubar :items [ (sketchpad.menu.file/make-file-menu app-atom)
-                                        (sketchpad.menu.edit/make-edit-menu app-atom)
-                                        (make-project-menu app)
-                                        (make-source-menu app-atom)
-                                        (make-view-menu app)
-                                        (make-help-menu app)]))))
+                      (menubar :items [ file-menu
+                                        edit-menu
+                                        ; (make-project-menu app)
+                                        ; (make-source-menu app-atom)
+                                        ; (make-view-menu app)
+                                        ; (make-help-menu app)
+                                        ]))))
 
 
 

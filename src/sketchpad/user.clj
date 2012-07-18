@@ -10,7 +10,8 @@
 					  [leiningen.core.project :as project]
 					  [clojure.pprint :as pprint]
 					  [clojure.stacktrace :as stack-trace]
-					  [seesaw.dev :as seesaw.dev])
+					  [seesaw.dev :as seesaw.dev]
+					  [sketchpad.repl-communication :as repl-communication])
 	(:import (org.fife.ui.rsyntaxtextarea RSyntaxTextAreaEditorKit)
 			 		(org.fife.ui.rtextarea RTextAreaEditorKit)
 			 		(java.awt.event ActionEvent)))
@@ -28,7 +29,8 @@
 	(ActionEvent. c 0 "buffer-info-action-event"))
 
 (defn perform-action [action e rta]
-	(.actionPerformedImpl action e rta))
+	(repl-communication/awtevent 
+		(.actionPerformedImpl action e rta)))
 
 (def app @sketchpad.core/current-app)
 

@@ -1,10 +1,23 @@
 (ns sketchpad.menu.file 
-	(:use [seesaw core keystroke meta])
-	(:require [sketchpad.filetree :as file-tree]
+	(:use [seesaw meta bind])
+	(:require [sketchpad.menu.menu-utils :as menu-utils]
+        [sketchpad.filetree :as file-tree]
 			  [sketchpad.tab-builder :as tab-builder]
 			  [sketchpad.tab-manager :as tab-manager]
 			  [sketchpad.file-manager :as file-manager]
-			  [sketchpad.rsyntaxtextarea :as rsyntaxtextarea]))
+			  [sketchpad.rsyntaxtextarea :as rsyntaxtextarea]
+        [seesaw.core :as seesaw.core]
+        [seesaw.keystroke :as keystroke]))
+
+(defonce file-menu-item-state 
+  { :new-file (atom true)
+    :save (atom false)
+    :save-as (atom false)
+    :open (atom true)})
+
+(defn set-edit-menu-item-state-bindings [item-state-map item-map]
+  (doseq [[k v] item-state-map]
+   (menu-utils/set-menu-binding (k item-state-map) (k item-map))))
 
 (defn lein-project-path [lein-project]
 "Returns the src path of a Leiningen project."
@@ -33,29 +46,37 @@
 		(println new-file)
 		(tab-builder/new-file-tab! app-atom new-file))))
 
+(defn make-menu-items [app-atom]
+ {:new-file (seesaw.core/menu-item :text "New File" 
+                              :mnemonic "N" 
+                              :key (keystroke/keystroke "meta N") 
+                              :listen [:action (fn [_] (new-file! app-atom (file-tree/get-selected-file-path @app-atom)))])
+  :save     (seesaw.core/menu-item :text "Save" 
+                              :mnemonic "S" 
+                              :key (keystroke/keystroke "meta S") 
+                              :listen [:action (fn [_] (save-file! app-atom))])
+  :save-as  (seesaw.core/menu-item :text "Save as..." 
+                              :mnemonic "M" 
+                              :key (keystroke/keystroke "meta shift S")
+                              :listen [:action (fn [_] (file-tree/save-file-as @app-atom))])})
+
+
+
 (defn make-file-menu
   [app-atom]
-  (let [app @app-atom]
-    (menu :text "File"
-        :mnemonic "F"
-        :items [
-                (menu-item :text "New" 
-                           :mnemonic "N" 
-                           :key (keystroke "meta N") 
-                           :listen [:action (fn [_] (new-file! app-atom (file-tree/get-selected-file-path app)))])
-                (menu-item :text "Save" 
-                           :mnemonic "S" 
-                           :key (keystroke "meta S") 
-                           :listen [:action (fn [_] (save-file! app-atom))])
-                (separator)
-                (menu-item :text "Move/Rename" 
-                           :mnemonic "M" 
-                           :listen [:action (fn [_] (file-tree/save-file-as app))])
-                (if (rsyntaxtextarea/is-osx?)
-                  (do 
-                  	(separator)
-                    (menu-item :text "Quit"
-                               :mnemonic "Q"
-                               :key (keystroke "meta Q")
-                               :listen [:action (fn [_] (System/exit 0))])))])))
+  (let [menu-items (make-menu-items app-atom)]
+    (seesaw.core/menu :text "File"
+          :mnemonic "F"
+          :items [
+                  (menu-items :new-file)
+                  (menu-items :save)
+                  (menu-items :save-as)
+                  (seesaw.core/separator)
+                  (if (rsyntaxtextarea/is-osx?)
+                    (do 
+                    	(seesaw.core/separator)
+                      (seesaw.core/menu-item :text "Quit"
+                                 :mnemonic "Q"
+                                 :key (keystroke/keystroke "meta Q")
+                                 :listen [:action (fn [_] (System/exit 0))])))])))
 

@@ -20,7 +20,6 @@
 		(color :gray)
 		(get default-project-style-prefs id)))
 
-
 (defn add-project [app project-path]
   (let [id (get-project-id!)]
 	  (swap! (app :project-set) conj project-path)
@@ -50,3 +49,6 @@
 		(when-let [proj-map (projects-map proj-path)]
 			(let [proj-repls (proj-map :active-repls)]   	
 		(swap! proj-repls (fn [repls] (disj repls repl-buffer)))))))
+
+(defn setup-non-project-map [app-atom]
+	(add-project @app-atom "/default"))
