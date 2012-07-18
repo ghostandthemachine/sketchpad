@@ -18,7 +18,9 @@
 								(if (@tab-state :clean)
 									(do
 										(swap! tab-color (fn [_] pressed-color))
-										(project/remove-buffer-from-project! app-atom proj file-name)
+										(try 
+											(project/remove-buffer-from-project! app-atom proj file-name)
+											(catch java.lang.NullPointerException e))
 										(remove-tab! (app :editor-tabbed-panel) (index-of-component (app :editor-tabbed-panel) container)))
 									(do
 										(swap! tab-color (fn [_] pressed-color))

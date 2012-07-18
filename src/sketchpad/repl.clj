@@ -376,7 +376,9 @@
 
     (put-meta! editor-repl :repl-history repl-history)
     (put-meta! editor-repl :repl-que repl-que)
+    
     (.setUI repl-tabbed-panel (rtab/sketchpad-repl-tab-ui repl-tabbed-panel))
+    
     (listen repl-tabbed-panel :selection 
        (fn [e] 
          (let [num-tabs (tab-count repl-tabbed-panel)]
@@ -384,9 +386,13 @@
             (swap! app-atom (fn [app] (assoc app :current-repl (current-text-area (app :repl-tabbed-panel)))))))))
 
     (add-tab! repl-tabbed-panel "sketchpad" repl-container)
+    
     (set-input-map! editor-repl (default-input-map))
+    
     (add-repl-input-handler editor-repl)
+    
     (install-auto-completion editor-repl)
+    
     (config! repl-in-scroll-pane :background config/app-color)
     (config/apply-editor-prefs! config/default-editor-prefs editor-repl)
 

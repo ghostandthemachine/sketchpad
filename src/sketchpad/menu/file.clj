@@ -5,6 +5,7 @@
 			  [sketchpad.tab-builder :as tab-builder]
 			  [sketchpad.tab-manager :as tab-manager]
 			  [sketchpad.file-manager :as file-manager]
+        [sketchpad.filetree :as file-tree]
 			  [sketchpad.rsyntaxtextarea :as rsyntaxtextarea]
         [seesaw.core :as seesaw.core]
         [seesaw.keystroke :as keystroke]))
@@ -40,9 +41,10 @@
 (defn save-file-as! [app-atom]
 "Open the save as dialog for the current buffer."
 (let [app @app-atom
-	  rsta (tab-manager/current-text-area (:editor-tabbed-panel app))
-	  file (get-meta rsta :file)]
-	(when-let[new-file (file-tree/save-file-as rsta file)]
+	   rsta (tab-manager/current-text-area (:editor-tabbed-panel app))
+	   file (get-meta rsta :file)
+     file-path (file-tree/get-selected-file-path app)]
+	(when-let[new-file (file-tree/save-file-as app-atom file-path file)]
 		(println new-file)
 		(tab-builder/new-file-tab! app-atom new-file))))
 
@@ -58,7 +60,7 @@
   :save-as  (seesaw.core/menu-item :text "Save as..." 
                               :mnemonic "M" 
                               :key (keystroke/keystroke "meta shift S")
-                              :listen [:action (fn [_] (file-tree/save-file-as @app-atom))])})
+                              :listen [:action (fn [_] (save-file-as! app-atom))])})
 
 
 

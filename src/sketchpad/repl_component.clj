@@ -36,14 +36,21 @@
 				repl-scroll-pane (RTextScrollPane. rsta false)
 			repl-server (lein/project-repl-server project)
       repl-container (vertical-panel :items [repl-scroll-pane] :class :repl-container)]
+  
   (put-meta! rsta :state state)
   (put-meta! rsta :repl-server repl-server)
-		(put-meta! rsta :repl-history repl-history)
+	(put-meta! rsta :repl-history repl-history)
   (put-meta! rsta :project-path path)
+
   (config! repl-scroll-pane :background config/app-color)
   (config/apply-editor-prefs! config/default-editor-prefs rsta)
+  
   (set-input-map! rsta (default-input-map))
+  
   (install-auto-completion rsta)
+  
   (attach-lein-repl-handler rsta)
+  
   (init-prompt rsta)
+  
   repl-container)))
