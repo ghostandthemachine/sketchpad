@@ -58,14 +58,16 @@
                    (-> project :repl-options :ack-port))]
     (Integer. p)))
 
-
+; TODO: The tools.nrepl dependency should not be hard coded here.  Instead it should be setup
+; to extract it from the leiningen version currently being used, so that we use the same
+; nrepl lein has been written to work with.
 (defn project-repl-server [project]
-	(let [port (next-repl-port!)]
-;				project (dissoc :prep-tasks)]
+	(let [port (next-repl-port!)
+          project (update-in project [:dependencies] #(conj % '[org.clojure/tools.nrepl "0.2.0-beta8"]))]
 		(.start
 			(Thread.
 				(bound-fn []
 					(eval/eval-in-project project
                            `(nrepl.server/start-server :port ~port)
-                           '(require [clojure.tools.nrepl.server :as nrepl.server])))))
+                           `(require '[clojure.tools.nrepl.server :as nrepl.server])))))
 		{:port port}))
