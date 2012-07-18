@@ -1,4 +1,5 @@
 (ns sketchpad.search-engine
+	(:refer-clojure :exclude [find replace])
 	(:import (org.fife.ui.rtextarea SearchEngine)))
 
 (defn find [rta context]
