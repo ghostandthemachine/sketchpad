@@ -61,7 +61,9 @@
 	(component-at tabbed-panel (current-tab-index tabbed-panel)))
 
 (defn current-text-area [tabbed-panel]
-	(select (current-tab tabbed-panel) [:#editor]))
+	(try 
+		(select (current-tab tabbed-panel) [:#editor])
+		(catch java.lang.IllegalArgumentException e)))
 
 (defn open? [tabbed-panel file-name]
 	(if (= -1 (.indexOfTab tabbed-panel file-name))
