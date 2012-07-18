@@ -228,8 +228,8 @@
                                             shift)
         DefaultEditorKit/insertBreakAction)
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_ENTER
-                                            default-modifier)
+        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_TAB
+                                            0)
         RTextAreaEditorKit/rtaDumbCompleteWordAction)
 
       (.put
