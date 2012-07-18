@@ -1,4 +1,4 @@
-(ns sketchpad.project-manager 
+	(ns sketchpad.project-manager 
 	(:use [clojure.pprint]
 			[seesaw color meta]
 			[sketchpad tab-manager]))

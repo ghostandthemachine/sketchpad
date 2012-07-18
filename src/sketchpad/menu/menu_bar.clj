@@ -10,7 +10,8 @@
         [sketchpad.tab-manager :as tab-manager]
         [sketchpad.lein-manager :as lein]
         [sketchpad.menu.file :as sketchpad.menu.file]
-        [sketchpad.menu.edit :as sketchpad.menu.edit]))
+        [sketchpad.menu.edit :as sketchpad.menu.edit]
+        [sketchpad.menu.view :as sketchpad.menu.view]))
 
 (def macro-recording-state (atom false))
 
@@ -79,58 +80,6 @@
                 (menu :text "Project"
                       :items [])]))))
 
-(defn make-edit-menu
-  [app]
-  (menu :text "Edit" 
-            :mnemonic "E"
-        :items [(menu-item :text "Undo" 
-                           :mnemonic "U" 
-                           :key (keystroke "meta Z"))
-                (menu-item :text "Redo" 
-                           :mnemonic "Y" 
-                           :key (keystroke "meta shift Z"))
-                (separator)
-                (menu-item :text "Copy" 
-                           :mnemonic "C" 
-                           :key (keystroke "meta C") 
-                           :listen [:action (fn [_] (cr/copy-as-rtf (app :doc-text-area)))])
-                (menu-item :text "Paste" 
-                           :mnemonic "P" 
-                           :key (keystroke "meta V") 
-                           :listen [:action (fn [_] (rt/paste (:doc-text-area app)))])
-                (separator)
-                (menu-item :text "Increase font size" 
-                           :key (keystroke "meta shift PLUS") 
-                           :listen [:action (fn [_] (grow-font app))])
-                (menu-item :text "Decrease font size" 
-                           :key (keystroke "meta shift MINUS") 
-                           :listen [:action (fn [_] (shrink-font app))])
-                (separator)
-                (menu-item :text "Choose font..." 
-                           :listen [:action (fn [_] (apply show-font-window app set-font @current-font))])
-                (separator)
-                (menu :text "Mode"
-                      :items [(checkbox-menu-item :text "Vim Command Mode"
-                                                  :listen [:action (fn [_] (toggle-vim-mode! (app :doc-text-area)))])])]))
-
-(defn make-project-menu
-  [app]
-  (menu :text "Project" 
-            :mnemonic "P"
-        :items [(menu-item :text "New..." 
-                           :mnemonic "N" 
-                           :key (keystroke "meta shift N") 
-                           :listen [:action (fn [_] (new-project app))])
-                (menu-item :text "Open..." 
-                           :mnemonic "O" 
-                           :key (keystroke "meta shift O") 
-                           :listen [:action (fn [_] (open-project app))])
-                (separator)
-                (menu-item :text "Move/Rename" 
-                           :mnemonic "M" 
-                           :listen [:action (fn [_] (rename-project app))])
-                (menu-item :text "Remove" 
-                           :listen [:action (fn [_] (remove-project app))])]))
 
 (defn make-source-menu
   [app-atom]
@@ -179,41 +128,6 @@
       (send-to-editor-repl (tab-manager/current-text-area (:editor-tabbed-panel app)) (str "(in-ns " \' (str (second (current-ns-form app))) ")"))
       )))
 
-(defn make-view-menu
-  [app]
-  (menu :text "View"
-        :mnemonic "V"
-        :items [(menu-item :text "Go to REPL input" 
-                           :mnemonic "R" 
-                           :key (keystroke "meta alt 3") 
-                           :listen [:action (fn [_] (.requestFocusInWindow (:editor-repl app)))])
-                (menu-item :text "Go to Editor" 
-                           :mnemonic "E" 
-                           :key (keystroke "meta alt 2") 
-                           :listen [:action (fn [_] (.requestFocusInWindow (:doc-text-area app)))])
-                (menu-item :text "Go to Project Tree" 
-                           :mnemonic "P" 
-                           :key (keystroke "meta alt 1") 
-                           :listen [:action (fn [_] (.requestFocusInWindow (:docs-tree app)))])
-                (separator)
-                (menu-item :text "Show File Tree" 
-                           :key (keystroke "meta 1") 
-                           :listen [:action (fn [_] (toggle-file-tree-panel app))])
-                (menu-item :text "Show REPL" 
-                           :key (keystroke "meta 2") 
-                           :listen [:action (fn [_] (toggle-repl app))])
-                (separator)
-                (menu-item :text "Next tab"
-                					 :key (keystroke "meta alt RIGHT")
-                					 :listen [:action (fn [_] (select-next-tab (app :editor-tabbed-panel)))])
-                (menu-item :text "Previous tab"
-                					 :key (keystroke "meta alt LEFT")
-                					 :listen [:action (fn [_] (select-previous-tab (app :editor-tabbed-panel)))])
-                (separator)
-                (menu-item :text "Close tab"
-                           :key (keystroke "meta W")
-                           :listen [:action (fn [_] (close-current-tab app))])]))
-
 (defn make-help-menu
   [app]
   (menu :text "Help"
@@ -224,14 +138,14 @@
   [app-atom]
   (let [app @app-atom
         file-menu (sketchpad.menu.file/make-file-menu app-atom)
-        edit-menu (sketchpad.menu.edit/make-edit-menu app-atom)]
+        edit-menu (sketchpad.menu.edit/make-edit-menu app-atom)
+        view-menu (sketchpad.menu.view/make-view-menu app-atom)]
     (config! 
       (:frame @app-atom) :menubar 
                       (menubar :items [ file-menu
                                         edit-menu
-                                        ; (make-project-menu app)
                                         ; (make-source-menu app-atom)
-                                        ; (make-view-menu app)
+                                        view-menu
                                         ; (make-help-menu app)
                                         ]))))
 

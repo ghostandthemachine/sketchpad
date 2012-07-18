@@ -97,26 +97,28 @@
 	(set-selected! tabbed-panel index))
 
 (defn select-next-tab [tabbed-panel]
-	(let [current-index (.getSelectedIndex tabbed-panel)
-				num-tabs (.getTabCount tabbed-panel)]
-		(cond 
-			(< current-index (- num-tabs 1))
-				(.setSelectedIndex tabbed-panel (+ current-index 1))
-			(= current-index (- num-tabs 1))
-				(.setSelectedIndex tabbed-panel 0)
-			:else 
-				(.setSelectedIndex tabbed-panel 0))))
+	(when (tabs? tabbed-panel)
+		(let [current-index (.getSelectedIndex tabbed-panel)
+					num-tabs (.getTabCount tabbed-panel)]
+			(cond 
+				(< current-index (- num-tabs 1))
+					(.setSelectedIndex tabbed-panel (+ current-index 1))
+				(= current-index (- num-tabs 1))
+					(.setSelectedIndex tabbed-panel 0)
+				:else 
+					(.setSelectedIndex tabbed-panel 0)))))
 
 (defn select-previous-tab [tabbed-panel]
-	(let [current-index (.getSelectedIndex tabbed-panel)
-				num-tabs (.getTabCount tabbed-panel)]
-		(cond 
-			(> current-index 0)
-				(.setSelectedIndex tabbed-panel (- current-index 1))
-			(= current-index 0)
-				(.setSelectedIndex tabbed-panel (- num-tabs 1))
-			:else 
-				(.setSelectedIndex tabbed-panel (- num-tabs 1)))))
+	(when (tabs? tabbed-panel)
+		(let [current-index (.getSelectedIndex tabbed-panel)
+					num-tabs (.getTabCount tabbed-panel)]
+			(cond 
+				(> current-index 0)
+					(.setSelectedIndex tabbed-panel (- current-index 1))
+				(= current-index 0)
+					(.setSelectedIndex tabbed-panel (- num-tabs 1))
+				:else 
+					(.setSelectedIndex tabbed-panel (- num-tabs 1))))))
 
 (defn mark-tab-dirty! [tabbed-panel i] (mark-tab-state! tabbed-panel i :dirty))
 

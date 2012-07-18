@@ -29,6 +29,7 @@
   (write-value-to-prefs sketchpad-prefs "project-set" @project-set))
     
 (defn load-project-set []
+  (println (read-value-from-prefs sketchpad-prefs "project-set"))
   (reset! project-set (into (sorted-set)
                             (read-value-from-prefs sketchpad-prefs "project-set"))))
 
@@ -89,8 +90,7 @@
 "
 (defproject PROJECTNAME \"1.0.0-SNAPSHOT\"
   :description \"FIXME: write\"
-  :dependencies [[org.clojure/clojure \"1.3.0\"]])
-"))
+  :dependencies [[org.clojure/clojure \"1.3.0\"]])"))
       
 (defn specify-source [project-dir title default-namespace]
   (when-let [namespace (JOptionPane/showInputDialog nil
@@ -499,15 +499,13 @@
                                                        :fill-h]
                                       :id             :docs-tree-label-panel
                                       :class          :file-tree
-                                      :background config/file-tree-bg
-                                        )
+                                      :background config/file-tree-bg)
         docs-tree-panel (vertical-panel 
                                       :items          [docs-tree-label-panel
                                                       docs-tree-scroll-pane]
                                       :id             :file-tree-panel
                                       :class          :file-tree
                                       :background config/file-tree-bg)]
-
     (let [cell-renderer (cast DefaultTreeCellRenderer (.getCellRenderer docs-tree))]
       (.setBackgroundNonSelectionColor cell-renderer config/file-tree-bg))
     (swap! app-atom conj (gen-map

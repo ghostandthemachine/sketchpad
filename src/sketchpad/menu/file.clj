@@ -46,7 +46,7 @@
 		(println new-file)
 		(tab-builder/new-file-tab! app-atom new-file))))
 
-(defn make-menu-items [app-atom]
+(defn make-file-menu-items [app-atom]
  {:new-file (seesaw.core/menu-item :text "New File" 
                               :mnemonic "N" 
                               :key (keystroke/keystroke "meta N") 
@@ -64,19 +64,11 @@
 
 (defn make-file-menu
   [app-atom]
-  (let [menu-items (make-menu-items app-atom)]
+  (let [menu-items (make-file-menu-items app-atom)]
     (seesaw.core/menu :text "File"
           :mnemonic "F"
           :items [
                   (menu-items :new-file)
                   (menu-items :save)
-                  (menu-items :save-as)
-                  (seesaw.core/separator)
-                  (if (rsyntaxtextarea/is-osx?)
-                    (do 
-                    	(seesaw.core/separator)
-                      (seesaw.core/menu-item :text "Quit"
-                                 :mnemonic "Q"
-                                 :key (keystroke/keystroke "meta Q")
-                                 :listen [:action (fn [_] (System/exit 0))])))])))
+                  (menu-items :save-as)])))
 
