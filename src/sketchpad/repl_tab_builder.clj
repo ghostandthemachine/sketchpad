@@ -14,7 +14,9 @@
           :mouse-entered (fn [e] (swap! tab-color (fn [_] mouse-over-color)))
           :mouse-exited (fn [e] (swap! tab-color (fn [_] base-color)))
           :mouse-clicked (fn [e] (let [idx (.indexOfComponent panel repl-component)
-                                       yes-no-option (close-repl-dialogue)]
+                                       yes-no-option (close-repl-dialogue)
+                                       repl-server (get-meta rsta :repl-server)
+                                       nrepl-port (repl-server :port)]
                                    (if (= yes-no-option 0)
                                      (do
                                        (remove-repl-tab! panel idx)

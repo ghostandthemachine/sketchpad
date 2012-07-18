@@ -71,3 +71,6 @@
                            `(nrepl.server/start-server :port ~port)
                            `(require '[clojure.tools.nrepl.server :as nrepl.server])))))
 		{:port port}))
+
+(defn stop-lein-server [port]
+  )

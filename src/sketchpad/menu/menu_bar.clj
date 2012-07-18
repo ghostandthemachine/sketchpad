@@ -13,6 +13,10 @@
         [sketchpad.menu.edit :as sketchpad.menu.edit]
         [sketchpad.menu.view :as sketchpad.menu.view]))
 
+(defn update-menu-state [tabbed-panel]
+"Based on the state of the tabbed panel, set active menu items"
+  
+)
 
 (defn make-help-menu
   []

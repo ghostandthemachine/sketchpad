@@ -32,17 +32,17 @@
 	(repl-communication/awtevent 
 		(.actionPerformedImpl action e rta)))
 
-(def app @sketchpad.core/current-app)
+(def app sketchpad.core/current-app)
 
 (defn preflect [obj]
 	(clojure.pprint/pprint (clojure.reflect/reflect obj)))
 
-(defn current-repl-rta [] (tab/current-text-area (:repl-tabbed-panel app)))
+(defn current-repl-rta [] (tab/current-text-area (:repl-tabbed-panel @app)))
 
 (defn current-buffer [] 
 "return the current text-area component form the editor tabbed panel"
 	(try 
-		(when-let [cur-buf (tab/current-text-area (:editor-tabbed-panel app))]
+		(when-let [cur-buf (tab/current-text-area (:editor-tabbed-panel @app))]
 			cur-buf)
 		(catch java.lang.IllegalArgumentException e
 			(println "no buffer open editor"))))

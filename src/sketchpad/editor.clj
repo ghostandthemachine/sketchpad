@@ -17,7 +17,8 @@
             [sketchpad.rtextarea :as ta]
             [sketchpad.gutter :as gutter]
             [sketchpad.config :as config]
-            [sketchpad.tab-ui :as tab])
+            [sketchpad.tab-ui :as tab]
+            [sketchpad.editor-tab-change-manager :as sketchpad.editor-tab-change-manager])
   (:import  (java.awt.event FocusAdapter MouseAdapter KeyAdapter)
            (javax.swing.event ChangeListener)
            (javax.swing UIManager)))
@@ -159,19 +160,6 @@
 (defn put [laf k v]
   (.put laf (str "TabbedPane." k) v))
 
-(defn attach-tab-change-handler [app-atom editor-tabbed-panel]
-  (listen editor-tabbed-panel :selection
-          (fn [e]
-            (let [num-tabs (tab-count editor-tabbed-panel)
-                  i (current-tab-index editor-tabbed-panel)]
-              (if (> 0 num-tabs)
-                (do
-                  (swap! app-atom assoc :doc-text-area (current-text-area editor-tabbed-panel))
-                  (swap! app-atom (fn [app] (assoc app :current-tab i))))
-                (do
-                  (swap! app-atom assoc :doc-text-area nil)
-                  (swap! app-atom (fn [app] (assoc app :current-tab i)))))))))
-
 (defn editor [app-atom]
   (let [arglist-label         (label :foreground     (color :blue)
                                      :id             :arglist-label
@@ -210,7 +198,7 @@
                                 :class          :editor-comp)]
     (.setUI editor-tabbed-panel (tab/sketchpad-tab-ui editor-tabbed-panel))
 
-    (attach-tab-change-handler app-atom editor-tabbed-panel)
+    (sketchpad.editor-tab-change-manager/attach-tab-change-handler app-atom editor-tabbed-panel)
 
     (config! arglist-label :background config/app-color)
     (config! arg-search-panel :background config/app-color)
