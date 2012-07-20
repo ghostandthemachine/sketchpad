@@ -30,13 +30,13 @@
 	+ ~~Supporting, nay, embracing mousing. Yes, I use the mouse (actually, a trackball) in addition to the keyboard, get over it. Much of my time spent &#8220;programming&#8221; is actually spent doing things other than typing (thank goodness), and many of these tasks are not best done with the keyboard.~~
 	+ All of this <strong>should</strong> go without saying IMO, but emacs seems to put a stake in the ground that much of the above is unnecessary or undesirable. The issue of progressive disclosure and discovery of functionality is a particular sore spot for me. Many of the most important features of a development environment (or perhaps any class of nontrivial software) are the most esoteric that might go untouched for weeks or months (debuggers, profilers, code coverage tools, configuration settings, etc), and one must be able to <strong>effectively</strong> stumble through them for the first time, and after having not touched them for a long time. I don&#8217;t want to have to learn, remember, or google for the <tt>M-x run-clojure-debugger</tt> command or somesuch along with 200, 500, 1000? others.
 
-- ~~REPL support (overall, I think it&#8217;d be hard to improve on enclojure<sup><a href="#fn1"> 1 </a> </sup> – and, AFAIK, swank-clojure, in this department)
+- ~~REPL support (overall, I think it&#8217;d be hard to improve on enclojure<sup><a href="#fn1"> 1 </a> </sup> – and, AFAIK, swank-clojure, in this department)~~
 
-- ~~all REPLs should be separate processes (I don&#8217;t want a REPL session to hork my main environment)
+- ~~all REPLs should be separate processes (I don&#8217;t want a REPL session to hork my main environment)~~
 
-	+ ~~therefore, all REPLs are fundamentally remote REPLs
-	+ ~~ensure that the REPL server library is lean, available, stable, and licensed liberally, so I can roll it into my applications and therefore&#8230;.
-	+ ~~connect to running REPL servers on any IP/port from the dev environment, making all REPL-enabled functionality available regardless of where the host REPL process is running
+	+ ~~therefore, all REPLs are fundamentally remote REPLs~~
+	+ ~~ensure that the REPL server library is lean, available, stable, and licensed liberally, so I can roll it into my applications and therefore&#8230;.~~
+	+ ~~connect to running REPL servers on any IP/port from the dev environment, making all REPL-enabled functionality available regardless of where the host REPL process is running~~
 
 ####Post GSoC plans for Sketcpad
 - Pervasive syntax highlighting
