@@ -1,10 +1,13 @@
 ###From Chas Emerick's Post ["The Ideal Clojure Development Environment"](http://cemerick.com/ideal-clojure-development-environment/)
 - - - -
 
+####Project Deliverables
+The fundamental goal of the Sketchpad GSoC project is to deliver a standalone programming environment
+
 ####In the scope of Sketcpad
 
 - code completion
-	+ ~~Should have visibility to locally-defined vars/bindings, those that are :required or :used, as well as stuff in core~~
+	+ Should have visibility to locally-defined vars/bindings, those that are :required or :used, as well as stuff in core
 	+ Host (Java) interop completion should be key off of the type hints in the surrounding code, and do what it can with imports and such
 	+ ~~In all cases, provide associated docs as well as parameter hints (that are bolded, etc. as you go along adding parameters)~~	
 
