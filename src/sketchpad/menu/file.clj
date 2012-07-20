@@ -62,13 +62,13 @@
       new-file? (get-meta buffer :new-file)]
   (if new-file?
     (do
-      (let [new-file (file/save-file-as)
-            new-file-title (.getName new-file)]
-        (when (file/save-file buffer new-file)
-          (put-meta! buffer :file new-file)
-          (put-meta! buffer :new-file false)
-          (tab/title-at! (tab/index-of-component buffer) new-file-title)
-          (tab/mark-current-tab-clean! (@app :editor-tabbed-panel)))))
+      (when-let [new-file (file/save-file-as)]
+        (let[new-file-title (.getName new-file)]  
+          (when (file/save-file buffer new-file)
+            (put-meta! buffer :file new-file)
+            (put-meta! buffer :new-file false)
+            (tab/title-at! (tab/index-of-component buffer) new-file-title)
+            (tab/mark-current-tab-clean! (@app :editor-tabbed-panel))))))
     (do
       (when (file/save-file buffer (get-meta buffer :file))
              (tab/mark-current-tab-clean! (@app :editor-tabbed-panel)))))))
