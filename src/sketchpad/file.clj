@@ -133,9 +133,7 @@
         (let [path (.getAbsolutePath new-file)]
           (spit path "")
           (println "create new file " path)
-          (println "update file tree")
-          ; (file-tree/update-project-tree (@app :docs-tree))
-))
+          (println "update file tree")))
         new-file)
       (catch Exception e (do (JOptionPane/showMessageDialog nil
                                "Unable to create file."
@@ -144,7 +142,7 @@
 
 (defn save-file-as []
   (try
-    (when-let [new-file (utils/choose-file (@app :frame) "Save file as" (project/current-project app) false)]
+    (when-let [new-file (utils/choose-file (@app :frame) "Save file as" (project/current-project) false)]
       (utils/awt-event
         (let [path (.getAbsolutePath new-file)]
           (spit path "")

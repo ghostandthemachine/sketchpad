@@ -13,7 +13,7 @@
 "return the text from the current buffer component"
 []
 (let [tabbed-panel (@app :editor-tabbed-panel)
-	cur-idx (- (.getSelectedIndex tabbed-panel) 1)
+	cur-idx (.getSelectedIndex tabbed-panel)
 	cur-buffer (.getComponentAt tabbed-panel cur-idx)]
 	cur-buffer))
 

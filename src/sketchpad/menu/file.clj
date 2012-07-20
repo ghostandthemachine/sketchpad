@@ -62,9 +62,11 @@
       new-file? (get-meta buffer :new-file)]
   (if new-file?
     (do
-      (let [new-file (file/save-file-as)]
+      (let [new-file (file/save-file-as)
+            new-file-title (.getName new-file)]
         (when (file/save-file buffer new-file)
           (put-meta! buffer :file new-file)
+          (tab/title-at! (tab/index-of-component buffer) new-file-title)
           (tab/mark-current-tab-clean! (@app :editor-tabbed-panel)))))
     (do
       (when (file/save-file buffer (get-meta buffer :file))
@@ -76,9 +78,9 @@
 	   file (get-meta rsta :file)
      file-path (file-tree/get-selected-file-path @app)]
 	(when-let[new-file (file/save-file-as)]
-		(println new-file)
-		; (tab-builder/new-file-tab! app-atom new-file)
-    )))
+    (when (get-meta rsta :new-file)
+      (put-meta! rsta :new-file false))
+		(println new-file))))
 
 (defn make-file-menu-items [app-atom]
  {:new-file (seesaw.core/menu-item :text "New File" 
@@ -103,6 +105,5 @@
           :items [
                   (menu-items :new-file)
                   (menu-items :save)
-                  (menu-items :save-as)]))
-  )
+                  (menu-items :save-as)])))
 

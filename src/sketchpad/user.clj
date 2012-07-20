@@ -39,6 +39,9 @@
 
 (defn current-repl-rta [] (tab/current-text-area (:repl-tabbed-panel @app)))
 
+(defn current-tree-path []
+	)
+
 (defn current-buffer [] 
 "return the current text-area component form the editor tabbed panel"
 	(try 

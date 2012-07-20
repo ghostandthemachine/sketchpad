@@ -9,12 +9,27 @@
 	(:require [clojure.string :as str]
 						[sketchpad.state :as sketchpad.state]
 						[sketchpad.button-tab :as button-tab]
-						[sketchpad.tab :as tab]))
+						[sketchpad.tab :as tab]
+						[sketchpad.file :as file]))
 
 (def app sketchpad.state/app)
 
 (defn app-tabbed-panel []
 	(@app :editor-tabbed-panel))
+
+(defn save-file! [rsta]
+"Save the current buffer."
+(let [buffer (tab/current-text-area)
+      new-file? (get-meta buffer :new-file)]
+  (if new-file?
+    (do
+      (let [new-file (file/save-file-as)]
+        (when (file/save-file buffer new-file)
+          (put-meta! buffer :file new-file)
+          (tab/mark-current-tab-clean! (@app :editor-tabbed-panel)))))
+    (do
+      (when (file/save-file buffer (get-meta buffer :file))
+             (tab/mark-current-tab-clean! (@app :editor-tabbed-panel)))))))
 
 (defn add-mouse-handlers [rsta]
 	(let [tab-color (get-meta rsta :tab-color)
@@ -36,7 +51,7 @@
 										(cond 
 											(= answer 0)
 												(do
-													; (save-file app rsta idx) 
+													(save-file! rsta)
 													(tab/remove-tab! rsta))
 											(= answer 1)
 												(do 

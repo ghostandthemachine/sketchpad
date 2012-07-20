@@ -67,11 +67,13 @@
               (cond 
                 (= answer 0)
                   (do
-                    (file/save-file) 
-                    (tab/close-tab))
+                    (let [new-file (get-meta buffer :file)
+                          new-file-title (.getName new-file)]
+                      (file/save-file buffer new-file)
+                      (tab/close-tab))
                 (= answer 1)
                   (do 
-                    (tab/close-tab)))))))))
+                    (tab/close-tab))))))))))
 
 (defn make-view-menu-items []
 	{:goto-repl 		(seesaw.core/menu-item 	:text "Go to REPL input" 
