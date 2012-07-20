@@ -1,5 +1,7 @@
-(ns sketchpad.file-manager
+(ns sketchpad.file
   (:require [seesaw.bind :as bind]
+            [sketchpad.project :as project]
+            [sketchpad.utils :as utils]
             [clojure.string :as string])
   (:use [seesaw core dev meta]
         [sketchpad.editor-component])
@@ -7,13 +9,16 @@
            (java.awt.event.KeyEvent)
            (javax.swing  JOptionPane)))
 
+(def app sketchpad.state/app)
+
 (defn ends-with? [file-name ext]
   (.endsWith file-name ext))
 
 (defn file-name [file]
   (.getName file))
 
-(defn file-type [file]
+(defn file-type [file-name]
+  ; (let [file-name (file-name file)]
     (cond
       (ends-with? file-name ".clj")
       :clojure
@@ -95,14 +100,13 @@
     (not (.isDirectory f))))
 
 (defn save-file
-  [rsta]
+[rsta file] 
   (try
-    (let [f (get-meta rsta :file)]
       (with-open [writer (BufferedWriter.
                            (OutputStreamWriter.
-                             (FileOutputStream. f)
+                             (FileOutputStream. file)
                              "UTF-8"))]
-        (.write rsta writer))
+        (.write rsta writer)
       true)
     (catch Exception e
       (do
@@ -119,3 +123,40 @@
 
 (defn get-file-state-by-tab-index [app i]
   (@(get-meta (select (.getComponentAt (app :editor-tabbed-pane) i) [:#editor]) :state) :clean))
+
+
+
+(defn new-file! []
+  (try
+    (when-let [new-file (utils/choose-file (@app :frame) "New file" (project/current-project app) false)]
+      (utils/awt-event
+        (let [path (.getAbsolutePath new-file)]
+          (spit path "")
+          (println "create new file " path)
+          (println "update file tree")
+          ; (file-tree/update-project-tree (@app :docs-tree))
+))
+        new-file)
+      (catch Exception e (do (JOptionPane/showMessageDialog nil
+                               "Unable to create file."
+                               "Oops" JOptionPane/ERROR_MESSAGE)
+                           (.printStackTrace e)))))
+
+(defn save-file-as []
+  (try
+    (when-let [new-file (utils/choose-file (@app :frame) "Save file as" (project/current-project app) false)]
+      (utils/awt-event
+        (let [path (.getAbsolutePath new-file)]
+          (spit path "")
+          (println "update file tree")))
+        new-file)
+      (catch Exception e (do (JOptionPane/showMessageDialog nil
+                               "Unable to create file."
+                               "Oops" JOptionPane/ERROR_MESSAGE)
+                           (.printStackTrace e)))))
+
+
+
+
+
+

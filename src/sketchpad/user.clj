@@ -1,9 +1,9 @@
 (ns sketchpad.user
 	(:refer-clojure :exclude [find replace])
-	(:use [sketchpad buffer-info]
+	(:use [sketchpad buffer-info tree]
 				[seesaw meta]
 			  [clojure.repl])
-	(:require [sketchpad.tab-manager :as tab]
+	(:require [sketchpad.tab :as tab]
 					  [sketchpad.rsyntaxtextarea :as rsta]
 					  [sketchpad.core :as core]
 					  [sketchpad.buffer-search :as buffer-search]
@@ -32,7 +32,7 @@
 	(repl-communication/awtevent 
 		(.actionPerformedImpl action e rta)))
 
-(def app sketchpad.core/current-app)
+(def app sketchpad.state/app)
 
 (defn preflect [obj]
 	(clojure.pprint/pprint (clojure.reflect/reflect obj)))

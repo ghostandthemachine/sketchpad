@@ -17,13 +17,13 @@
         [clooj.navigate]
         [clooj.dev-tools]
         [clooj.indent]
-        [sketchpad prefs auto-complete tab-manager utils filetree editor edit-mode default-mode completion-builder rsyntaxtextarea help])
+        [sketchpad prefs auto-complete tab utils filetree editor edit-mode default-mode completion-builder rsyntaxtextarea help])
   (:require [sketchpad.theme :as theme]
             [sketchpad.config :as config]
-            [sketchpad.preview-manager :as pm]
             [sketchpad.repl :as srepl]
-            [sketchpad.project-manager :as project]
-            [sketchpad.menu.menu-bar :as menu]))
+            [sketchpad.project :as project]
+            [sketchpad.menu.menu-bar :as menu]
+            [sketchpad.state :as sketchpad.state]))
 
 (defn set-laf [laf-string]
   (UIManager/setLookAndFeel laf-string))
@@ -104,11 +104,6 @@
   (let [app @app-atom]
     ;; file tree
     (setup-tree app-atom)
-    (listen (app :editor-tabbed-panel) :selection (fn [e]
-                                                    (let [cur-tab (cast JTabbedPane (.getSource e))
-                                                          rsta (select cur-tab [:#editor])
-                                                          current-tab-index (current-tab-index (app :editor-tabbed-panel))]
-                                                      (save-tab-selections app))))
     ;; global
     (add-visibility-shortcut app)))
 
@@ -121,8 +116,8 @@
           (println thread) (.printStackTrace exception))))
     (add-behaviors app-atom)
     (menu/make-menus app-atom)
-    (project/setup-non-project-map app-atom)
-    (doall (map #(project/add-project app %) (load-project-set)))
+    ; (project/setup-non-project-map app-atom)
+    (doall (map #(project/add-project %) (load-project-set)))
     (let [frame (app :frame)]
       (persist-window-shape sketchpad-prefs "main-window" frame)
       (on-window-activation frame #(update-project-tree (app :docs-tree))))
@@ -131,22 +126,20 @@
       (load-tree-selection tree))
     (app :frame)))
 
-(defonce current-app (atom nil))
-
 (defn show []
   (reset! embedded false)
   (invoke-later
-    (reset! current-app (create-app))
+    (reset! sketchpad.state/app (create-app))
     (->
-      (startup-sketchpad current-app)
+      (startup-sketchpad sketchpad.state/app)
       show!)))
 
 (defn -main [& args]
   (reset! embedded false)
   (invoke-later
-    (reset! current-app (create-app))
+    (reset! sketchpad.state/app (create-app))
     (->
-      (startup-sketchpad current-app)
+      (startup-sketchpad sketchpad.state/app)
       show!)))
 
 

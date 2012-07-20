@@ -1,15 +1,16 @@
 (ns sketchpad.filetree
     (:use [seesaw core keystroke border meta]
-          [sketchpad utils tab-builder prefs buffer-edit]
+          [sketchpad utils prefs buffer-edit]
           [clojure.pprint])
     (:require [seesaw.color :as c]
               [seesaw.chooser :as chooser]
-              [sketchpad.config :as config]
               [clojure.java.io :as io]
               [clojure.string :as string]
-              [sketchpad.preview-manager :as preview]
-              [sketchpad.file-manager :as fm]
-              [sketchpad.project-manager :as project])
+              [sketchpad.config :as config]
+              [sketchpad.tab-builder :as tab-builder]
+              [sketchpad.file :as file]
+              [sketchpad.project :as project]
+              [sketchpad.buffer-new :as buffer-new])
     (:import 
            (java.io File StringReader BufferedWriter OutputStreamWriter FileOutputStream)
            (java.awt GridLayout)
@@ -108,13 +109,13 @@
       (.mkdirs the-dir)
       [(File. the-dir (str name ".clj")) namespace])))
 
-(defn file-name-choose [app-atom project-dir title]
-  (chooser/choose-file :type :save
-               :dir project-dir
-               :success-fn (fn [fc file] (do 
-               															(spit (File. (.getAbsolutePath file)) "") 
-                                            (new-file-tab! app-atom file project-dir)
-               															(println "Createded file " (.getAbsolutePath file))))))
+; (defn file-name-choose [app-atom project-dir title]
+;   (chooser/choose-file :type :save
+;                :dir project-dir
+;                :success-fn (fn [fc file] (do 
+;                															(spit (File. (.getAbsolutePath file)) "") 
+;                                             (new-file-tab! app-atom file project-dir)
+;                															(println "Createded file " (.getAbsolutePath file))))))
 
 
 (defn new-project-clj [app project-dir]
@@ -269,40 +270,40 @@
         (.delete f))
       (update-project-tree (app :docs-tree)))))
 
-(defn create-file [app-atom project-dir default-namespace]
-   (when-let [file-name (file-name-choose app-atom project-dir "New file")]
-    (println file-name)))
+; (defn create-file [app-atom project-dir default-namespace]
+;    (when-let [file-name (file-name-choose app-atom project-dir "New file")]
+;     (println file-name)))
 
-(defn new-file [app-atom project-dir]
-  (let [app @app-atom]
-    (try
-      (when-let [new-file (choose-file (@app-atom :frame) "New file" project-dir false)]
-        (awt-event
-          (let [path (.getAbsolutePath new-file)]
-            (spit path "")
-            (println "create new file " path)
-            (update-project-tree (app :docs-tree)))
-          (new-file-tab! app-atom new-file project-dir))
-          new-file)
-        (catch Exception e (do (JOptionPane/showMessageDialog nil
-                                 "Unable to create file."
-                                 "Oops" JOptionPane/ERROR_MESSAGE)
-                             (.printStackTrace e))))))
+; (defn new-file [app-atom project-dir]
+;   (let [app @app-atom]
+;     (try
+;       (when-let [new-file (choose-file (@app-atom :frame) "New file" project-dir false)]
+;         (awt-event
+;           (let [path (.getAbsolutePath new-file)]
+;             (spit path "")
+;             (println "create new file " path)
+;             (update-project-tree (app :docs-tree)))
+;           (new-file-tab! app-atom new-file project-dir))
+;           new-file)
+;         (catch Exception e (do (JOptionPane/showMessageDialog nil
+;                                  "Unable to create file."
+;                                  "Oops" JOptionPane/ERROR_MESSAGE)
+;                              (.printStackTrace e))))))
 
-(defn save-file-as [app-atom file-path file]
-  (let [app @app-atom]
-    (try
-      (when-let [new-file (choose-file (@app-atom :frame) "Save file as" file-path false)]
-        (awt-event
-          (let [path (.getAbsolutePath new-file)]
-            (spit path "")
-            (update-project-tree (app :docs-tree)))
-          (new-file-tab! app-atom new-file file-path))
-          new-file)
-        (catch Exception e (do (JOptionPane/showMessageDialog nil
-                                 "Unable to create file."
-                                 "Oops" JOptionPane/ERROR_MESSAGE)
-                             (.printStackTrace e))))))
+; (defn save-file-as [app-atom file-path file]
+;   (let [app @app-atom]
+;     (try
+;       (when-let [new-file (choose-file (@app-atom :frame) "Save file as" file-path false)]
+;         (awt-event
+;           (let [path (.getAbsolutePath new-file)]
+;             (spit path "")
+;             (update-project-tree (app :docs-tree)))
+;           (new-file-tab! app-atom new-file file-path))
+;           new-file)
+;         (catch Exception e (do (JOptionPane/showMessageDialog nil
+;                                  "Unable to create file."
+;                                  "Oops" JOptionPane/ERROR_MESSAGE)
+;                              (.printStackTrace e))))))
 
 (defn open-project [app]
   (when-let [dir (choose-directory (app :f) "Choose a project directory")]
@@ -328,7 +329,8 @@
             (project/add-project app path)
             (update-project-tree (:docs-tree app))
             (set-tree-selection (app :docs-tree) path)
-            (create-file app-atom dir (str (.getName dir) ".core")))))
+            ; (create-file app-atom dir (str (.getName dir) ".core"))
+            )))
         (catch Exception e (do (JOptionPane/showMessageDialog nil
                                  "Unable to create project."
                                  "Oops" JOptionPane/ERROR_MESSAGE)
@@ -390,9 +392,11 @@
     (let [file (.. path getLastPathComponent getUserObject)
     			proj (.getPathComponent path 1)
     			proj-str (trim-parens (last (string/split (.toString proj) #"   ")))]
-      (when (fm/text-file? file) ;; handle if dir is selected instead of file
+      (when (file/text-file? file) ;; handle if dir is selected instead of file
         (do 
-          (new-file-tab! app-atom file proj-str)
+          ; (tab-builder/new-file-tab! app-atom file proj-str)
+          ; (tab-builder/new-file-tab! (get-selected-file-path @app-atom))
+          (buffer-new/buffer-from-file! (get-selected-file-path @app-atom))
           (save-tree-selection tree path))))
     (catch java.lang.NullPointerException e)))
   
@@ -431,14 +435,15 @@
     (popup 
       :id :filetree-popup
       :class :popup
-      :items [(menu-item :text "New File" 
-                        :listen [:action (fn [_] (new-file app-atom (first (get-selected-projects app)) ""))])
-              (menu-item :text "New Folder" )
-              (separator)
-              (menu-item :text "New Project" 
-                        :mnemonic "N" 
-                        :key (keystroke "meta shift N") 
-                        :listen [:action (fn [_] (new-project app))])
+      :items [
+              ; (menu-item :text "New File" 
+              ;           :listen [:action (fn [_] (new-file app-atom (first (get-selected-projects app)) ""))])
+              ; (menu-item :text "New Folder" )
+              ; (separator)
+              ; (menu-item :text "New Project" 
+              ;           :mnemonic "N" 
+              ;           :key (keystroke "meta shift N") 
+              ;           :listen [:action (fn [_] (new-project app))])
               (menu-item :text "Open Project" 
                         :mnemonic "O" 
                         :key (keystroke "meta shift O") 
@@ -447,14 +452,15 @@
               (menu-item :text "Remove" 
                         :mnemonic "M" 
                         :listen [:action (fn [_] (remove-project app))])
-              (menu-item :text "Rename Project" 
-                        :listen [:action (fn [_] (rename-project app))])
-              (separator)
-              (menu-item :text "Move/Rename" 
-                        :listen [:action (fn [_] (rename-file app))])
-              (separator)
-              (menu-item :text "Delete" 
-                        :listen [:action (fn [_] (delete-file app))])])))
+              ; (menu-item :text "Rename Project" 
+              ;           :listen [:action (fn [_] (rename-project app))])
+              ; (separator)
+              ; (menu-item :text "Move/Rename" 
+              ;           :listen [:action (fn [_] (rename-file app))])
+              ; (separator)
+              ; (menu-item :text "Delete" 
+              ;           :listen [:action (fn [_] (delete-file app))])
+              ])))
 
 (defn setup-tree [app-atom]
   (let [app @app-atom

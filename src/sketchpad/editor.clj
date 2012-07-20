@@ -198,7 +198,7 @@
                                 :class          :editor-comp)]
     (.setUI editor-tabbed-panel (tab/sketchpad-tab-ui editor-tabbed-panel))
 
-    (sketchpad.editor-tab-change-manager/attach-tab-change-handler app-atom editor-tabbed-panel)
+    ; (sketchpad.editor-tab-change-manager/attach-tab-change-handler app-atom editor-tabbed-panel)
 
     (config! arglist-label :background config/app-color)
     (config! arg-search-panel :background config/app-color)

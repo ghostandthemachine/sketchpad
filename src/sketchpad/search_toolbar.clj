@@ -1,5 +1,5 @@
 (ns sketchpad.search-toolbar
-	(:use [sketchpad tab-manager]
+	(:use [sketchpad tab]
 		  [seesaw core]))
 
 (defn find-field-listener [app])

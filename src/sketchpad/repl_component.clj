@@ -8,7 +8,7 @@
             [sketchpad.rtextscrollpane :as sp]
             [sketchpad.config :as config]
             [sketchpad.lein-manager :as lein]
-            [sketchpad.tab-manager :as tab-manager]
+            [sketchpad.tab :as tab]
             [clojure.string :as string])
   (:import (org.fife.ui.rtextarea RTextScrollPane)
            (java.io BufferedReader BufferedWriter PipedReader PipedWriter PrintWriter Writer
@@ -19,7 +19,7 @@
 
 (defn make-repl-component
 ([app] 
-(let [current-rta (tab-manager/current-text-area (app :editor-tabbed-panel))
+(let [current-rta (tab/current-text-area (app :editor-tabbed-panel))
       current-project-path (get-meta current-rta :project-path)
       lein-project (lein/get-lein-project current-project-path)]
   (make-repl-component app current-project-path lein-project)))

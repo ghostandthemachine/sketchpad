@@ -1,7 +1,6 @@
 (ns sketchpad.buffer-search
   (:use [sketchpad search-context])
-  (:require [sketchpad.search-engine :as search]
-            [sketchpad.tab-manager :as sketchpad.tab-manager]))
+  (:require [sketchpad.search-engine :as search]))
 
 (defn search
   [rta search-str]

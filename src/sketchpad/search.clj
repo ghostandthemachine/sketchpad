@@ -1,6 +1,6 @@
 (ns sketchpad.search
 	(:use [seesaw core color]
-		  [sketchpad tab-manager layout-config])
+		  [sketchpad tab layout-config])
 	(:require [sketchpad.search-engine :as search])
 	(:import (javax.swing UIManager)))
 

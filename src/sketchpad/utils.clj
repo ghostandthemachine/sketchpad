@@ -5,8 +5,6 @@
 
 (ns sketchpad.utils
   (:require [clojure.string :as string :only (join split)]
-            [sketchpad.file-manager :as fm]
-            [sketchpad.preview-manager :as preview]
             [sketchpad.rsyntaxtextarea :as rsyntaxtextarea])
 	(:import (java.util UUID)
            (java.awt FileDialog Point Window)
@@ -24,6 +22,12 @@
            (org.fife.ui.rsyntaxtextarea RSyntaxDocument))
   (:use [sketchpad buffer-edit prefs]
         [seesaw.core :only (config config!)]))
+
+(defmacro awtevent [& body]
+  `(SwingUtilities/invokeLater
+     (fn [] (try ~@body
+                 (catch Throwable t# (.printStackTrace t#))))))
+
 
 ;; general
 (def no-project-txt

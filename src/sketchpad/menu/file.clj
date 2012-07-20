@@ -3,13 +3,16 @@
 	(:require [sketchpad.menu.menu-utils :as menu-utils]
         [sketchpad.filetree :as file-tree]
 			  [sketchpad.tab-builder :as tab-builder]
-			  [sketchpad.tab-manager :as tab-manager]
-			  [sketchpad.file-manager :as file-manager]
+			  [sketchpad.tab :as tab]
+        [sketchpad.buffer-new :as buffer-new]
+        [sketchpad.file :as file]
         [sketchpad.filetree :as file-tree]
 			  [sketchpad.rsyntaxtextarea :as rsyntaxtextarea]
+        [sketchpad.state :as sketchpad.state]
         [seesaw.core :as seesaw.core]
         [seesaw.keystroke :as keystroke]))
 
+(def app sketchpad.state/app)
 
 (defonce file-menu-item-state
   { :new-file (atom true)
@@ -24,9 +27,9 @@
   (reset! activation-atom true))
 
 (defn save? [tabbed-panel activation-atom]
-  (if (tab-manager/tabs? tabbed-panel)  
+  (if (tab/tabs? tabbed-panel)  
     (do 
-      (let [rta (tab-manager/current-text-area tabbed-panel)
+      (let [rta (tab/current-text-area tabbed-panel)
             clean (:clean (get-meta rta :state))]
         (when clean
           (reset! activation-atom false)
@@ -34,7 +37,7 @@
     (reset! activation-atom false)))
 
 (defn save-as? [tabbed-panel activation-atom]
-  (if (tab-manager/tabs? tabbed-panel)  
+  (if (tab/tabs? tabbed-panel)  
     (reset! activation-atom true)
     (reset! activation-atom false)))
 
@@ -51,26 +54,31 @@
 (defn new-file!
 "Create a new file"
 [app-atom file-path]
-(when-let [new-file (file-tree/new-file app-atom file-path)]
-	(println new-file)
-	(tab-builder/new-file-tab! app-atom new-file)))
+  (buffer-new/blank-clj-buffer!))
 
-(defn save-file! [app-atom]
+(defn save-file! []
 "Save the current buffer."
-(let [app @app-atom
-	  rsta (tab-manager/current-text-area (:editor-tabbed-panel app))]
-	(if (file-manager/save-file rsta)
-	 (tab-manager/mark-current-tab-clean! (app :editor-tabbed-panel)))))
+(let [buffer (tab/current-text-area)
+      new-file? (get-meta buffer :new-file)]
+  (if new-file?
+    (do
+      (let [new-file (file/save-file-as)]
+        (when (file/save-file buffer new-file)
+          (put-meta! buffer :file new-file)
+          (tab/mark-current-tab-clean! (@app :editor-tabbed-panel)))))
+    (do
+      (when (file/save-file buffer (get-meta buffer :file))
+             (tab/mark-current-tab-clean! (@app :editor-tabbed-panel)))))))
 
-(defn save-file-as! [app-atom]
+(defn save-file-as! []
 "Open the save as dialog for the current buffer."
-(let [app @app-atom
-	   rsta (tab-manager/current-text-area (:editor-tabbed-panel app))
+(let [rsta (tab/current-text-area (:editor-tabbed-panel @app))
 	   file (get-meta rsta :file)
-     file-path (file-tree/get-selected-file-path app)]
-	(when-let[new-file (file-tree/save-file-as app-atom file-path file)]
+     file-path (file-tree/get-selected-file-path @app)]
+	(when-let[new-file (file/save-file-as)]
 		(println new-file)
-		(tab-builder/new-file-tab! app-atom new-file))))
+		; (tab-builder/new-file-tab! app-atom new-file)
+    )))
 
 (defn make-file-menu-items [app-atom]
  {:new-file (seesaw.core/menu-item :text "New File" 
@@ -80,36 +88,11 @@
   :save     (seesaw.core/menu-item :text "Save" 
                               :mnemonic "S" 
                               :key (keystroke/keystroke "meta S") 
-                              :listen [:action (fn [_] (save-file! app-atom))])
+                              :listen [:action (fn [_] (save-file!))])
   :save-as  (seesaw.core/menu-item :text "Save as..." 
                               :mnemonic "M" 
                               :key (keystroke/keystroke "meta shift S")
-                              :listen [:action (fn [_] (save-file-as! app-atom))])})
-
-; (defn new-file!
-; "Create a new file"
-; []
-; (tab/new-tab!))
-
-; (defn save-file! 
-; "Save the current buffer."
-; []
-; (file/save-file!))
-
-; (defn save-file-as!
-; "Open the save as dialog for the current buffer."
-; []
-; (let [app @app-atom
-;     rsta (tab-manager/current-text-area (:editor-tabbed-panel app))
-;     file (get-meta rsta :file)]
-;   (when-let[new-file (file-tree/save-file-as rsta file)]
-;     (println new-file)
-;     (tab-builder/new-file-tab! app-atom new-file))))
-
-; (defn file-menu-items [app-atom]
-;  [[:new-file "New File" "cmd N" ]])
-
-
+                              :listen [:action (fn [_] (save-file-as!))])})
 
 (defn make-file-menu
   [app-atom]
@@ -120,5 +103,6 @@
           :items [
                   (menu-items :new-file)
                   (menu-items :save)
-                  (menu-items :save-as)])))
+                  (menu-items :save-as)]))
+  )
 

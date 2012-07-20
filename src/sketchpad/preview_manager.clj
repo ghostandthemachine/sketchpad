@@ -1,11 +1,11 @@
 (ns sketchpad.preview-manager
-	(:use [sketchpad tab-manager tab-builder]
+	(:use [sketchpad tab tab-builder]
 				[seesaw.core])
 	(:require [sketchpad.rsyntax :as rsyntax]
             [sketchpad.rtextscrollpane :as sp]
             [sketchpad.rsyntaxtextarea :as rs]
             [sketchpad.file-manager :as fm]
-            [sketchpad.tab-manager :as tab]
+            [sketchpad.tab :as tab]
             [sketchpad.editor-component :as ec]
             [clojure.java.io :as io])
 	(:import (java.io StringReader)))

@@ -12,7 +12,7 @@
         [clj-inspector.jars :only (clj-sources-from-jar jar-files)]
         [clj-inspector.vars :only (analyze-clojure-source
                                     parse-ns-form)]
-        [sketchpad.tab-manager])
+        [sketchpad.tab])
   (:require [clojure.string :as string]))
 
 
