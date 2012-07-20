@@ -1,5 +1,5 @@
 (ns sketchpad.menu.file 
-	(:use [seesaw meta bind])
+	(:use [seesaw meta])
 	(:require [sketchpad.menu.menu-utils :as menu-utils]
         [sketchpad.filetree :as file-tree]
 			  [sketchpad.tab-builder :as tab-builder]
@@ -66,6 +66,7 @@
             new-file-title (.getName new-file)]
         (when (file/save-file buffer new-file)
           (put-meta! buffer :file new-file)
+          (put-meta! buffer :new-file false)
           (tab/title-at! (tab/index-of-component buffer) new-file-title)
           (tab/mark-current-tab-clean! (@app :editor-tabbed-panel)))))
     (do

@@ -210,3 +210,6 @@
 
 (defn get-tab-rsta [tabbed-panel i]
 	(select (component-at tabbed-panel i) [:#editor]))
+
+(defn focus-buffer [buffer]
+	(.grabFocus buffer))

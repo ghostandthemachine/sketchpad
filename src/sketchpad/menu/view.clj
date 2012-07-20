@@ -6,6 +6,7 @@
 		[sketchpad.tab :as tab]
     [sketchpad.app :as app]
     [sketchpad.file :as file]
+    [sketchpad.buffer-new :as buffer-new]
     [sketchpad.option-windows :as option-windows]))
 
 (defonce edit-menu-item-state 
@@ -61,19 +62,22 @@
       (let [buffer (app/buffer)
             current-tab-state (get-meta buffer :state)]
         (if (@current-tab-state :clean)
-          (tab/close-tab)
+          (tab/close-tab) ;; nothing has changed, just close.
           (do 
             (let [answer (option-windows/close-or-save-current-dialogue (app/buffer-title))]
               (cond 
-                (= answer 0)
+                (= answer 0) ;; answered yes to save
                   (do
-                    (let [new-file (get-meta buffer :file)
-                          new-file-title (.getName new-file)]
-                      (file/save-file buffer new-file)
-                      (tab/close-tab))
-                (= answer 1)
+                    (if (get-meta buffer :new-file) ;; is it a new buffer?
+                      (do 
+                        (buffer-new/save-new-buffer! buffer)
+                        (tab/close-tab))
+                      (do
+                        (buffer-new/save-buffer! buffer)
+                        (tab/close-tab))))
+                (= answer 1) ;; don't save just close
                   (do 
-                    (tab/close-tab))))))))))
+                    (tab/close-tab)))))))))
 
 (defn make-view-menu-items []
 	{:goto-repl 		(seesaw.core/menu-item 	:text "Go to REPL input" 
