@@ -46,9 +46,11 @@
 		    (put-meta! buffer :file new-file)
 		    (put-meta! buffer :new-file false)
 		    (tab/title-at! (tab/index-of-component buffer) new-file-title)
-		    (tab/mark-current-tab-clean! (@new-buff-app :editor-tabbed-panel))))))
+		    (tab/mark-current-tab-clean! (@new-buff-app :editor-tabbed-panel))
+		    (tree/update-tree)))))
 
 (defn save-buffer! [buffer]
 	(let [file (get-meta buffer :file)
           file-title (.getName file)]
-        (file/save-file buffer file)))
+        (file/save-file buffer file)
+        (tree/update-tree)))

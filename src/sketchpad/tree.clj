@@ -213,3 +213,7 @@
       (load-expanded-paths tree)
       (load-tree-selection tree)
       (save-expanded-paths tree))))
+
+(defn update-tree []
+	; (update-project-tree (@tree-app :docs-tree))
+	(.reload (.getModel (@tree-app :docs-tree))))

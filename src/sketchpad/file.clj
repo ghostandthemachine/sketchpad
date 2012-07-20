@@ -132,8 +132,7 @@
       (utils/awt-event
         (let [path (.getAbsolutePath new-file)]
           (spit path "")
-          (println "create new file " path)
-          (println "update file tree")))
+          (println "create new file " path)))
         new-file)
       (catch Exception e (do (JOptionPane/showMessageDialog nil
                                "Unable to create file."
@@ -145,8 +144,7 @@
     (when-let [new-file (utils/choose-file (@app :frame) "Save file as" (project/current-project) false)]
       (utils/awt-event
         (let [path (.getAbsolutePath new-file)]
-          (spit path "")
-          (println "update file tree")))
+          (spit path "")))
         new-file)
       (catch Exception e (do (JOptionPane/showMessageDialog nil
                                "Unable to create file."

@@ -2,7 +2,7 @@
 	(:use [clojure.main]
 		  [sketchpad buffer-edit utils])
 	(:import [clojure.lang LineNumberingPushbackReader])
-	; (:require [clojure.main :as main])
+	(:require [clojure.main :as main])
 )
 
 
