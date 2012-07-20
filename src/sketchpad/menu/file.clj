@@ -75,13 +75,13 @@
 
 (defn save-file-as! []
 "Open the save as dialog for the current buffer."
-(let [rsta (tab/current-text-area (:editor-tabbed-panel @app))
-	   file (get-meta rsta :file)
-     file-path (file-tree/get-selected-file-path @app)]
-	(when-let[new-file (file/save-file-as)]
-    (when (get-meta rsta :new-file)
-      (put-meta! rsta :new-file false))
-		(println new-file))))
+(when-let [rsta (tab/current-text-area (:editor-tabbed-panel @app))]
+  (let [file (get-meta rsta :file)
+       file-path (file-tree/get-selected-file-path @app)]
+	  (when-let[new-file (file/save-file-as)]
+      (when (get-meta rsta :new-file)
+        (put-meta! rsta :new-file false))
+    		(println new-file)))))
 
 (defn make-file-menu-items [app-atom]
  {:new-file (seesaw.core/menu-item :text "New File" 

@@ -86,8 +86,9 @@
 	(.setTabComponentAt (app-tabbed-panel) (tab/index-of-component buffer) tab)
 	(.setDot (.getCaret buffer) 0)
 	(.discardAllEdits buffer)
-	(tab/mark-tab-clean! buffer)
-	(tab/show-tab! buffer))
+	(tab/show-tab! buffer)
+	(tab/focus-buffer buffer)
+	(tab/mark-tab-clean! buffer))
 
 (defn new-file! [buffer b]
 	(if b
@@ -110,8 +111,7 @@
 				tab-color (atom base-color)]
 		(init-new-tab container buffer tab tab-label close-button tab-state tab-color)
 		(new-file! buffer true)
-		(tab/focus-buffer buffer)
-		buffer))) 
+		buffer)))
 ([proj]
 	(let [tabbed-panel (app-tabbed-panel)
 		  container (make-editor-component app)
@@ -127,7 +127,6 @@
 				tab-color (atom base-color)]
 		(init-new-tab container buffer tab tab-label close-button tab-state tab-color)
 		(new-file! buffer false)
-		(tab/focus-buffer buffer)
 		buffer))))
 
 
