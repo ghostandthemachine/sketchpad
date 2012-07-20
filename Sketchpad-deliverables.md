@@ -1,5 +1,4 @@
-###From Chas Emerick's Post ["The Ideal Clojure Development Environment"](http://cemerick.com/ideal-clojure-development-environment/)
-- - - -
+#GSoC Overtone Sketchpad 
 
 ####Project Deliverables
 The fundamental goal of the Sketchpad GSoC project is to deliver a standalone programming environment for creating and learning sound design with Overtone and Clojure. Inspired by the popular Processing project, Sketchpad aims to make the hassle of dependencies, operating systems, and installations a non-factor while also facilitating creative coding through concise and accessible documentation and functionality. 

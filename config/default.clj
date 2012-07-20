@@ -21,7 +21,7 @@
 	; :font ["Menlo" Font/BOLD 14]
 	:tab-size 				2
 	:hyper-links-enabled false
-	:mark-occurences false
+	:mark-occurences true
 	:mark-occurences-color "#ADA6A9"
 	:paint-mark-occurences-border false
 	:matched-bracket-bg-color [80 240 70 50]
