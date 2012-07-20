@@ -13,13 +13,10 @@
         [sketchpad.menu.edit :as sketchpad.menu.edit]
         [sketchpad.menu.view :as sketchpad.menu.view]))
 
-<<<<<<< HEAD
-=======
 (defn update-menu-state [tabbed-panel]
 "Based on the state of the tabbed panel, set active menu items"
   
 )
->>>>>>> master
 
 (defn make-help-menu
   []
@@ -45,21 +42,14 @@
         file-menu (sketchpad.menu.file/make-file-menu app-atom)
         edit-menu (sketchpad.menu.edit/make-edit-menu app-atom)
         view-menu (sketchpad.menu.view/make-view-menu app-atom)
-<<<<<<< HEAD
-=======
         repl-menu (make-repl-menu app-atom)
->>>>>>> master
         help-menu (make-help-menu)]
     (config! 
       (:frame @app-atom) :menubar 
                       (menubar :items [ file-menu
                                         edit-menu
-                                        ; (make-source-menu app-atom)
-                                        view-menu
-<<<<<<< HEAD
-=======
+                                          view-menu
                                         repl-menu
->>>>>>> master
                                         help-menu]))))
 
 

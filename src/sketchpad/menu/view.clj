@@ -45,7 +45,7 @@
 
 (defn close-tab [app-atom]
 "Close the current tab."
-	(tab-manager/close-current-tab (@app-atom :editor-tabbed-panel)))
+	(tab-manager/close-current-tab @app-atom))
 
 (defn make-view-menu-items [app-atom]
 	{:goto-repl 		(seesaw.core/menu-item 	:text "Go to REPL input" 

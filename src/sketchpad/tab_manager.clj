@@ -7,9 +7,10 @@
 	(:use [sketchpad option-windows file-manager button-tab prefs]
 				[clojure pprint]
 				[seesaw meta core border])
-	(:require [clojure.string :as string])
-	)
+	(:require [clojure.string :as string]
+		[sketchpad.state :as sketchpad.state]))
 
+(def app sketchpad.state/app)
 
 (defn chop
   "Removes the last character of string."
@@ -129,7 +130,7 @@
 
 (defn save-tab-selections [app]
 	(let [current-index (current-tab-index (app :editor-tabbed-panel))]
-	  (write-value-to-prefs sketchpad-prefs "current-files" @(app :current-files))
+	  (write-value-to-prefs sketchpad-prefs "current-files" @(	app :current-files))
   	  (write-value-to-prefs sketchpad-prefs "current-tab" current-index)))
 
 (defn close-current-tab [app]
@@ -156,7 +157,7 @@
 									(remove-tab! (app :editor-tabbed-panel) idx)))))))))
 
 (defn get-file-from-tab-index [app i]
-	(i @(app :current-files)))
+	(i @(@app :current-files)))
 
 (defn get-tab-rsta [tabbed-panel i]
 	(select (component-at tabbed-panel i) [:#editor]))

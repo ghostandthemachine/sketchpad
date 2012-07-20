@@ -8,8 +8,10 @@
         [sketchpad.filetree :as file-tree]
 			  [sketchpad.rsyntaxtextarea :as rsyntaxtextarea]
         [seesaw.core :as seesaw.core]
+        [sketchpad.state :as sketchpad.state]
         [seesaw.keystroke :as keystroke]))
 
+(def app sketchpad.state/app)
 
 (defonce file-menu-item-state
   { :new-file (atom true)
