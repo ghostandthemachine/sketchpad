@@ -7,10 +7,7 @@
 	(:use [sketchpad option-windows file-manager button-tab prefs]
 				[clojure pprint]
 				[seesaw meta core border])
-	(:require [clojure.string :as string]
-		[sketchpad.state :as sketchpad.state]))
-
-(def app sketchpad.state/app)
+	(:require [clojure.string :as string]))
 
 (defn chop
   "Removes the last character of string."
