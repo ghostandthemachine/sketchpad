@@ -12,6 +12,14 @@
 
 - ~~insofar as lein becomes a mainstay of clojure development, support will be needed for it as well~~
 
+- ~~Support for multiple REPLs (i.e. load code into the last focused REPL)~~
+
+- ~~Full editor capability in the REPL – highlighting, symbol completion, formatting, etc.~~
+
+- ~~Browsable/searchable REPL history~~
+
+	+ ~~Prior expressions accessible via standard command history (Ctrl-up/down, etc), as well as by clicking on expressions still shown in the REPL window~~
+
 - ~~Automatic generation and configuration of the classpath for local REPLs; this includes (almost certainly in this order!):~~
 
 	+ ~~all current-project source paths (this ensures that changes source files are loaded before same-named files or AOT&#8217;ed classfiles from the project&#8217;s artifact(s))~~
@@ -70,7 +78,7 @@
 - Refactoring (rarely needed, but when needed, it would be <strong>incredibly</strong>helpful)
 
 	+ ~~This would almost certainly be limited in static usage – local renames, and such.~~
-	+ ~~Given an open REPL that&#8217;s had my entire application loaded (and therefore should be able to use function/var metadata to its fullest), I should be able to do damn near anything you can do in a top-notch Java IDE (within the bounds of what&#8217;s relevant, anyway).
+	+ ~~Given an open REPL that&#8217;s had my entire application loaded (and therefore should be able to use function/var metadata to its fullest), I should be able to do damn near anything you can do in a top-notch Java IDE (within the bounds of what&#8217;s relevant, anyway).~~
 	+ the equivalent of Java IDEs&#8217; &#8220;organize imports&#8221; in clojure ns use/import/require clauses~~
 
 - Static analysis
@@ -89,14 +97,6 @@
 - static namespace browser, with reasonable search capabilities
 
 - REPL history persistent across IDE restarts
-
-- ~~Support for multiple REPLs (i.e. load code into the last focused REPL)~~
-
-- ~~Full editor capability in the REPL – highlighting, symbol completion, formatting, etc.~~
-
-- ~~Browsable/searchable REPL history~~
-
-	+ ~~Prior expressions accessible via standard command history (Ctrl-up/down, etc), as well as by clicking on expressions still shown in the REPL window~~
 
 - Runtime namespace browser, with the same usage characteristics as the static one, but tied to the focused REPL
 
