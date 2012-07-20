@@ -1,37 +1,34 @@
 (ns sketchpad.sketchpad-repl
-	(:use [clojure.main]
+	(:use
 		  [sketchpad buffer-edit utils])
-	(:import [clojure.lang LineNumberingPushbackReader])
-	; (:require [clojure.main :as main])
-)
+  (:require [clojure.main :as main])
+  (:import [clojure.lang LineNumberingPushbackReader]))
 
-
-
-(defn repl-writer 
+(defn repl-writer
 	[rsta]
 	(let [writer (proxy [java.io.StringWriter] []
-		(append 
+		(append
 		([csq]
 			(proxy-super append csq))
-		([csq arg]	
+		([csq arg]
 			(proxy-super append csq arg))
-		([csq arg1 arg2]	
+		([csq arg1 arg2]
 			(proxy-super append csq arg1 arg2))
 		)
 
 		(close []
 			(proxy-super close))
 
-		(flush [] 
+		(flush []
 			(proxy-super flush))
 
 		(getBuffer []
 			(proxy-super getBuffer))
 
-		(toString [] 
+		(toString []
 			(proxy-super toString))
-			
-		(write 
+
+		(write
 		([c]
 			(append-text rsta c)
 			(proxy-super write c))
@@ -40,7 +37,7 @@
 			(proxy-super write cbuf off len))))]
 		writer))
 
-		
+
 
 (defn sketchpad-repl
   "Generic, reusable, read-eval-print loop. By default, reads from *in*,
@@ -97,12 +94,12 @@
 		              need-prompt (if (instance? LineNumberingPushbackReader *in*)
 		                            #(.atLineStart ^LineNumberingPushbackReader *in*)
 		                            #(identity true))
-		              prompt      repl-prompt
+		              prompt      main/repl-prompt
 		              flush       flush
-		              read        repl-read
+		              read        main/repl-read
 		              eval        eval
 		              print       prn
-		              caught      repl-caught}}
+		              caught      main/repl-caught}}
 		        (apply hash-map options)
 		        request-prompt (Object.)
 		        request-exit (Object.)
@@ -131,7 +128,7 @@
 		     (prompt)
 		     (flush)
 		     (loop []
-		       (when-not 
+		       (when-not
 		       	 (try (= (read-eval-print) request-exit)
 			  (catch Throwable e
 			   (caught e)
