@@ -87,7 +87,6 @@
 	(.setDot (.getCaret buffer) 0)
 	(.discardAllEdits buffer)
 	(tab/mark-tab-clean! buffer)
-	(println "new buffer can undo = " (.canUndo buffer))
 	(tab/show-tab! buffer))
 
 (defn new-file! [buffer b]

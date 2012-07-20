@@ -5,7 +5,8 @@
 			[sketchpad.tab :as tab]
 			[sketchpad.tab-builder :as tab-builder]
 			[sketchpad.state :as sketchpad.state]
-			[clojure.string :as string]))
+			[clojure.string :as string]
+			[sketchpad.]))
 
 (def app sketchpad.state/app)
 

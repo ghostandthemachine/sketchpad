@@ -6,6 +6,7 @@
 			[sketchpad.file :as file]
 			[seesaw.core :as seesaw]
 			[sketchpad.tab :as tab]
+			[sketchpad.tree :as tree]
 			[sketchpad.state :as sketchpad.state]
 			[clojure.string :as string]))
 
@@ -39,13 +40,13 @@
 	(tab-builder/new-tab!))
 
 (defn save-new-buffer! [buffer]
-	(let [new-file (file/save-file-as)
-	      new-file-title (.getName new-file)]
-	  (when (file/save-file buffer new-file)
-	    (put-meta! buffer :file new-file)
-	    (put-meta! buffer :new-file false)
-	    (tab/title-at! (tab/index-of-component buffer) new-file-title)
-	    (tab/mark-current-tab-clean! (@new-buff-app :editor-tabbed-panel)))))
+	(when-let [new-file (file/save-file-as)]
+		(let [new-file-title (.getName new-file)]
+		  (when (file/save-file buffer new-file)
+		    (put-meta! buffer :file new-file)
+		    (put-meta! buffer :new-file false)
+		    (tab/title-at! (tab/index-of-component buffer) new-file-title)
+		    (tab/mark-current-tab-clean! (@new-buff-app :editor-tabbed-panel))))))
 
 (defn save-buffer! [buffer]
 	(let [file (get-meta buffer :file)

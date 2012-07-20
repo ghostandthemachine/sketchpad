@@ -270,41 +270,6 @@
         (.delete f))
       (update-project-tree (app :docs-tree)))))
 
-; (defn create-file [app-atom project-dir default-namespace]
-;    (when-let [file-name (file-name-choose app-atom project-dir "New file")]
-;     (println file-name)))
-
-; (defn new-file [app-atom project-dir]
-;   (let [app @app-atom]
-;     (try
-;       (when-let [new-file (choose-file (@app-atom :frame) "New file" project-dir false)]
-;         (awt-event
-;           (let [path (.getAbsolutePath new-file)]
-;             (spit path "")
-;             (println "create new file " path)
-;             (update-project-tree (app :docs-tree)))
-;           (new-file-tab! app-atom new-file project-dir))
-;           new-file)
-;         (catch Exception e (do (JOptionPane/showMessageDialog nil
-;                                  "Unable to create file."
-;                                  "Oops" JOptionPane/ERROR_MESSAGE)
-;                              (.printStackTrace e))))))
-
-; (defn save-file-as [app-atom file-path file]
-;   (let [app @app-atom]
-;     (try
-;       (when-let [new-file (choose-file (@app-atom :frame) "Save file as" file-path false)]
-;         (awt-event
-;           (let [path (.getAbsolutePath new-file)]
-;             (spit path "")
-;             (update-project-tree (app :docs-tree)))
-;           (new-file-tab! app-atom new-file file-path))
-;           new-file)
-;         (catch Exception e (do (JOptionPane/showMessageDialog nil
-;                                  "Unable to create file."
-;                                  "Oops" JOptionPane/ERROR_MESSAGE)
-;                              (.printStackTrace e))))))
-
 (defn open-project [app]
   (when-let [dir (choose-directory (app :f) "Choose a project directory")]
     (let [project-dir (if (= (.getName dir) "src") (.getParentFile dir) dir)]
@@ -394,8 +359,6 @@
     			proj-str (trim-parens (last (string/split (.toString proj) #"   ")))]
       (when (file/text-file? file) ;; handle if dir is selected instead of file
         (do 
-          ; (tab-builder/new-file-tab! app-atom file proj-str)
-          ; (tab-builder/new-file-tab! (get-selected-file-path @app-atom))
           (buffer-new/buffer-from-file! (get-selected-file-path @app-atom))
           (save-tree-selection tree path))))
     (catch java.lang.NullPointerException e)))
