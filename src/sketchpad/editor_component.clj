@@ -38,7 +38,7 @@
 
     (.setFont doc-text-area (Font. "Menlo" Font/BOLD 13))
     ;; attach caret listener to editor info component
-    ; (attach-caret-handler doc-text-area app-atom)
+    (attach-caret-handler doc-text-area app-atom)
     ;; set default input map
     (set-input-map! doc-text-area (default-input-map))
     (config/apply-editor-prefs! config/default-editor-prefs doc-text-area)

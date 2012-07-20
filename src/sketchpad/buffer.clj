@@ -67,8 +67,10 @@
       (catch java.lang.ClassCastException e ))))
 
 (defn append-text-update [rsta s]
-  (append-text rsta (str s))
-  (.setCaretPosition rsta (.getLastVisibleOffset rsta)))
+  (try
+    (append-text rsta (str s))
+    (.setCaretPosition rsta (.getLastVisibleOffset rsta))
+    (catch java.lang.NullPointerException e)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Search

@@ -23,6 +23,7 @@
             [sketchpad.repl :as srepl]
             [sketchpad.project :as project]
             [sketchpad.menu.menu-bar :as menu]
+            [sketchpad.editor-info :as info]
             [sketchpad.state :as sketchpad.state]))
 
 (defn set-laf [laf-string]
@@ -41,14 +42,11 @@
   []
   (let [app-init  (atom {})
         ;; editor-info MUST init before editor so it is selectable
-        ; editor-info (editor-info app-init)
-        ; search-toolbar (search-toolbar app-init)
+        editor-info (info/editor-info app-init)
         editor    (editor app-init)
 
         file-tree (file-tree app-init)
         repl      (srepl/repl app-init)
-
-        ; info-panel (top-bottom-split search-toolbar editor-info)
 
         doc-split-pane (left-right-split
                          file-tree
@@ -58,15 +56,10 @@
                          :resize-weight 0.25
                          :divider-size 3
                          :background config/app-color)
-        ; doc-info-split-pane (top-bottom-split
-        ;               doc-split-pane
-        ;               info-panel
-        ;               ; :divider-location 0.66
-        ;               ; :resize-weight 0.66
-        ;               :divider-size 1
-        ;               :border (empty-border :thickness 0)
-        ;               :background config/app-color)
-
+        doc-info-split-pane (vertical-panel
+                       :items[doc-split-pane
+                              editor-info]
+                       :background config/app-color)
         split-pane (top-bottom-split
                      doc-split-pane
                      repl

@@ -553,5 +553,21 @@
 (defn fr [s r] (sketchpad.buffer-search/search-replace (current-buffer) s r))
 (defn fra [s r] (sketchpad.buffer-search/search-replace-all (current-buffer) s r))
 
+(defn mark-occurrences
+([b]
+  (mark-occurrences (current-buffer) b))
+([buffer b]
+  (.clearMarkAllHighlights buffer)
+  (.setMarkOccurrences buffer b)))
 
+(defn mark-all
+([str-to-mark]
+  (mark-all (current-buffer) str-to-mark))
+([buffer str-to-mark]
+  (.markAll buffer str-to-mark false false false)))
 
+(defn clear-marks
+([]
+  (clear-marks (current-buffer)))
+([buffer]
+  (.clearMarkAllHighlights buffer)))
