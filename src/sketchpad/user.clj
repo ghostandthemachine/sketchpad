@@ -582,13 +582,42 @@
 [buffer]
   (.getGutter (buffer-scroller buffer)))
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Bookmarks
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn gutter 
+"Returns the gutter from a given buffer."
+[buffer]
+  (let [scroller (get-meta buffer :scroller)
+        gutter (.getGutter scroller)]
+    gutter))
+
+(defn show-bookmarks! 
+"Show the bookmark panel."
+([] (show-bookmarks! (current-buffer)))
+([buffer]
+  (.setBookmarkingEnabled (gutter buffer) true)))
+
+(defn hide-bookmarks!
+"Hide the bookmark panel."
+([] (hide-bookmarks! (current-buffer)))
+([buffer]
+  (.setBookmarkingEnabled (gutter buffer) false)))
+
+(defn bookmark-line
+"Bookmark a then line of the given buffer."
+[buffer line]
+  (.toggleBookmark (gutter buffer) line))
+
 (defmulti foo class)
 
 (defmethod foo org.fife.ui.rsyntaxtextarea.RSyntaxTextArea [buffer] 
-  (bookmark buffer (current-line))))
+  (bookmark-line buffer (current-line)))
 
-(defmethod foo java.lang.Long [n]
-  (bookmark (current-buffer) line))
+(defmethod foo java.lang.Long [line]
+  (bookmark-line (current-buffer) line))
 
 (defmethod foo clojure.lang.PersistentVector [[buffer line]] 
-  (bookmark-line buffer line) 
+  (bookmark-line buffer line))

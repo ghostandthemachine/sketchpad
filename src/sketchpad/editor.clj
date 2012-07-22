@@ -4,7 +4,6 @@
         [clojure.pprint]
         [sketchpad.vim-mode]
         [sketchpad.toggle-vim-mode-action]
-        [sketchpad tab-manager]
         [rounded-border.core])
   (:require [sketchpad.rsyntax :as rsyntax]
             [sketchpad.tab-ui :as tab-ui]

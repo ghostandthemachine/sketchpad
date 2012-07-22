@@ -274,7 +274,7 @@
   (when-let [dir (choose-directory (app :f) "Choose a project directory")]
     (let [project-dir (if (= (.getName dir) "src") (.getParentFile dir) dir)]
       (write-value-to-prefs sketchpad-prefs "last-open-dir" (.getAbsolutePath (.getParentFile project-dir)))
-      (project/add-project app (.getAbsolutePath project-dir))
+      (project/add-project (.getAbsolutePath project-dir))
       (update-project-tree (:docs-tree app))
       (when-let [clj-file (or (-> (File. project-dir "src")
                                  .getAbsolutePath
