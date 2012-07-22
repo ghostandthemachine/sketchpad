@@ -383,7 +383,7 @@
        (fn [e] 
          (let [num-tabs (tab-count repl-tabbed-panel)]
           (if (> 0 num-tabs)
-            (swap! app-atom (fn [app] (assoc app :current-repl (current-text-area (app :repl-tabbed-panel)))))))))
+            (swap! app-atom (fn [app] (assoc app :current-repl (current-buffer (app :repl-tabbed-panel)))))))))
 
     (add-tab! repl-tabbed-panel "sketchpad" repl-container)
     

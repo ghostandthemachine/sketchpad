@@ -8,13 +8,13 @@
 (defn buffer
 "return the text from the current buffer component"
 []
-(tab/current-text-area))
+(tab/current-buffer))
 
 (defn buffer-text
 "return the text from the current buffer text"
 []
 	(try
-		(.getText (tab/current-text-area (tab/current-tab (@app :editor-tabbed-panel))))
+		(.getText (tab/current-buffer (tab/current-tab (@app :editor-tabbed-panel))))
 		(catch java.lang.IllegalArgumentException e
 			(println "no buffer open in editor"))))
 
@@ -26,13 +26,13 @@
 (defn repl 
 "return the current repl component"
 []
-	(tab/current-text-area (tab/current-tab (@app :repl-tabbed-panel))))
+	(tab/current-buffer (tab/current-tab (@app :repl-tabbed-panel))))
 
 (defn repl-text 
 "return the text from the current repl buffer text"
 []
 	(try
-		(.getText (tab/current-text-area (tab/current-tab (@app :repl-tabbed-panel))))
+		(.getText (tab/current-buffer (tab/current-tab (@app :repl-tabbed-panel))))
 		(catch java.lang.IllegalArgumentException e
 			(println "no buffer open in editor"))))
 

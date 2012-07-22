@@ -26,7 +26,7 @@
 ; 		 					action-command (.getActionCommand e)
 ; 		 					forward (if (= action-command "FindNext") true false)
 ; 		 					text (config find-field :text)
-; 		 					current-rta (current-text-area (app :editor-tabbed-panel))
+; 		 					current-rta (current-buffer (app :editor-tabbed-panel))
 ; 		 					found (search/find 
 ; 		 									current-rta 
 ; 		 									text 

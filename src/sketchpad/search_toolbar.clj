@@ -20,7 +20,7 @@
 							action-command (.getActionCommand e)
 							forward (if (= action-command "FindNext") true false)
 							text (config find-field :text)
-							current-rta (current-text-area app)
+							current-rta (current-buffer app)
 							found (SearchEngine/find 
 											current-rta 
 											text 

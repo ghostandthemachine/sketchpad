@@ -7,7 +7,7 @@
   (:require [sketchpad.rsyntax :as rsyntax]
             [sketchpad.rtextscrollpane :as sp]
             [sketchpad.config :as config]
-            ))
+            [sketchpad.editor-info-utils :as editor-info-utils]))
 
 (def bg [39 40 34])
 
@@ -34,43 +34,17 @@
         doc-container  			    (vertical-panel :border nil
                                               :items [doc-scroller-container] :class :container)]
     (put-meta! doc-text-area :state state )
-    (.setBorder doc-scroll-pane (empty-border :thickness 0))
+    (put-meta! doc-text-area :scroller doc-scroll-pane)
 
-    (.setFont doc-text-area (Font. "Menlo" Font/BOLD 13))
-    ;; attach caret listener to editor info component
-    (attach-caret-handler doc-text-area app-atom)
-    ;; set default input map
+    (editor-info-utils/attach-caret-handler doc-text-area app-atom)
     (set-input-map! doc-text-area (default-input-map))
+
     (config/apply-editor-prefs! config/default-editor-prefs doc-text-area)
+    (config/apply-buffer-scroller-prefs! config/default-buffer-scroller-prefs doc-scroll-pane)
+    (config/apply-gutter-prefs! config/default-gutter-prefs (.getGutter doc-scroll-pane))
+    
     (install-auto-completion doc-text-area)
-    (.setBorderColor doc-scroller-gutter (color 0 0 0 0))
-    (.setFoldIndicatorEnabled (.getGutter doc-scroll-pane) true)
-    (.toggleBookmark (.getGutter doc-scroll-pane) 10)
+        
     doc-container))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

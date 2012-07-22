@@ -29,7 +29,7 @@
 (defn save? [tabbed-panel activation-atom]
   (if (tab/tabs? tabbed-panel)  
     (do 
-      (let [rta (tab/current-text-area tabbed-panel)
+      (let [rta (tab/current-buffer tabbed-panel)
             clean (:clean (get-meta rta :state))]
         (when clean
           (reset! activation-atom false)
@@ -58,7 +58,7 @@
 
 (defn save-file! []
 "Save the current buffer."
-(let [buffer (tab/current-text-area)
+(let [buffer (tab/current-buffer)
       new-file? (get-meta buffer :new-file)]
   (if new-file?
     (do
@@ -75,7 +75,7 @@
 
 (defn save-file-as! []
 "Open the save as dialog for the current buffer."
-(when-let [rsta (tab/current-text-area (:editor-tabbed-panel @app))]
+(when-let [rsta (tab/current-buffer (:editor-tabbed-panel @app))]
   (let [file (get-meta rsta :file)
        file-path (file-tree/get-selected-file-path @app)]
 	  (when-let[new-file (file/save-file-as)]

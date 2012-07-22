@@ -19,7 +19,7 @@
 
 (defn make-repl-component
 ([app] 
-(let [current-rta (tab/current-text-area (app :editor-tabbed-panel))
+(let [current-rta (tab/current-buffer (app :editor-tabbed-panel))
       current-project-path (get-meta current-rta :project-path)
       lein-project (lein/get-lein-project current-project-path)]
   (make-repl-component app current-project-path lein-project)))

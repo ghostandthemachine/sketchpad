@@ -19,9 +19,17 @@
   [s]
   (subs s 0 (dec (count s))))
 
-(defn tab-count [tabbed-panel]
+(defn tab-count 
+([]
+	(tab-count (@tab-app :editor-tabbed-panel)))
+([tabbed-panel]
 	(let [tabbed-panel tabbed-panel]
-		(.getTabCount tabbed-panel)))
+		(.getTabCount tabbed-panel))))
+
+(defn current-index 
+"Index of current tab."
+([]
+	(.getSelectedIndex (@tab-app :editor-tabbed-panel))))
 
 (defn tabs? 
 ([]
@@ -31,7 +39,9 @@
 
 (defn component-at [tabbed-panel index]
 	(when (tabs? tabbed-panel)
-		(.getComponentAt tabbed-panel index)))
+		(try 
+			(.getComponentAt tabbed-panel index)
+			(catch java.lang.ArrayIndexOutOfBoundsException e))))
 
 (defn component-at! [tabbed-panel index comp]
 	(.setComponentAt tabbed-panel index comp))
@@ -41,7 +51,6 @@
 	(.getTitleAt (@tab-app :editor-tabbed-panel) index))
 ([tabbed-panel index]
 	(.getTitleAt tabbed-panel index)))
-
 
 (defn title-at!
 ([index s]
@@ -54,6 +63,16 @@
 		(index-of-component (@tab-app :editor-tabbed-panel) (get-meta comp :parent)))
 	([tabbed-panel comp]
 	(.indexOfComponent tabbed-panel comp)))
+
+(defn title 
+"Title of the current buffer."
+([]
+	(let [idx (current-index)]
+		(if (>= idx 0)
+			(title-at idx)
+			"no file open")))
+([buffer]
+	(title-at (index-of-component buffer))))
 
 (defn insert-tab! [tabbed-panel title icon comp tip i]
 	(.insertTab tabbed-panel title icon comp tip i))
@@ -95,9 +114,9 @@
 ([tabbed-panel]
 	(component-at tabbed-panel (current-tab-index tabbed-panel))))
 
-(defn current-text-area 
+(defn current-buffer 
 ([]
-	(current-text-area (@tab-app :editor-tabbed-panel)))
+	(current-buffer (@tab-app :editor-tabbed-panel)))
 ([tabbed-panel]
 	(try 
 		(select (current-tab tabbed-panel) [:#editor])

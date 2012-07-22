@@ -19,7 +19,7 @@
 
 (defn save-file! [rsta]
 "Save the current buffer."
-(let [buffer (tab/current-text-area)
+(let [buffer (tab/current-buffer)
       new-file? (get-meta buffer :new-file)]
   (if new-file?
     (do
@@ -70,7 +70,6 @@
 		     	(changedUpdate [e]
     				(dirty-doc-handler e buffer)))))
 
-
 (defn attach-tab-handlers [buffer]
 	(add-mouse-handlers buffer)
 	(add-doc-handler buffer))
@@ -84,11 +83,7 @@
 	(attach-tab-handlers buffer)
 	(swap! tab-state (fn [state] (assoc state :index (tab/index-of-component buffer))))
 	(.setTabComponentAt (app-tabbed-panel) (tab/index-of-component buffer) tab)
-	(.setDot (.getCaret buffer) 0)
-	(.discardAllEdits buffer)
-	(tab/show-tab! buffer)
-	(tab/focus-buffer buffer)
-	(tab/mark-tab-clean! buffer))
+	(.setDot (.getCaret buffer) 0))
 
 (defn new-file! [buffer b]
 	(if b

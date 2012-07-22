@@ -3,8 +3,7 @@
             [sketchpad.project :as project]
             [sketchpad.utils :as utils]
             [clojure.string :as string])
-  (:use [seesaw core dev meta]
-        [sketchpad.editor-component])
+  (:use [seesaw core dev meta])
   (:import (java.io File StringReader BufferedWriter OutputStreamWriter FileOutputStream)
            (java.awt.event.KeyEvent)
            (javax.swing  JOptionPane)))

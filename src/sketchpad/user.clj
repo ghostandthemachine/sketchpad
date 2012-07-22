@@ -1,7 +1,7 @@
 (ns sketchpad.user
 	(:refer-clojure :exclude [find replace])
 	(:use [sketchpad buffer-info tree]
-				[seesaw meta]
+				[seesaw meta dev]
 			  [clojure.repl])
 	(:require [sketchpad.tab :as tab]
 					  [sketchpad.rsyntaxtextarea :as rsta]
@@ -14,7 +14,10 @@
 					  [sketchpad.repl-communication :as repl-communication])
 	(:import (org.fife.ui.rsyntaxtextarea RSyntaxTextAreaEditorKit)
 			 		(org.fife.ui.rtextarea RTextAreaEditorKit)
+			 		(org.fife.ui.rsyntaxtextarea.RSyntaxTextArea)
 			 		(java.awt.event ActionEvent)))
+
+(def app sketchpad.state/app)
 
 (defn pp [& args]
 	(pprint/pprint args))
@@ -32,12 +35,10 @@
 	(repl-communication/awtevent 
 		(.actionPerformedImpl action e rta)))
 
-(def app sketchpad.state/app)
-
 (defn preflect [obj]
 	(clojure.pprint/pprint (clojure.reflect/reflect obj)))
 
-(defn current-repl-rta [] (tab/current-text-area (:repl-tabbed-panel @app)))
+(defn current-repl-rta [] (tab/current-buffer (:repl-tabbed-panel @app)))
 
 (defn current-tree-path []
 	)
@@ -45,7 +46,7 @@
 (defn current-buffer [] 
 "return the current text-area component form the editor tabbed panel"
 	(try 
-		(when-let [cur-buf (tab/current-text-area (:editor-tabbed-panel @app))]
+		(when-let [cur-buf (tab/current-buffer (:editor-tabbed-panel @app))]
 			cur-buf)
 		(catch java.lang.IllegalArgumentException e
 			(println "no buffer open editor"))))
@@ -371,17 +372,17 @@
 
 (defn cursor-point
   "Return the current position of the cursor as a character count."
-  ([]
+([]
   (cursor-point (current-buffer)))
-  ([rta]
-  (buffer-cursor-point rta)))
+([buffer]
+  (buffer-cursor-point buffer)))
 
 (defn cursor-pos
   "Returns the position of the cursor [<column> <line>]."
-  ([]
+([]
   (buffer-cursor-pos (current-buffer)))
-  ([rta]
-  (buffer-cursor-pos rta)))
+([buffer]
+  (buffer-cursor-pos buffer)))
 
 (defn set-cursor-pos!
   "Set the position of the cursor."
@@ -389,14 +390,18 @@
 
 (defn current-col
   "Return the column number of the cursor in the current buffer."
-  []
-  (first (cursor-pos)))
+([]
+  (current-col (current-buffer)))
+([buffer]
+  (first (cursor-pos buffer))))
 
 (defn current-line
   "Return the line number of the cursor in the current buffer."
-  []
-  (second (cursor-pos)))
-
+([]
+  (current-line (current-buffer)))
+([buffer]
+  (second (cursor-pos buffer))))
+  
 ;(defn goto-pattern
 ;  [regex-pattern]
 ;  (search (str regex-pattern)))
@@ -531,10 +536,6 @@
 ; set, add, remove contents of popup
 ; move, delete popup
 
-
-
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Seesaw helpers
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -542,8 +543,6 @@
 (defn show-opts [c]
 "show seesaw widget optoins for the given component"
 	(seesaw.dev/show-options c))
-
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Shorthand. mostly for dev
@@ -570,4 +569,26 @@
 ([]
   (clear-marks (current-buffer)))
 ([buffer]
-  (.clearMarkAllHighlights buffer)))
+  (.clearMarkAllHighlights buffer)
+  (.repaint buffer)))
+
+(defn buffer-scroller
+"Returns the buffers parent RScrollPanel."
+[buffer]
+  (get-meta buffer :scroller))
+
+(defn buffer-gutter
+"Returns the buffers Gutter component."
+[buffer]
+  (.getGutter (buffer-scroller buffer)))
+
+(defmulti foo class)
+
+(defmethod foo org.fife.ui.rsyntaxtextarea.RSyntaxTextArea [buffer] 
+  (bookmark buffer (current-line))))
+
+(defmethod foo java.lang.Long [n]
+  (bookmark (current-buffer) line))
+
+(defmethod foo clojure.lang.PersistentVector [[buffer line]] 
+  (bookmark-line buffer line) 

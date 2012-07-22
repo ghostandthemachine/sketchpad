@@ -31,7 +31,7 @@
         repl-component (make-repl-component app)
         rsta (select repl-component [:#editor])
         tab-title (str "REPL# " (+ (tab-count tabbed-panel) 1))
-        cur-buffer (current-text-area (app :editor-tabbed-panel))
+        cur-buffer (current-buffer (app :editor-tabbed-panel))
         cur-proj (get-meta cur-buffer :project)]
     (add-tab! tabbed-panel tab-title repl-component)
     (project/add-repl-to-project! rsta)

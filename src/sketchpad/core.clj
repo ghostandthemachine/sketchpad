@@ -30,12 +30,8 @@
   (UIManager/setLookAndFeel laf-string))
 
 (def overtone-handlers
-  {:update-caret-position update-caret-position
-   :save-caret-position save-caret-position
-   :setup-autoindent setup-autoindent
-   ; :switch-repl switch-repl
+  {:setup-autoindent setup-autoindent
    :get-selected-projects get-selected-projects
-   ; :apply-namespace-to-repl apply-namespace-to-repl
    :find-file find-file})
 
 (defn create-app
@@ -44,28 +40,27 @@
         ;; editor-info MUST init before editor so it is selectable
         editor-info (info/editor-info app-init)
         editor    (editor app-init)
-
         file-tree (file-tree app-init)
         repl      (srepl/repl app-init)
-
+        doc-info-split-pane (vertical-panel :items[editor
+                                                   :fill-h
+                                                   editor-info]
+                                            :background config/app-color
+                                            :border (empty-border :thickness 0))
         doc-split-pane (left-right-split
                          file-tree
-                         editor
-                         :border (empty-border :thickness 0)
+                         doc-info-split-pane
                          :divider-location 0.25
                          :resize-weight 0.25
                          :divider-size 3
+                         :border (empty-border :thickness 0)
                          :background config/app-color)
-        doc-info-split-pane (vertical-panel
-                       :items[doc-split-pane
-                              editor-info]
-                       :background config/app-color)
         split-pane (top-bottom-split
                      doc-split-pane
                      repl
                      :divider-location 0.66
                      :resize-weight 0.66
-                     :divider-size 1
+                     :divider-size 3
                      :border (empty-border :thickness 0)
                      :background config/app-color)
         frame (frame :title "Sketchpad"
@@ -95,7 +90,7 @@
 (defn add-behaviors
   [app-atom]
   (let [app @app-atom]
-    ;; file tree
+    (tab-change-handler app-atom)
     (setup-tree app-atom)
     ;; global
     (add-visibility-shortcut app)))
@@ -111,12 +106,12 @@
     (menu/make-menus app-atom)
     ; (project/setup-non-project-map app-atom)
     (doall (map #(project/add-project %) (load-project-set)))
-    (let [frame (app :frame)]
-      (persist-window-shape sketchpad-prefs "main-window" frame)
-      (on-window-activation frame #(update-project-tree (app :docs-tree))))
     (let [tree (app :docs-tree)]
       (load-expanded-paths tree)
       (load-tree-selection tree))
+    (let [frame (app :frame)]
+      (persist-window-shape sketchpad-prefs "main-window" frame)
+      (on-window-activation frame #(update-project-tree (app :docs-tree))))
     (app :frame)))
 
 (defn show []
@@ -134,5 +129,4 @@
     (->
       (startup-sketchpad sketchpad.state/app)
       show!)))
-
 

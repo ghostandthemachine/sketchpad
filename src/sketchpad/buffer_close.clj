@@ -13,7 +13,7 @@
 (defn close-buffer
 "Close the current buffer."
 ([]
-	(close-buffer (tab/current-text-area)))
+	(close-buffer (tab/current-buffer)))
 "Close the specified buffer."
 ([rsta]
 	(let [new-file? (get-meta rsta :new-file)]
