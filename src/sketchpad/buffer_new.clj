@@ -15,7 +15,8 @@
 (defn init-buffer-tab-state [buffer]
 	(tab/focus-buffer buffer)
 	(swap! (@new-buff-app :doc-title-atom) (fn [lbl] (tab/title)))
-	(tab/mark-tab-clean! buffer))
+	(tab/mark-tab-clean! buffer)
+	(.setCaretPosition buffer 0))
 
 (defn selected-file-path []
   (when-let [tree-path (-> @new-buff-app :docs-tree .getSelectionPaths first)]
