@@ -33,7 +33,7 @@
         doc-scroller-gutter     (.getGutter doc-scroll-pane)
         doc-container  			    (vertical-panel :border nil
                                               :items [doc-scroller-container] :class :container)]
-    (put-meta! doc-text-area :state state )
+    (put-meta! doc-text-area :state state)
     (put-meta! doc-text-area :scroller doc-scroll-pane)
 
     (editor-info-utils/attach-caret-handler doc-text-area app-atom)

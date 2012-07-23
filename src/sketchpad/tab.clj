@@ -46,9 +46,10 @@
 (defn component-at! [tabbed-panel index comp]
 	(.setComponentAt tabbed-panel index comp))
 
-(defn title-at 
+(defn title-at
+([] (title-at (@tab-app :editor-tabbed-panel) (current-index)))
 ([index]
-	(.getTitleAt (@tab-app :editor-tabbed-panel) index))
+	(title-at (@tab-app :editor-tabbed-panel) index))
 ([tabbed-panel index]
 	(.getTitleAt tabbed-panel index)))
 
@@ -120,7 +121,7 @@
 ([tabbed-panel]
 	(try 
 		(select (current-tab tabbed-panel) [:#editor])
-		(catch java.lang.IllegalArgumentException e))))
+		(catch Exception e))))
 
 (defn open? [tabbed-panel file-name]
 	(if (= -1 (.indexOfTab tabbed-panel file-name))
@@ -231,4 +232,5 @@
 	(select (component-at tabbed-panel i) [:#editor]))
 
 (defn focus-buffer [buffer]
-	(.grabFocus buffer))
+	(when (not (nil? buffer))
+	  (.grabFocus buffer)))

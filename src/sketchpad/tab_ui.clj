@@ -81,7 +81,7 @@
 			:end [(.getX rect) (.getY rect)]
 			:colors [c1 c2])))
 
-(defn sketchpad-tab-ui [tabbed-panel]
+(defn sketchpad-tab-ui [tabbed-panel show-tabs?]
 	(let [bg (atom fill-color)
 				height-pad 13
 				tab-ui  (proxy [javax.swing.plaf.basic.BasicTabbedPaneUI] []

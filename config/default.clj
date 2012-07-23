@@ -3,7 +3,7 @@
 (def default-background-color [39 49 34])
 
 (def default-editor-prefs
-   {:rsta-theme "themes/dark.xml" ;; load RSyntaxTextArea from xml theme file
+   {:buffer-theme "themes/dark.xml" ;; load RSyntaxTextArea from xml theme file
 	;; params after this point will overide those set by the theme selection above
 	:whitespace-visible false
 	:line-wrap 	true

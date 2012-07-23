@@ -19,17 +19,20 @@
 (defn update-doc-position-label!
 "Update the editor info position label."
 ([e]
-	(when (tab/tabs?)
-		(when-let [current-buffer (tab/current-buffer)]
-			(let [coords (get-caret-coords current-buffer)]
-				(swap! (@info-app :doc-position-atom) (fn [_] (format-position-str (first coords) (second coords)))))))))
+	(if (tab/tabs?)
+		(do
+			(when-let [current-buffer (tab/current-buffer)]
+				(let [coords (get-caret-coords current-buffer)]
+					(swap! (@info-app :doc-position-atom) (fn [_] (format-position-str (first coords) (second coords)))))))
+		(swap! (@info-app :doc-position-atom) (fn [_] "")))))
 
 (defn update-doc-title-label!
 "Update the currently displayed doc title in the info panel"
 ([e]
-	(when (tab/tabs?)
-		(if-let [title (tab/title-at (tab/current-buffer (@info-app :editor-tabbed-panel)))]
-  			(swap! (@info-app :doc-title-atom) (fn [_] title))))))
+	(if (tab/tabs?)
+		(if-let [title (tab/title)]
+  			(swap! (@info-app :doc-title-atom) (fn [_] title)))
+			(swap! (@info-app :doc-title-atom) (fn [_] "")))))
 
 (defn attach-caret-handler [rsta lbl]
 	(listen rsta :caret-update update-doc-position-label!))

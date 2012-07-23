@@ -23,7 +23,7 @@
 
 (defn editor-info [app-atom]
 	(let [app @app-atom
-				doc-position-label (label :text "Line 0, Column 0"
+				doc-position-label (label :text ""
 													:border nil
 													:foreground (color :white)
 													:id :editor-info-label)
@@ -35,9 +35,10 @@
 										:items [[:fill-h 10] doc-position-label :fill-h doc-title-label [:fill-h 10]]
 										:background config/app-color
 										:border nil
+										:maximum-size [10000 :by 20] ;; HACK. need to figure out the safe way to set max height when no tab is present
 										:id :editor-info
 										:paint paint-info-panel)]
 		(swap! app-atom (fn [a] (assoc a :editor-info editor-info :doc-position-atom doc-position-atom :doc-title-atom doc-title-atom)))
-		; (bind/bind doc-title-atom (bind/transform (fn [s] s)) (bind/property doc-title-label :text))
+	  (bind/bind doc-title-atom (bind/transform (fn [s] s)) (bind/property doc-title-label :text))
 		(bind/bind doc-position-atom (bind/transform (fn [s] s)) (bind/property doc-position-label :text))
 		editor-info))

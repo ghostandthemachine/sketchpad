@@ -45,7 +45,7 @@
 
 (defn blank-clj-buffer! []
 	(let [new-buffer (tab-builder/new-tab!)]
-		(init-buffer-tab-state (tab/current-buffer))
+		(init-buffer-tab-state new-buffer)
 		(tab/show-tab! new-buffer)))
 
 (defn save-new-buffer! [buffer]

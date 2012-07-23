@@ -41,7 +41,7 @@
   (.put laf (str "TabbedPane." k) v))
 
 (defn tab-change-handler [app-atom]
-  ; (listen (@app-atom :editor-tabbed-panel) :selection editor-info-utils/update-doc-title-label!)
+  (listen (@app-atom :editor-tabbed-panel) :selection editor-info-utils/update-doc-title-label!)
   (listen (@app-atom :editor-tabbed-panel) :selection editor-info-utils/update-doc-position-label!))
 
 (defn editor [app-atom]
