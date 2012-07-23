@@ -39,6 +39,6 @@
 										:id :editor-info
 										:paint paint-info-panel)]
 		(swap! app-atom (fn [a] (assoc a :editor-info editor-info :doc-position-atom doc-position-atom :doc-title-atom doc-title-atom)))
-	  (bind/bind doc-title-atom (bind/transform (fn [s] s)) (bind/property doc-title-label :text))
+	  	(bind/bind doc-title-atom (bind/transform (fn [s] s)) (bind/property doc-title-label :text))
 		(bind/bind doc-position-atom (bind/transform (fn [s] s)) (bind/property doc-position-label :text))
 		editor-info))

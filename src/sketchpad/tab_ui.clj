@@ -1,5 +1,6 @@
 (ns sketchpad.tab-ui
 	(:use [seesaw core color graphics style])
+	(:require [sketchpad.sketchpad-prefs :as sketchpad-prefs])
 	(:import (javax.swing.plaf.basic.BasicTabbedPaneUI)
 					 (java.lang.reflect.Array)
 					 (java.awt.geom.GeneralPath)
@@ -81,24 +82,25 @@
 			:end [(.getX rect) (.getY rect)]
 			:colors [c1 c2])))
 
-(defn sketchpad-tab-ui [tabbed-panel show-tabs?]
+(defn sketchpad-tab-ui [tabbed-panel]
 	(let [bg (atom fill-color)
 				height-pad 13
 				tab-ui  (proxy [javax.swing.plaf.basic.BasicTabbedPaneUI] []
 									(paint [gfx comp]
-										(proxy-super paint gfx comp)
-										(.setRenderingHint gfx RenderingHints/KEY_ANTIALIASING RenderingHints/VALUE_ANTIALIAS_ON)
-										(if (= (.getTabCount comp) 0)
-											(let [w (width comp)
-												  	h (height comp)
-												  	bg-img-width-offset (/ (.getIconWidth bg-img) 2)
-														bg-img-height-offset (/ (.getIconHeight bg-img) 2)
-												  	x (- (/ w 2) bg-img-width-offset)
-												  	y (- (/ h 2) bg-img-height-offset)]
-												(draw gfx 
-													(rect 0 0 w h)
-													(style :background :black))
-												(.paintIcon bg-img comp gfx x y))))
+										(when @sketchpad.sketchpad-prefs/show-tabs?
+											(proxy-super paint gfx comp)
+											(.setRenderingHint gfx RenderingHints/KEY_ANTIALIASING RenderingHints/VALUE_ANTIALIAS_ON)
+											(if (= (.getTabCount comp) 0)
+												(let [w (width comp)
+													  	h (height comp)
+													  	bg-img-width-offset (/ (.getIconWidth bg-img) 2)
+															bg-img-height-offset (/ (.getIconHeight bg-img) 2)
+													  	x (- (/ w 2) bg-img-width-offset)
+													  	y (- (/ h 2) bg-img-height-offset)]
+													(draw gfx 
+														(rect 0 0 w h)
+														(style :background :black))
+													(.paintIcon bg-img comp gfx x y)))))
 
 									(paintTab [gfx tab-placement rects tab-index icon-rect text-rect]
 										(proxy-super paintTab gfx tab-placement rects tab-index icon-rect text-rect))
@@ -119,7 +121,9 @@
 														(style :background (unselected-tab-graient x (+ y h) x y)))))))
 										
 									(calculateTabHeight [placement index font-height]
-										(+ font-height height-pad))
+										(if @sketchpad.sketchpad-prefs/show-tabs?
+											(+ font-height height-pad)
+											0))
 
 									(paintTabBorder [gfx placement index x y w h selected]
 										(.setRenderingHint gfx RenderingHints/KEY_ANTIALIASING RenderingHints/VALUE_ANTIALIAS_ON)
@@ -140,10 +144,14 @@
 													(style :foreground (color 20 20 20 100) :thickness 1))))))
 
 									(getTabAreaInsets [placement]
-										(Insets. 5 10 0 10))
+									  (if @sketchpad.sketchpad-prefs/show-tabs?
+  										(Insets. 5 10 0 10)
+  										(Insets. 0 0 0 0)))
 
 									(getContentBorderInsets [placement]
-										(Insets. 1 0 0 0))
+									  (if @sketchpad.sketchpad-prefs/show-tabs?
+  										(Insets. 1 0 0 0)
+  										(Insets. 0 0 0 0)))
 
 									(getTabsOverlapBorder []
 										true)
@@ -175,12 +183,15 @@
 												(style :foreground selected-border-color :stroke 3))))))
 
 									(getTabInsets [placement index]
-										(let [insets (proxy-super getTabInsets placement index)
-												h-pad 0
-												v-pad 0
-												t (+ v-pad (.top insets))
-												l (+ h-pad (.left insets))
-												b (+ v-pad (.bottom insets))
-												r (+ h-pad (.right insets))]
-										(java.awt.Insets. t l b r))))]
+      						  (if @sketchpad.sketchpad-prefs/show-tabs?
+							  		  (do
+							  		    (let [insets (proxy-super getTabInsets placement index)
+						  			  			h-pad 0
+					  			  				v-pad 0
+				  			  					t (+ v-pad (.top insets))
+			  			  						l (+ h-pad (.left insets))
+		  			  							b (+ v-pad (.bottom insets))
+	  		  									r (+ h-pad (.right insets))]
+  				  						(java.awt.Insets. t l b r)))
+				  						(Insets. 0 0 0 0))))]
 		tab-ui))

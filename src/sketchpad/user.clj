@@ -2,7 +2,8 @@
 	(:refer-clojure :exclude [find replace])
 	(:use [sketchpad buffer-info tree]
 				[seesaw meta dev core]
-			  [clojure.repl])
+			  [clojure.repl]
+			  [sketchpad.config])
 	(:require [sketchpad.tab :as tab]
 					  [sketchpad.rsyntaxtextarea :as rsta]
 					  [sketchpad.core :as core]

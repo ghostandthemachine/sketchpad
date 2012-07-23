@@ -13,7 +13,7 @@
 	:code-folding true
 	:auto-indent true
 	:eol-marker false
-	:font "MENLO-BOLD-14"
+	:font "MENLO-BOLD-12"
 	:tab-size 				2
 	:hyper-links-enabled false
 	:mark-occurences false
@@ -49,6 +49,9 @@
    :line-number-font                   "MENLO-14"
    :line-number-start-index            1
    :active-range-color 				   [0 255 0 15]})
+
+(def default-sketchpad-prefs
+	{:show-tabs? false})
 
 (def default-project-style-prefs
 	[(color :white) (color :orange) (color :green) (color :yellow) (color :blue) (color :red) (color :purple) (color :pink)])

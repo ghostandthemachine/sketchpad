@@ -6,7 +6,8 @@
            (java.awt.event ActionListener MouseListener)
            (java.awt.BasicStoke)
            (java.awt Color Dimension Graphics2D FlowLayout))
-  (:require [sketchpad.state :as sketchpad.state]))
+  (:require [sketchpad.state :as sketchpad.state]
+            [sketchpad.sketchpad-prefs :as sketchpad.sketchpad-prefs]))
 
 (def app sketchpad.state/app)
 
@@ -96,13 +97,15 @@
         btn (tab-button tabbed-panel btn-tab app state c)
         label (proxy [JLabel] []
                 (getText []
-                  (let [index (.indexOfComponent tabbed-panel rta)]
-                    (if (= (.getSelectedIndex tabbed-panel) i)
-                      (config! this :foreground :white)
-                      (config! this :foreground (color 155 155 155)))
-                    (if (not= -1 index)
-                      (.getTitleAt tabbed-panel index)
-                      nil))))]
+                  (if @sketchpad.sketchpad-prefs/show-tabs?
+                    (do
+                      (let [index (.indexOfComponent tabbed-panel rta)]
+                        (if (= (.getSelectedIndex tabbed-panel) i)
+                          (config! this :foreground :white)
+                          (config! this :foreground (color 155 155 155)))
+                        (if (not= -1 index)
+                          (.getTitleAt tabbed-panel index)
+                          nil))))))]
     (config! btn-tab :items[label btn])
     (config! label :foreground (color :white) :focusable? false
              :id (symbol (str "[:tab-label-" i "]")))
