@@ -34,6 +34,15 @@
    :get-selected-projects get-selected-projects
    :find-file find-file})
 
+(defn set-osx-icon
+  [icon]
+  (try
+    (import 'com.apple.eawt.Application)
+    (.setDockIconImage (com.apple.eawt.Application/getApplication) icon)
+    (catch Exception e
+      false))
+  true)
+
 (defn create-app
   []
   (let [app-init  (atom {})
@@ -69,7 +78,6 @@
                      :on-close :exit
                      :minimum-size [500 :by 350]
                      :content split-pane)
-
         app (merge {:current-files (atom {})
                     :current-file (atom nil)
                     :current-tab -1
@@ -82,7 +90,11 @@
                    (gen-map
                      frame
                      doc-split-pane
-                     split-pane))]
+                     split-pane))
+        icon-url (clojure.java.io/resource "sketchpad-icon.png")
+        icon (.createImage (Toolkit/getDefaultToolkit) icon-url)]
+    (.setIconImage frame icon)
+    (set-osx-icon icon)
     (config! doc-split-pane :background (color :black))
     app))
 
