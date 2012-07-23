@@ -198,18 +198,18 @@ You never have to change the opaque property yourself; it is always done for you
 (defn show-tabs!
 ([]
 "Show the current buffer tabs."
-  (show-tabs? true))
+  (show-tabs! true))
 ([bool]
 "Show or hide the buffer tabs."
   `(seesaw/config! (seesaw/select (:editor-tabbed-panel @state/app) [:.button-tab]) :visible? ~bool)
-  (do (swap! sketchpad.sketchpad-prefs/show-tabs? (fn [_] bool))))
+  (do (swap! sketchpad.sketchpad-prefs/show-tabs? (fn [_] bool)))))
 
 (defn hide-tabs! []
 "Hide the current buffer tabs."
   (show-tabs! false))
 
 (def sketchpad-pref-handlers
-  {:show-tabs? show-tabs?})
+  {:show-tabs? show-tabs!})
 
 (def buffer-scroller-pref-handlers
   {:fold-indicator-enabled             (fn [scroller pref] (.setFoldIndicatorEnabled scroller pref))
