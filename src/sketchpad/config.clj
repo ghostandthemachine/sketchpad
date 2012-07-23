@@ -195,19 +195,18 @@ You never have to change the opaque property yourself; it is always done for you
    :close-curly-braces close-curly-braces 			           
    :buffer-theme buffer-theme})
 
-(defn show-tabs?
+(defn show-tabs!
+([]
+"Show the current buffer tabs."
+  (show-tabs? true))
+([bool]
 "Show or hide the buffer tabs."
-[bool]
   `(seesaw/config! (seesaw/select (:editor-tabbed-panel @state/app) [:.button-tab]) :visible? ~bool)
   (do (swap! sketchpad.sketchpad-prefs/show-tabs? (fn [_] bool))))
 
-(defn show-tabs! []
-"Show the current buffer tabs."
-  (show-tabs? true))
-
 (defn hide-tabs! []
 "Hide the current buffer tabs."
-  (show-tabs? false))
+  (show-tabs! false))
 
 (def sketchpad-pref-handlers
   {:show-tabs? show-tabs?})
