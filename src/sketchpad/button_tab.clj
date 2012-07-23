@@ -19,46 +19,46 @@
 (defn paint-tab-button 
 ([proj-color state c g]
   "custom renderer for tab x"
-  (let [clean? (@state :clean)
-        w          (width c)
-        h          (height c)
-        line-style (style :foreground button-base-color :stroke 2 :cap :round)
-        border-style (style :foreground proj-color :stroke 0.5)
-        ellipse-style (style :foreground button-base-color :background button-base-color :stroke 1 :cap :round)
-        d 3
-        lp 7]
-    (cond
-      clean?
-      (do
-        (draw g
-              (line lp lp (- w lp) (- h lp)) line-style
-              (line lp (- h lp) (- w lp) lp) line-style
-              (rounded-rect d d (- w d d) (- h d d) 5 5) border-style))
-      (not clean?)
-      (do
-        (draw g
-              (ellipse lp lp (- w lp lp) (- h lp lp)) ellipse-style
-              (rounded-rect d d (- w d d) (- h d d) 5 5) border-style)))))
+    (let [clean? (@state :clean)
+          w          (width c)
+          h          (height c)
+          line-style (style :foreground button-base-color :stroke 2 :cap :round)
+          border-style (style :foreground proj-color :stroke 0.5)
+          ellipse-style (style :foreground button-base-color :background button-base-color :stroke 1 :cap :round)
+          d 3
+          lp 7]
+      (cond
+        clean?
+        (do
+          (draw g
+                (line lp lp (- w lp) (- h lp)) line-style
+                (line lp (- h lp) (- w lp) lp) line-style
+                (rounded-rect d d (- w d d) (- h d d) 5 5) border-style))
+        (not clean?)
+        (do
+          (draw g
+                (ellipse lp lp (- w lp lp) (- h lp lp)) ellipse-style
+                (rounded-rect d d (- w d d) (- h d d) 5 5) border-style)))))
 
 ([state c g]
   "custom renderer for tab x"
-  (let [clean? (@state :clean)
-        w          (width c)
-        h          (height c)
-        line-style (style :foreground button-base-color :stroke 2 :cap :round)
-        ellipse-style (style :foreground button-base-color :background button-base-color :stroke 1 :cap :round)
-        d 3
-        lp 7]
-    (cond
-      clean?
-      (do
-        (draw g
-              (line lp lp (- w lp) (- h lp)) line-style
-              (line lp (- h lp) (- w lp) lp) line-style))
-      (not clean?)
-      (do
-        (draw g
-              (ellipse lp lp (- w lp lp) (- h lp lp)) ellipse-style))))))
+    (let [clean? (@state :clean)
+          w          (width c)
+          h          (height c)
+          line-style (style :foreground button-base-color :stroke 2 :cap :round)
+          ellipse-style (style :foreground button-base-color :background button-base-color :stroke 1 :cap :round)
+          d 3
+          lp 7]
+      (cond
+        clean?
+        (do
+          (draw g
+                (line lp lp (- w lp) (- h lp)) line-style
+                (line lp (- h lp) (- w lp) lp) line-style))
+        (not clean?)
+        (do
+          (draw g
+                (ellipse lp lp (- w lp lp) (- h lp lp)) ellipse-style))))))
 
 
 (defn tab-button 
@@ -97,18 +97,17 @@
         btn (tab-button tabbed-panel btn-tab app state c)
         label (proxy [JLabel] []
                 (getText []
-                  (if @sketchpad.sketchpad-prefs/show-tabs?
-                    (do
-                      (let [index (.indexOfComponent tabbed-panel rta)]
-                        (if (= (.getSelectedIndex tabbed-panel) i)
-                          (config! this :foreground :white)
-                          (config! this :foreground (color 155 155 155)))
-                        (if (not= -1 index)
-                          (.getTitleAt tabbed-panel index)
-                          nil))))))]
-    (config! btn-tab :items[label btn])
-    (config! label :foreground (color :white) :focusable? false
-             :id (symbol (str "[:tab-label-" i "]")))
+                  (let [index (.indexOfComponent tabbed-panel rta)]
+                    (if (= (.getSelectedIndex tabbed-panel) i)
+                      (config! this :foreground :white)
+                      (config! this :foreground (color 155 155 155)))
+                    (if (not= -1 index)
+                      (.getTitleAt tabbed-panel index)
+                      nil))))]
+    (config! btn-tab :items[label btn] :class :button-tab)
+    (config! label :foreground (color :white) :focusable? false)
+;    (when-not  @sketchpad.sketchpad-prefs/show-tabs?
+;      (config! btn-tab :visible? false))
     (doto btn-tab
       (.setOpaque false)
       (.setBorder (javax.swing.BorderFactory/createEmptyBorder 0 0 0 0))
@@ -127,8 +126,10 @@
                     (if (not= -1 index)
                       (.getTitleAt (@app :editor-tabbed-panel) index)
                       nil))))]
-    (config! btn-tab :items[label btn])
+    (config! btn-tab :items[label btn] :class :button-tab)
     (config! label :foreground (color :white) :focusable? false)
+    (when-not  @sketchpad.sketchpad-prefs/show-tabs?
+      (config! btn-tab :visible? false))
     (doto btn-tab
       (.setOpaque false)
       (.setBorder (javax.swing.BorderFactory/createEmptyBorder 0 0 0 0))

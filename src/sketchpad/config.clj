@@ -8,6 +8,7 @@
             [seesaw.core :as seesaw]
             [sketchpad.editor :as sketchpad.editor]
             [sketchpad.theme :as theme]
+            [sketchpad.state :as state]
             [sketchpad.sketchpad-prefs :as sketchpad-prefs])
   (:import [org.fife.ui.rtextarea RTextArea]
            [java.io FileNotFoundException]
@@ -194,13 +195,21 @@ You never have to change the opaque property yourself; it is always done for you
    :close-curly-braces close-curly-braces 			           
    :buffer-theme buffer-theme})
 
-(defn show-tabs?
+(defn show-tabs!
+([]
+"Show the current buffer tabs."
+  (show-tabs! true))
+([bool]
 "Show or hide the buffer tabs."
-[bool]
-  (swap! sketchpad.sketchpad-prefs/show-tabs? (fn [_] bool)))
+  `(seesaw/config! (seesaw/select (:editor-tabbed-panel @state/app) [:.button-tab]) :visible? ~bool)
+  (do (swap! sketchpad.sketchpad-prefs/show-tabs? (fn [_] bool)))))
+
+(defn hide-tabs! []
+"Hide the current buffer tabs."
+  (show-tabs! false))
 
 (def sketchpad-pref-handlers
-  {:show-tabs? show-tabs?})
+  {:show-tabs? show-tabs!})
 
 (def buffer-scroller-pref-handlers
   {:fold-indicator-enabled             (fn [scroller pref] (.setFoldIndicatorEnabled scroller pref))
@@ -237,7 +246,6 @@ You never have to change the opaque property yourself; it is always done for you
 
 (defn apply-editor-prefs! [prefs buffer]
   (doseq [[k pref] default-editor-prefs]
-    (println k pref)
     ((k editor-pref-handlers) buffer pref)))
 
 (defn apply-auto-completion-prefs! [prefs ac]
@@ -246,7 +254,6 @@ You never have to change the opaque property yourself; it is always done for you
 
 (defn apply-sketchpad-prefs! [prefs]
   (doseq [[k pref] default-sketchpad-prefs]
-    (println k pref prefs)
     ((k sketchpad-pref-handlers) pref)))
 
 (apply-sketchpad-prefs! default-sketchpad-prefs)

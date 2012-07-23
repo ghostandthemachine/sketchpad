@@ -19,17 +19,16 @@
         :mnemonic "H"
         :items []))
 
-; (defn make-repl-menu
-;   []
-;   (menu :text "REPL"
-;         :mnemonic "R"
-;         :items [  (menu-item :text "Create new REPL" 
-;                              :mnemonic "N" 
-;                              :key (keystroke "meta control R") 
-;                              :listen [:action (fn [_] 
-;                                               (repl/new-repl-tab! 
-;                                                 app-atom))])
-;                     (separator)]))
+(defn make-repl-menu
+  []
+  (menu :text "REPL"
+        :mnemonic "R"
+        :items [  (menu-item :text "Create new REPL" 
+                             :mnemonic "N" 
+                             :key (keystroke "meta control R") 
+                             :listen [:action (fn [_] 
+                                              (repl/new-repl-tab! (tab/current-buffer)))])
+                    (separator)]))
 
 (defn make-menus
   [app-atom]
@@ -37,7 +36,7 @@
         file-menu (sketchpad.menu.file/make-file-menu app-atom)
         edit-menu (sketchpad.menu.edit/make-edit-menu)
         view-menu (sketchpad.menu.view/make-view-menu)
-        ; repl-menu (make-repl-menu)
+        repl-menu (make-repl-menu)
         help-menu (make-help-menu)]
     (config! 
       (:frame @app-atom) :menubar 
@@ -46,7 +45,7 @@
                                         ; edit-menu
                                         ; (make-source-menu app-atom)
                                         view-menu
-                                        ; repl-menu
+                                        repl-menu
                                         help-menu]))))
 
 

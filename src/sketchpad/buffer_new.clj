@@ -8,14 +8,18 @@
 			[sketchpad.tab :as tab]
 			[sketchpad.tree :as tree]
 			[sketchpad.state :as sketchpad.state]
+			[leiningen.core.project :as lein-project]
 			[clojure.string :as string]))
 
 (def new-buff-app sketchpad.state/app)
 
-(defn init-buffer-tab-state [buffer]
+(defn init-buffer-tab-state [buffer lein-project]
+  	(when lein-project
+    	(put-meta! buffer :project lein-project))
 	(tab/focus-buffer buffer)
 	(swap! (@new-buff-app :doc-title-atom) (fn [lbl] (tab/title)))
-	(tab/mark-tab-clean! buffer))
+	(tab/mark-tab-clean! buffer)
+	(.setCaretPosition buffer 0))
 
 (defn selected-file-path []
   (when-let [tree-path (-> @new-buff-app :docs-tree .getSelectionPaths first)]
@@ -37,10 +41,10 @@
 			(update-buffer-syntax-style buffer file-path)
 			(update-buffer-label-from-file buffer file-path))))
 
-(defn buffer-from-file! [file-path]
+(defn buffer-from-file! [file-path lein-project]
 	(let [new-buffer (tab-builder/new-tab! (selected-file-path))]
 		(load-file-into-buffer new-buffer file-path)
-		(init-buffer-tab-state new-buffer)
+		(init-buffer-tab-state new-buffer lein-project)
 		(tab/show-tab! new-buffer)))
 
 (defn blank-clj-buffer! []

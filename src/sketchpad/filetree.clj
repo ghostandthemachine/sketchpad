@@ -10,7 +10,9 @@
               [sketchpad.tab-builder :as tab-builder]
               [sketchpad.file :as file]
               [sketchpad.project :as project]
-              [sketchpad.buffer-new :as buffer-new])
+              [sketchpad.buffer-new :as buffer-new]
+              [sketchpad.lein-manager :as lein-manager]
+              [leiningen.core.project :as lein-project])
     (:import 
            (java.io File StringReader BufferedWriter OutputStreamWriter FileOutputStream)
            (java.awt GridLayout)
@@ -359,7 +361,7 @@
     			proj-str (trim-parens (last (string/split (.toString proj) #"   ")))]
       (when (file/text-file? file) ;; handle if dir is selected instead of file
         (do 
-          (buffer-new/buffer-from-file! (get-selected-file-path @app-atom))
+          (buffer-new/buffer-from-file! (get-selected-file-path @app-atom) (lein-manager/get-lein-project proj-str))
           (save-tree-selection tree path))))
     (catch java.lang.NullPointerException e)))
   

@@ -21,14 +21,12 @@
               (take-str s 1 (- (count cmd-token) 1))
               cmd-token)
         type (atom :repl-cmd)]
-    ; (println (take-str s 1 3) (take-str s 0 2))
     (contains? (keys app-commands) (take-str s 0 2))
     (cond
       (contains? (keys app-commands) cmd)
       (swap! type (fn [_] :app-cmd))
       :else
       (swap! type (fn [_] :repl-cmd)))
-    ; (println @type)
     @type))
 
 

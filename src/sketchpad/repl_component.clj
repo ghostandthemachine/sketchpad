@@ -18,12 +18,7 @@
   (append-text rta "user=> "))
 
 (defn make-repl-component
-([app] 
-(let [current-rta (tab/current-buffer (app :editor-tabbed-panel))
-      current-project-path (get-meta current-rta :project-path)
-      lein-project (lein/get-lein-project current-project-path)]
-  (make-repl-component app current-project-path lein-project)))
-([app path project]
+([project]
 	(let [state (atom {:tab-index -1
 										 :parent-tab-index -1
 										})
@@ -32,14 +27,14 @@
 																					:id 		:editor
 																					:class 	:repl)
       repl-history {:items (atom nil) :pos (atom 0) :last-end-pos (atom 0)}
-				repl-scroll-pane (RTextScrollPane. rsta false)
+			repl-scroll-pane (RTextScrollPane. rsta false)
 			repl-server (lein/project-repl-server project)
       repl-container (vertical-panel :items [repl-scroll-pane] :class :repl-container)]
   
   (put-meta! rsta :state state)
   (put-meta! rsta :repl-server repl-server)
 	(put-meta! rsta :repl-history repl-history)
-  (put-meta! rsta :project-path path)
+  (put-meta! rsta :project project)
 
   (config! repl-scroll-pane :background config/app-color)
   (config/apply-editor-prefs! config/default-editor-prefs rsta)

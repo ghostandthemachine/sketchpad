@@ -32,13 +32,6 @@
 (defn server-port [server]
   (-> server deref :ss .getLocalPort))
 
-(comment
-(require '[sketchpad.lein-manager :as lein])
-(require '[leiningen.core.project :as project])
-(require '[leiningen.core.eval :as eval])
-(require '[leiningen.core.user :as user])
-(require '[sketchpad.user :as u]))
-
 (def port-ids (atom 0))
 (def base-port-number 2000)
 (defn next-repl-port! [] (+ base-port-number (swap! port-ids inc)))
@@ -63,7 +56,7 @@
 ; nrepl lein has been written to work with.
 (defn project-repl-server [project]
 	(let [port (next-repl-port!)
-          project (update-in project [:dependencies] #(conj % '[org.clojure/tools.nrepl "0.2.0-beta8"]))]
+        project (update-in project [:dependencies] #(conj % '[org.clojure/tools.nrepl "0.2.0-beta8"]))]
 		(.start
 			(Thread.
 				(bound-fn []
@@ -72,5 +65,8 @@
                            `(require '[clojure.tools.nrepl.server :as nrepl.server])))))
 		{:port port}))
 
+
+;; TODO need to figure out how to get the outside repl server instance so that
+;; (clojure.tools.nrepl.server/stop-server server) can be called.
 (defn stop-lein-server [port]
   )
