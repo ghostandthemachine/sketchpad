@@ -13,7 +13,8 @@
            [java.io FileNotFoundException]
            [java.awt.Image]
            [java.awt.image.BufferedImage]
-           [javax.imageio.ImageIO]))
+           [javax.imageio ImageIO]
+           [java.io File]))
 
 (load-file "config/default.clj")
 
@@ -161,10 +162,9 @@ This method fires a property change event of type CLOSE_CURLY_BRACES_PROPERTY."
 (defn background-img
 "Sets this image as the background image. This method fires a property change event of type RTextAreaBase.BACKGROUND_IMAGE_PROPERTY.
 NOTE: the opaque property is set to true when the background is set to a color. When an image is used for the background (by this method), opaque is set to false. This is because we perform better when setOpaque is true, but if we use an image for the background when opaque is true, we get on-screen garbage when the user scrolls via the arrow keys. Thus we need setOpaque to be false in that case.
-
 You never have to change the opaque property yourself; it is always done for you."
 [buffer pref]
-  (.setBackgroundImage buffer pref))
+  (.setBackgroundImage buffer (ImageIO/read (File. pref))))
 
 (def editor-pref-handlers ^{:doc "default handlers for config settings found in config/default.clj"}
   {:whitespace-visible whitespace-visible 			           
@@ -237,6 +237,7 @@ You never have to change the opaque property yourself; it is always done for you
 
 (defn apply-editor-prefs! [prefs buffer]
   (doseq [[k pref] default-editor-prefs]
+    (println k pref)
     ((k editor-pref-handlers) buffer pref)))
 
 (defn apply-auto-completion-prefs! [prefs ac]
