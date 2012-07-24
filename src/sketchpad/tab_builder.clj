@@ -93,8 +93,9 @@
 (defn new-tab!
 ([]
 	(let [tabbed-panel (app-tabbed-panel)
-		  container (make-editor-component app)
-		  buffer (select container [:#editor])
+		  editor-component (make-editor-component app)
+		  container (:container editor-component)
+		  buffer (:text-area editor-component)
 		  tab-state (get-meta buffer :state)]
 		(tab/add-tab! "untitled" container)
 		(tab/show-tab! buffer)
@@ -107,10 +108,11 @@
 		(init-new-tab container buffer tab tab-label close-button tab-state tab-color)
 		(new-file! buffer true)
 		buffer)))
-([proj]
+([project]
 	(let [tabbed-panel (app-tabbed-panel)
-		  container (make-editor-component app)
-		  buffer (select container [:#editor])
+		  editor-component (make-editor-component app)
+		  container (:container editor-component)
+		  buffer (:text-area editor-component)
 		  tab-state (get-meta buffer :state)]
 		(tab/add-tab! "untitled" container)
 		(tab/show-tab! buffer)

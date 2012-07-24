@@ -21,7 +21,7 @@
   (:require [sketchpad.theme :as theme]
             [sketchpad.config :as config]
             [sketchpad.repl :as srepl]
-            [sketchpad.project :as project]
+            [sketchpad.project.project :as project]
             [sketchpad.menu.menu-bar :as menu]
             [sketchpad.editor-info :as info]
             [sketchpad.state :as sketchpad.state]))
@@ -107,6 +107,10 @@
     ;; global
     (add-visibility-shortcut app)))
 
+(defn init-projects []
+  ; (project/add-project "~/")
+  (doall (map #(project/add-project %) (load-project-set))))
+
 ;; startup
 (defn startup-sketchpad [app-atom]
   (let [app @app-atom]
@@ -116,8 +120,9 @@
           (println thread) (.printStackTrace exception))))
     (add-behaviors app-atom)
     (menu/make-menus app-atom)
-    ; (project/setup-non-project-map app-atom)
-    (doall (map #(project/add-project %) (load-project-set)))
+    
+    (init-projects)
+
     (let [tree (app :docs-tree)]
       (load-expanded-paths tree)
       (load-tree-selection tree))

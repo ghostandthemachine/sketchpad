@@ -3,6 +3,15 @@
 				[seesaw color meta])
 	(:require [sketchpad.state :as sketchpad.state]))
 
+(comment
+	"Sketchpad project format."
+	{:path project-root-path
+	 :lein-project lein-project
+	 :id uuid
+	 :theme theme
+	 :repls (atom #{})
+	 :buffers (atom nil)})
+
 (load-file "config/default.clj")
 
 (def app sketchpad.state/app)
@@ -36,11 +45,9 @@
 	  (swap! (@app :project-map) 
 	  		(fn [m] (assoc m project-path {:path project-path :id id :project-color (get-project-theme-color id) :active-repls (atom #{}) :active-buffers (atom nil)})))))
 
-(defn add-buffer-to-project! [proj title rsta] 
-	(let [projects-map @(@app :project-map)
-		  proj-map (projects-map proj)
-		  proj-buffers (proj-map :active-buffers)]   	
-	(swap! proj-buffers (fn [buffers] (assoc buffers title rsta)))))
+(defn add-buffer-to-project! [project title text-area] 
+	(let [projects-map @(@app :project-map)]
+		(swap! (get-in projects-map [project :active-buffers]) (fn [buffers] (assoc buffers title text-area)))))
 
 (defn remove-buffer-from-project! [proj title]
 	(let [projects-map @(@app :project-map)

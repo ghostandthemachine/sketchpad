@@ -22,7 +22,6 @@
 (defn- get-classpath []
    (sort (map (memfn getPath) 
               (seq (.getURLs (java.lang.ClassLoader/getSystemClassLoader))))))
-
     
 (defn get-last-cmd [buffer]
   (let [text (config buffer :text)]

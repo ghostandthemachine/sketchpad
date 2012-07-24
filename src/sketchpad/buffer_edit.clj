@@ -18,6 +18,6 @@
       (.insertString doc (.getLength doc) text nil)
       (catch java.lang.ClassCastException e ))))
 
-(defn append-text-update [rsta s]
-  (append-text rsta (str s))
-  (.setCaretPosition rsta (.getLastVisibleOffset rsta)))
+(defn append-text-update [buffer s]
+  (append-text buffer (str s))
+  (.setCaretPosition buffer (.getLastVisibleOffset buffer)))

@@ -1,17 +1,12 @@
 (ns sketchpad.menu.menu-bar
-  (:use [clojure.pprint]
-        [seesaw core keystroke meta])
+  (:use [seesaw core keystroke meta])
   (:require 
         [sketchpad.tab :as tab]
+        [sketchpad.project.project :as project]
         [sketchpad.menu.file :as sketchpad.menu.file]
         [sketchpad.menu.edit :as sketchpad.menu.edit]
-        [sketchpad.menu.view :as sketchpad.menu.view]
-        [sketchpad.repl-tab-builder :as repl]))
+        [sketchpad.menu.view :as sketchpad.menu.view]))
 
-(defn update-menu-state [tabbed-panel]
-"Based on the state of the tabbed panel, set active menu items"
-  
-)
 
 (defn make-help-menu
   []
@@ -27,8 +22,8 @@
                              :mnemonic "N" 
                              :key (keystroke "meta control R") 
                              :listen [:action (fn [_] 
-                                              (repl/new-repl-tab! (tab/current-buffer)))])
-                    (separator)]))
+                                              ; (repl/new-repl-tab! (tab/current-buffer))
+                                              )])]))
 
 (defn make-menus
   [app-atom]

@@ -14,4 +14,7 @@
 (defn repl-from-project! 
 "Create a new outside REPL process for a given Leiningen project."
 ([lein-project]
-	(let [new-repl-buffer (repl-builder/build-new-repl-tab! lein-project)])))
+	(let [new-repl-buffer (repl-builder/build-new-repl-tab! lein-project)
+				]
+
+		)))

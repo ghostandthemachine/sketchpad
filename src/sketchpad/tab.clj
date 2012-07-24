@@ -234,3 +234,4 @@
 (defn focus-buffer [buffer]
 	(when (not (nil? buffer))
 	  (.grabFocus buffer)))
+

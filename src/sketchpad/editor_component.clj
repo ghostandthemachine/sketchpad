@@ -23,28 +23,32 @@
                      :new false
                      :active nil
                      :index nil})
-        doc-text-area         	(rsyntax/text-area    ;:border nil
+        text-area         	(rsyntax/text-area    ;:border nil
                                                   :syntax         :clojure
                                                   :id             :editor
                                                   :class          [:editor-comp :syntax-editor])
-        doc-scroll-pane       	(sp/scroll-pane doc-text-area)
+        doc-scroll-pane       	(sp/scroll-pane text-area)
         doc-scroller-container  (vertical-panel :border nil
                                                 :items [doc-scroll-pane] :class :rsta-scroller)
         doc-scroller-gutter     (.getGutter doc-scroll-pane)
         doc-container  			    (vertical-panel :border nil
                                               :items [doc-scroller-container] :class :container)]
-    (put-meta! doc-text-area :state state)
-    (put-meta! doc-text-area :scroller doc-scroll-pane)
+    (put-meta! text-area :state state)
+    (put-meta! text-area :scroller doc-scroll-pane)
 
-    (editor-info-utils/attach-caret-handler doc-text-area app-atom)
-    (set-input-map! doc-text-area (default-input-map))
+    (editor-info-utils/attach-caret-handler text-area app-atom)
+    (set-input-map! text-area (default-input-map))
 
-    (config/apply-editor-prefs! config/default-editor-prefs doc-text-area)
+    (config/apply-editor-prefs! config/default-editor-prefs text-area)
     (config/apply-buffer-scroller-prefs! config/default-buffer-scroller-prefs doc-scroll-pane)
     (config/apply-gutter-prefs! config/default-gutter-prefs (.getGutter doc-scroll-pane))
     
-    (install-auto-completion doc-text-area)
+    (install-auto-completion text-area)
         
-    doc-container))
+    doc-container
+    {:text-area text-area
+     :container doc-container
+     :state state
+     :scroller doc-scroll-pane}))
 
 

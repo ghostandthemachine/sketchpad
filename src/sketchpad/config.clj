@@ -236,6 +236,12 @@ You never have to change the opaque property yourself; it is always done for you
    :parameter-assistance               (fn [ac pref] (.setParameterAssistanceEnabled ac pref))
    :trigger-key                        (fn [ac pref] (.setTriggerKey ac (key/keystroke pref)))})
 
+(def repl-response-timeout (default-repl-prefs :response-timeout))
+
+
+(def project-theme-colors default-project-style-prefs)
+
+
 (defn apply-buffer-scroller-prefs! [prefs scroller]
   (doseq [[k pref] default-buffer-scroller-prefs]
     ((k buffer-scroller-pref-handlers) scroller pref)))

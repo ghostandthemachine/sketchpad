@@ -54,5 +54,8 @@
 (def default-sketchpad-prefs
 	{:show-tabs? false})
 
+(def default-repl-prefs
+	{:response-timeout 1000})
+
 (def default-project-style-prefs
 	[(color :white) (color :orange) (color :green) (color :yellow) (color :blue) (color :red) (color :purple) (color :pink)])

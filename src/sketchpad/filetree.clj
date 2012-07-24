@@ -9,7 +9,7 @@
               [sketchpad.config :as config]
               [sketchpad.tab-builder :as tab-builder]
               [sketchpad.file :as file]
-              [sketchpad.project :as project]
+              [sketchpad.project.project :as project]
               [sketchpad.buffer-new :as buffer-new]
               [sketchpad.lein-manager :as lein-manager]
               [leiningen.core.project :as lein-project])
