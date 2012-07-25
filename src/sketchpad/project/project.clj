@@ -3,6 +3,7 @@
 				[seesaw color meta])
 	(:require [sketchpad.state :as state]
 		[sketchpad.project.theme :as theme]
+		[sketchpad.project.state :as project.state]
 		[leiningen.core.project :as lein-project])
 	(:import [java.io File]))
 
@@ -26,7 +27,6 @@
       :else            :non-existent)))
  
 (defn lein-project-file? []
-	(println (kind "project.clj"))
   (not= (kind "project.clj") :non-existent))
 
 (defn buffer
@@ -36,6 +36,9 @@
 	cur-idx (.getSelectedIndex tabbed-panel)
 	cur-buffer (.getComponentAt tabbed-panel cur-idx)]
 	cur-buffer))
+
+(defn get-project [project-path]
+	(get @project.state/project-map project-path))
 
 (defn current-project []
 	(let [cur-buffer (buffer)
