@@ -4,46 +4,11 @@
         [sketchpad.tree.utils :as tree.utils]
 			  [sketchpad.tab :as tab]
         [sketchpad.editor.buffer :as editor.buffer]
-        [sketchpad.file :as file]
+        [sketchpad.file.file :as file]
 			  [sketchpad.rsyntaxtextarea :as rsyntaxtextarea]
-        [sketchpad.state :as sketchpad.state]
+        [sketchpad.state :as state]
         [seesaw.core :as seesaw.core]
         [seesaw.keystroke :as keystroke]))
-
-(def app sketchpad.state/app)
-
-(defonce file-menu-item-state
-  { :new-file (atom true)
-    :save (atom false)
-    :save-as (atom false)
-    :open (atom true)})
-
-(defn new-file? [tabbed-panel activation-atom]
-  (reset! activation-atom true))
-
-(defn open? [tabbed-panel activation-atom]
-  (reset! activation-atom true))
-
-(defn save? [tabbed-panel activation-atom]
-  (if (tab/tabs? tabbed-panel)  
-    (do 
-      (let [rta (tab/current-buffer tabbed-panel)
-            clean (:clean (get-meta rta :state))]
-        (when clean
-          (reset! activation-atom false)
-          (reset! activation-atom true))))
-    (reset! activation-atom false)))
-
-(defn save-as? [tabbed-panel activation-atom]
-  (if (tab/tabs? tabbed-panel)  
-    (reset! activation-atom true)
-    (reset! activation-atom false)))
-
-(defonce file-menu-activation-fns
-  { :new-file new-file?
-    :save     save?
-    :save-as  save-as?
-    :open     open?})
 
 (defn lein-project-path [lein-project]
 "Returns the src path of a Leiningen project."
@@ -54,38 +19,41 @@
 [app-atom file-path]
   (editor.buffer/blank-clj-buffer!))
 
-(defn save-file! []
+(defn save-file!
+([] (save-file! (tab/current-buffer)))
+([buffer]
 "Save the current buffer."
-(let [buffer (tab/current-buffer)
-      new-file? (get-meta buffer :new-file)]
+(let [new-file? @(buffer :new-file?)]
   (if new-file?
     (do
       (when-let [new-file (file/save-file-as)]
         (let[new-file-title (.getName new-file)]  
-          (when (file/save-file buffer new-file)
-            (put-meta! buffer :file new-file)
-            (put-meta! buffer :new-file false)
+          (when (file/save-file! buffer new-file)
+            (assoc (:file buffer) new-file)
+            (assoc (:new-file? buffer) false)
             (tab/title-at! (tab/index-of-component buffer) new-file-title)
-            (tab/mark-current-tab-clean! (@app :editor-tabbed-panel))))))
+            (tab/mark-current-tab-clean! (@state/app :editor-tabbed-panel))))))
     (do
-      (when (file/save-file buffer (get-meta buffer :file))
-             (tab/mark-current-tab-clean! (@app :editor-tabbed-panel)))))))
+      (when (file/save-file! buffer)
+            (tab/mark-current-tab-clean!)))))))
 
-(defn save-file-as! []
+(defn save-file-as!
+([] (save-file-as! (tab/current-text-area (:editor-tabbed-panel @state/app))))
+([buffer]
 "Open the save as dialog for the current buffer."
-(when-let [rsta (tab/current-buffer (:editor-tabbed-panel @app))]
-  (let [file (get-meta rsta :file)
-       file-path (tree.utils/get-selected-file-path @app)]
+  (let [text-area (:text-area buffer)
+        file @(:file buffer)
+       file-path (tree.utils/get-selected-file-path @state/app)]
 	  (when-let[new-file (file/save-file-as)]
-      (when (get-meta rsta :new-file)
-        (put-meta! rsta :new-file false))
-    		(println new-file)))))
+      (when @(:new-file? buffer)
+        (assoc (:new-file? buffer) false))
+    		(println "Saved file as: " new-file)))))
 
 (defn make-file-menu-items [app-atom]
  {:new-file (seesaw.core/menu-item :text "New File" 
                               :mnemonic "N" 
                               :key (keystroke/keystroke "meta N") 
-                              :listen [:action (fn [_] (new-file! app-atom (tree.utils/get-selected-file-path @app-atom)))])
+                              :listen [:action (fn [_] (new-file!))])
   :save     (seesaw.core/menu-item :text "Save" 
                               :mnemonic "S" 
                               :key (keystroke/keystroke "meta S") 
@@ -98,7 +66,6 @@
 (defn make-file-menu
   [app-atom]
   (let [menu-items (make-file-menu-items app-atom)]
-    (menu-utils/set-menu-item-bindings file-menu-item-state menu-items)
     (seesaw.core/menu :text "File"
           :mnemonic "F"
           :items [

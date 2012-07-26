@@ -5,7 +5,7 @@
 		[sketchpad.layout-config :as layout-config]
 		[sketchpad.tab :as tab]
     [sketchpad.app :as app]
-    [sketchpad.file :as file]
+    [sketchpad.file.file :as file]
     [sketchpad.editor.buffer :as buffer-new]
     [sketchpad.option-windows :as option-windows]))
 
@@ -59,7 +59,7 @@
 "Close the current tab. If the current buffer is dirty this will ask if you are sure you want to close the tab."
 []
 (if (tab/tabs?)
-      (let [buffer (app/buffer)
+      (let [buffer (tab/current-buffer)
             current-tab-state (:state buffer)]
         (if (@current-tab-state :clean)
           (tab/close-tab) ;; nothing has changed, just close.
@@ -68,7 +68,7 @@
               (cond 
                 (= answer 0) ;; answered yes to save
                   (do
-                    (if (get-meta buffer :new-file) ;; is it a new buffer?
+                    (if @(:new-file? buffer) ;; is it a new buffer?
                       (do 
                         (buffer-new/save-new-buffer! buffer)
                         (tab/close-tab))

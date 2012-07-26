@@ -96,7 +96,6 @@
 (defn add-behaviors
   [app-atom]
   (let [app @app-atom]
-    (tab-change-handler app-atom)
     (setup-tree app-atom)
     ;; global
     (add-visibility-shortcut app)))

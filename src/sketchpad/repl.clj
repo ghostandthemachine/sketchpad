@@ -14,7 +14,7 @@
         [clooj.help :only (get-var-maps)]
         [clj-inspector.jars :only (get-entries-in-jar jar-files)]
         [seesaw core color border meta]
-        [sketchpad repl-dep-loader repl-communication editor-repl rsyntaxtextarea tab auto-complete app-cmd default-mode sketchpad-repl]
+        [sketchpad repl-dep-loader repl-communication editor-repl rsyntaxtextarea tab auto-complete default-mode sketchpad-repl]
         [clojure.tools.nrepl.server :only (start-server stop-server)])
   (:require [clojure.string :as string]
             [sketchpad.rsyntax :as rsyntax]

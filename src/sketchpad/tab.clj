@@ -8,7 +8,7 @@
 				[clojure pprint]
 				[seesaw meta core border])
 	(:require [clojure.string :as string]
-			[sketchpad.file :as file]
+			[sketchpad.file.file :as file]
 			[sketchpad.state :as state]))
 
 (defn chop
@@ -72,6 +72,18 @@
 ([buffer]
 	(title-at (index-of-component buffer))))
 
+(defn index-of [tabbed-panel name]
+	(.indexOfTab tabbed-panel name))
+
+(defn set-selected! [tabbed-panel index]
+	(.setSelectedIndex tabbed-panel index))
+
+(defn index-of-buffer [buffer]
+	(.indexOfComponent (@state/app :editor-tabbed-panel) (:container buffer)))
+
+(defn index-of-repl [repl]
+	(.indexOfComponent (@state/app :repl-tabbed-panel) (:container repl)))
+
 (defn insert-tab!
 ([title comp i] (insert-tab! (:editor-tabbed-panel @state/app) title comp i))
 ([tabbed-panel title comp i] (insert-tab! tabbed-panel title nil comp nil i))
@@ -85,12 +97,12 @@
 	(.addTab tabbed-panel title comp)))
 
 (defn remove-tab! 
-	([comp]
+	([buffer]
 		(remove-tab! 
 			(@state/app :editor-tabbed-panel) 
-			(index-of-component comp)))
-	([tabbed-panel index]
-	(.removeTabAt tabbed-panel index)))
+			buffer))
+	([tabbed-panel buffer]
+	(.removeTabAt tabbed-panel (index-of-buffer buffer))))
 
 (defn remove-repl-tab! [tabbed-panel index]
 	(let [rsta (select (component-at tabbed-panel index) [:#editor])]
@@ -119,19 +131,6 @@
 	(if (= -1 (.indexOfTab tabbed-panel file-name))
 		false
 		true))
-
-(defn index-of [tabbed-panel name]
-	(.indexOfTab tabbed-panel name))
-
-(defn set-selected! [tabbed-panel index]
-	(.setSelectedIndex tabbed-panel index))
-
-(defn index-of-buffer [buffer]
-	(.indexOfComponent (@state/app :editor-tabbed-panel) (:container buffer)))
-
-(defn index-of-repl [repl]
-	(.indexOfComponent (@state/app :repl-tabbed-panel) (:container repl)))
-
 
 (defn show-tab! 
 ([buffer]
@@ -169,69 +168,6 @@
 					:else 
 						(.setSelectedIndex tabbed-panel (- num-tabs 1)))))))
 
-(defn mark-tab-state! 
-[buffer kw]
-(let [file-state (:state buffer)]
-	(cond
-		(= kw :clean)
-			(do
-				(swap! file-state (fn [state] (assoc state :clean true))))
-		(= kw :dirty)
-			(do
-				(swap! file-state (fn [state] (assoc state :clean false)))))))
-
-(defn mark-tab-clean! 
-([buffer]
-	(mark-tab-state! buffer :clean)))
-
-(defn mark-current-tab-clean! [tabbed-panel]
-	(mark-tab-clean! tabbed-panel (.getSelectedIndex tabbed-panel)))
-
-(defn mark-tab-dirty!
-([buffer]
-(mark-tab-state! buffer :dirty)))
-
-(defn mark-current-tab-dirty! [tabbed-panel i]
-	(mark-tab-dirty! tabbed-panel (.getSelectedIndex tabbed-panel)))
-
-(defn save-tab-selections []
-	(let [current-index (current-tab-index)]
-	  (write-value-to-prefs sketchpad-prefs "current-files" @(@state/app :current-files))
-  	  (write-value-to-prefs sketchpad-prefs "current-tab" current-index)))
-
-(defn close-tab 
-([]
-	(if (tabs? (@state/app :editor-tabbed-panel))
-		(remove-tab! (@state/app :editor-tabbed-panel) (current-tab-index))))
-([tabbed-panel]
-	(if (tabs? tabbed-panel)
-		(remove-tab! tabbed-panel (current-tab-index tabbed-panel)))))
-
-(defn close-current-tab []
-	(remove-tab! (@state/app :editor-tabbed-panel) (current-tab-index)))
-
-(defn get-file-from-tab-index [app i]
-	(i @(app :current-files)))
-
-(defn get-tab-rsta [tabbed-panel i]
-	(select (component-at tabbed-panel i) [:#editor]))
-
-(defn focus-buffer [buffer]
-	(when (not (nil? buffer))
-	  (.grabFocus buffer)))
-
-(defn add-buffer [buffer]
-	(add-tab! @(:title buffer) (:container buffer)))
-
-(defn buffer-tab-component! [buffer tab]
-	(.setTabComponentAt (:editor-tabbed-panel @state/app) (index-of-buffer buffer) (:container tab)))
-
-(defn repl-tab-component! [repl-buffer tab]
-	(.setTabComponentAt (:repl-tabbed-panel @state/app) (index-of-repl repl-buffer) (:container tab)))
-
-(defn buffer-title!
-[buffer title]
-	(title-at! (index-of-buffer buffer) title))
 
 (defn current-tab-file-name 
 ([]
@@ -257,4 +193,71 @@
 ([]
 	(current-buffer (@state/app :editor-tabbed-panel)))
 ([tabbed-panel]
-	(get @(current-buffers) (current-buffer-uuid tabbed-panel))))
+  (if (tabs? tabbed-panel)
+  	(get @(current-buffers) (current-buffer-uuid tabbed-panel))
+  	"No buffers are currently open")))
+
+(defn mark-tab-state! 
+[buffer kw]
+(let [file-state (:state buffer)]
+	(cond
+		(= kw :clean)
+			(do
+				(swap! file-state assoc :clean true))
+		(= kw :dirty)
+			(do
+				(swap! file-state assoc :clean false)))))
+
+(defn mark-tab-clean! 
+([buffer]
+	(mark-tab-state! buffer :clean)))
+
+(defn mark-current-tab-clean! []
+	(mark-tab-clean! (current-buffer)))
+
+(defn mark-tab-dirty!
+([buffer]
+(mark-tab-state! buffer :dirty)))
+
+(defn mark-current-tab-dirty! [tabbed-panel i]
+	(mark-tab-dirty! tabbed-panel (.getSelectedIndex tabbed-panel)))
+
+(defn save-tab-selections []
+	(let [current-index (current-tab-index)]
+	  (write-value-to-prefs sketchpad-prefs "current-files" @(@state/app :current-files))
+  	  (write-value-to-prefs sketchpad-prefs "current-tab" current-index)))
+
+(defn close-tab 
+([]
+	(if (tabs? (@state/app :editor-tabbed-panel))
+		(remove-tab! (current-buffer))))
+([tabbed-panel]
+	(if (tabs? tabbed-panel)
+		(remove-tab! tabbed-panel (current-buffer)))))
+
+(defn close-current-tab []
+	(remove-tab! (@state/app :editor-tabbed-panel) (current-buffer)))
+
+(defn get-file-from-tab-index [app i]
+	(i @(app :current-files)))
+
+(defn get-tab-rsta [tabbed-panel i]
+	(select (component-at tabbed-panel i) [:#editor]))
+
+(defn focus-buffer [buffer]
+	(when (not (nil? buffer))
+	  (.grabFocus (:text-area buffer))))
+
+(defn add-buffer [buffer]
+	(add-tab! @(:title buffer) (:container buffer)))
+
+(defn buffer-tab-component! [buffer tab]
+	(.setTabComponentAt (:editor-tabbed-panel @state/app) (index-of-buffer buffer) (:container tab)))
+
+(defn repl-tab-component! [repl-buffer tab]
+	(.setTabComponentAt (:repl-tabbed-panel @state/app) (index-of-repl repl-buffer) (:container tab)))
+
+(defn buffer-title!
+[buffer title]
+	(title-at! (index-of-buffer buffer) title))
+

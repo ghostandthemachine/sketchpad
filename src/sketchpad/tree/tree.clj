@@ -8,7 +8,7 @@
             [clojure.java.io :as io]
             [clojure.string :as string]
             [sketchpad.config :as config]
-            [sketchpad.file :as file]
+            [sketchpad.file.file :as file]
             [sketchpad.project.project :as project]
             [sketchpad.project.state :as project-state]
             [sketchpad.editor.buffer :as editor.buffer]
@@ -141,7 +141,7 @@
                                     :class          :file-tree
                                     :background config/file-tree-bg)]
   (let [cell-renderer (cast DefaultTreeCellRenderer (.getCellRenderer docs-tree))]
-    (.setBackgroundNonSelectionColor cell-renderer config/file-tree-bg))
+  (.setBackgroundNonSelectionColor cell-renderer config/file-tree-bg))
   (project-state/add-projects-to-app app-atom)
   (swap! app-atom conj (gen-map
                           docs-tree
