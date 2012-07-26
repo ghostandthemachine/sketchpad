@@ -3,7 +3,7 @@
   (:require [sketchpad.rsyntaxtextarea :as rsyntaxtextarea]
             [sketchpad.rtextarea :as rtext]
             [sketchpad.tab :as tab]
-            [sketchpad.buffer :as buffer]
+            [sketchpad.buffer.action :as buffer.action]
             [sketchpad.menu.menu-utils :as menu-utils]))
 
 (defonce edit-menu-item-state 
@@ -17,33 +17,33 @@
   {:undo  (menu-item :text "Undo" 
                      :mnemonic "U" 
                      :key (keystroke "meta Z")
-                     :listen [:action (fn [_] (buffer/undo))])
+                     :listen [:action (fn [_] (buffer.action/undo))])
   :redo   (menu-item :text "Redo" 
                      :mnemonic "Y"
                      :key (keystroke "meta shift Z") 
-                     :listen [:action (fn [_] (buffer/redo))])
+                     :listen [:action (fn [_] (buffer.action/redo))])
   :copy   (menu-item :text "Copy" 
                      :mnemonic "C" 
                      :key (keystroke "meta C") 
-                     :listen [:action (fn [_] (buffer/copy))])
+                     :listen [:action (fn [_] (buffer.action/copy))])
   :paste  (menu-item :text "Paste" 
                      :mnemonic "P" 
                      :key (keystroke "meta V") 
-                     :listen [:action (fn [_] (buffer/paste))])
+                     :listen [:action (fn [_] (buffer.action/paste))])
   :cut    (menu-item :text "Cut" 
                      :mnemonic "X" 
                      :key (keystroke "meta X") 
-                     :listen [:action (fn [_] (buffer/cut))])})
+                     :listen [:action (fn [_] (buffer.action/cut))])})
 
 (def edit-menu-items
-  [[:undo "Undo" "meta Z" buffer/undo]
-   [:redo "Redo" "meta shift Z" buffer/redo]
-   [:copy "Copy" "meta C" buffer/copy]
-   [:copy "Paste" "meta V" buffer/paste]
-   [:copy "Cut" "meta X" buffer/cut]])
+  [[:undo "Undo" "meta Z" buffer.action/undo]
+   [:redo "Redo" "meta shift Z" buffer.action/redo]
+   [:copy "Copy" "meta C" buffer.action/copy]
+   [:copy "Paste" "meta V" buffer.action/paste]
+   [:copy "Cut" "meta X" buffer.action/cut]])
 
-(defn make-edit-menu-items []
-  (menu-utils/make-menu edit-menu-items))
+; (defn make-edit-menu-items []
+;   (menu-utils/make-menu edit-menu-items))
 
 (defn make-edit-menu
   []

@@ -6,7 +6,7 @@
 		[sketchpad.tab :as tab]
     [sketchpad.app :as app]
     [sketchpad.file :as file]
-    [sketchpad.buffer-new :as buffer-new]
+    [sketchpad.editor.buffer :as buffer-new]
     [sketchpad.option-windows :as option-windows]))
 
 (defonce edit-menu-item-state 
@@ -60,7 +60,7 @@
 []
 (if (tab/tabs?)
       (let [buffer (app/buffer)
-            current-tab-state (get-meta buffer :state)]
+            current-tab-state (:state buffer)]
         (if (@current-tab-state :clean)
           (tab/close-tab) ;; nothing has changed, just close.
           (do 

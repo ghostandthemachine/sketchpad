@@ -14,12 +14,12 @@
 	(doseq [[k v] state-map] 
     	((k fns) tabbed-panel v)))
 
-(defn make-menu [items]
-	(reduce
-		(fn [menu-map item]
-			(let [[ikey iname istroke ihandler] item
-						mitem (seesaw/menu-item :text iname 
-												:key (keystroke/keystroke istroke)
-												:listen [:action ihandler])]))
-		{}
-		items))
+; (defn make-menu [items]
+; 	(reduce
+; 		(fn [menu-map item]
+; 			(let [[ikey iname istroke ihandler] item
+; 						mitem (seesaw/menu-item :text iname 
+; 												:key (keystroke/keystroke istroke)
+; 												:listen [:action ihandler])]))
+; 		{}
+; 		items))

@@ -37,8 +37,11 @@
 	cur-buffer (.getComponentAt tabbed-panel cur-idx)]
 	cur-buffer))
 
+(defn projects []
+	@project.state/project-map)
+
 (defn get-project [project-path]
-	(get @project.state/project-map project-path))
+	(get (projects) project-path))
 
 (defn current-project []
 	(let [cur-buffer (buffer)

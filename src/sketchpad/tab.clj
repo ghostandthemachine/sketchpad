@@ -4,15 +4,12 @@
     (java.io File StringReader BufferedWriter OutputStreamWriter FileOutputStream)
 		(javax.swing JButton JOptionPane JWindow ImageIcon)
 		(javax.swing.event DocumentListener))
-	(:use [sketchpad option-windows file-manager button-tab prefs]
+	(:use [sketchpad option-windows file-manager prefs]
 				[clojure pprint]
 				[seesaw meta core border])
 	(:require [clojure.string :as string]
 			[sketchpad.file :as file]
-			[sketchpad.state :as sketchpad.state])
-	)
-
-(def tab-app sketchpad.state/app)
+			[sketchpad.state :as state]))
 
 (defn chop
   "Removes the last character of string."
@@ -21,7 +18,7 @@
 
 (defn tab-count 
 ([]
-	(tab-count (@tab-app :editor-tabbed-panel)))
+	(tab-count (@state/app :editor-tabbed-panel)))
 ([tabbed-panel]
 	(let [tabbed-panel tabbed-panel]
 		(.getTabCount tabbed-panel))))
@@ -29,11 +26,11 @@
 (defn current-index 
 "Index of current tab."
 ([]
-	(.getSelectedIndex (@tab-app :editor-tabbed-panel))))
+	(.getSelectedIndex (@state/app :editor-tabbed-panel))))
 
 (defn tabs? 
 ([]
-	(tabs? (@tab-app :editor-tabbed-panel)))
+	(tabs? (@state/app :editor-tabbed-panel)))
 ([tabbed-panel]
 	(> (tab-count tabbed-panel) 0)))
 
@@ -47,21 +44,21 @@
 	(.setComponentAt tabbed-panel index comp))
 
 (defn title-at
-([] (title-at (@tab-app :editor-tabbed-panel) (current-index)))
+([] (title-at (@state/app :editor-tabbed-panel) (current-index)))
 ([index]
-	(title-at (@tab-app :editor-tabbed-panel) index))
+	(title-at (@state/app :editor-tabbed-panel) index))
 ([tabbed-panel index]
 	(.getTitleAt tabbed-panel index)))
 
 (defn title-at!
 ([index s]
-	(title-at! (@tab-app :editor-tabbed-panel) index s))
+	(title-at! (@state/app :editor-tabbed-panel) index s))
 ([tabbed-panel index s]
 	(.setTitleAt tabbed-panel index s)))
 
 (defn index-of-component 
 	([comp]
-		(index-of-component (@tab-app :editor-tabbed-panel) (get-meta comp :parent)))
+		(index-of-component (@state/app :editor-tabbed-panel) (get-meta comp :parent)))
 	([tabbed-panel comp]
 	(.indexOfComponent tabbed-panel comp)))
 
@@ -75,19 +72,22 @@
 ([buffer]
 	(title-at (index-of-component buffer))))
 
-(defn insert-tab! [tabbed-panel title icon comp tip i]
-	(.insertTab tabbed-panel title icon comp tip i))
+(defn insert-tab!
+([title comp i] (insert-tab! (:editor-tabbed-panel @state/app) title comp i))
+([tabbed-panel title comp i] (insert-tab! tabbed-panel title nil comp nil i))
+([tabbed-panel title icon comp tip i]
+	(.insertTab tabbed-panel title icon comp tip i)))
 
 (defn add-tab! 
 ([title comp]
-	(add-tab! (@tab-app :editor-tabbed-panel) title comp))
+	(add-tab! (@state/app :editor-tabbed-panel) title comp))
 ([tabbed-panel title comp]
 	(.addTab tabbed-panel title comp)))
 
 (defn remove-tab! 
 	([comp]
 		(remove-tab! 
-			(@tab-app :editor-tabbed-panel) 
+			(@state/app :editor-tabbed-panel) 
 			(index-of-component comp)))
 	([tabbed-panel index]
 	(.removeTabAt tabbed-panel index)))
@@ -99,29 +99,21 @@
 	(.removeTabAt tabbed-panel index)))
 
 (defn current-tab-index 
-([] (current-tab-index (@tab-app :editor-tabbed-panel)))
+([] (current-tab-index (@state/app :editor-tabbed-panel)))
 ([tabbed-panel]
 	(.getSelectedIndex tabbed-panel)))
 
 (defn current-tab-index 
 ([]
-	(.getSelectedIndex (@tab-app :editor-tabbed-panel)))
+	(.getSelectedIndex (@state/app :editor-tabbed-panel)))
 ([tabbed-panel]
 	(.getSelectedIndex tabbed-panel)))
 
 (defn current-tab 
 ([]
-	(current-tab (@tab-app :editor-tabbed-panel)))
+	(current-tab (@state/app :editor-tabbed-panel)))
 ([tabbed-panel]
 	(component-at tabbed-panel (current-tab-index tabbed-panel))))
-
-(defn current-buffer 
-([]
-	(current-buffer (@tab-app :editor-tabbed-panel)))
-([tabbed-panel]
-	(try 
-		(select (current-tab tabbed-panel) [:#editor])
-		(catch Exception e))))
 
 (defn open? [tabbed-panel file-name]
 	(if (= -1 (.indexOfTab tabbed-panel file-name))
@@ -134,14 +126,25 @@
 (defn set-selected! [tabbed-panel index]
 	(.setSelectedIndex tabbed-panel index))
 
+(defn index-of-buffer [buffer]
+	(.indexOfComponent (@state/app :editor-tabbed-panel) (:container buffer)))
+
+(defn index-of-repl [repl]
+	(.indexOfComponent (@state/app :repl-tabbed-panel) (:container repl)))
+
+
 (defn show-tab! 
 ([buffer]
-	(set-selected! (@tab-app :editor-tabbed-panel) (index-of-component buffer)))
-([tabbed-panel index]
-	(set-selected! tabbed-panel index)))
+	(set-selected! (@state/app :editor-tabbed-panel) (index-of-buffer buffer)))
+([tabbed-panel buffer]
+	(set-selected! tabbed-panel (index-of-component tabbed-panel (:container buffer)))))
+
+(defn show-buffer
+[buffer]
+	(set-selected! (@state/app :editor-tabbed-panel) (index-of-component (@state/app :editor-tabbed-panel) (:container buffer))))
 
 (defn next-tab []
-	(let [tabbed-panel (@tab-app :editor-tabbed-panel)]
+	(let [tabbed-panel (@state/app :editor-tabbed-panel)]
 		(when (tabs? tabbed-panel)
 			(let [current-index (.getSelectedIndex tabbed-panel)
 						num-tabs (.getTabCount tabbed-panel)]
@@ -154,7 +157,7 @@
 						(.setSelectedIndex tabbed-panel 0))))))
 
 (defn previous-tab []
-	(let [tabbed-panel (@tab-app :editor-tabbed-panel)]
+	(let [tabbed-panel (@state/app :editor-tabbed-panel)]
 		(when (tabs? tabbed-panel)
 			(let [current-index (.getSelectedIndex tabbed-panel)
 						num-tabs (.getTabCount tabbed-panel)]
@@ -167,63 +170,45 @@
 						(.setSelectedIndex tabbed-panel (- num-tabs 1)))))))
 
 (defn mark-tab-state! 
-([tabbed-panel i kw]
-	(let [rsta (select (component-at tabbed-panel i) [:#editor])
-				file-state (get-meta rsta :state)]
-		(cond
-			(= kw :clean)
-				(do
-					(swap! file-state (fn [state] (assoc state :clean true)))
-					(.repaint tabbed-panel))
-			(= kw :dirty)
-				(do
-					(swap! file-state (fn [state] (assoc state :clean false)))
-					(.repaint tabbed-panel)))))
-([buffer kw]
-(let [file-state (get-meta buffer :state)]
+[buffer kw]
+(let [file-state (:state buffer)]
 	(cond
 		(= kw :clean)
 			(do
-				(swap! file-state (fn [state] (assoc state :clean true)))
-				(.repaint (get-meta buffer :tab)))
+				(swap! file-state (fn [state] (assoc state :clean true))))
 		(= kw :dirty)
 			(do
-				(swap! file-state (fn [state] (assoc state :clean false)))
-				(.repaint (get-meta buffer :tab)))))))
+				(swap! file-state (fn [state] (assoc state :clean false)))))))
 
 (defn mark-tab-clean! 
 ([buffer]
-	(mark-tab-state! buffer :clean))
-([tabbed-panel i] 
-	(mark-tab-state! tabbed-panel i :clean)))
+	(mark-tab-state! buffer :clean)))
 
 (defn mark-current-tab-clean! [tabbed-panel]
 	(mark-tab-clean! tabbed-panel (.getSelectedIndex tabbed-panel)))
 
 (defn mark-tab-dirty!
 ([buffer]
-(mark-tab-state! buffer :dirty))
-([tabbed-panel i] 
-(mark-tab-state! tabbed-panel i :dirty)))
+(mark-tab-state! buffer :dirty)))
 
 (defn mark-current-tab-dirty! [tabbed-panel i]
 	(mark-tab-dirty! tabbed-panel (.getSelectedIndex tabbed-panel)))
 
 (defn save-tab-selections []
 	(let [current-index (current-tab-index)]
-	  (write-value-to-prefs sketchpad-prefs "current-files" @(@tab-app :current-files))
+	  (write-value-to-prefs sketchpad-prefs "current-files" @(@state/app :current-files))
   	  (write-value-to-prefs sketchpad-prefs "current-tab" current-index)))
 
 (defn close-tab 
 ([]
-	(if (tabs? (@tab-app :editor-tabbed-panel))
-		(remove-tab! (@tab-app :editor-tabbed-panel) (current-tab-index))))
+	(if (tabs? (@state/app :editor-tabbed-panel))
+		(remove-tab! (@state/app :editor-tabbed-panel) (current-tab-index))))
 ([tabbed-panel]
 	(if (tabs? tabbed-panel)
 		(remove-tab! tabbed-panel (current-tab-index tabbed-panel)))))
 
 (defn close-current-tab []
-	(remove-tab! (@tab-app :editor-tabbed-panel) (current-tab-index)))
+	(remove-tab! (@state/app :editor-tabbed-panel) (current-tab-index)))
 
 (defn get-file-from-tab-index [app i]
 	(i @(app :current-files)))
@@ -235,3 +220,41 @@
 	(when (not (nil? buffer))
 	  (.grabFocus buffer)))
 
+(defn add-buffer [buffer]
+	(add-tab! @(:title buffer) (:container buffer)))
+
+(defn buffer-tab-component! [buffer tab]
+	(.setTabComponentAt (:editor-tabbed-panel @state/app) (index-of-buffer buffer) (:container tab)))
+
+(defn repl-tab-component! [repl-buffer tab]
+	(.setTabComponentAt (:repl-tabbed-panel @state/app) (index-of-repl repl-buffer) (:container tab)))
+
+(defn buffer-title!
+[buffer title]
+	(title-at! (index-of-buffer buffer) title))
+
+(defn current-tab-file-name 
+([]
+	(current-tab-file-name (:editor-tabbed-panel @state/app)))
+([tabbed-panel]
+	(.getAbsolutePath (get-meta (select (current-tab tabbed-panel) [:#editor]) :file))))
+
+(defn current-text-area 
+([]
+	(current-text-area (@state/app :editor-tabbed-panel)))
+([tabbed-panel]
+	(select (current-tab tabbed-panel) [:#editor])))
+
+(defn current-buffers []
+	(get @state/app :current-buffers))
+
+(defn current-buffer-uuid
+([] (current-buffer-uuid (@state/app :editor-tabbed-panel)))
+([tabbed-panel]
+	(get-meta (current-text-area tabbed-panel) :uuid)))
+
+(defn current-buffer 
+([]
+	(current-buffer (@state/app :editor-tabbed-panel)))
+([tabbed-panel]
+	(get @(current-buffers) (current-buffer-uuid tabbed-panel))))

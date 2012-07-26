@@ -1,24 +1,27 @@
 (ns sketchpad.user
 	(:refer-clojure :exclude [find replace])
-	(:use [sketchpad buffer-info tree]
+	(:use [sketchpad tab tree]
 				[seesaw meta dev core]
 			  [clojure.repl]
-			  [sketchpad.config])
+			  [sketchpad.config]
+			  [sketchpad.buffer.action])
 	(:require [sketchpad.tab :as tab]
 					  [sketchpad.rsyntaxtextarea :as rsta]
 					  [sketchpad.core :as core]
-					  [sketchpad.buffer-search :as buffer-search]
+					  [sketchpad.buffer.search :as search]
 					  [leiningen.core.project :as project]
 					  [clojure.pprint :as pprint]
 					  [clojure.stacktrace :as stack-trace]
 					  [seesaw.dev :as seesaw.dev]
 					  [sketchpad.repl-communication :as repl-communication])
-	(:import (org.fife.ui.rsyntaxtextarea RSyntaxTextAreaEditorKit)
+	(:import 	(org.fife.ui.rsyntaxtextarea RSyntaxTextAreaEditorKit)
 			 		(org.fife.ui.rtextarea RTextAreaEditorKit)
 			 		(org.fife.ui.rsyntaxtextarea.RSyntaxTextArea)
 			 		(java.awt.event ActionEvent)))
 
 (def app sketchpad.state/app)
+
+(def projects (:project-map @app))
 
 (defn pp [& args]
 	(pprint/pprint args))
@@ -28,41 +31,26 @@
 
 (defn st []
 	(stack-trace))
-	
-(defn action-event [c]
-	(ActionEvent. c 0 "buffer-info-action-event"))
-
-(defn perform-action [action e rta]
-	(repl-communication/awtevent 
-		(.actionPerformedImpl action e rta)))
 
 (defn preflect [obj]
 	(clojure.pprint/pprint (clojure.reflect/reflect obj)))
 
-(defn current-repl-rta [] (tab/current-buffer (:repl-tabbed-panel @app)))
+(defn current-repl-rta [] (current-text-area (:repl-tabbed-panel @app)))
 
 (defn current-tree-path []
 	)
 
-(defn current-buffer [] 
-"return the current text-area component form the editor tabbed panel"
-	(try 
-		(when-let [cur-buf (tab/current-buffer (:editor-tabbed-panel @app))]
-			cur-buf)
-		(catch java.lang.IllegalArgumentException e
-			(println "no buffer open editor"))))
-
 (defn current-text []
 "return the text from the current buffer component"
 	(try
-		(.getText (current-buffer))
+		(.getText (current-text-area))
 		(catch java.lang.IllegalArgumentException e
 			(println "no buffer open editor"))))
 			
 (defn current-project []
 "return the current Leiningen project being edited in the editor component"
 	(try
-		(when-let [cur-project (get-meta (current-buffer) :project)]
+		(when-let [cur-project (get-meta (current-text-area) :project)]
 			cur-project)
 		(catch java.lang.IllegalArgumentException e
 			(println "no project open in editor buffers"))))
@@ -80,292 +68,6 @@
 	(catch java.lang.IllegalArgumentException e
 		(println "no project open in buffer"))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; RTextArea Actions
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn undo
-"undo last recordable action"
-([] (undo (current-buffer)))
-([rta]
-	(perform-action 
-		(org.fife.ui.rtextarea.RTextAreaEditorKit$UndoAction. )
-		(action-event rta) 
-		rta)))
-		
-(defn redo
-"redo last recordable action"
-([] (redo (current-buffer)))
-([rta]
-	(perform-action 
-		(org.fife.ui.rtextarea.RTextAreaEditorKit$RedoAction. )
-		(action-event rta) 
-		rta)))
-
-(defn u 
-"undo last recordable action"
-([]
-	(undo))
-([rta]
-	(undo rta)))
-
-(defn r
-"redo last recordable action"
-([]
-	(redo))
-([rta]
-	(redo rta)))
-
-(defn beep 
-"trigger system beep tone"
-([] (beep (current-buffer)))
-([rta]
-	(perform-action 
-		(org.fife.ui.rtextarea.RTextAreaEditorKit$BeepAction.)
-		(action-event rta) 
-		rta)))
-
-(defn goto-next-word
-"move caret to next word"
-([] (goto-next-word (current-buffer)))
-([rta]
-	(perform-action 
-		(org.fife.ui.rtextarea.RTextAreaEditorKit$NextWordAction. "goto-next-word" false)
-		(action-event rta) 
-		rta)))
-
-(defn select-next-word 
-"select to next word"
-([] (select-next-word (current-buffer)))
-([rta]
-	(perform-action 
-		(org.fife.ui.rtextarea.RTextAreaEditorKit$NextWordAction. "select-next-word" true)
-		(action-event rta) 
-		rta)))
-
-(defn goto-beginning 
-"move caret to begining of the current buffer"
-([] (goto-beginning (current-buffer)))
-([rta]
-(perform-action 
-	(org.fife.ui.rtextarea.RTextAreaEditorKit$BeginAction. "goto-beginning" true)
-	(action-event rta) 
-	rta)))
-
-(defn goto-line-beginning
-"select to begining of the current line"
-([] (goto-line-beginning (current-buffer)))
-([rta]
-(perform-action 
-	(org.fife.ui.rtextarea.RTextAreaEditorKit$BeginLineAction. "goto-line-beginning" false)
-	(action-event rta) 
-	rta)))
-
-(defn goto-line-beginning
-"move caret to begining of the current line"
-([] (goto-line-beginning (current-buffer)))
-([rta]
-(perform-action 
-	(org.fife.ui.rtextarea.RTextAreaEditorKit$BeginLineAction. "goto-line-beginning" false)
-	(action-event rta) 
-	rta)))
-
-(defn goto-line-end
-"move caret to ending of the current line"
-([] (goto-line-end (current-buffer)))
-([rta]
-(perform-action 
-	(org.fife.ui.rtextarea.RTextAreaEditorKit$EndAction. "goto-line-end" false)
-	(action-event rta) 
-	rta)))
-
-(defn select-to-line-end
-"select from current caret position to the end of the current line"
-([] (select-to-line-end (current-buffer)))
-([rta]
-(perform-action 
-	(org.fife.ui.rtextarea.RTextAreaEditorKit$EndAction. "select-to-line-beginning" true)
-	(action-event rta) 
-	rta)))
-
-(defn select-to-line-beginning
-"select from current caret position to the end of the current line"
-([] (select-to-line-beginning (current-buffer)))
-([rta]
-(perform-action 
-	(org.fife.ui.rtextarea.RTextAreaEditorKit$BeginLineAction. "select-to-line-beginning" true)
-	(action-event rta) 
-	rta)))
-
-(defn delete-line
-"delete the current line"
-([] (delete-line (current-buffer)))
-([rta]
-(perform-action 
-	(org.fife.ui.rtextarea.RTextAreaEditorKit$DeleteLineAction. )
-	(action-event rta) 
-	rta)))
-
-(defn delete-next-char
-"delete the next char after the caret"
-([] (delete-next-char (current-buffer)))
-([rta]
-(perform-action 
-	(org.fife.ui.rtextarea.RTextAreaEditorKit$DeleteNextCharAction. )
-	(action-event rta) 
-	rta)))
-
-(defn delete-prev-char
-"delete the previous char before the caret"
-([] (delete-prev-char (current-buffer)))
-([rta]
-(perform-action 
-	(org.fife.ui.rtextarea.RTextAreaEditorKit$DeletePrevCharAction. )
-	(action-event rta) 
-	rta)))
-
-(defn delete-prev-word-char
-"delete the previous word before the caret"
-([] (delete-prev-word-char (current-buffer)))
-([rta]
-(perform-action 
-	(org.fife.ui.rtextarea.RTextAreaEditorKit$DeletePrevWordAction. )
-	(action-event rta) 
-	rta)))
-
-(defn delete-rest-of-line
-"delete the rest of the line after the caret"
-([] (delete-rest-of-line (current-buffer)))
-([rta]
-(perform-action 
-	(org.fife.ui.rtextarea.RTextAreaEditorKit$DeleteRestOfLineAction. )
-	(action-event rta) 
-	rta)))
-
-(defn start-macro!
-"Start recording a macro. Any recordable text actions called between start-macro! and end-macro! will be included."
-([] (start-macro! (current-buffer)))
-([rta] 
-(perform-action 
-	(org.fife.ui.rtextarea.RTextAreaEditorKit$BeginRecordingMacroAction. )
-	(action-event rta) 
-	rta))
-([rta name-str desc]
-(perform-action 
-	(org.fife.ui.rtextarea.RTextAreaEditorKit$BeginRecordingMacroAction. )
-	(action-event rta) 
-	rta))
-([rta name-str desc accelerator]
-(perform-action 
-	(org.fife.ui.rtextarea.RTextAreaEditorKit$BeginRecordingMacroAction. name-str nil desc nil accelerator)
-	(action-event rta) 
-	rta)))
-
-(defn end-macro!
-"End recording a macro. Any recordable text actions called between start-macro! and end-macro! will be included."
-([] (end-macro! (current-buffer)))
-([rta] 
-(perform-action 
-	(org.fife.ui.rtextarea.RTextAreaEditorKit$EndRecordingMacroAction. )
-	(action-event rta) 
-	rta))
-([rta name-str desc]
-(perform-action 
-	(org.fife.ui.rtextarea.RTextAreaEditorKit$EndRecordingMacroAction. )
-	(action-event rta) 
-	rta))
-([rta name-str desc  accelerator]
-(perform-action 
-	(org.fife.ui.rtextarea.RTextAreaEditorKit$EndRecordingMacroAction. name-str nil desc nil accelerator)
-	(action-event rta) 
-	rta)))
-
-(defn play-macro
-"Playback last macro"
-([] (play-macro (current-buffer)))
-([rta] 
-(perform-action 
-	(org.fife.ui.rtextarea.RTextAreaEditorKit$PlaybackLastMacroAction. )
-	(action-event rta) 
-	rta))
-([rta name-str desc]
-(perform-action 
-	(org.fife.ui.rtextarea.RTextAreaEditorKit$PlaybackLastMacroAction. )
-	(action-event rta) 
-	rta))
-([rta name-str desc  accelerator]
-(perform-action 
-	(org.fife.ui.rtextarea.RTextAreaEditorKit$PlaybackLastMacroAction. name-str nil desc nil accelerator)
-	(action-event rta) 
-	rta)))
-
-
-(defn copy
-"copy the current selection"
-([] (copy (current-buffer)))
-([rta]
-(perform-action 
-	(org.fife.ui.rtextarea.RTextAreaEditorKit$CopyAction. )
-	(action-event rta) 
-	rta)))
-
-(defn cut
-"cut the current selection"
-([] (cut (current-buffer)))
-([rta]
-(perform-action 
-	(org.fife.ui.rtextarea.RTextAreaEditorKit$CutAction. )
-	(action-event rta) 
-	rta)))
-
-; (defn increase-font-size
-; ([] (cut (current-buffer)))
-; ([rta]
-; (perform-action
-; 	(org.fife.ui.rtextarea.RTextAreaEditorKit$IncreaseFontSizeAction. )
-; 	(action-event rta) 
-; 	rta)))
-
-; (defn decrease-font-size
-; ([] (cut (current-buffer)))
-; ([rta]
-; (perform-action
-; 	(org.fife.ui.rtextarea.RTextAreaEditorKit$DecreaseFontSizeAction. )
-; 	(action-event rta) 
-; 	rta)))
-
-(defn previous-occurence
-([] (previous-occurence (current-buffer)))
-([rta]
-(perform-action
-	(org.fife.ui.rtextarea.RTextAreaEditorKit$PreviousOccurrenceAction. "previous-occurence")
-	(action-event rta) 
-	rta)))
-	
-(defn next-occurence
-([] (next-occurence (current-buffer)))
-([rta]
-(perform-action
-	(org.fife.ui.rtextarea.RTextAreaEditorKit$NextOccurrenceAction. "next-occurence")
-	(action-event rta) 
-	rta)))
-
-(defn macro 
-([f] (macro f (current-buffer)))
-([f rta]
-	(start-macro! rta)
-	(f rta)
-	(end-macro! rta))
-([f rta file-name] (macro f rta file-name nil))
-([f rta file-name ks]
-	(start-macro! rta nil nil ks)
-	(f rta)
-	(end-macro! rta)
-	(let[m (.getCurrentMacro rta)]
-		(.saveToFile m file-name)
-		;; log created new macro file
-	)))
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Cursor and mark position
@@ -374,14 +76,14 @@
 (defn cursor-point
   "Return the current position of the cursor as a character count."
 ([]
-  (cursor-point (current-buffer)))
+  (cursor-point (current-text-area)))
 ([buffer]
   (buffer-cursor-point buffer)))
 
 (defn cursor-pos
   "Returns the position of the cursor [<column> <line>]."
 ([]
-  (buffer-cursor-pos (current-buffer)))
+  (buffer-cursor-pos (current-text-area)))
 ([buffer]
   (buffer-cursor-pos buffer)))
 
@@ -392,14 +94,14 @@
 (defn current-col
   "Return the column number of the cursor in the current buffer."
 ([]
-  (current-col (current-buffer)))
+  (current-col (current-text-area)))
 ([buffer]
   (first (cursor-pos buffer))))
 
 (defn current-line
   "Return the line number of the cursor in the current buffer."
 ([]
-  (current-line (current-buffer)))
+  (current-line (current-text-area)))
 ([buffer]
   (second (cursor-pos buffer))))
   
@@ -409,15 +111,15 @@
 
 (defn goto-next-char
   []
-  (buffer-goto-next-char (current-buffer)))
+  (buffer-goto-next-char (current-text-area)))
 
 (defn goto-prev-char
   []
-  (buffer-goto-prev-char (current-buffer)))
+  (buffer-goto-prev-char (current-text-area)))
 
 (defn goto-nth-char
   [n]
-  (buffer-goto-prev-char (current-buffer) n))
+  (buffer-goto-prev-char (current-text-area) n))
 
 (defn goto-prev-word
   [])
@@ -549,26 +251,26 @@
 ;; Shorthand. mostly for dev
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn f [s] (sketchpad.buffer-search/search (current-buffer) s))
-(defn fr [s r] (sketchpad.buffer-search/search-replace (current-buffer) s r))
-(defn fra [s r] (sketchpad.buffer-search/search-replace-all (current-buffer) s r))
+(defn f [s] (search/search (current-text-area) s))
+(defn fr [s r] (search/search-replace (current-text-area) s r))
+(defn fra [s r] (search/search-replace-all (current-text-area) s r))
 
 (defn mark-occurrences
 ([b]
-  (mark-occurrences (current-buffer) b))
+  (mark-occurrences (current-text-area) b))
 ([buffer b]
   (.clearMarkAllHighlights buffer)
   (.setMarkOccurrences buffer b)))
 
 (defn mark-all
 ([str-to-mark]
-  (mark-all (current-buffer) str-to-mark))
+  (mark-all (current-text-area) str-to-mark))
 ([buffer str-to-mark]
   (.markAll buffer str-to-mark false false false)))
 
 (defn clear-marks
 ([]
-  (clear-marks (current-buffer)))
+  (clear-marks (current-text-area)))
 ([buffer]
   (.clearMarkAllHighlights buffer)
   (.repaint buffer)))
@@ -597,13 +299,13 @@
 
 (defn show-bookmarks! 
 "Show the bookmark panel."
-([] (show-bookmarks! (current-buffer)))
+([] (show-bookmarks! (current-text-area)))
 ([buffer]
   (.setBookmarkingEnabled (gutter buffer) true)))
 
 (defn hide-bookmarks!
 "Hide the bookmark panel."
-([] (hide-bookmarks! (current-buffer)))
+([] (hide-bookmarks! (current-text-area)))
 ([buffer]
   (.setBookmarkingEnabled (gutter buffer) false)))
 
@@ -618,7 +320,7 @@
   (bookmark-line buffer (current-line)))
 
 (defmethod foo java.lang.Long [line]
-  (bookmark-line (current-buffer) line))
+  (bookmark-line (current-text-area) line))
 
 (defmethod foo clojure.lang.PersistentVector [[buffer line]] 
   (bookmark-line buffer line))

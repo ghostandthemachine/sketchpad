@@ -17,22 +17,17 @@
         [clooj.navigate]
         [clooj.dev-tools]
         [clooj.indent]
-        [sketchpad prefs auto-complete tab utils filetree editor edit-mode default-mode completion-builder rsyntaxtextarea help])
+        [sketchpad.tree.tree]
+        [sketchpad.tree.utils]
+        [sketchpad prefs auto-complete tab utils editor edit-mode default-mode completion-builder rsyntaxtextarea help])
   (:require [sketchpad.theme :as theme]
             [sketchpad.config :as config]
             [sketchpad.repl :as srepl]
+            [sketchpad.state :as state]
             [sketchpad.project.project :as project]
             [sketchpad.menu.menu-bar :as menu]
-            [sketchpad.editor-info :as info]
+            [sketchpad.editor.info :as info]
             [sketchpad.state :as sketchpad.state]))
-
-(defn set-laf [laf-string]
-  (UIManager/setLookAndFeel laf-string))
-
-(def overtone-handlers
-  {:setup-autoindent setup-autoindent
-   :get-selected-projects get-selected-projects
-   :find-file find-file})
 
 (defn set-osx-icon
   [icon]
@@ -45,12 +40,11 @@
 
 (defn create-app
   []
-  (let [app-init  (atom {})
-        ;; editor-info MUST init before editor so it is selectable
-        editor-info (info/editor-info app-init)
-        editor    (editor app-init)
-        file-tree (file-tree app-init)
-        repl      (srepl/repl app-init)
+  (let [;; editor-info MUST init before editor so it is selectable
+        editor-info (info/editor-info)
+        editor    (editor state/app)
+        file-tree (file-tree state/app)
+        repl      (srepl/repl state/app)
         doc-info-split-pane (vertical-panel :items[editor
                                                    :fill-h
                                                    editor-info]
@@ -80,13 +74,13 @@
                      :content split-pane)
         app (merge {:current-files (atom {})
                     :current-file (atom nil)
+                    :current-buffers (atom {})
                     :current-tab -1
                     :repls (atom {})
                     :changed   false
                     :doc-text-area nil
                     :doc-scroll-pane nil}
-                   @app-init
-                   overtone-handlers
+                   @state/app
                    (gen-map
                      frame
                      doc-split-pane

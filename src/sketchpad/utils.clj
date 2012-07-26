@@ -20,7 +20,7 @@
            (javax.swing.event CaretListener DocumentListener UndoableEditListener)
            (javax.swing.undo UndoManager)
            (org.fife.ui.rsyntaxtextarea RSyntaxDocument))
-  (:use [sketchpad buffer-edit prefs]
+  (:use [sketchpad prefs]
         [seesaw.core :only (config config!)]))
 
 (defmacro awtevent [& body]
@@ -112,6 +112,8 @@
     {:row row :col col}))
 
 (defn get-caret-coords [text-comp]
+  (println "utils")
+
   (get-coords text-comp (.getCaretPosition text-comp)))
 
 (defn add-text-change-listener [text-comp f]

@@ -148,14 +148,14 @@
         server-port (repl.server/server project)
         conn   (repl.connection/connection server-port)
         repl-history (repl.history/history)
-	 	repl (map :type :repl 
+	 	repl {:type :repl 
     			    :component component
     		      :text-area text-area
     		      :container container
     		      :server-port server-port
     		      :connection conn
         	    :history history
-        		  :project project)
+        		  :project project}
         custom-repl-tab (button-tab/add-button-tab repl)]
     	(add-repl-behaviors repl conn history)
     	(assoc repl :tab custom-repl-tab)))

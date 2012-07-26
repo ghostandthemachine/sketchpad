@@ -1,6 +1,7 @@
 (ns sketchpad.sketchpad-repl
-	(:use [sketchpad buffer-edit utils])
-  (:require [clojure.main :as main])
+	(:use [sketchpad utils])
+  (:require [clojure.main :as main]
+  	[sketchpad.buffer.edit :as buffer.edit])
   (:import [clojure.lang LineNumberingPushbackReader]))
 
 (defn repl-writer
@@ -29,10 +30,10 @@
 
 		(write
 		([c]
-			(append-text rsta c)
+			(buffer.edit/append-text rsta c)
 			(proxy-super write c))
 		([cbuf off len]
-			(append-text rsta (str cbuf))
+			(buffer.edit/append-text rsta (str cbuf))
 			(proxy-super write cbuf off len))))]
 		writer))
 

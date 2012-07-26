@@ -1,12 +1,10 @@
 (ns sketchpad.menu.file 
 	(:use [seesaw meta])
 	(:require [sketchpad.menu.menu-utils :as menu-utils]
-        [sketchpad.filetree :as file-tree]
-			  [sketchpad.tab-builder :as tab-builder]
+        [sketchpad.tree.utils :as tree.utils]
 			  [sketchpad.tab :as tab]
-        [sketchpad.buffer-new :as buffer-new]
+        [sketchpad.editor.buffer :as editor.buffer]
         [sketchpad.file :as file]
-        [sketchpad.filetree :as file-tree]
 			  [sketchpad.rsyntaxtextarea :as rsyntaxtextarea]
         [sketchpad.state :as sketchpad.state]
         [seesaw.core :as seesaw.core]
@@ -54,7 +52,7 @@
 (defn new-file!
 "Create a new file"
 [app-atom file-path]
-  (buffer-new/blank-clj-buffer!))
+  (editor.buffer/blank-clj-buffer!))
 
 (defn save-file! []
 "Save the current buffer."
@@ -77,7 +75,7 @@
 "Open the save as dialog for the current buffer."
 (when-let [rsta (tab/current-buffer (:editor-tabbed-panel @app))]
   (let [file (get-meta rsta :file)
-       file-path (file-tree/get-selected-file-path @app)]
+       file-path (tree.utils/get-selected-file-path @app)]
 	  (when-let[new-file (file/save-file-as)]
       (when (get-meta rsta :new-file)
         (put-meta! rsta :new-file false))
@@ -87,7 +85,7 @@
  {:new-file (seesaw.core/menu-item :text "New File" 
                               :mnemonic "N" 
                               :key (keystroke/keystroke "meta N") 
-                              :listen [:action (fn [_] (new-file! app-atom (file-tree/get-selected-file-path @app-atom)))])
+                              :listen [:action (fn [_] (new-file! app-atom (tree.utils/get-selected-file-path @app-atom)))])
   :save     (seesaw.core/menu-item :text "Save" 
                               :mnemonic "S" 
                               :key (keystroke/keystroke "meta S") 

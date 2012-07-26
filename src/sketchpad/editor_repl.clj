@@ -1,6 +1,7 @@
 (ns sketchpad.editor-repl
-  (:require [clojure.string :as string])
-  (:use [sketchpad repl-communication buffer-edit sketchpad-repl]
+  (:require [clojure.string :as string]
+    [sketchpad.buffer.edit :as buffer.edit])
+  (:use [sketchpad repl-communication sketchpad-repl]
         [seesaw meta])
   (:import (java.util.concurrent LinkedBlockingDeque)))
   
@@ -10,11 +11,11 @@
     (read-string (.take q)))
 
 (defn sketchpad-prompt [rsta]
-  (append-text rsta (str \newline (ns-name *ns*) "=> "))
+  (buffer.edit/append-text rsta (str \newline (ns-name *ns*) "=> "))
   (.setCaretPosition rsta (.getLastVisibleOffset rsta)))
 
 (defn sketchpad-printer [rsta value]
-  (append-text rsta (str value)))
+  (buffer.edit/append-text rsta (str value)))
 
 (defn create-editor-repl [repl-rsta]
   (let [editor-repl-q (LinkedBlockingDeque. )
@@ -31,7 +32,7 @@
 (defn append-history-text [rsta m]
   (let [pos @(m :pos)
         history-str (string/trim (str (nth @(m :items) pos)))]
-    (append-text-update rsta history-str)))
+    (buffer.edit/append-text-update rsta history-str)))
 
 (defn update-repl-history-display-position [rsta kw]
   (let [repl-history (get-meta rsta :repl-history)

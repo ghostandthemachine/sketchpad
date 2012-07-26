@@ -1,8 +1,9 @@
 (ns sketchpad.repl-communication
-  (:use [sketchpad buffer-edit rsyntaxtextarea]
+  (:use [sketchpad rsyntaxtextarea]
         [seesaw core meta])
   (:require [clojure.string :as string]
-  					[clojure.tools.nrepl :as nrepl])
+  					[clojure.tools.nrepl :as nrepl]
+            [sketchpad.buffer.edit :as buffer.edit])
   (:import (javax.swing SwingUtilities))
   )
 
@@ -99,7 +100,7 @@
   (awtevent
     (let [cmd-ln (str \newline (.trim cmd) \newline)
           cmd-trim (.trim cmd)]
-      (append-text-update rsta (str \newline))
+      (buffer.edit/append-text-update rsta (str \newline))
       (let [repl-server (get-meta rsta :repl-server)
             repl-history (get-meta rsta :repl-history)
             items (repl-history :items)
@@ -114,8 +115,8 @@
                          (nrepl/message {:op :eval :code "(ns-name *ns*)"})
                          nrepl/response-values)
               promp-str (str \newline (first prompt-ns) "=> ")]
-		       (append-text-update rsta response-str)
-           (append-text-update rsta promp-str)))
+		       (buffer.edit/append-text-update rsta response-str)
+           (buffer.edit/append-text-update rsta promp-str)))
        (when (not= cmd-trim (first @items))
           (swap! items
                  replace-first cmd-trim)
@@ -132,7 +133,7 @@
           cmd-ln (str \newline (.trim cmd) \newline)
           cmd-trim (.trim cmd)]
       ;; go to next line
-      (append-text-update rsta (str \newline))
+      (buffer.edit/append-text-update rsta (str \newline))
       (let [cmd-str (cmd-attach-file-and-line cmd file line)
       			repl-history (get-meta rsta :repl-history)]
         (offer! (get-meta rsta :repl-que) cmd-str))

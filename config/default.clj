@@ -7,7 +7,7 @@
 	;; params after this point will overide those set by the theme selection above
 	; :background-image "img/invisible.png"
 	:whitespace-visible false
-	:line-wrap 	true
+	:line-wrap 	false
 	:rounded-selection-edges true
 	:animate-bracket-matching true
 	:anti-aliasing true
@@ -52,7 +52,7 @@
    :active-range-color 				   [0 255 0 15]})
 
 (def default-sketchpad-prefs
-	{:show-tabs? false})
+	{:show-tabs? true})
 
 (def default-repl-prefs
 	{:response-timeout 1000})

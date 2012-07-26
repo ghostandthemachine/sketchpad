@@ -14,13 +14,14 @@
         [clooj.help :only (get-var-maps)]
         [clj-inspector.jars :only (get-entries-in-jar jar-files)]
         [seesaw core color border meta]
-        [sketchpad repl-dep-loader buffer-edit repl-communication editor-repl rsyntaxtextarea tab auto-complete app-cmd default-mode sketchpad-repl]
+        [sketchpad repl-dep-loader repl-communication editor-repl rsyntaxtextarea tab auto-complete app-cmd default-mode sketchpad-repl]
         [clojure.tools.nrepl.server :only (start-server stop-server)])
   (:require [clojure.string :as string]
             [sketchpad.rsyntax :as rsyntax]
             [clojure.java.io :as io]
             [sketchpad.editor-kit :as kit]
             [sketchpad.config :as config]
+            [sketchpad.buffer.edit :as buffer.edit]
             [sketchpad.repl-tab-ui :as rtab]
             [sketchpad.rtextscrollpane :as sp]
             [clojure.tools.nrepl :as repl]
@@ -180,9 +181,9 @@
           cmd-trim (.trim cmd)]
       (cond
           (= src-key :repl)
-            (append-text (app :doc-text-area) (str \newline))
+            (buffer.edit/append-text (app :doc-text-area) (str \newline))
           (= src-key :file)
-            (append-text (app :doc-text-area) (str \newline)))
+            (buffer.edit/append-text (app :doc-text-area) (str \newline)))
       (let [cmd-str (cmd-attach-file-and-line cmd file line)]
         (binding [*out* (:input-writer @(app :repl))]
           (println cmd-str)
@@ -272,7 +273,7 @@
            current-ns)))
 
 (defn restart-repl [app project-path]
-  (append-text (app :editor-repl)
+  (buffer.edit/append-text (app :editor-repl)
                (str "\n=== RESTARTING " project-path " REPL ===\n"))
   (when-let [proc (-> app :repl deref :proc)]
     (.destroy proc))
@@ -282,7 +283,7 @@
 (defn switch-repl [app project-path]
   (when (and project-path
              (not= project-path (-> app :repl deref :project-path)))
-    (append-text (app :editor-repl)
+    (buffer.edit/append-text (app :editor-repl)
                  (str "\n\n=== Switching to " project-path " REPL ===\n"))
     (let [repl (or (get @repls project-path)
                    (create-outside-repl (app :repl-out-writer) project-path))]
