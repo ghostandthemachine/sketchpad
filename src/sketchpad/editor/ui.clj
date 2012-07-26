@@ -1,4 +1,4 @@
-(ns sketchpad.tab-ui
+(ns sketchpad.editor.ui
 	(:use [seesaw core color graphics style])
 	(:require [sketchpad.sketchpad-prefs :as sketchpad-prefs])
 	(:import (javax.swing.plaf.basic.BasicTabbedPaneUI)

@@ -1,6 +1,6 @@
 (ns sketchpad.file.file
   (:require [seesaw.bind :as bind]
-            [sketchpad.project :as project]
+            [sketchpad.project.project :as project]
             [sketchpad.utils :as utils]
             [clojure.string :as string])
   (:use [seesaw core dev meta])
@@ -138,7 +138,7 @@
                                "Oops" JOptionPane/ERROR_MESSAGE)
                            (.printStackTrace e)))))
 
-(defn save-file-as []
+(defn save-file-as! []
   (try
     (when-let [new-file (utils/choose-file (@app :frame) "Save file as" (project/current-project) false)]
       (utils/awt-event

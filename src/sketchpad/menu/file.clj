@@ -16,21 +16,23 @@
 
 (defn new-file!
 "Create a new file"
-[app-atom file-path]
+[]
   (editor.buffer/blank-clj-buffer!))
 
 (defn save-file!
 ([] (save-file! (tab/current-buffer)))
 ([buffer]
 "Save the current buffer."
+(println "menu.save-file! current-buffer: " (tab/current-buffer))
+(println "menu.save-file! buffer: " buffer)
 (let [new-file? @(buffer :new-file?)]
   (if new-file?
     (do
-      (when-let [new-file (file/save-file-as)]
-        (let[new-file-title (.getName new-file)]  
-          (when (file/save-file! buffer new-file)
-            (assoc (:file buffer) new-file)
-            (assoc (:new-file? buffer) false)
+      (when-let [new-file (file/save-file-as!)]
+        (let[new-file-title (.getName new-file)] 
+          (assoc (:file buffer) new-file)
+          (assoc (:new-file? buffer) false) 
+          (when (file/save-file! buffer)
             (tab/title-at! (tab/index-of-component buffer) new-file-title)
             (tab/mark-current-tab-clean! (@state/app :editor-tabbed-panel))))))
     (do
@@ -38,13 +40,13 @@
             (tab/mark-current-tab-clean!)))))))
 
 (defn save-file-as!
-([] (save-file-as! (tab/current-text-area (:editor-tabbed-panel @state/app))))
+([] (save-file-as! (tab/current-buffer)))
 ([buffer]
 "Open the save as dialog for the current buffer."
   (let [text-area (:text-area buffer)
         file @(:file buffer)
        file-path (tree.utils/get-selected-file-path @state/app)]
-	  (when-let[new-file (file/save-file-as)]
+	  (when-let[new-file (file/save-file-as!)]
       (when @(:new-file? buffer)
         (assoc (:new-file? buffer) false))
     		(println "Saved file as: " new-file)))))

@@ -77,8 +77,8 @@
         tab))
 
 (defn scratch-buffer-tab
-[]
-	(let [tabbed-panel (@state/app :editor-tabbed-panel)
+[project-path]
+	(let [tabbed-panel (app-tabbed-panel)
 		  buffer-component (editor.component/buffer-component)
 		  container (:container buffer-component)
 		  text-area (:text-area buffer-component)
@@ -90,18 +90,18 @@
 					 :text-area text-area
 					 :container container
 					 :tab tab
-					 :title (atom "new tab")
+					 :title (atom "untitled")
 					 :label (:label buffer-component)
 					 :file (atom nil)
 					 :state tab-state
 					 :new-file? true
 					 :uuid uuid
-					 :project nil}]
+					 :project project-path}]
 			(init-new-tab buffer))))
 
 (defn project-buffer-tab
-[project]
-	(let [tabbed-panel (@state/app :editor-tabbed-panel)
+[project-path]
+	(let [tabbed-panel (app-tabbed-panel)
 		  buffer-component (editor.component/buffer-component)
 		  container (get buffer-component :container)
 		  text-area (get buffer-component :text-area)
@@ -112,13 +112,13 @@
 			buffer { :type :buffer
 				     :text-area text-area
 					 :tab tab
-					 :title (atom "new tab")
+					 :title (atom "")
 					 :label (:label buffer-component)
 					 :file (atom nil)
 					 :container container
 					 :state tab-state
 					 :new-file? (atom false)
-					 :project project
+					 :project project-path
 					 :uuid uuid}]
 			(init-new-tab buffer))))
 

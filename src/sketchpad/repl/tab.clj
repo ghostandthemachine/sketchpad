@@ -1,4 +1,4 @@
-(ns sketchpad.repl-button-tab
+(ns sketchpad.repl.tab
 	(:use [seesaw core color border graphics meta]
 				[sketchpad option-windows])
 	(:import (javax.swing JPanel JLabel BorderFactory AbstractButton JButton)

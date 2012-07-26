@@ -7,6 +7,7 @@
     [sketchpad.app :as app]
     [sketchpad.file.file :as file]
     [sketchpad.editor.buffer :as buffer-new]
+    [sketchpad.project.project :as sketchpad.project]
     [sketchpad.option-windows :as option-windows]))
 
 (defonce edit-menu-item-state 
@@ -48,12 +49,14 @@
 (defn next-tab
 "Display the next available tab in the editor tabbed panel."
   []
-	(tab/next-tab))
+	(tab/next-tab)
+  (tab/update-tree-selection-from-tab))
 
 (defn previous-tab
 "Display the previous available tab in the editor tabbed panel."
   []
-	(tab/previous-tab))
+	(tab/previous-tab)
+  (tab/update-tree-selection-from-tab))
 
 (defn close-tab
 "Close the current tab. If the current buffer is dirty this will ask if you are sure you want to close the tab."
@@ -71,13 +74,16 @@
                     (if @(:new-file? buffer) ;; is it a new buffer?
                       (do 
                         (buffer-new/save-new-buffer! buffer)
-                        (tab/close-tab))
+                        (tab/close-tab)
+                        (sketchpad.project/remove-buffer-from-app buffer)
                       (do
                         (buffer-new/save-buffer! buffer)
-                        (tab/close-tab))))
+                        (tab/close-tab)
+                        (sketchpad.project/remove-buffer-from-app buffer)))))
                 (= answer 1) ;; don't save just close
                   (do 
-                    (tab/close-tab)))))))))
+                    (tab/close-tab)
+                    (sketchpad.project/remove-buffer-from-app buffer)))))))))
 
 (defn make-view-menu-items []
 	{:goto-repl 		(seesaw.core/menu-item 	:text "Go to REPL input" 

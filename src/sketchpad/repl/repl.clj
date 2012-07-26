@@ -8,11 +8,12 @@
 		[sketchpad.repl.server :as repl.server]
     [sketchpad.repl.history :as repl.history]
 		[sketchpad.repl.connection :as repl.connection]
-		[sketchpad.repl-button-tab :as button-tab]
+		[sketchpad.repl.tab :as repl.tab]
     [sketchpad.buffer :as buffer]
     [sketchpad.option-windows :as option-windows]
 		[sketchpad.config :as config]
     [sketchpad.tab :as tab]
+    [sketchpad.state :as state]
     [clojure.tools.nrepl :as nrepl])
   (:import (java.io
              BufferedReader BufferedWriter
@@ -139,26 +140,26 @@
                                         (apply shut-down-fn lein-project repl-buffer)
                                         (tab/remove-tab! repl-tabbed-panel repl-buffer)))))))
 
-(defn repl
-"Create a new REPL from a project."
-  [project]
-  (let [component (repl.component/repl-component)
- 		text-area (:text-area component)
- 		container (:container component)
-        server-port (repl.server/server project)
-        conn   (repl.connection/connection server-port)
+(defn create-repl-map [text-area component container server-port conn history project]
+  {:type :repl
+   :container container
+   :component component
+   :text-area text-area
+   :server-port server-port
+   :conn conn
+   :project project
+   :history history})
+
+(defn repl [sketchpad-project]
+  (let [component (repl.component/repl-component)
+        text-area (:text-area component)
+        container (:container component)
+        server-port (repl.server/server sketchpad-project)
+        conn (repl.connection/connection server-port)
         repl-history (repl.history/history)
-	 	repl {:type :repl 
-    			    :component component
-    		      :text-area text-area
-    		      :container container
-    		      :server-port server-port
-    		      :connection conn
-        	    :history history
-        		  :project project}
-        custom-repl-tab (button-tab/add-button-tab repl)]
-    	(add-repl-behaviors repl conn history)
-    	(assoc repl :tab custom-repl-tab)))
+        repl (create-repl-map text-area component container server-port conn repl-history sketchpad-project)
+        tab (repl.tab/add-button-tab repl)]
+        (assoc repl :tab tab)))
 
 (defn init-new-repl-tab 
 "Initialize REPL component handlers and add the component to the REPL tabbed panel component."
@@ -168,11 +169,12 @@
         repl-text-area (:text-area repl)]
     (add-repl-behaviors repl)
     (add-repl-mouse-handlers repl)
-    (tab/add-tab! repl-tabbed-panel repl-tab-component)
-    (tab/show-tab! repl-tabbed-panel (index-of-component repl-tabbed-panel repl-component))
-    (tab/focus-buffer repl-tabbed-panel repl-text-area)))
+    (tab/add-tab! repl-tabbed-panel repl-component)
+    (tab/show-tab! repl-tabbed-panel (tab/index-of-buffer repl-tabbed-panel repl))
+    (tab/focus-buffer repl-tabbed-panel repl))
+  repl)
 
 (defn new-repl-tab!
 "Builds a new REPL component for a given project."
 [project]
-  (init-new-repl-tab (repl proejct)))
+  (init-new-repl-tab (repl project)))

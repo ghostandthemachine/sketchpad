@@ -7,14 +7,13 @@
 			[seesaw.core :as seesaw]
 			[sketchpad.tab :as tab]
 			[sketchpad.tree.utils :as tree.utils]
+			[sketchpad.project.project :as sketchpad.project]
 			[sketchpad.state :as state]
+			[sketchpad.tree.utils :as tree.utils]
 			[leiningen.core.project :as lein-project]
 			[clojure.string :as string]
 			[seesaw.bind :as bind]
 			[seesaw.core :as seesaw]))
-
-(defn add-buffer-to-project [project buffer]
-  (swap! (get project :active-buffers) conj buffer))
 
 (defn update-editor-info-file-title [title]
 	(swap! (@state/app :doc-title-atom) (fn [lbl] title)))
@@ -37,7 +36,6 @@
 		(seesaw/config! (get-in buffer [:tab :label]) :text (.getName file))
 		(tab/buffer-title! buffer (.getName file))))
 
-
 (defn update-buffer-syntax-style [buffer file-path]
 	(seesaw/config! buffer :syntax (file/file-type file-path)))
 
@@ -46,36 +44,30 @@
 		(let[rdr (StringReader. txt)
 			file (File. file-path)
 			text-area (:text-area buffer)]
-		(put-meta! text-area :file file)
 		(.read text-area rdr nil)
 		(update-buffer-syntax-style text-area file-path)
 		(update-buffer-label-from-file buffer file-path)
 		(swap! (:title buffer) (fn [_] (.getName file)))
-		(swap! (:file buffer) (fn [_] file))
-		(put-meta! text-area :file file)
-		(reset! (:file buffer) file))))
+		(swap! (:file buffer) (fn [_] file)))))
 
-(defn current-buffers []
-	(:current-buffers @state/app))
-
-(defn add-buffer-to-app [buffer]
-	(swap! (current-buffers) (fn [buffers] (assoc buffers (:uuid buffer) buffer))))
-
-(defn buffer-from-file! [file-path project]
-	(let [buffer (editor.build/project-buffer-tab project)]
+(defn buffer-from-file! [file-path project-path]
+	(let [project (sketchpad.project/project-from-path project-path)
+		  buffer (editor.build/project-buffer-tab project-path)]
+		  (clojure.pprint/pprint project)
 		(load-file-into-buffer project buffer file-path)
 		(init-buffer-tab-state buffer)
-		(add-buffer-to-project project buffer)
-		(add-buffer-to-app buffer)
+		(sketchpad.project/add-buffer-to-project project-path buffer)
+		(sketchpad.project/add-buffer-to-app buffer)
 		(tab/show-buffer buffer)))
 
 (defn blank-clj-buffer! []
-	(let [buffer (editor.build/scratch-buffer-tab)]
+	(let [buffer (editor.build/scratch-buffer-tab (tree.utils/get-root-path))]
 		(init-buffer-tab-state buffer)
+		(sketchpad.project/add-buffer-to-app buffer)
 		(tab/show-buffer buffer)))
 
 (defn save-new-buffer! [buffer]
-	(when-let [new-file (file/save-file-as)]
+	(when-let [new-file (file/save-file-as!)]
 		(let [new-file-title (.getName new-file)]
 		  (when (file/save-file! buffer new-file)
 		    (assoc (:file buffer) new-file)
@@ -90,3 +82,4 @@
         (file/save-file! buffer file)
         (tree.utils/update-tree)
 		(update-editor-info-file-title (tab/title))))
+

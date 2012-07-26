@@ -6,8 +6,7 @@
         [sketchpad.toggle-vim-mode-action]
         [rounded-border.core])
   (:require [sketchpad.rsyntax :as rsyntax]
-            [sketchpad.tab-ui :as tab-ui]
-            [sketchpad.tab :as tab]
+            [sketchpad.editor.ui :as editor.ui]
             [sketchpad.editor.info-utils :as editor.info-utils]
             [sketchpad.state :as state])
   (:import  (java.awt.event FocusAdapter MouseAdapter KeyAdapter)
@@ -26,9 +25,8 @@
                                             :overflow :wrap
                                             :background (color :black)
                                             :border (empty-border :thickness 0))]
-    (.setUI editor-tabbed-panel (tab-ui/sketchpad-tab-ui editor-tabbed-panel))
+    (.setUI editor-tabbed-panel (editor.ui/sketchpad-editor.ui editor-tabbed-panel))
     (swap! state/app conj (gen-map
                            editor-tabbed-panel))
     (tab-change-handler editor-tabbed-panel)
     editor-tabbed-panel))
-

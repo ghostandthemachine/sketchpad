@@ -1,4 +1,4 @@
-(ns sketchpad.project.project
+	(ns sketchpad.project.project
 	(:use [clojure.pprint]
 				[seesaw color meta])
 	(:require [sketchpad.state :as state]
@@ -98,3 +98,23 @@
 
 (defn setup-non-project-map []
 	(add-project @state/app "/default"))
+
+(defn current-buffers []
+	(:current-buffers @state/app))
+
+(defn add-buffer-to-app [buffer]
+	(swap! (current-buffers) assoc (:uuid buffer) buffer))
+
+(defn remove-buffer-from-app [buffer]
+	(swap! (current-buffers) dissoc (:uuid buffer)))
+
+(defn add-buffer-to-project [project-path buffer]
+	(let [buffers (get-in @(@state/app :project-map) [project-path :active-buffers])]
+  (swap! buffers conj buffer)))
+
+(defn remove-buffer-from-project [project buffer]
+  (swap! (get project :active-buffers) disj buffer))
+
+(defn project-from-path [project-path]
+	(get @(@state/app :project-map) project-path))
+

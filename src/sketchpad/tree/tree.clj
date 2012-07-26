@@ -9,10 +9,10 @@
             [clojure.string :as string]
             [sketchpad.config :as config]
             [sketchpad.file.file :as file]
-            [sketchpad.project.project :as project]
             [sketchpad.project.state :as project-state]
             [sketchpad.editor.buffer :as editor.buffer]
             [sketchpad.tree.popup :as popup]
+            [sketchpad.state :as state]
             [sketchpad.buffer.edit :as buffer.edit]
             [sketchpad.lein-manager :as lein-manager]
             [leiningen.core.project :as lein-project])
@@ -49,10 +49,10 @@
 (try 
   (let [file (.. path getLastPathComponent getUserObject)
         proj (.getPathComponent path 1)
-        proj-str (str (buffer.edit/trim-parens (last (string/split (.toString proj) #"   "))))]
+        project-str (str (buffer.edit/trim-parens (last (string/split (.toString proj) #"   "))))]
     (when (file/text-file? file) ;; handle if dir is selected instead of file
       (do 
-        (editor.buffer/buffer-from-file! (get-selected-file-path @app-atom) (get (project/projects) proj-str))
+        (editor.buffer/buffer-from-file! (get-selected-file-path @app-atom) project-str)
         (save-tree-selection tree path))))
   (catch java.lang.NullPointerException e)))
 
@@ -65,6 +65,8 @@
       tree (app :docs-tree)
       listener (proxy [MouseAdapter] []
                   (mousePressed [e]
+                    )
+                  (mouseClicked [e]
                     (let [sel-row (.getRowForLocation tree (.getX e) (.getY e))
                           sel-path (.getPathForLocation tree (.getX e) (.getY e))
                           click-count (.getClickCount e)]
@@ -74,14 +76,7 @@
                             (handle-right-click sel-row sel-path app)
                             (handle-single-click sel-row sel-path app-atom))
                         (= click-count 2)
-                          (handle-double-click sel-row sel-path app-atom)
-                          )))
-                  ; (mouseClicked [e]
-                  ;   (if (double-click? e)
-                  ;     (let [sel-row (.getRowForLocation tree (.getX e) (.getY e))
-                  ;           sel-path (.getPathForLocation tree (.getX e) (.getY e))
-                  ;           click-count (.getClickCount e)]
-                  ;     (handle-double-click sel-row sel-path app-atom))))
+                          (handle-double-click sel-row sel-path app-atom))))
                   )]
       listener))
 

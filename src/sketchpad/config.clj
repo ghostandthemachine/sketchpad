@@ -6,7 +6,6 @@
             [seesaw.border :as border]
             [seesaw.font :as font]
             [seesaw.core :as seesaw]
-            [sketchpad.editor.editor :as sketchpad.editor.editor]
             [sketchpad.theme :as theme]
             [sketchpad.state :as state]
             [sketchpad.sketchpad-prefs :as sketchpad-prefs])

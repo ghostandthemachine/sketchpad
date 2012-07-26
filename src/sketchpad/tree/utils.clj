@@ -128,8 +128,10 @@
               #(for [i (range (.getChildCount %))] (.getChildAt % i))
               root)))
 
-(defn get-root-path [tree]
-  (TreePath. (.. tree getModel getRoot)))
+(defn get-root-path 
+([] (get-root-path (@state/app :docs-tree)))
+([tree]
+  (TreePath. (.. tree getModel getRoot))))
 
 (defn tree-path-to-file [^TreePath tree-path]
   (when tree-path
@@ -173,14 +175,16 @@
                       (catch Exception e)))]
       node)))
 
-(defn set-tree-selection [tree path]
+(defn set-tree-selection 
+([path] (set-tree-selection (@state/app :docs-tree) path))
+([tree path]
   (awt-event
     (when-let [node (path-to-node tree path)]
       (let [node-path (.getPath node)
             paths (map #(.. % getUserObject getAbsolutePath) (rest node-path))]
         (expand-paths tree paths)
         (when-let [row (row-for-path tree path)]
-          (.setSelectionRow tree row))))))
+          (.setSelectionRow tree row)))))))
 
 (defn load-tree-selection [tree]
   (let [path (read-value-from-prefs sketchpad-prefs "tree-selection")]
@@ -218,12 +222,14 @@
   (->> tree .getSelectionPaths first
        .getLastPathComponent .getUserObject .toString))
 
-(defn get-selected-projects [app]
+(defn get-selected-projects 
+([] (get-selected-projects (@state/app)))
+([app]
   (let [tree (app :docs-tree)
         selections (.getSelectionPaths tree)]
     (for [selection selections]
       (->> selection .getLastPathComponent (get-project-node tree)
-           .getUserObject .getAbsolutePath))))
+           .getUserObject .getAbsolutePath)))))
 
 (defn update-project-tree [tree]
   (let [model (project-set-to-tree-model)]

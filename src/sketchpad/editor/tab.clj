@@ -53,24 +53,11 @@
       (.setFocusable false))
     button)))
 
-; (defn tab-label [buffer-component]
-;   (let [tabbed-panel (:editor-tabbed-panel @state/app)
-;         container (:container buffer-component)]
-;     (proxy [JLabel] []
-;               (getText []
-;                 (let [index (.indexOfTabComponent tabbed-panel container)]
-;                   (if (= (.getSelectedIndex tabbed-panel) index)
-;                     (config! this :foreground :white)
-;                     (config! this :foreground (color 155 155 155)))
-;                   (if (not= -1 index)
-;                     @(:title buffer-component)
-;                     nil))))))
-
 (defn button-tab 
 [buffer-component]
   (let [container (flow-panel :align :right)
         button (tab-button buffer-component)
-        label (label "")]
+        label (label "untitled")]
     (config! container :items[label button] :class :button-tab)
     (config! label :foreground (color :white) :focusable? false)
     (when-not  @sketchpad.sketchpad-prefs/show-tabs?

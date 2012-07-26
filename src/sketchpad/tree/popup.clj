@@ -2,6 +2,7 @@
 	(:require [sketchpad.state :as state]
 			[seesaw.core :as seesaw]
 			[seesaw.keystroke :as keystroke]
+      [sketchpad.menu.file :as menu.file]
 			[sketchpad.tree.utils :as utils]))
 
 (defn make-filetree-popup
@@ -32,10 +33,10 @@
               ; (menu-item :text "Move/Rename" 
               ;           :listen [:action (fn [_] (rename-file app))])
               (seesaw/separator)
-              (seesaw/menu-item :text "Create REPL"
-                        :mnemonic "R" 
-                        :listen [:action (fn [_] (utils/remove-project app))])
-              (seesaw/separator)
+              ; (seesaw/menu-item :text "Create REPL"
+              ;           :mnemonic "R" 
+              ;           :listen [:action (fn [_] (repl/new-repl-tab! (project/project-from-path (utils/get-selected-projects))))])
+              ; (seesaw/separator)
               (seesaw/menu-item :text "Delete" 
                         :listen [:action (fn [_] (utils/delete-file app))])
               ])))

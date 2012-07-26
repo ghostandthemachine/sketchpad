@@ -30,12 +30,4 @@
         repl-container (vertical-panel :items [repl-scroll-pane] :class :repl-container)]
     (init-repl text-area)
     {:container repl-container
-     :text-area text-area
-     :scroller repl-scroll-pane})))
-
-;           index-of-new-tab (index-of tabbed-panel tab-title)
-;           project-color (project/get-project-theme-color (:id project))
-;           tab (repl-button-tab app tabbed-panel index-of-new-tab project-color)
-;           close-button (select tab [:#close-button])
-;           tab-label (first (select tab [:.tab-label]))
-;           tab-color (atom base-color)]
+     :text-area text-area})))

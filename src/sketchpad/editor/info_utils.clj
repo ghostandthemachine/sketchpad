@@ -19,18 +19,17 @@
 [e]
 	(if (tab/tabs?)
 		(do
-			(when-let [current-text-area (tab/current-text-area)]
-				(let [coords (get-caret-coords current-text-area)]
-					(swap! (@state/app :doc-position-atom) (fn [_] (format-position-str (first coords) (second coords)))))))
+			(let [current-text-area (tab/current-text-area)
+			      coords (get-caret-coords current-text-area)]
+				(swap! (@state/app :doc-position-atom) (fn [_] (format-position-str (first coords) (second coords))))))
 		(swap! (@state/app :doc-position-atom) (fn [_] ""))))
 
 (defn update-doc-title-label!
 "Update the currently displayed doc title in the info panel"
 [e]
 	(if (tab/tabs?)
-		(if-let [title (tab/title)]
-  			(swap! (@state/app :doc-title-atom) (fn [_] title)))
-			(swap! (@state/app :doc-title-atom) (fn [_] ""))))
+		(swap! (@state/app :doc-title-atom) (fn [_] (tab/title))))
+		(swap! (@state/app :doc-title-atom) (fn [_] "")))
 
 (defn attach-caret-handler [text-area]
 	(listen text-area :caret-update update-doc-position-label!))

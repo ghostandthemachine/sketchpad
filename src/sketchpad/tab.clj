@@ -8,7 +8,7 @@
 				[clojure pprint]
 				[seesaw meta core border])
 	(:require [clojure.string :as string]
-			[sketchpad.file.file :as file]
+    		[sketchpad.tree.utils :as tree.utils]
 			[sketchpad.state :as state]))
 
 (defn chop
@@ -194,19 +194,23 @@
 	(current-buffer (@state/app :editor-tabbed-panel)))
 ([tabbed-panel]
   (if (tabs? tabbed-panel)
-  	(get @(current-buffers) (current-buffer-uuid tabbed-panel))
+	(do 
+		(let [uuid (current-buffer-uuid tabbed-panel)
+			  buffers @(current-buffers)]
+  			(get buffers uuid)))
   	"No buffers are currently open")))
 
 (defn mark-tab-state! 
 [buffer kw]
-(let [file-state (:state buffer)]
+(when-let [file-state (:state buffer)]
 	(cond
 		(= kw :clean)
 			(do
 				(swap! file-state assoc :clean true))
 		(= kw :dirty)
 			(do
-				(swap! file-state assoc :clean false)))))
+				(swap! file-state assoc :clean false)))
+	(.repaint (get-in buffer [:tab :container]))))
 
 (defn mark-tab-clean! 
 ([buffer]
@@ -260,4 +264,12 @@
 (defn buffer-title!
 [buffer title]
 	(title-at! (index-of-buffer buffer) title))
+
+(defn update-tree-selection-from-tab []
+	(when (tabs?)
+		(let [buffer (current-buffer)]
+			(when-not @(:new-file? buffer)
+				(let [file @(:file buffer)
+					  file-path (.getAbsolutePath file)]
+					(tree.utils/set-tree-selection file-path))))))
 
