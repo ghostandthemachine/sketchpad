@@ -30,4 +30,5 @@
         repl-container (vertical-panel :items [repl-scroll-pane] :class :repl-container)]
     (init-repl text-area)
     {:container repl-container
-     :text-area text-area})))
+     :text-area text-area
+     :title (atom "nREPL")})))

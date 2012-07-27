@@ -51,12 +51,12 @@
 	(.setDot (.getCaret (:text-area buffer)) 0)
 	(put-meta! (:text-area buffer) :uuid (:uuid buffer))
     (editor.info-utils/attach-caret-handler (:text-area buffer))
+    (tab/buffer-title! buffer)
+    (tab/buffer-tab-component! buffer)
 	buffer)
 
 (defn custom-tab [buffer-component]
-	(let [tab (button-tab/button-tab buffer-component)]
-        (tab/buffer-tab-component! buffer-component tab)
-        tab))
+	(button-tab/button-tab buffer-component))
 
 (defn scratch-buffer-tab
 [project-path]
@@ -72,9 +72,10 @@
 					 :text-area text-area
 					 :container container
 					 :tab tab
-					 :title (atom "untitled")
+					 :title (:title buffer-component)
 					 :label (:label buffer-component)
 					 :file (atom nil)
+					 :component buffer-component
 					 :state tab-state
 					 :new-file? (atom true)
 					 :uuid uuid
@@ -94,12 +95,13 @@
 			buffer { :type :buffer
 				     :text-area text-area
 					 :tab tab
-					 :title (atom "")
+					 :title (:title buffer-component)
 					 :label (:label buffer-component)
 					 :file (atom nil)
 					 :container container
 					 :state tab-state
 					 :new-file? (atom false)
+					 :component buffer-component
 					 :project project-path
 					 :uuid uuid}]
 			(init-new-tab buffer))))

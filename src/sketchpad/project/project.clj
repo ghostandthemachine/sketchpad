@@ -84,18 +84,6 @@
 		  project-buffers (project :active-buffers)]
 	(swap! project-buffers (fn [buffers] (dissoc buffers title)))))
 
-(defn add-repl-to-project! [project-path repl]
-	(let [projects (@state/app :project-map)
-		  project (@projects project-path)
-		  project-repls (project :active-repls)]   	
-	(swap! project-repls (fn [repls] (conj repls repl)))))
-
-(defn remove-repl-from-project! [project-path repl]
-	(let [projects-map @(@state/app :project-map)]
-		(when-let [project-map (projects-map project-path)]
-			(let [project-repls (project-map :active-repls)]   	
-		(swap! project-repls (fn [repls] (disj repls repl)))))))
-
 (defn setup-non-project-map []
 	(add-project @state/app "/default"))
 

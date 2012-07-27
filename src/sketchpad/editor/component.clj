@@ -32,6 +32,7 @@
     {:type :buffer-component
      :text-area text-area
      :container doc-container
+     :title (atom "untitled")
      :state (atom {:clean true :new false :active nil :index nil})
      :scroller doc-scroll-pane}))
 

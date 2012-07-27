@@ -35,11 +35,6 @@
 (defn preflect [obj]
 	(clojure.pprint/pprint (clojure.reflect/reflect obj)))
 
-(defn current-repl-rta [] (current-text-area (:repl-tabbed-panel @app)))
-
-(defn current-tree-path []
-	)
-
 (defn current-text []
 "return the text from the current buffer component"
 	(try

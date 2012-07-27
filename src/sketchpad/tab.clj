@@ -79,10 +79,11 @@
 	(.setSelectedIndex tabbed-panel index))
 
 (defn index-of-buffer [buffer]
-	(.indexOfComponent (@state/app :editor-tabbed-panel) (:container buffer)))
+	(.indexOfComponent (@state/app :editor-tabbed-panel) (get buffer :container)))
 
 (defn index-of-repl [repl]
-	(.indexOfComponent (@state/app :repl-tabbed-panel) (:container repl)))
+	(println (.indexOfComponent (@state/app :repl-tabbed-panel) (get-in repl [:component :container])))
+	(.indexOfComponent (@state/app :repl-tabbed-panel) (get-in repl [:component :container])))
 
 (defn insert-tab!
 ([title comp i] (insert-tab! (:editor-tabbed-panel @state/app) title comp i))
@@ -259,15 +260,26 @@
 (defn add-buffer [buffer]
 	(add-tab! @(:title buffer) (:container buffer)))
 
-(defn buffer-tab-component! [buffer tab]
-	(.setTabComponentAt (:editor-tabbed-panel @state/app) (index-of-buffer buffer) (:container tab)))
+(defn buffer-tab-component! [buffer]
+	; (println buffer)
+	; (println )
+	; (println )
+	; (println tab)
+	(.setTabComponentAt (:editor-tabbed-panel @state/app) (index-of-buffer buffer) (get-in buffer [:tab :container])))
 
-(defn repl-tab-component! [repl-buffer tab]
-	(.setTabComponentAt (:repl-tabbed-panel @state/app) (index-of-repl repl-buffer) (:container tab)))
+(defn repl-tab-component! [repl]
+	(.setTabComponentAt (:repl-tabbed-panel @state/app) (index-of-repl repl) (get-in repl [:tab :container])))
 
 (defn buffer-title!
-[buffer title]
-	(title-at! (index-of-buffer buffer) title))
+([buffer] (buffer-title! buffer @(get-in buffer [:component :title])))
+([buffer title]
+	(title-at! (index-of-buffer buffer) title)))
+
+
+(defn repl-title!
+([repl] (buffer-title! repl))
+([buffer title]
+	(buffer-title! buffer title)))
 
 (defn update-tree-selection-from-tab []
 	(when (tabs?)
@@ -276,4 +288,13 @@
 				(let [file @(:file buffer)
 					  file-path (.getAbsolutePath file)]
 					(tree.utils/set-tree-selection file-path))))))
+
+(defn current-repl-tab []
+  (current-tab (@state/app :repl-tabbed-panel)))
+
+(defn current-repl-text-area []
+  (select (current-tab (@state/app :repl-tabbed-panel)) [:#editor]))
+
+(defn current-repl-uuid []
+  (get-meta (current-repl-text-area) :uuid))
 

@@ -8,7 +8,7 @@
 		[sketchpad.repl.server :as repl.server]
     [sketchpad.repl.history :as repl.history]
 		[sketchpad.repl.connection :as repl.connection]
-		[sketchpad.editor.tab :as editor.tab]
+		[sketchpad.repl.tab :as repl.tab]
     [sketchpad.buffer.action :as buffer.action]
     [sketchpad.option-windows :as option-windows]
 		[sketchpad.config :as config]
@@ -91,6 +91,7 @@
 	        items (:items repl-history)
 	        cmd-str (cmd-attach-file-and-line (buffer.action/get-last-cmd (:text-area repl)  ) file line)]
       (append-text-update text-area (str \newline))
+      (append-text-update text-area (str "=> "))
 		    ; (when-let [response (-> (nrepl/client conn config/repl-response-timeout)
 	   		; 				        (nrepl/message {:op :eval :code cmd})
 						; 		    nrepl/response-values)]
@@ -122,7 +123,6 @@
                                   caret-pos)))))
         submit #(let [txt (buffer.action/get-last-cmd text-area)
                       pos (get-in repl [:history :pos])]
-                      (println pos)
                     (if (correct-expression? txt)
                       (do 
                         (send-repl-cmd repl txt)
@@ -141,16 +141,17 @@
                                    (if (= yes-no-option 0)
                                      (do
                                         (tab/remove-repl repl)
-                                        (sketchpad.project/remove-repl-from-project project repl)))))))
+                                        (sketchpad.project/remove-repl-from-project repl)))))))
 
-(defn create-repl-map [text-area component container history project uuid]
+(defn create-repl-map [text-area component container history project tab uuid]
   {:type :repl
    :container container
    :component component
    :text-area text-area
    ; :server-port server-port
    ; :conn conn
-   :title (atom "nREPL")
+   :tab tab
+   :title (:title component)
    :project (:path project)
    :uuid uuid
    :history history})
@@ -163,9 +164,9 @@
         ; conn (repl.connection/connection server-port)
         uuid (.. UUID randomUUID toString)
         repl-history (repl.history/history)
-        repl (create-repl-map text-area component container repl-history sketchpad-project uuid)
-        tab (editor.tab/button-tab component)]
-        (assoc repl :tab tab)))
+        tab (repl.tab/button-tab component)
+        repl (create-repl-map text-area component container repl-history sketchpad-project tab uuid)]
+    repl))
 
 (defn add-repl-to-project [project repl]
   (sketchpad.project/add-repl-to-project project repl))
@@ -181,6 +182,7 @@
     (tab/add-repl repl)
     (tab/show-repl repl)
     (tab/focus-repl repl))
+  (tab/repl-tab-component! repl)
   repl)
 
 (defn repl

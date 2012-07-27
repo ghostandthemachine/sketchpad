@@ -7,7 +7,8 @@
            (java.awt.event ActionListener MouseListener)
            (java.awt.BasicStoke)
            (java.awt Color Dimension Graphics2D FlowLayout))
-  (:require [sketchpad.state :as state]
+  (:require [seesaw.bind :as bind]
+            [sketchpad.state :as state]
             [sketchpad.sketchpad-prefs :as sketchpad.sketchpad-prefs]))
 
 (defn text-area-from-index [tabbed-panel i]
@@ -55,14 +56,16 @@
 
 (defn button-tab 
 [buffer-component]
-  (let [container (flow-panel :align :right)
-        button (tab-button buffer-component)
-        label (label "untitled")]
-    (config! container :items[label button] :class :button-tab)
-    (config! label :foreground (color :white) :focusable? false)
+  (let [button (tab-button buffer-component)
+        label (label :text "untitled"
+                      :foreground (color :white)
+                      :focusable?  false)
+        container (flow-panel :align :right
+                              :items [label button]
+                              :class :button-tab)]
     (when-not  @sketchpad.sketchpad-prefs/show-tabs?
       (config! container :visible? false))
-    ; (bind/bind (:title repl) (bind/transform (fn [s] s)) (bind/property label :text))
+    (bind/bind (:title buffer-component) (bind/transform (fn [s] s)) (bind/property label :text))
     (doto container
       (.setOpaque false)
       (.setBorder (javax.swing.BorderFactory/createEmptyBorder 0 0 0 0))
