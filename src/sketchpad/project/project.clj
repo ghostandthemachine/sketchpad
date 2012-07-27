@@ -54,7 +54,7 @@
 (defn add-project [project-path]
   (let [id (get-project-id!)
   		theme (theme/get-new-theme id)
-  		projects (@state/app :project-map)]
+  		projects (@state/app :projects)]
 	  (swap! (@state/app :project-set) conj project-path)
 	  (swap! projects 
 	  		(fn [m] 
@@ -62,8 +62,8 @@
 	  									:path project-path
 	  									:id id 
 	  									:theme theme 
-	  									:active-repls (atom {}) 
-	  									:active-buffers (atom {})})))
+	  									:repls (atom {}) 
+	  									:buffers (atom {})})))
 	  (if (lein-project-file?)
 		  (when-let [lein-project (lein-project/read (str project-path "/project.clj"))]
 		  	(swap! projects (fn [m] (assoc-in m [project-path :lein-project] lein-project)))
@@ -72,16 +72,16 @@
 (defn add-buffer-to-project! [project-path buffer] 
 	(let [text-area (:text-area buffer)
 		  title (:title buffer)
-		  projects-map @(@state/app :project-map)
+		  projects-map @(@state/app :projects)
 		  project (projects-map project-path)
-		  project-buffers (project :active-buffers)]   	
+		  project-buffers (project :buffers)]   	
 	(swap! project-buffers (fn [buffers] (assoc buffers title buffer)))))
 
 (defn remove-buffer-from-project! [project-path buffer]
 	(let [title (:title buffer)
-		  projects @(@state/app :project-map)
+		  projects @(@state/app :projects)
 		  project (projects project-path)
-		  project-buffers (project :active-buffers)]
+		  project-buffers (project :buffers)]
 	(swap! project-buffers (fn [buffers] (dissoc buffers title)))))
 
 (defn setup-non-project-map []
@@ -97,23 +97,23 @@
 	(swap! (current-buffers) dissoc (:uuid buffer)))
 
 (defn add-buffer-to-project [project-path buffer]
-	(let [buffers (get-in @(@state/app :project-map) [project-path :active-buffers])]
+	(let [buffers (get-in @(@state/app :projects) [project-path :buffers])]
   (swap! buffers assoc (:uuid buffer) buffer)))
 
 (defn remove-buffer-from-project [buffer]
-  	(let [buffers (get-in @(@state/app :project-map) [(:project-path buffer) :active-buffers])]
+  	(let [buffers (get-in @(@state/app :projects) [(:project-path buffer) :buffers])]
   (swap! buffers dissoc (:uuid buffer))))
 
 (defn add-repl-to-project [project-path repl]
-	(let [buffers (get-in @(@state/app :project-map) [project-path :active-repls])]
+	(let [buffers (get-in @(@state/app :projects) [project-path :repls])]
   (swap! buffers assoc (:uuid repl) repl)))
 
 (defn remove-repl-from-project [repl]
-  	(let [buffers (get-in @(@state/app :project-map) [(:project-path repl) :active-repls])]
+  	(let [buffers (get-in @(@state/app :projects) [(:project-path repl) :repls])]
   (swap! buffers dissoc (:uuid repl))))
 
 (defn project-from-path [project-path]
-	(get @(@state/app :project-map) project-path))
+	(get @(@state/app :projects) project-path))
 
 (defn project-theme [project-path]
 	(:theme (project-from-path project-path)))
@@ -125,5 +125,14 @@
 	(project-theme (:project buffer)))
 
 (defn buffer-color [buffer]
-	(project-color (:project buffer)))
+	(get-in (project-from-path (:project buffer)) [:theme :color]))
+
+(defn repl-color [repl]
+	(get-in (project-from-path (:project repl)) [:theme :color]))
+
+(defn project-by-name [project-name]
+	(let [short-keys (map #(last (clojure.string/split (str %) #"/")) (keys @(:projects @state/app)))
+		  long-keys (keys @(:projects @state/app))]
+		 (or (contains? short-keys project-name) (contains? long-keys project-name))))
+
 

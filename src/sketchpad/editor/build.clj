@@ -65,13 +65,10 @@
 		  container (:container buffer-component)
 		  text-area (:text-area buffer-component)
 		  tab-state (:state buffer-component)
-		  uuid (.. UUID randomUUID toString)]
-		(tab/add-tab! "untitled" container)
-		(let [tab (custom-tab buffer-component)
-			buffer { :type :buffer
+		  uuid (.. UUID randomUUID toString)
+		  buffer { :type :buffer
 					 :text-area text-area
 					 :container container
-					 :tab tab
 					 :title (:title buffer-component)
 					 :label (:label buffer-component)
 					 :file (atom nil)
@@ -80,7 +77,10 @@
 					 :new-file? (atom true)
 					 :uuid uuid
 					 :project project-path}]
-			(init-new-tab buffer))))
+		(tab/add-tab! "untitled" container)
+		(let [tab (custom-tab buffer)]
+			(init-new-tab buffer)
+			(assoc buffer :tab tab))))
 
 (defn project-buffer-tab
 [project-path]
@@ -89,12 +89,9 @@
 		  container (get buffer-component :container)
 		  text-area (get buffer-component :text-area)
 		  tab-state (get buffer-component :state)
-		  uuid (.. UUID randomUUID toString)]
-		(tab/add-tab! "untitled" container)
-		(let [tab (custom-tab buffer-component)
-			buffer { :type :buffer
+		  uuid (.. UUID randomUUID toString)
+		  buffer { :type :buffer
 				     :text-area text-area
-					 :tab tab
 					 :title (:title buffer-component)
 					 :label (:label buffer-component)
 					 :file (atom nil)
@@ -104,7 +101,9 @@
 					 :component buffer-component
 					 :project project-path
 					 :uuid uuid}]
-			(init-new-tab buffer))))
+		(tab/add-tab! "untitled" container)
+		(let [tab (custom-tab buffer)]
+	(init-new-tab (assoc buffer :tab tab)))))
 
 
 

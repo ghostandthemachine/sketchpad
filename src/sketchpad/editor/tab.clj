@@ -9,6 +9,7 @@
            (java.awt Color Dimension Graphics2D FlowLayout))
   (:require [seesaw.bind :as bind]
             [sketchpad.state :as state]
+            [sketchpad.project.project :as project]
             [sketchpad.sketchpad-prefs :as sketchpad.sketchpad-prefs]))
 
 (defn text-area-from-index [tabbed-panel i]
@@ -16,13 +17,12 @@
 
 (def button-base-color (color 150 150 150))
 
-(defn paint-tab-button [buffer-component c g]
-    (let [
-          clean? (@(:state buffer-component) :clean)
+(defn paint-tab-button [buffer c g]
+    (let [clean? (@(:state buffer) :clean)
           w          (width c)
           h          (height c)
           line-style (style :foreground button-base-color :stroke 2 :cap :round)
-          project-color (if (:project buffer-component) (get-in buffer-component [:project :theme :color]) (color :white))
+          project-color @(project/buffer-color buffer)
           border-style (style :foreground project-color :stroke 0.5)
           ellipse-style (style :foreground button-base-color :background button-base-color :stroke 1 :cap :round)
           d 3
@@ -41,13 +41,13 @@
                 (rounded-rect d d (- w d d) (- h d d) 5 5) border-style)))))
 
 (defn tab-button 
-([buffer-component]
+([buffer]
   (let [button (button :focusable? false
                     :tip "close this tab"
                     :minimum-size [20 :by 20]
                     :size [20 :by 20]
                     :id :close-button
-                    :paint (partial paint-tab-button buffer-component))]
+                    :paint (partial paint-tab-button buffer))]
     (doto button
       (.setBorderPainted false)
       (.setRolloverEnabled false)
@@ -55,9 +55,9 @@
     button)))
 
 (defn button-tab 
-[buffer-component]
-  (let [button (tab-button buffer-component)
-        label (label :text "untitled"
+[buffer]
+  (let [button (tab-button buffer)
+        label (label :text @(:title buffer)
                       :foreground (color :white)
                       :focusable?  false)
         container (flow-panel :align :right
@@ -65,7 +65,7 @@
                               :class :button-tab)]
     (when-not  @sketchpad.sketchpad-prefs/show-tabs?
       (config! container :visible? false))
-    (bind/bind (:title buffer-component) (bind/transform (fn [s] s)) (bind/property label :text))
+    (bind/bind (:title buffer) (bind/transform (fn [s] s)) (bind/property label :text))
     (doto container
       (.setOpaque false)
       (.setBorder (javax.swing.BorderFactory/createEmptyBorder 0 0 0 0))

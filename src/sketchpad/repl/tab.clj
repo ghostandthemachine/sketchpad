@@ -14,7 +14,7 @@
 (defn paint-button 
 "custom renderer for tab x"
 [repl c g]
-  (let [project-color (buffer-color repl)
+  (let [project-color @(sketchpad.project/repl-color repl)
   		w          (width c)
         h          (height c)
         line-style (style :foreground styles/base-color :stroke 2 :cap :round)
@@ -61,7 +61,6 @@
 		  button (tab-button repl)
 		  container (flow-panel :align :right :items [label button])]
 		(bind/bind (:title repl) (bind/transform (fn [s] s)) (bind/property label :text))
-		(println tab-button)
 		(doto container
 			(.setOpaque false)
 			(.setBorder (javax.swing.BorderFactory/createEmptyBorder 0 0 0 0))

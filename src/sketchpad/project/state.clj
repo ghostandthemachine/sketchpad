@@ -4,5 +4,5 @@
 (defonce project-map (atom {}))
 
 (defn add-projects-to-app [app-atom]
-	(swap! app-atom assoc :project-map project-map)
+	(swap! app-atom assoc :projects project-map)
 	(swap! app-atom assoc :project-set project-set))

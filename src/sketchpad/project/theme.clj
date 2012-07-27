@@ -11,5 +11,5 @@
 		(color :gray)
 		(get config/project-theme-colors id)))
 
-(defn get-new-theme [uu-id]
-	{:color (get-project-theme-color uu-id)})
+(defn get-new-theme [id]
+	{:color (atom (get-project-theme-color id))})

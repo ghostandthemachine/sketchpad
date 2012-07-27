@@ -75,7 +75,7 @@
 ;   (let [app @app
 ;         project (get-meta buffer :lein-project)
 ;         cur-project-path (project/current-project)
-;         project-map (app :project-map)
+;         project-map (app :projects)
 ;         tabbed-panel (app :repl-tabbed-panel)
 ;         repl-component (make-repl-component project)
 ;         rsta (select repl-component [:#editor])

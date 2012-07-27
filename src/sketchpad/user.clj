@@ -9,7 +9,8 @@
 					  [sketchpad.rsyntaxtextarea :as rsta]
 					  [sketchpad.core :as core]
 					  [sketchpad.buffer.search :as search]
-					  [leiningen.core.project :as project]
+            [sketchpad.project.project :as project]
+					  ; [leiningen.core.project :as project]
 					  [clojure.pprint :as pprint]
 					  [clojure.stacktrace :as stack-trace]
 					  [seesaw.dev :as seesaw.dev]
@@ -21,7 +22,7 @@
 
 (def app sketchpad.state/app)
 
-(def projects (:project-map @app))
+(def projects (:projects @app))
 
 (defn pp [& args]
 	(pprint/pprint args))
@@ -50,18 +51,24 @@
 		(catch java.lang.IllegalArgumentException e
 			(println "no project open in editor buffers"))))
 
-(defn lein-project [path]
-"return a parsed Leiningen project.clj by path"
-	(when-let [proj (project/read (str (current-project) "/project.clj"))]
-		proj))
+; (defn lein-project [path]
+; "return a parsed Leiningen project.clj by path"
+; 	(when-let [proj (project/read (str (current-project) "/project.clj"))]
+; 		proj))
 
-(defn current-lein-project []
-"return the current project's parsed Leiningen project.clj"
-	(try
-		(when-let [lein-proj (lein-project (current-project))]
-		lein-proj)
-	(catch java.lang.IllegalArgumentException e
-		(println "no project open in buffer"))))
+; (defn current-lein-project []
+; "return the current project's parsed Leiningen project.clj"
+; 	(try
+; 		(when-let [lein-proj (lein-project (current-project))]
+; 		lein-proj)
+; 	(catch java.lang.IllegalArgumentException e
+; 		(println "no project open in buffer"))))
+
+(defn repls []
+  (mapcat :repls @(:projects @app)))
+
+(defn buffers []
+  (mapcat :buffers @(:projects @app)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -35,10 +35,9 @@
 	(> (tab-count tabbed-panel) 0)))
 
 (defn component-at [tabbed-panel index]
-	(when (tabs? tabbed-panel)
-		(try 
-			(.getComponentAt tabbed-panel index)
-			(catch java.lang.ArrayIndexOutOfBoundsException e))))
+	(try 
+		(.getComponentAt tabbed-panel index)
+		(catch java.lang.ArrayIndexOutOfBoundsException e)))
 
 (defn component-at! [tabbed-panel index comp]
 	(.setComponentAt tabbed-panel index comp))
@@ -82,7 +81,6 @@
 	(.indexOfComponent (@state/app :editor-tabbed-panel) (get buffer :container)))
 
 (defn index-of-repl [repl]
-	(println (.indexOfComponent (@state/app :repl-tabbed-panel) (get-in repl [:component :container])))
 	(.indexOfComponent (@state/app :repl-tabbed-panel) (get-in repl [:component :container])))
 
 (defn insert-tab!
@@ -261,10 +259,6 @@
 	(add-tab! @(:title buffer) (:container buffer)))
 
 (defn buffer-tab-component! [buffer]
-	; (println buffer)
-	; (println )
-	; (println )
-	; (println tab)
 	(.setTabComponentAt (:editor-tabbed-panel @state/app) (index-of-buffer buffer) (get-in buffer [:tab :container])))
 
 (defn repl-tab-component! [repl]
@@ -297,4 +291,13 @@
 
 (defn current-repl-uuid []
   (get-meta (current-repl-text-area) :uuid))
+
+(defn current-repl []
+	(first (filter #(= (current-repl-uuid) (:uuid %)) (mapcat :repls @(:projects @state/app)))))
+
+(defn uuid-at [idx]
+	(let [text-area (select (component-at tabbed-panel idx) [:#editor])]
+		(get-meta text-area :uuid)))
+
+
 
