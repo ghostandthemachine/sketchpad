@@ -69,4 +69,5 @@
     {:type :tab
      :container container
      :button button
-     :label label}))
+     :label label
+     :label-color (atom (color :white))}))

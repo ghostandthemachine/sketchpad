@@ -110,10 +110,11 @@
 
 (defn add-buffer-to-project [project-path buffer]
 	(let [buffers (get-in @(@state/app :project-map) [project-path :active-buffers])]
-  (swap! buffers conj buffer)))
+  (swap! buffers assoc (:uuid buffer) buffer)))
 
-(defn remove-buffer-from-project [project buffer]
-  (swap! (get project :active-buffers) disj buffer))
+(defn remove-buffer-from-project [buffer]
+  	(let [buffers (get-in @(@state/app :project-map) [(:project-path buffer) :active-buffers])]
+  (swap! buffers dissoc (:uuid buffer))))
 
 (defn project-from-path [project-path]
 	(get @(@state/app :project-map) project-path))

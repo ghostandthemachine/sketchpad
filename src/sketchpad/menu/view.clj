@@ -6,7 +6,7 @@
 		[sketchpad.tab :as tab]
     [sketchpad.app :as app]
     [sketchpad.file.file :as file]
-    [sketchpad.editor.buffer :as buffer-new]
+    [sketchpad.buffer.io :as buffer.io]
     [sketchpad.project.project :as sketchpad.project]
     [sketchpad.option-windows :as option-windows]))
 
@@ -60,30 +60,34 @@
 
 (defn close-tab
 "Close the current tab. If the current buffer is dirty this will ask if you are sure you want to close the tab."
-[]
-(if (tab/tabs?)
-      (let [buffer (tab/current-buffer)
-            current-tab-state (:state buffer)]
+([] (close-tab (tab/current-buffer)))
+([buffer]
+(when (tab/tabs?)
+      (let [current-tab-state (:state buffer)]
         (if (@current-tab-state :clean)
           (tab/close-tab) ;; nothing has changed, just close.
           (do 
-            (let [answer (option-windows/close-or-save-current-dialogue (app/buffer-title))]
+            (let [answer (option-windows/close-or-save-current-dialogue @(:title buffer))]
               (cond 
                 (= answer 0) ;; answered yes to save
                   (do
                     (if @(:new-file? buffer) ;; is it a new buffer?
                       (do 
-                        (buffer-new/save-new-buffer! buffer)
+                        (buffer.io/save-new-buffer! buffer)
                         (tab/close-tab)
                         (sketchpad.project/remove-buffer-from-app buffer)
+                        (sketchpad.project/remove-buffer-from-project buffer)
+
                       (do
-                        (buffer-new/save-buffer! buffer)
+                        (buffer.io/save-buffer! buffer)
                         (tab/close-tab)
-                        (sketchpad.project/remove-buffer-from-app buffer)))))
+                        (sketchpad.project/remove-buffer-from-app buffer)
+                        (sketchpad.project/remove-buffer-from-project buffer)))))
                 (= answer 1) ;; don't save just close
                   (do 
                     (tab/close-tab)
-                    (sketchpad.project/remove-buffer-from-app buffer)))))))))
+                    (sketchpad.project/remove-buffer-from-app buffer)))))))
+                    (tab/save-tab-selections))))
 
 (defn make-view-menu-items []
 	{:goto-repl 		(seesaw.core/menu-item 	:text "Go to REPL input" 

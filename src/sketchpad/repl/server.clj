@@ -1,4 +1,5 @@
 (ns sketchpad.repl.server
+  (:use [clojure.pprint])
 	(:require clojure.main
 	    clojure.set
 	    [leiningen.core.eval :as eval]
@@ -7,7 +8,8 @@
 	    [clojure.tools.nrepl :as nrepl]
 	    [leiningen.core.classpath :as classpath]
 	    [leiningen.core.main :as main]
-	    [sketchpad.config :as config]))
+	    [sketchpad.config :as config]
+	    [sketchpad.repl.print :as repl.print]))
 
 
 (def repl-port-ids (atom 0))
@@ -18,6 +20,7 @@
 ; to extract it from the leiningen version currently being used, so that we use the same
 ; nrepl lein has been written to work with.
 (defn server [project]
+  (println "create a server for project: " (:path project))
 	(let [port (next-repl-port!)]
         (when-let [lein-project (:lein-project project)]
         	(let [updated-lein-project (update-in lein-project [:dependencies] #(conj % '[org.clojure/tools.nrepl "0.2.0-beta8"]))]
@@ -29,9 +32,22 @@
 		                           `(require '[clojure.tools.nrepl.server :as nrepl.server])))))))
 		port))
 
+(defn success [port]
+  (repl.print/pln)
+	(repl.print/pln "Created new nREPL server on port: " port)
+	(repl.print/prompt)
+	port)
+
+(defn failure []
+	(repl.print/pln)
+	(repl.print/pln "Could not create nREPL server...")
+	(repl.print/prompt))
 
 (defn repl-server
 "Create an outside REPL process for a given project and buffer."
-[lein-project]
-	(let [port (server lein-project)]
-		port))
+[project]
+	(if (= (:type project) :lein-project)
+		(if-let [port (server (:lein-project project))]
+		  	(success port)
+	  		(failure))
+		(println "Not a Leiningen project..")))

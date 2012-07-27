@@ -12,39 +12,21 @@
 						[sketchpad.editor.tab :as button-tab]
 						[sketchpad.tab :as tab]
 						[sketchpad.utils :as utils]
+						[sketchpad.project.project :as sketchpad.project]
 						[sketchpad.editor.component :as editor.component]
 						[sketchpad.editor.info-utils :as editor.info-utils]
+						[sketchpad.menu.view :as sketchpad.menu.view]
 						[sketchpad.file.file :as file]))
 
 (defn app-tabbed-panel []
 	(@state/app :editor-tabbed-panel))
 
 (defn add-mouse-handlers [buffer]
-	(let [tab-color (atom (color :white))
+	(let [label-color (get-in buffer [:tab :label-color])
 		  button (get-in buffer [:tab :button])]
-	(listen button :mouse-entered (fn [e] (reset! tab-color mouse-over-color)))
-	(listen button :mouse-exited  (fn [e] (reset! tab-color base-color)))
-	(listen button :mouse-pressed (fn [e]
-							;; CHECK FOR SAVE FIRST!!!!!!!
-							(if (@(:state buffer) :clean)
-								(do
-									(swap! tab-color (fn [_] pressed-color))
-									(try 
-										(catch java.lang.NullPointerException e))
-									(tab/remove-tab! buffer))
-								(do
-									(swap! tab-color (fn [_] pressed-color))
-									(let [idx (tab/index-of-buffer buffer)
-											answer (close-or-save-current-dialogue (tab/title-at idx))]
-										(cond 
-											(= answer 0)
-												(do
-													(file/save-file! buffer)
-													(tab/remove-tab! buffer))
-											(= answer 1)
-												(do 
-													(tab/remove-tab! buffer))))))
-							(tab/save-tab-selections )))))
+	(listen button :mouse-entered (fn [e] (reset! label-color mouse-over-color)))
+	(listen button :mouse-exited  (fn [e] (reset! label-color base-color)))
+	(listen button :mouse-pressed (fn [e] (sketchpad.menu.view/close-tab buffer)))))
 
 (defn dirty-doc-handler [e buffer]
 	(tab/mark-tab-dirty! buffer))
@@ -94,7 +76,7 @@
 					 :label (:label buffer-component)
 					 :file (atom nil)
 					 :state tab-state
-					 :new-file? true
+					 :new-file? (atom true)
 					 :uuid uuid
 					 :project project-path}]
 			(init-new-tab buffer))))

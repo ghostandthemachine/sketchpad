@@ -6,7 +6,6 @@
 			[sketchpad.file.file :as file]
 			[seesaw.core :as seesaw]
 			[sketchpad.tab :as tab]
-			[sketchpad.tree.utils :as tree.utils]
 			[sketchpad.project.project :as sketchpad.project]
 			[sketchpad.state :as state]
 			[sketchpad.tree.utils :as tree.utils]
@@ -53,7 +52,6 @@
 (defn buffer-from-file! [file-path project-path]
 	(let [project (sketchpad.project/project-from-path project-path)
 		  buffer (editor.build/project-buffer-tab project-path)]
-		  (clojure.pprint/pprint project)
 		(load-file-into-buffer project buffer file-path)
 		(init-buffer-tab-state buffer)
 		(sketchpad.project/add-buffer-to-project project-path buffer)
@@ -65,21 +63,4 @@
 		(init-buffer-tab-state buffer)
 		(sketchpad.project/add-buffer-to-app buffer)
 		(tab/show-buffer buffer)))
-
-(defn save-new-buffer! [buffer]
-	(when-let [new-file (file/save-file-as!)]
-		(let [new-file-title (.getName new-file)]
-		  (when (file/save-file! buffer new-file)
-		    (assoc (:file buffer) new-file)
-		    (tab/title-at! (tab/index-of-buffer buffer) new-file-title)
-		    (tab/mark-current-tab-clean! (@state/app :editor-tabbed-panel))
-		    (tree.utils/update-tree)
-			(update-editor-info-file-title (tab/title))))))
-
-(defn save-buffer! [buffer]
-	(let [file @(:file buffer)
-          file-title (.getName file)]
-        (file/save-file! buffer file)
-        (tree.utils/update-tree)
-		(update-editor-info-file-title (tab/title))))
 

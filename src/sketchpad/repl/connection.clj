@@ -5,8 +5,8 @@
 (defn connection
 "Create a connection to the given server."
 [port]
-	(let [conn (nrepl/connect :port port)
-		  client (nrepl/client conn config/repl-response-timeout)]
+	(with-open [conn (nrepl/connect :port port)]
+		(let [client (nrepl/client conn config/repl-response-timeout)]
 		{:client client
 		 :conn conn
-		 :port port}))
+		 :port port})))

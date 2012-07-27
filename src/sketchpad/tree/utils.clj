@@ -223,7 +223,7 @@
        .getLastPathComponent .getUserObject .toString))
 
 (defn get-selected-projects 
-([] (get-selected-projects (@state/app)))
+([] (get-selected-projects @state/app))
 ([app]
   (let [tree (app :docs-tree)
         selections (.getSelectionPaths tree)]

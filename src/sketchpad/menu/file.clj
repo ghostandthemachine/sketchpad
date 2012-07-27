@@ -23,17 +23,16 @@
 ([] (save-file! (tab/current-buffer)))
 ([buffer]
 "Save the current buffer."
-(println "menu.save-file! current-buffer: " (tab/current-buffer))
-(println "menu.save-file! buffer: " buffer)
 (let [new-file? @(buffer :new-file?)]
   (if new-file?
     (do
       (when-let [new-file (file/save-file-as!)]
         (let[new-file-title (.getName new-file)] 
-          (assoc (:file buffer) new-file)
-          (assoc (:new-file? buffer) false) 
+          (reset! (:file buffer) new-file)
+          (reset! (:new-file? buffer) false) 
           (when (file/save-file! buffer)
-            (tab/title-at! (tab/index-of-component buffer) new-file-title)
+            (tab/title-at! (tab/index-of-buffer buffer) new-file-title)
+            (reset! (:title buffer) new-file-title)
             (tab/mark-current-tab-clean! (@state/app :editor-tabbed-panel))))))
     (do
       (when (file/save-file! buffer)
@@ -48,8 +47,8 @@
        file-path (tree.utils/get-selected-file-path @state/app)]
 	  (when-let[new-file (file/save-file-as!)]
       (when @(:new-file? buffer)
-        (assoc (:new-file? buffer) false))
-    		(println "Saved file as: " new-file)))))
+        (reset! (:new-file? buffer) false)
+        (reset! (:title buffer) (.getName new-file)))))))
 
 (defn make-file-menu-items [app-atom]
  {:new-file (seesaw.core/menu-item :text "New File" 
