@@ -8,14 +8,16 @@
 		[sketchpad.repl.server :as repl.server]
     [sketchpad.repl.history :as repl.history]
 		[sketchpad.repl.connection :as repl.connection]
-		[sketchpad.repl.tab :as repl.tab]
-    [sketchpad.buffer :as buffer]
+		[sketchpad.editor.tab :as editor.tab]
+    [sketchpad.buffer.action :as buffer.action]
     [sketchpad.option-windows :as option-windows]
 		[sketchpad.config :as config]
     [sketchpad.tab :as tab]
     [sketchpad.state :as state]
+    [sketchpad.project.project :as sketchpad.project]
     [clojure.tools.nrepl :as nrepl])
-  (:import (java.io
+  (:import  (java.util UUID)
+            (java.io
              BufferedReader BufferedWriter
              InputStreamReader
              File PipedReader PipedWriter PrintWriter Writer
@@ -87,18 +89,18 @@
 	        repl-history (:history repl)
           text-area (:text-area repl)
 	        items (:items repl-history)
-	        cmd-str (cmd-attach-file-and-line (buffer/get-last-cmd text-area) file line)]
+	        cmd-str (cmd-attach-file-and-line (buffer.action/get-last-cmd (:text-area repl)  ) file line)]
       (append-text-update text-area (str \newline))
-		    (when-let [response (-> (nrepl/client conn config/repl-response-timeout)
-	   						        (nrepl/message {:op :eval :code cmd})
-								    nrepl/response-values)]
-          (let [response-str (str (first response))
-	             prompt-ns (-> (nrepl/client conn config/repl-response-timeout)
-	                     	(nrepl/message {:op :eval :code "(ns-name *ns*)"})
-	                     	nrepl/response-values)
-	             promp-str (str \newline (first prompt-ns) "=> ")]
-		    (append-text-update text-area response-str)
-	        (append-text-update text-area promp-str)))
+		    ; (when-let [response (-> (nrepl/client conn config/repl-response-timeout)
+	   		; 				        (nrepl/message {:op :eval :code cmd})
+						; 		    nrepl/response-values)]
+      ;     (let [response-str (str (first response))
+	     ;         prompt-ns (-> (nrepl/client conn config/repl-response-timeout)
+	     ;                 	(nrepl/message {:op :eval :code "(ns-name *ns*)"}) 
+	     ;                 	nrepl/response-values)
+	     ;         promp-str (str \newline (first prompt-ns) "=> ")]
+		    ; (append-text-update text-area response-str)
+	     ;    (append-text-update text-area promp-str)))
 	   (when (not= cmd-str (first @items))
 	      (swap! items replace-first cmd-str)
 	      (swap! items conj ""))
@@ -106,7 +108,7 @@
 
 (defn add-repl-behaviors [repl]
   (let [text-area (:text-area repl)
-        editor-repl-history (:repl-history repl)
+        repl-history (:repl-history repl)
         get-caret-pos #(.getCaretPosition text-area)
         ready #(let [caret-pos (get-caret-pos)
                      txt (.getText text-area)
@@ -118,12 +120,13 @@
                    (= -1 (first (brackets/find-enclosing-brackets
                                   txt
                                   caret-pos)))))
-        submit #(when-let [txt (buffer/get-last-cmd text-area)]
-                  (let [pos (editor-repl-history :pos)]
+        submit #(let [txt (buffer.action/get-last-cmd text-area)
+                      pos (get-in repl [:history :pos])]
+                      (println pos)
                     (if (correct-expression? txt)
                       (do 
-                        (send-repl-cmd text-area txt)
-                        (swap! pos (fn [p] 0))))))
+                        (send-repl-cmd repl txt)
+                        (reset! pos 0))))
         prev-hist #(repl.history/update-repl-history-display-position repl :dec)
         next-hist #(repl.history/update-repl-history-display-position repl :inc)]
     (utils/attach-child-action-keys text-area ["ENTER" ready submit])
@@ -132,49 +135,55 @@
 
 (defn add-repl-mouse-handlers
 "Takes a leinengin project, the parent tabbed panel, the repl buffer, and a function which takes 2 args: the lein project for this repl and the repl-buffer."
-[lein-project btn repl-tabbed-panel repl-buffer shut-down-fn]
-  (seesaw/listen btn
+[repl project]
+  (seesaw/listen (get-in repl [:tab :button])
           :mouse-clicked (fn [e] (let [yes-no-option (option-windows/close-repl-dialogue)]
                                    (if (= yes-no-option 0)
                                      (do
-                                        (apply shut-down-fn lein-project repl-buffer)
-                                        (tab/remove-tab! repl-tabbed-panel repl-buffer)))))))
+                                        (tab/remove-repl repl)
+                                        (sketchpad.project/remove-repl-from-project project repl)))))))
 
-(defn create-repl-map [text-area component container server-port conn history project]
+(defn create-repl-map [text-area component container history project uuid]
   {:type :repl
    :container container
    :component component
    :text-area text-area
-   :server-port server-port
-   :conn conn
-   :project project
+   ; :server-port server-port
+   ; :conn conn
+   :title (atom "nREPL")
+   :project (:path project)
+   :uuid uuid
    :history history})
 
-(defn repl [sketchpad-project]
+(defn build-ui [sketchpad-project]
   (let [component (repl.component/repl-component)
         text-area (:text-area component)
         container (:container component)
-        server-port (repl.server/server sketchpad-project)
-        conn (repl.connection/connection server-port)
+        ; server-port (repl.server/server sketchpad-project)
+        ; conn (repl.connection/connection server-port)
+        uuid (.. UUID randomUUID toString)
         repl-history (repl.history/history)
-        repl (create-repl-map text-area component container server-port conn repl-history sketchpad-project)
-        tab (repl.tab/add-button-tab repl)]
+        repl (create-repl-map text-area component container repl-history sketchpad-project uuid)
+        tab (editor.tab/button-tab component)]
         (assoc repl :tab tab)))
+
+(defn add-repl-to-project [project repl]
+  (sketchpad.project/add-repl-to-project project repl))
 
 (defn init-new-repl-tab 
 "Initialize REPL component handlers and add the component to the REPL tabbed panel component."
-[repl]
-  (let [repl-tabbed-panel (@state/app :repl-tabbed-panel)
-        repl-component (:container repl)
+[repl project]
+  (let [repl-component (:container repl)
         repl-text-area (:text-area repl)]
+    (add-repl-to-project (:path project) repl)
     (add-repl-behaviors repl)
-    (add-repl-mouse-handlers repl)
-    (tab/add-tab! repl-tabbed-panel repl-component)
-    (tab/show-tab! repl-tabbed-panel (tab/index-of-buffer repl-tabbed-panel repl))
-    (tab/focus-buffer repl-tabbed-panel repl))
+    (add-repl-mouse-handlers repl project)
+    (tab/add-repl repl)
+    (tab/show-repl repl)
+    (tab/focus-repl repl))
   repl)
 
-(defn new-repl-tab!
+(defn repl
 "Builds a new REPL component for a given project."
 [project]
-  (init-new-repl-tab (repl project)))
+  (init-new-repl-tab (build-ui project) project))

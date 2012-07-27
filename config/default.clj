@@ -14,7 +14,7 @@
 	:code-folding true
 	:auto-indent true
 	:eol-marker false
-	:font "MENLO-BOLD-12"
+	:font "MENLO-12"
 	:tab-size 				2
 	:hyper-links-enabled false
 	:mark-occurences false

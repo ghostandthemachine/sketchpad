@@ -9,7 +9,7 @@
 
 (defn create-repl []
   (let [project-path (first (utils/get-selected-projects))]
-    (repl/new-repl-tab! (project/project-from-path project-path))))
+    (repl/repl (project/project-from-path project-path))))
 
 (defn make-filetree-popup
   []

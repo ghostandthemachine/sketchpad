@@ -62,6 +62,7 @@
     (config! label :foreground (color :white) :focusable? false)
     (when-not  @sketchpad.sketchpad-prefs/show-tabs?
       (config! container :visible? false))
+    ; (bind/bind (:title repl) (bind/transform (fn [s] s)) (bind/property label :text))
     (doto container
       (.setOpaque false)
       (.setBorder (javax.swing.BorderFactory/createEmptyBorder 0 0 0 0))

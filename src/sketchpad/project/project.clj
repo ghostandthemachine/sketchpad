@@ -62,8 +62,8 @@
 	  									:path project-path
 	  									:id id 
 	  									:theme theme 
-	  									:active-repls (atom #{}) 
-	  									:active-buffers (atom nil)})))
+	  									:active-repls (atom {}) 
+	  									:active-buffers (atom {})})))
 	  (if (lein-project-file?)
 		  (when-let [lein-project (lein-project/read (str project-path "/project.clj"))]
 		  	(swap! projects (fn [m] (assoc-in m [project-path :lein-project] lein-project)))
@@ -116,6 +116,26 @@
   	(let [buffers (get-in @(@state/app :project-map) [(:project-path buffer) :active-buffers])]
   (swap! buffers dissoc (:uuid buffer))))
 
+(defn add-repl-to-project [project-path repl]
+	(let [buffers (get-in @(@state/app :project-map) [project-path :active-repls])]
+  (swap! buffers assoc (:uuid repl) repl)))
+
+(defn remove-repl-from-project [repl]
+  	(let [buffers (get-in @(@state/app :project-map) [(:project-path repl) :active-repls])]
+  (swap! buffers dissoc (:uuid repl))))
+
 (defn project-from-path [project-path]
 	(get @(@state/app :project-map) project-path))
+
+(defn project-theme [project-path]
+	(:theme (project-from-path project-path)))
+
+(defn project-color [project-path]
+	(:color (project-theme project-path)))
+
+(defn buffer-theme [buffer]
+	(project-theme (:project buffer)))
+
+(defn buffer-color [buffer]
+	(project-color (:project buffer)))
 

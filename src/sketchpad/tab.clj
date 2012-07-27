@@ -96,6 +96,10 @@
 ([tabbed-panel title comp]
 	(.addTab tabbed-panel title comp)))
 
+(defn add-repl
+[repl]
+	(.addTab (@state/app :repl-tabbed-panel) @(:title repl) (:container repl)))
+
 (defn remove-tab! 
 	([buffer]
 		(remove-tab! 
@@ -104,20 +108,12 @@
 	([tabbed-panel buffer]
 	(.removeTabAt tabbed-panel (index-of-buffer buffer))))
 
-(defn remove-repl-tab! [tabbed-panel index]
-	(let [rsta (select (component-at tabbed-panel index) [:#editor])]
-		(if-let [repl (get-meta rsta :repl)]
-			(.destroy (repl :proc)))
-	(.removeTabAt tabbed-panel index)))
+(defn remove-repl
+[repl]
+	(.removeTabAt (@state/app :repl-tabbed-panel) (index-of-repl repl)))
 
 (defn current-tab-index 
 ([] (current-tab-index (@state/app :editor-tabbed-panel)))
-([tabbed-panel]
-	(.getSelectedIndex tabbed-panel)))
-
-(defn current-tab-index 
-([]
-	(.getSelectedIndex (@state/app :editor-tabbed-panel)))
 ([tabbed-panel]
 	(.getSelectedIndex tabbed-panel)))
 
@@ -141,6 +137,10 @@
 (defn show-buffer
 [buffer]
 	(set-selected! (@state/app :editor-tabbed-panel) (index-of-component (@state/app :editor-tabbed-panel) (:container buffer))))
+
+(defn show-repl
+[repl]
+	(set-selected! (@state/app :repl-tabbed-panel) (index-of-repl repl)))
 
 (defn next-tab []
 	(let [tabbed-panel (@state/app :editor-tabbed-panel)]
@@ -251,6 +251,10 @@
 (defn focus-buffer [buffer]
 	(when (not (nil? buffer))
 	  (.grabFocus (:text-area buffer))))
+
+(defn focus-repl [repl]
+	(when (not (nil? repl))
+	  (.grabFocus (:text-area repl))))
 
 (defn add-buffer [buffer]
 	(add-tab! @(:title buffer) (:container buffer)))
