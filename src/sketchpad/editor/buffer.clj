@@ -59,7 +59,7 @@
 		(tab/show-buffer buffer)))
 
 (defn blank-clj-buffer! []
-	(let [buffer (editor.build/scratch-buffer-tab (tree.utils/get-root-path))]
+	(let [buffer (editor.build/scratch-buffer-tab "tmp")]
 		(init-buffer-tab-state buffer)
 		(sketchpad.project/add-buffer-to-app buffer)
 		(tab/show-buffer buffer)))

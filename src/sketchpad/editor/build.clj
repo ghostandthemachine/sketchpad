@@ -79,8 +79,7 @@
 					 :project project-path}]
 		(tab/add-tab! "untitled" container)
 		(let [tab (custom-tab buffer)]
-			(init-new-tab buffer)
-			(assoc buffer :tab tab))))
+	(init-new-tab (assoc buffer :tab tab)))))
 
 (defn project-buffer-tab
 [project-path]

@@ -100,8 +100,12 @@
     ;; global
     (add-visibility-shortcut app)))
 
+(defn- get-classpath []
+   (sort (map (memfn getPath) 
+              (seq (.getURLs (java.lang.ClassLoader/getSystemClassLoader))))))
+
 (defn init-projects []
-  ; (project/add-project "~/")
+  (project/add-project "tmp")
   (doall (map #(project/add-project %) (load-project-set))))
 
 ;; startup
