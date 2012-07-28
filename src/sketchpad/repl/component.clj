@@ -22,12 +22,14 @@
 
 (defn repl-component 
 ([]
-  (let [text-area (rsyntax/text-area :border nil
+  (let [text-area (rsyntax/text-area 
+                                :border (line-border :thickness 1 :color config/app-color)                          
                                 :syntax :clojure
                                 :id     :editor
                                 :class  :repl)
         repl-scroll-pane (RTextScrollPane. text-area false)
         repl-container (vertical-panel :items [repl-scroll-pane] :class :repl-container)]
+    (config! repl-scroll-pane :border (line-border :thickness 1 :color config/app-color))
     (init-repl text-area)
     {:container repl-container
      :text-area text-area

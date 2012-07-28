@@ -80,8 +80,10 @@
 (defn index-of-buffer [buffer]
 	(.indexOfComponent (@state/app :editor-tabbed-panel) (get buffer :container)))
 
-(defn index-of-repl [repl]
-	(.indexOfComponent (@state/app :repl-tabbed-panel) (get-in repl [:component :container])))
+(defn index-of-repl 
+([repl] (index-of-repl (@state/app :repl-tabbed-panel) repl))
+([tabbed-panel repl]
+	(.indexOfComponent tabbed-panel (get-in repl [:component :container]))))
 
 (defn insert-tab!
 ([title comp i] (insert-tab! (:editor-tabbed-panel @state/app) title comp i))
@@ -261,8 +263,10 @@
 (defn buffer-tab-component! [buffer]
 	(.setTabComponentAt (:editor-tabbed-panel @state/app) (index-of-buffer buffer) (get-in buffer [:tab :container])))
 
-(defn repl-tab-component! [repl]
-	(.setTabComponentAt (:repl-tabbed-panel @state/app) (index-of-repl repl) (get-in repl [:tab :container])))
+(defn repl-tab-component! 
+([repl] (repl-tab-component! (@state/app :repl-tabbed-panel) repl))
+([tabbed-panel repl]
+	(.setTabComponentAt tabbed-panel (index-of-repl tabbed-panel repl) (get-in repl [:tab :container]))))
 
 (defn buffer-title!
 ([buffer] (buffer-title! buffer @(get-in buffer [:component :title])))

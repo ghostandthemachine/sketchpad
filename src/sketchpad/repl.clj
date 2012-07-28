@@ -25,6 +25,7 @@
             [sketchpad.repl-tab-ui :as rtab]
             [sketchpad.rtextscrollpane :as sp]
             [clojure.tools.nrepl :as repl]
+            [sketchpad.repl.tab :as repl.tab]
             [leiningen.core.project :as lein])
   (:import (org.fife.ui.rtextarea RTextScrollPane)
            (java.io.IOException)))
@@ -362,9 +363,11 @@
                                             :border nil)
         editor-repl (rsyntax/text-area 
                                       :syntax          :clojure    
-                                      :border          nil                          
+                                      :border          (line-border :thickness 1 :color config/app-color)                          
                                       :id             :editor
                                       :class          :repl)
+
+        repl-title (atom "Sketchpad")
 
         repl-history {:items (atom nil) :pos (atom 0) :last-end-pos (atom 0)}
         repl-in-scroll-pane (RTextScrollPane. editor-repl false) ;; default to no linenumbers
@@ -373,20 +376,29 @@
                                       :id             :repl-container
                                       :class          :repl)
         repl-undo-count (atom 0)
-        repl-que (create-editor-repl editor-repl)]
+        repl-que (create-editor-repl editor-repl)
+        tab (repl.tab/label-tab {:container repl-container
+                                  :title repl-title})
+       repl {:type :editor-repl
+             :container repl-container
+             :component {:container repl-container :text-area editor-repl}
+             :title repl-title
+             :history repl-history
+             :que repl-que
+             :tab tab}]
 
     (put-meta! editor-repl :repl-history repl-history)
     (put-meta! editor-repl :repl-que repl-que)
     
     (.setUI repl-tabbed-panel (rtab/sketchpad-repl-tab-ui repl-tabbed-panel))
     
-    (listen repl-tabbed-panel :selection 
-       (fn [e] 
-         (let [num-tabs (tab-count repl-tabbed-panel)]
-          (if (> 0 num-tabs)
-            (swap! app-atom (fn [app] (assoc app :current-repl (current-buffer (app :repl-tabbed-panel)))))))))
-
-    (add-tab! repl-tabbed-panel "sketchpad" repl-container)
+    ; (listen repl-tabbed-panel :selection 
+    ;    (fn [e] 
+    ;      (let [num-tabs (tab-count repl-tabbed-panel)]
+    ;       (if (> 0 num-tabs)
+    ;         (swap! app-atom (fn [app] (assoc app :current-repl (current-buffer (app :repl-tabbed-panel)))))))))
+    (add-tab! repl-tabbed-panel "Sketchpad" repl-container)
+    (repl-tab-component! repl-tabbed-panel repl)
     
     (set-input-map! editor-repl (default-input-map))
     

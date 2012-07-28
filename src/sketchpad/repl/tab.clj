@@ -40,20 +40,6 @@
 			(.setFocusable false))
 		button))
 
-; (defn tab-button 
-; ([buffer-component]
-;   (let [button (button :focusable? false
-;                     :tip "close this tab"
-;                     :minimum-size [20 :by 20]
-;                     :size [20 :by 20]
-;                     :id :close-button
-;                     :paint (partial paint-tab-button buffer-component))]
-;     (doto button
-;       (.setBorderPainted false)
-;       (.setRolloverEnabled false)
-;       (.setFocusable false))
-;     button)))
-
 (defn button-tab [repl]
 	(let [label (label :text @(:title repl) 
 		  				:foreground (color :white)
@@ -72,6 +58,19 @@
 		 :label-color (atom (color :white))}))
 
 
-
+(defn label-tab [repl]
+	(let [label (label :text @(:title repl) 
+		  				:foreground (color :white)
+		  				:focusable? false)
+		  container (flow-panel :align :right :items [label])]
+		(bind/bind (:title repl) (bind/transform (fn [s] s)) (bind/property label :text))
+		(doto container
+			(.setOpaque false)
+			(.setBorder (javax.swing.BorderFactory/createEmptyBorder 0 0 0 0))
+			(.setMinimumSize (Dimension. 300 20)))
+		{:type :tab
+		 :label label
+		 :container container
+		 :label-color (atom (color :white))}))
 
 
