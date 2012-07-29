@@ -27,10 +27,9 @@
 				(.start
 					(Thread.
 						(bound-fn []
-							(eval/eval-in-project project
+							(eval/eval-in-project updated-lein-project
 		                           `(require '[clojure.tools.nrepl.server :as nrepl.server])
-		                           `(let [server (nrepl.server/start-server :port ~port)]
-		                           		(spit "/Users/jonrose/code/projects/sketchpad/log/repl/repl.log" (str server)))))))))
+		                           `(let [server (nrepl.server/start-server :port ~port)])))))))
 		port))
 
 (defn success [port]
@@ -47,8 +46,7 @@
 (defn repl-server
 "Create an outside REPL process for a given project and buffer."
 [project]
-	(if (= (:type project) :lein-project)
-		(if-let [port (server (:lein-project project))]
-		  	(success port)
-	  		(failure))
-		(println "Not a Leiningen project..")))
+	(if-let [port (server project)]
+	  	(success port)
+  		(failure))
+	(println "Not a Leiningen project.."))

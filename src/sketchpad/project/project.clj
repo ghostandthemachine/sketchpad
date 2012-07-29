@@ -61,8 +61,7 @@
 	  									:buffers (atom {})})))
 	  (if (lein-project-file?)
 		  (when-let [lein-project (lein-project/read (str project-path "/project.clj"))]
-		  	(swap! projects (fn [m] (assoc-in m [project-path :lein-project] lein-project)))
-		  	(swap! projects (fn [m] (assoc-in m [project-path :type] :lein-project)))))))
+		  	(swap! projects (fn [m] (assoc-in m [project-path :lein-project] lein-project)))))))
 
 (defn add-buffer-to-project! [project-path buffer] 
 	(let [text-area (:text-area buffer)
