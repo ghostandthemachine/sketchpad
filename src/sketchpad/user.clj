@@ -10,7 +10,6 @@
 					  [sketchpad.core :as core]
 					  [sketchpad.buffer.search :as search]
             [sketchpad.project.project :as project]
-					  ; [leiningen.core.project :as project]
 					  [clojure.pprint :as pprint]
 					  [clojure.stacktrace :as stack-trace]
 					  [seesaw.dev :as seesaw.dev]

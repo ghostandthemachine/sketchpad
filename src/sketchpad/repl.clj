@@ -407,7 +407,7 @@
     (install-auto-completion editor-repl)
     
     (config! repl-in-scroll-pane :background config/app-color)
-    (config/apply-editor-prefs! config/default-editor-prefs editor-repl)
+    (config/apply-repl-prefs! editor-repl)
 
 		(send-to-editor-repl editor-repl "(require 'sketchpad.user)(in-ns 'sketchpad.user)")
     

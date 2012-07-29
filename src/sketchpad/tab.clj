@@ -293,12 +293,22 @@
 (defn current-repl-text-area []
   (select (current-tab (@state/app :repl-tabbed-panel)) [:#editor]))
 
-(defn current-repl-uuid []
+(defn get-uuid []
   (get-meta (current-repl-text-area) :uuid))
 
 (defn current-repl []
-	(first (filter #(= (current-repl-uuid) (:uuid %)) (mapcat :repls @(:projects @state/app)))))
+	(first (filter #(= (get-uuid) (:uuid %)) (mapcat :repls @(:projects @state/app)))))
 
+(defn current-buffer 
+([]
+	(current-buffer (@state/app :editor-tabbed-panel)))
+([tabbed-panel]
+  (if (tabs? tabbed-panel)
+	(do 
+		(let [uuid (current-buffer-uuid tabbed-panel)
+			  buffers @(current-buffers)]
+  			(get buffers uuid)))
+  	"No buffers are currently open")))
 (defn uuid-at [idx]
 	(let [text-area (select (component-at tabbed-panel idx) [:#editor])]
 		(get-meta text-area :uuid)))

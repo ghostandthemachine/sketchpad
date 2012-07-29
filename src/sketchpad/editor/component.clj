@@ -1,12 +1,13 @@
 (ns sketchpad.editor.component
   (:use [seesaw core border meta color graphics]
         [sketchpad auto-complete rsyntaxtextarea default-mode scroll-bar-ui scroll-pane-ui])
-  (:import (java.awt Adjustable Font)
+  (:import (java.awt Adjustable Font Dimension)
            (javax.swing JScrollBar UIManager)
            (javax.swing JLayeredPane))
   (:require [sketchpad.rsyntax :as rsyntax]
             [sketchpad.rtextscrollpane :as sp]
             [sketchpad.config :as config]
+            [sketchpad.scroll-bar-ui :as scrollbar.ui]
             [sketchpad.editor.info :as editor.info]
             [sketchpad.editor.info-utils :as editor.info-utils]))
 
@@ -24,10 +25,13 @@
                                               :items [doc-scroller-container] :class :container)]
     (set-input-map! text-area (default-input-map))
 
-    (config/apply-editor-prefs! config/default-editor-prefs text-area)
-    (config/apply-buffer-scroller-prefs! config/default-buffer-scroller-prefs doc-scroll-pane)
-    (config/apply-gutter-prefs! config/default-gutter-prefs (.getGutter doc-scroll-pane))
+    (config/apply-editor-prefs! text-area)
+    (config/apply-buffer-scroller-prefs! doc-scroll-pane)
+    (config/apply-gutter-prefs! (.getGutter doc-scroll-pane))
     (install-auto-completion text-area)
+
+    (.setPreferredSize (.getVerticalScrollBar doc-scroll-pane) (Dimension. 0 0))
+    (.setPreferredSize (.getHorizontalScrollBar doc-scroll-pane) (Dimension. 0 0))
 
     {:type :buffer-component
      :text-area text-area

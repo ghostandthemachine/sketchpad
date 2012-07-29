@@ -89,7 +89,6 @@
         icon (.createImage (Toolkit/getDefaultToolkit) icon-url)]
     (.setIconImage frame icon)
     (set-osx-icon icon)
-    (config! doc-split-pane :background (color :black))
     app))
 
 
@@ -126,6 +125,7 @@
     (let [frame (app :frame)]
       (persist-window-shape sketchpad-prefs "main-window" frame)
       (on-window-activation frame #(update-project-tree (app :docs-tree))))
+    (config/apply-sketchpad-prefs!)
     (app :frame)))
 
 (defn show []

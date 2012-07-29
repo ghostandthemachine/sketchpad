@@ -14,7 +14,7 @@
 	:code-folding true
 	:auto-indent true
 	:eol-marker false
-	:font "MENLO-12"
+	:font "MENLO-BOLD-10"
 	:tab-size 				2
 	:hyper-links-enabled false
 	:mark-occurences false
@@ -25,7 +25,47 @@
 	:tab-lines-enabled true
 	:tab-lines-color [100 100 100 100]
 	:templates-enabled true
-	:close-curly-braces true})
+	:close-curly-braces true
+	; :current-line-highlight false
+	; :current-line-highlight-fade false
+	; :current-line-highlight-color [150 150 150]
+	; :margin-line true
+	; :margin-line-position 10
+	; :margin-line-color [255 255 255]
+	})
+
+(def default-repl-prefs
+   {:buffer-theme "themes/dark.xml" ;; load RSyntaxTextArea from xml theme file
+	;; params after this point will overide those set by the theme selection above
+	; :background-image "img/invisible.png"
+	:whitespace-visible false
+	:line-wrap 	false
+	:rounded-selection-edges true
+	:animate-bracket-matching true
+	:anti-aliasing true
+	:code-folding true
+	:auto-indent true
+	:eol-marker false
+	:font "MENLO-BOLD-10"
+	:tab-size 				2
+	:hyper-links-enabled false
+	:mark-occurences false
+	:mark-occurences-color "#ADA6A9"
+	:paint-mark-occurences-border false
+	:matched-bracket-bg-color [80 240 70 50]
+	:matched-bracket-border-color [80 240 70 100]
+	:tab-lines-enabled true
+	:tab-lines-color [100 100 100 100]
+	:templates-enabled true
+	:close-curly-braces true
+	; :current-line-highlight false
+	; :current-line-highlight-fade false
+	; :current-line-highlight-color [150 150 150]
+	; :margin-line true
+	; :margin-line-position 10
+	; :margin-line-color [255 255 255]
+	:response-timeout 1000
+	})
 
 (def default-auto-completion-prefs
   { :auto-complete true
@@ -38,24 +78,30 @@
   	:trigger-key "control SPACE"})
 
 (def default-buffer-scroller-prefs
-  { :fold-indicator-enabled false ;; not functional until new Clojure Lexxer is integrated
+  { :vertical-scroll-bar false
+   	:horizontal-scroll-bar false
+  	:fold-indicator-enabled false ;; not functional until new Clojure Lexxer is integrated
    	:line-numbers-enabled true
    	:scroller-border-enabled false})
+
+(def default-file-scroller-tree-prefs
+	{:vertical-scroll-bar false
+	 :horizontal-scroll-bar false})
+
+(def default-file-tree-prefs
+	{})
 
 (def default-gutter-prefs
   {:border-color                       [0 0 0 0]
    :bookmarking-enabled                false
    :fold-indicator-enabled             false  ;; not functional until new Clojure Lexxer is integrated
-   :line-number-color                  [255 255 255]
-   :line-number-font                   "MENLO-14"
+   :line-number-color                  [143 144 134]
+   :line-number-font                   "MENLO-10"
    :line-number-start-index            1
-   :active-range-color 				   [0 255 0 15]})
+   :active-range-color 				   [50 50 41]})
 
 (def default-sketchpad-prefs
 	{:show-tabs? true})
-
-(def default-repl-prefs
-	{:response-timeout 1000})
 
 (def default-project-style-prefs
 	[(color :white) (color :orange) (color :green) (color :yellow) (color :blue) (color :red) (color :purple) (color :pink)])

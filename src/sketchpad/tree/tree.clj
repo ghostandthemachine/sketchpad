@@ -76,8 +76,7 @@
                             (handle-right-click sel-row sel-path app)
                             (handle-single-click sel-row sel-path app-atom))
                         (= click-count 2)
-                          (handle-double-click sel-row sel-path app-atom))))
-                  )]
+                          (handle-double-click sel-row sel-path app-atom)))))]
       listener))
 
 
@@ -138,6 +137,8 @@
   (let [cell-renderer (cast DefaultTreeCellRenderer (.getCellRenderer docs-tree))]
   (.setBackgroundNonSelectionColor cell-renderer config/file-tree-bg))
   (project-state/add-projects-to-app app-atom)
+  (config/apply-file-tree-scroller-prefs! docs-tree-scroll-pane)
+  ; (config/apply-file-tree-prefs! docs-tree)
   (swap! app-atom conj (gen-map
                           docs-tree
                           docs-tree-scroll-pane

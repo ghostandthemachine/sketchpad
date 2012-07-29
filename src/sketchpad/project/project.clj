@@ -43,11 +43,6 @@
 (defn get-project [project-path]
 	(get (projects) project-path))
 
-(defn current-project []
-	(let [cur-buffer (buffer)
-		  current-project (get-meta cur-buffer :project)]
-		current-project))
-
 (defn get-project-id! []
 	(swap! project-ids #(inc %)))
 
@@ -135,4 +130,8 @@
 		  long-keys (keys @(:projects @state/app))]
 		 (or (contains? short-keys project-name) (contains? long-keys project-name))))
 
+(defn current-project []
+	(let [cur-buffer (buffer)
+		  current-project (project-from-path (:project cur-buffer))]
+		current-project))
 

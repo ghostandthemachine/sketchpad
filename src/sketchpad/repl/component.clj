@@ -15,7 +15,7 @@
 (defn init-repl 
 "Init the repl component prefs and handlers."
 [text-area]
-  (config/apply-editor-prefs! config/default-editor-prefs text-area)
+  (config/apply-repl-prefs! text-area)
   (set-input-map! text-area (default-input-map))
   (install-auto-completion text-area)  
   (init-prompt text-area))

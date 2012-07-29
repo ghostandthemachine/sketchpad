@@ -25,7 +25,7 @@
                                             :overflow :wrap
                                             :background (color :black)
                                             :border (empty-border :thickness 0))]
-    (.setUI editor-tabbed-panel (editor.ui/sketchpad-editor.ui editor-tabbed-panel))
+    (.setUI editor-tabbed-panel (editor.ui/sketchpad-tab-ui editor-tabbed-panel))
     (swap! state/app conj (gen-map
                            editor-tabbed-panel))
     (tab-change-handler editor-tabbed-panel)
