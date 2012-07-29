@@ -96,7 +96,7 @@
 						; 		    nrepl/response-values)]
       ;     (let [response-str (str (first response))
 	     ;         prompt-ns (-> (nrepl/client conn config/repl-response-timeout)
-	     ;                 	(nrepl/message {:op :eval :code "(ns-name *ns*)"}) 
+	     ;                 	(nrepl/message {:op :eval :code "(ns-name *ns*)"})
 	     ;                 	nrepl/response-values)
 	     ;         promp-str (str \newline (first prompt-ns) "=> ")]
 		    ; (buffer.action/append-text-update text-area response-str)
@@ -123,7 +123,7 @@
         submit #(let [txt (buffer.action/get-last-cmd text-area)
                       pos (get-in repl [:history :pos])]
                     (if (correct-expression? txt)
-                      (do 
+                      (do
                         (send-repl-cmd repl txt)
                         (reset! pos 0))))
         prev-hist #(repl.history/update-repl-history-display-position repl :dec)
@@ -142,37 +142,28 @@
                                         (tab/remove-repl repl)
                                         (sketchpad.project/remove-repl-from-project repl)))))))
 
-(defn create-repl-map [component history project uuid conn server-port]
-  {:type :repl
-   :container (:container component)
-   :component component
-   :text-area (:text-area component)
-   :server-port server-port
-   :conn conn
-   :title (:title component)
-   :project (:path project)
-   :uuid uuid
-   :history history})
-
-(defn build-ui [sketchpad-project]
-  (let [component (repl.component/repl-component)
-        server-port (repl.server/repl-server sketchpad-project)
-        conn (repl.connection/connection server-port)
-        uuid (.. UUID randomUUID toString)
-        repl-history (repl.history/history)
-        repl (create-repl-map component repl-history sketchpad-project uuid conn server-port)
+(defn- repl-panel
+  []
+  (let [component    (repl.component/repl-component)
+        server-port  (repl.server/server sketchpad-project)
+        repl {:type :repl
+              :component   component
+              :container   (:container component)
+              :text-area   (:text-area component)
+              :server-port server-port
+              :conn        (repl.connection/connection server-port)
+              :title       (:title component)
+              :project     (:path project)
+              :uuid        (.. UUID randomUUID toString)
+              :history     (repl.history/history)}
         tab (repl.tab/button-tab repl)]
     (assoc repl :tab tab)))
 
-(defn add-repl-to-project [project repl]
-  (sketchpad.project/add-repl-to-project project repl))
-
-(defn init-new-repl-tab 
-"Initialize REPL component handlers and add the component to the REPL tabbed panel component."
-[repl project]
-  (let [repl-component (:container repl)
-        repl-text-area (:text-area repl)]
-    (add-repl-to-project (:path project) repl)
+(defn repl
+"Builds a new REPL component for a given project."
+[project]
+  (let [repl (repl-panel)]
+    (sketchpad.project/add-repl-to-project (:path project) repl)
     (add-repl-behaviors repl)
     (add-repl-mouse-handlers repl project)
     (tab/add-repl repl)
@@ -180,11 +171,6 @@
     (tab/focus-repl repl))
   (tab/repl-tab-component! repl)
   repl)
-
-(defn repl
-"Builds a new REPL component for a given project."
-[project]
-  (init-new-repl-tab (build-ui project) project))
 
 
 ; (first (filter #(= uuid (:uuid %)) (mapcat :repls @projects)))
