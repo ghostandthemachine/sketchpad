@@ -1,4 +1,4 @@
-	(ns sketchpad.project.project
+(ns sketchpad.project.project
 	(:use [clojure.pprint]
 				[seesaw color meta])
 	(:require [sketchpad.state :as state]

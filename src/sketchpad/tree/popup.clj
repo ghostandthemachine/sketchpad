@@ -9,7 +9,8 @@
 
 (defn create-repl []
   (let [project-path (first (utils/get-selected-projects))]
-    (repl/repl (project/project-from-path project-path))))
+    (seesaw/invoke-later 
+      (repl/repl (project/project-from-path project-path)))))
 
 (defn make-filetree-popup
   []

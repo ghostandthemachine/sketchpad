@@ -6,5 +6,5 @@
   (buffer.action/append-text rsta (str \newline (ns-name *ns*) "=> "))
   (.setCaretPosition rsta (.getLastVisibleOffset rsta)))
 
-(defn pln [rsta value]
-  (buffer.action/append-text rsta (str value \newline)))
+(defn pln [rsta & values]
+  (buffer.action/append-text rsta (str values \newline)))

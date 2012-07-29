@@ -142,11 +142,11 @@
                                         (tab/remove-repl repl)
                                         (sketchpad.project/remove-repl-from-project repl)))))))
 
-(defn create-repl-map [text-area component container history project uuid conn server-port]
+(defn create-repl-map [component history project uuid conn server-port]
   {:type :repl
-   :container container
+   :container (:container component)
    :component component
-   :text-area text-area
+   :text-area (:text-area component)
    :server-port server-port
    :conn conn
    :title (:title component)
@@ -156,13 +156,11 @@
 
 (defn build-ui [sketchpad-project]
   (let [component (repl.component/repl-component)
-        text-area (:text-area component)
-        container (:container component)
-        server-port (repl.server/server sketchpad-project)
+        server-port (repl.server/repl-server sketchpad-project)
         conn (repl.connection/connection server-port)
         uuid (.. UUID randomUUID toString)
         repl-history (repl.history/history)
-        repl (create-repl-map text-area component container repl-history sketchpad-project uuid conn server-port)
+        repl (create-repl-map component repl-history sketchpad-project uuid conn server-port)
         tab (repl.tab/button-tab repl)]
     (assoc repl :tab tab)))
 

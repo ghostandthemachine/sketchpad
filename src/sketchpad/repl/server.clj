@@ -6,6 +6,7 @@
 	    [leiningen.core.project :as project]
 	    [clojure.tools.nrepl.server :as nrepl.server]
 	    [clojure.tools.nrepl :as nrepl]
+	    [clojure.tools.nrepl.ack :as nrepl.ack]
 	    [leiningen.core.classpath :as classpath]
 	    [leiningen.core.main :as main]
 	    [sketchpad.config :as config]
@@ -14,12 +15,12 @@
 
 (def repl-port-ids (atom 0))
 (def base-repl-port 2000)
-(defn next-repl-port! [] (+ base-repl-port (swap! repl-port-ids inc)))
+(defn- next-repl-port! [] (+ base-repl-port (swap! repl-port-ids inc)))
 
 ; TODO: The tools.nrepl dependency should not be hard coded here.  Instead it should be setup
 ; to extract it from the leiningen version currently being used, so that we use the same
 ; nrepl lein has been written to work with.
-(defn server [project]
+(defn- server [project]
   (println "create a server for project: " (:path project))
 	(let [port (next-repl-port!)]
         (when-let [lein-project (:lein-project project)]
@@ -28,17 +29,17 @@
 					(Thread.
 						(bound-fn []
 							(eval/eval-in-project updated-lein-project
-		                           `(require '[clojure.tools.nrepl.server :as nrepl.server])
-		                           `(nrepl.server/start-server :port ~port)]))))))
+		                           `(let [server# (nrepl.server/start-server :port ~port)])
+		                           `(require '[clojure.tools.nrepl.server :as nrepl.server])))))))
 		port))
 
-(defn success [port]
-  (repl.print/pln)
-	(repl.print/pln "Created new nREPL server on port: " port)
-	(repl.print/prompt)
+(defn- success [port]
+  ; (repl.print/pln)
+	(println "Created new nREPL server on port: " (nrepl.ack/wait-for-ack 20000))
+	; (repl.print/prompt)
 	port)
 
-(defn failure []
+(defn- failure []
 	(repl.print/pln)
 	(repl.print/pln "Could not create nREPL server...")
 	(repl.print/prompt))

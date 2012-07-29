@@ -43,13 +43,13 @@
 		(catch java.lang.IllegalArgumentException e
 			(println "no buffer open editor"))))
 			
-(defn current-project []
-"return the current Leiningen project being edited in the editor component"
-	(try
-		(when-let [cur-project (get-meta (current-text-area) :project)]
-			cur-project)
-		(catch java.lang.IllegalArgumentException e
-			(println "no project open in editor buffers"))))
+; (defn current-project []
+; "return the current Leiningen project being edited in the editor component"
+; 	(try
+; 		(when-let [cur-project (get-meta (current-text-area) :project)]
+; 			cur-project)
+; 		(catch java.lang.IllegalArgumentException e
+; 			(println "no project open in editor buffers"))))
 
 ; (defn lein-project [path]
 ; "return a parsed Leiningen project.clj by path"
