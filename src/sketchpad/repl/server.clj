@@ -28,8 +28,9 @@
 					(Thread.
 						(bound-fn []
 							(eval/eval-in-project project
-		                           `(nrepl.server/start-server :port ~port)
-		                           `(require '[clojure.tools.nrepl.server :as nrepl.server])))))))
+		                           `(require '[clojure.tools.nrepl.server :as nrepl.server])
+		                           `(let [server (nrepl.server/start-server :port ~port)]
+		                           		(spit "/Users/jonrose/code/projects/sketchpad/log/repl/repl.log" (str server)))))))))
 		port))
 
 (defn success [port]

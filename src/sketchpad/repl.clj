@@ -21,7 +21,7 @@
             [clojure.java.io :as io]
             [sketchpad.editor-kit :as kit]
             [sketchpad.config :as config]
-            [sketchpad.buffer.edit :as buffer.edit]
+            [sketchpad.buffer.action :as buffer.action]
             [sketchpad.repl-tab-ui :as rtab]
             [sketchpad.rtextscrollpane :as sp]
             [clojure.tools.nrepl :as repl]
