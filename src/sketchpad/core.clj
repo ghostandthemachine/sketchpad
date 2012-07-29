@@ -19,11 +19,12 @@
         [clooj.indent]
         [sketchpad.tree.tree]
         [sketchpad.tree.utils]
-        [sketchpad prefs auto-complete tab utils editor edit-mode default-mode completion-builder rsyntaxtextarea help])
+        [sketchpad prefs auto-complete tab utils edit-mode default-mode completion-builder rsyntaxtextarea help])
   (:require [sketchpad.theme :as theme]
             [sketchpad.config :as config]
             [sketchpad.repl :as srepl]
             [sketchpad.state :as state]
+            [sketchpad.editor.editor :as sketchpad.editor]
             [sketchpad.project.project :as project]
             [sketchpad.menu.menu-bar :as menu]
             [sketchpad.editor.info :as info]
@@ -42,7 +43,7 @@
   []
   (let [;; editor-info MUST init before editor so it is selectable
         editor-info (info/editor-info)
-        editor    (editor state/app)
+        editor    (sketchpad.editor/editor)
         file-tree (file-tree state/app)
         repl      (srepl/repl state/app)
         doc-info-split-pane (vertical-panel :items[editor

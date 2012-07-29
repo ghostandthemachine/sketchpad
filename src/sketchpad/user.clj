@@ -1,9 +1,10 @@
 (ns sketchpad.user
 	(:refer-clojure :exclude [find replace])
-	(:use [sketchpad tab tree]
+	(:use [sketchpad tab]
 				[seesaw meta dev core]
 			  [clojure.repl]
 			  [sketchpad.config]
+        [sketchpad.tree.tree]
 			  [sketchpad.buffer.action])
 	(:require [sketchpad.tab :as tab]
 					  [sketchpad.rsyntaxtextarea :as rsta]

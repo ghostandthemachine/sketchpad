@@ -1,5 +1,4 @@
 (ns sketchpad.repl.repl
-  (:use [sketchpad buffer])
 	(:require [seesaw.core :as seesaw]
 		[clojure.string :as string]
     [clooj.brackets :as brackets]
@@ -90,8 +89,8 @@
           text-area (:text-area repl)
 	        items (:items repl-history)
 	        cmd-str (cmd-attach-file-and-line (buffer.action/get-last-cmd (:text-area repl)  ) file line)]
-      (append-text-update text-area (str \newline))
-      (append-text-update text-area (str "=> "))
+      (buffer.action/append-text-update text-area (str \newline))
+      (buffer.action/append-text-update text-area (str "=> "))
 		    ; (when-let [response (-> (nrepl/client conn config/repl-response-timeout)
 	   		; 				        (nrepl/message {:op :eval :code cmd})
 						; 		    nrepl/response-values)]
@@ -100,8 +99,8 @@
 	     ;                 	(nrepl/message {:op :eval :code "(ns-name *ns*)"}) 
 	     ;                 	nrepl/response-values)
 	     ;         promp-str (str \newline (first prompt-ns) "=> ")]
-		    ; (append-text-update text-area response-str)
-	     ;    (append-text-update text-area promp-str)))
+		    ; (buffer.action/append-text-update text-area response-str)
+	     ;    (buffer.action/append-text-update text-area promp-str)))
 	   (when (not= cmd-str (first @items))
 	      (swap! items replace-first cmd-str)
 	      (swap! items conj ""))

@@ -22,7 +22,7 @@
             [sketchpad.editor-kit :as kit]
             [sketchpad.config :as config]
             [sketchpad.buffer.action :as buffer.action]
-            [sketchpad.repl-tab-ui :as rtab]
+            [sketchpad.editor.ui :as editor.ui]
             [sketchpad.rtextscrollpane :as sp]
             [clojure.tools.nrepl :as repl]
             [sketchpad.repl.tab :as repl.tab]
@@ -390,7 +390,7 @@
     (put-meta! editor-repl :repl-history repl-history)
     (put-meta! editor-repl :repl-que repl-que)
     
-    (.setUI repl-tabbed-panel (rtab/sketchpad-repl-tab-ui repl-tabbed-panel))
+    (.setUI repl-tabbed-panel (editor.ui/sketchpad-tab-ui repl-tabbed-panel))
     
     ; (listen repl-tabbed-panel :selection 
     ;    (fn [e] 

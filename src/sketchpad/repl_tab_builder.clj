@@ -1,16 +1,16 @@
-(ns sketchpad.repl-tab-builder
-  (:import (java.awt.event KeyEvent)
-           (java.io File StringReader BufferedWriter OutputStreamWriter FileOutputStream)
-           (javax.swing JButton JOptionPane JWindow ImageIcon)
-           (javax.swing.event DocumentListener))
-  (:use [sketchpad styles buffer-edit option-windows repl tab repl-communication repl-button-tab prefs]
-    [sketchpad.repl component]
-        [clojure pprint]
-        [clooj.brackets :only (find-line-group find-enclosing-brackets)]
-        [seesaw meta core border color])
-  (:require [clojure.string :as string]
-            [sketchpad.project :as project]
-            [sketchpad.state :as state]))
+; (ns sketchpad.repl-tab-builder
+;   (:import (java.awt.event KeyEvent)
+;            (java.io File StringReader BufferedWriter OutputStreamWriter FileOutputStream)
+;            (javax.swing JButton JOptionPane JWindow ImageIcon)
+;            (javax.swing.event DocumentListener))
+;   (:use [sketchpad styles buffer-edit option-windows repl tab repl-communication repl-button-tab prefs]
+;     [sketchpad.repl component]
+;         [clojure pprint]
+;         [clooj.brackets :only (find-line-group find-enclosing-brackets)]
+;         [seesaw meta core border color])
+;   (:require [clojure.string :as string]
+;             [sketchpad.project :as project]
+;             [sketchpad.state :as state]))
 
 ; (defn add-repl-mouse-handlers
 ; "Takes a leinengin project, the parent tabbed panel, the repl buffer, and a function which takes 2 args: the lein project for this repl and the repl-buffer."

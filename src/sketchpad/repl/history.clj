@@ -1,5 +1,5 @@
 (ns sketchpad.repl.history
-	(:require [sketchpad.buffer :as buffer]
+	(:require [sketchpad.buffer.action :as buffer]
             [clojure.string :as string]
             [sketchpad.rsyntaxtextarea :as rsta]))
 
