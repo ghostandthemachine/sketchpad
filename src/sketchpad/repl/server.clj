@@ -29,7 +29,7 @@
 						(bound-fn []
 							(eval/eval-in-project updated-lein-project
 		                           `(require '[clojure.tools.nrepl.server :as nrepl.server])
-		                           `(let [server (nrepl.server/start-server :port ~port)])))))))
+		                           `(nrepl.server/start-server :port ~port)]))))))
 		port))
 
 (defn success [port]
