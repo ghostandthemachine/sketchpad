@@ -3,7 +3,7 @@
         [seesaw core meta])
   (:require [clojure.string :as string]
   					[clojure.tools.nrepl :as nrepl]
-            [sketchpad.buffer.edit :as buffer.edit])
+            [sketchpad.buffer.action :as buffer.action])
   (:import (javax.swing SwingUtilities))
   )
 
@@ -70,29 +70,6 @@
          (binding [*source-path* ~short-file
                    *file* ~file]
            (last (map eval ~read-string-code)))))))
-
-
-; (defn send-to-project-repl
-;   ([rsta cmd] (send-to-project-repl rsta cmd "NO_SOURCE_PATH" 0))
-;   ([rsta cmd file line]
-;   (awtevent
-;     (println "send-to-project-repl cmd: " cmd)
-;     (let [cmd-ln (str \newline (.trim cmd) \newline)
-;           cmd-trim (.trim cmd)]
-;       (append-text-update rsta (str \newline))
-;       (let [repl (get-meta rsta :repl)
-;             repl-history (get-meta rsta :repl-history)
-;             items (repl-history :items)
-;             cmd-str (cmd-attach-file-and-line (get-last-cmd rsta) file line)]
-;         (binding [*out* (:input-writer repl)]
-;           (println cmd-str)
-;           (flush))
-;        (when (not= cmd-trim (first @items))
-;           (swap! items
-;                  replace-first cmd-trim)
-;           (swap! items conj ""))
-;       	(swap! (repl-history :pos) (fn [pos] 0)))))))
-
   
 (defn send-to-lein-repl
   ([rsta cmd] (send-to-lein-repl rsta cmd "NO_SOURCE_PATH" 0))
@@ -100,7 +77,7 @@
   (awtevent
     (let [cmd-ln (str \newline (.trim cmd) \newline)
           cmd-trim (.trim cmd)]
-      (buffer.edit/append-text-update rsta (str \newline))
+      (buffer.action/append-text-update rsta (str \newline))
       (let [repl-server (get-meta rsta :repl-server)
             repl-history (get-meta rsta :repl-history)
             items (repl-history :items)
@@ -115,14 +92,13 @@
                          (nrepl/message {:op :eval :code "(ns-name *ns*)"})
                          nrepl/response-values)
               promp-str (str \newline (first prompt-ns) "=> ")]
-		       (buffer.edit/append-text-update rsta response-str)
-           (buffer.edit/append-text-update rsta promp-str)))
+		       (buffer.action/append-text-update rsta response-str)
+           (buffer.action/append-text-update rsta promp-str)))
        (when (not= cmd-trim (first @items))
           (swap! items
                  replace-first cmd-trim)
           (swap! items conj ""))
       	(swap! (repl-history :pos) (fn [pos] 0)))))))
-
 
 (defn send-to-editor-repl
   ([rsta cmd] (send-to-editor-repl rsta cmd "NO_SOURCE_PATH" 0) :repl)
@@ -133,7 +109,7 @@
           cmd-ln (str \newline (.trim cmd) \newline)
           cmd-trim (.trim cmd)]
       ;; go to next line
-      (buffer.edit/append-text-update rsta (str \newline))
+      (buffer.action/append-text-update rsta (str \newline))
       (let [cmd-str (cmd-attach-file-and-line cmd file line)
       			repl-history (get-meta rsta :repl-history)]
         (offer! (get-meta rsta :repl-que) cmd-str))

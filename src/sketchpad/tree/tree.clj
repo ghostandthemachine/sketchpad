@@ -13,7 +13,7 @@
             [sketchpad.editor.buffer :as editor.buffer]
             [sketchpad.tree.popup :as popup]
             [sketchpad.state :as state]
-            [sketchpad.buffer.edit :as buffer.edit]
+            [sketchpad.buffer.action :as buffer.action]
             [sketchpad.lein-manager :as lein-manager]
             [leiningen.core.project :as lein-project])
   (:import 
@@ -49,7 +49,7 @@
 (try 
   (let [file (.. path getLastPathComponent getUserObject)
         proj (.getPathComponent path 1)
-        project-str (str (buffer.edit/trim-parens (last (string/split (.toString proj) #"   "))))]
+        project-str (str (buffer.action/trim-parens (last (string/split (.toString proj) #"   "))))]
     (when (file/text-file? file) ;; handle if dir is selected instead of file
       (do 
         (editor.buffer/buffer-from-file! (get-selected-file-path @app-atom) project-str)

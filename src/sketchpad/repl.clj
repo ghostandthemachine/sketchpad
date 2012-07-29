@@ -182,9 +182,9 @@
           cmd-trim (.trim cmd)]
       (cond
           (= src-key :repl)
-            (buffer.edit/append-text (app :doc-text-area) (str \newline))
+            (buffer.action/append-text (app :doc-text-area) (str \newline))
           (= src-key :file)
-            (buffer.edit/append-text (app :doc-text-area) (str \newline)))
+            (buffer.action/append-text (app :doc-text-area) (str \newline)))
       (let [cmd-str (cmd-attach-file-and-line cmd file line)]
         (binding [*out* (:input-writer @(app :repl))]
           (println cmd-str)
@@ -274,7 +274,7 @@
            current-ns)))
 
 (defn restart-repl [app project-path]
-  (buffer.edit/append-text (app :editor-repl)
+  (buffer.action/append-text (app :editor-repl)
                (str "\n=== RESTARTING " project-path " REPL ===\n"))
   (when-let [proc (-> app :repl deref :proc)]
     (.destroy proc))
@@ -284,7 +284,7 @@
 (defn switch-repl [app project-path]
   (when (and project-path
              (not= project-path (-> app :repl deref :project-path)))
-    (buffer.edit/append-text (app :editor-repl)
+    (buffer.action/append-text (app :editor-repl)
                  (str "\n\n=== Switching to " project-path " REPL ===\n"))
     (let [repl (or (get @repls project-path)
                    (create-outside-repl (app :repl-out-writer) project-path))]
