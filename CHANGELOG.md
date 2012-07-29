@@ -46,3 +46,31 @@
 
 
 ##Version 0.0.1 (29st July 2012)
+
+**these updates are currently in the dev branch**
+
+### Updates
+* Scratch buffers
+* Show/hide tabs
+* More config options 
+* Config functions now documents and availble via user ns
+- Configurable components
+	+ Buffer/Editor text areas
+	+ Repl text areas
+	+ Buffer gutters
+	+ File tree
+- All prefs can be set in config/default.clj and all configuration functions can be accessed from sketchpad.user (default editor ns) or directly in sketchpad.config
+* Hide/Show scroll bars
+
+
+### Buf fixes
+* Fix file tree resizing. Now the resize update is drawn.
+* Update repl tab labels to be more visible
+* Fix files loading in dirty state
+* Fix out of bounds errors for non existant dumb completions
+
+### For next week
+* Finish integrating leiningen as a dependency for managing projects and per project repls
+* Begin creating the lein + SketchPad build tool for packaging sketchpad and any project
+* Update projects structure to support refactoring project paths etc.
+* Integrate updated RSyntaxTextArea ClojureTokenMaker
