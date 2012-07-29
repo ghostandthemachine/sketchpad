@@ -9,6 +9,7 @@
            (java.awt Color Dimension Graphics2D FlowLayout))
   (:require [seesaw.bind :as bind]
             [sketchpad.state :as state]
+            [seesaw.font :as font]
             [sketchpad.project.project :as project]
             [sketchpad.sketchpad-prefs :as sketchpad.sketchpad-prefs]))
 
@@ -59,7 +60,8 @@
   (let [button (tab-button buffer)
         label (label :text @(:title buffer)
                       :foreground (color :white)
-                      :focusable?  false)
+                      :focusable?  false
+                      :font (font/font "MENLO-12"))
         container (flow-panel :align :right
                               :items [label button]
                               :class :button-tab)]

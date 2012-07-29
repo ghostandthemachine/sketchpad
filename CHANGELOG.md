@@ -43,3 +43,6 @@
 * Add configs options for default components displayed like the file tree
 * Merge menu re-factoring, which should fix some cross platform issues as well as make search docs easy (i.e., (doc 'sketchpad.menu.file/save-as))
 * Continue refining the Leiningen dependency and outside REPL processes
+
+
+##Version 0.0.1 (29st July 2012)

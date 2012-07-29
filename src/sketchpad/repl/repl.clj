@@ -83,31 +83,32 @@
 ([repl cmd] (send-repl-cmd repl cmd "NO_SOURCE_PATH" 0))
 ([repl cmd file line]
   (utils/awtevent
-	  (let [repl-server (:server repl)
-          conn (:conn repl)
-	        repl-history (:history repl)
-          text-area (:text-area repl)
-	        items (:items repl-history)
-	        cmd-str (cmd-attach-file-and-line (buffer.action/get-last-cmd (:text-area repl)  ) file line)]
-      (buffer.action/append-text-update text-area (str \newline))
-      (buffer.action/append-text-update text-area (str "=> "))
-		    ; (when-let [response (-> (nrepl/client conn config/repl-response-timeout)
-	   		; 				        (nrepl/message {:op :eval :code cmd})
-						; 		    nrepl/response-values)]
-      ;     (let [response-str (str (first response))
-	     ;         prompt-ns (-> (nrepl/client conn config/repl-response-timeout)
-	     ;                 	(nrepl/message {:op :eval :code "(ns-name *ns*)"})
-	     ;                 	nrepl/response-values)
-	     ;         promp-str (str \newline (first prompt-ns) "=> ")]
-		    ; (buffer.action/append-text-update text-area response-str)
-	     ;    (buffer.action/append-text-update text-area promp-str)))
-	   (when (not= cmd-str (first @items))
-	      (swap! items replace-first cmd-str)
-	      (swap! items conj ""))
-	  	(swap! (repl-history :pos) (fn [pos] 0))))))
+    (if-let [conn (get @repl.server/current-connections (:conn repl))]
+  	  (let [repl-server (:server repl)
+  	        repl-history (:history repl)
+            text-area (get-in repl [:component :text-area])
+  	        items (:items repl-history)
+  	        cmd-str (cmd-attach-file-and-line (buffer.action/get-last-cmd (get-in repl [:component :text-area])  ) file line)]
+        (buffer.action/append-text-update text-area (str \newline))
+        (buffer.action/append-text-update text-area (str "=> "))
+  		    (when-let [response (-> (nrepl/client conn config/repl-response-timeout)
+  	   						        (nrepl/message {:op :eval :code cmd})
+  								    nrepl/response-values)]
+            (let [response-str (str (first response))
+  	             prompt-ns (-> (nrepl/client conn config/repl-response-timeout)
+  	                     	(nrepl/message {:op :eval :code "(ns-name *ns*)"})
+  	                     	nrepl/response-values)
+  	             promp-str (str \newline (first prompt-ns) "=> ")]
+  		    (buffer.action/append-text-update text-area response-str)
+  	        (buffer.action/append-text-update text-area promp-str)))
+  	   (when (not= cmd-str (first @items))
+  	      (swap! items replace-first cmd-str)
+  	      (swap! items conj ""))
+  	  	(swap! (repl-history :pos) (fn [pos] 0)))
+      (buffer.action/append-text-update (get-in repl [:component :text-area]) "Server not loaded yet...")))))
 
 (defn add-repl-behaviors [repl]
-  (let [text-area (:text-area repl)
+  (let [text-area (get-in repl [:component :text-area])
         repl-history (:repl-history repl)
         get-caret-pos #(.getCaretPosition text-area)
         ready #(let [caret-pos (get-caret-pos)
@@ -143,15 +144,14 @@
                                         (sketchpad.project/remove-repl-from-project repl)))))))
 
 (defn- repl-panel
-  []
+  [project]
   (let [component    (repl.component/repl-component)
-        server-port  (repl.server/server sketchpad-project)
+        conn-uuid  (repl.server/repl-server project)
         repl {:type :repl
               :component   component
-              :container   (:container component)
               :text-area   (:text-area component)
-              :server-port server-port
-              :conn        (repl.connection/connection server-port)
+              :server-port (atom nil)
+              :conn        conn-uuid
               :title       (:title component)
               :project     (:path project)
               :uuid        (.. UUID randomUUID toString)
@@ -162,15 +162,15 @@
 (defn repl
 "Builds a new REPL component for a given project."
 [project]
-  (let [repl (repl-panel)]
+  (let [repl (repl-panel project)]
     (sketchpad.project/add-repl-to-project (:path project) repl)
     (add-repl-behaviors repl)
     (add-repl-mouse-handlers repl project)
     (tab/add-repl repl)
     (tab/show-repl repl)
-    (tab/focus-repl repl))
-  (tab/repl-tab-component! repl)
-  repl)
+    (tab/focus-repl repl)
+    (tab/repl-tab-component! repl)
+  repl))
 
 
 ; (first (filter #(= uuid (:uuid %)) (mapcat :repls @projects)))

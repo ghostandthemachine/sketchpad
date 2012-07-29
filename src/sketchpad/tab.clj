@@ -99,7 +99,7 @@
 
 (defn add-repl
 [repl]
-	(.addTab (@state/app :repl-tabbed-panel) @(:title repl) (:container repl)))
+	(.addTab (@state/app :repl-tabbed-panel) @(:title repl) (get-in repl [:component :container])))
 
 (defn remove-tab! 
 	([buffer]
@@ -265,8 +265,9 @@
 
 (defn repl-tab-component! 
 ([repl] (repl-tab-component! (@state/app :repl-tabbed-panel) repl))
-([tabbed-panel repl]
-	(.setTabComponentAt tabbed-panel (index-of-repl tabbed-panel repl) (get-in repl [:tab :container]))))
+([tabbed-panel repl] (repl-tab-component! tabbed-panel repl (get-in repl [:tab :container])))
+([tabbed-panel repl tab]
+	(.setTabComponentAt tabbed-panel (index-of-repl tabbed-panel repl) tab)))
 
 (defn buffer-title!
 ([buffer] (buffer-title! buffer @(get-in buffer [:component :title])))
