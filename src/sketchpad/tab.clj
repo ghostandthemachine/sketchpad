@@ -311,11 +311,11 @@
 (defn current-repl-text-area []
   (select (current-tab (@state/app :repl-tabbed-panel)) [:#editor]))
 
-(defn get-uuid []
+(defn get-repl-uuid []
   (get-meta (current-repl-text-area) :uuid))
 
 (defn current-repl []
-	(first (filter #(= (get-uuid) (:uuid %)) (mapcat :repls @(:projects @state/app)))))
+	(first (filter #(= (get-repl-uuid) (:uuid %)) (mapcat :repls @(:projects @state/app)))))
 
 (defn current-buffer 
 ([]

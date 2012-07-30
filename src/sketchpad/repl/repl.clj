@@ -108,14 +108,64 @@
                           (nrepl/message {:op :eval :code "(str *ns*)"})
                       nrepl/combine-responses)
                   prompt-str (str (:ns ns-response) "=> ")]
-  		      ; (when (contains? response :status) 
+                  (println response-str)
               (buffer.action/append-text-update text-area response-str)
-  	          (buffer.action/append-text-update text-area prompt-str)))
-; )
+  	          (buffer.action/append-text-update text-area prompt-str)
+  	          (.discardAllEdits text-area))
   	   (when (not= cmd (first @items))
   	      (swap! items replace-first cmd)
   	      (swap! items conj ""))
-  	  	(swap! (repl-history :pos) (fn [pos] 0))))))
+  	  	(swap! (repl-history :pos) (fn [pos] 0)))))))
+
+(defn sys-cmd 
+  ([repl kwarg] (sys-cmd repl kwarg nil))
+  ([repl kwarg word]
+    (let [conn (:conn repl)
+          cmd-str
+    (cond
+      (= kwarg :quit)
+        "(quit)"
+      (= kwarg :completions)
+        (str `(doall 
+                (map 
+                 #(print % \"   \")
+                 (into 
+            (sorted-set)
+          (flatten
+            (doall
+              (map 
+                #(complete.core/completions (str \" ~word \") %)
+                (all-ns)))))))))]
+        (when-let [response (-> (nrepl/client conn config/repl-response-timeout)
+						        (nrepl/message {:op :eval :code cmd-str})
+					    nrepl/combine-responses)]
+                (println response)
+                ))))
+
+(defn completion-cmd-str [cmd complete-ns]
+  (println (str "(complete.core/completions \"" cmd "\" " " '"complete-ns ")"))
+  (str "(complete.core/completions \"" cmd "\" " " '"complete-ns ")"))
+
+(defn get-completions [repl]
+  (let [text-area (get-in repl [:component :text-area])
+        project (sketchpad.project/project-from-path (:project repl))
+        lein-project (:lein-project project)
+        deps (take-nth 2 (flatten (:dependencies lein-project)))
+        cmd (buffer.action/get-last-cmd text-area)]
+;    (doall (map #(send-repl-cmd repl (completion-cmd-str cmd (str %))) deps))
+  (send-repl-cmd repl 
+    (str
+    "(doall 
+      (map 
+        #(print % \"   \")
+        (into 
+          (sorted-set)
+          (flatten
+            (doall
+              (map 
+                #(complete.core/completions " cmd " %)
+                (all-ns)))))))"
+                ))))
 
 (defn add-repl-behaviors [repl]
   (let [text-area (get-in repl [:component :text-area])
@@ -138,7 +188,9 @@
                         (send-repl-cmd repl txt)
                         (reset! pos 0))))
         prev-hist #(repl.history/update-repl-history-display-position repl :dec)
-        next-hist #(repl.history/update-repl-history-display-position repl :inc)]
+        next-hist #(repl.history/update-repl-history-display-position repl :inc)
+        completions #(get-completions repl)]
+    (utils/attach-action-keys text-area ["TAB" completions])
     (utils/attach-child-action-keys text-area ["ENTER" ready submit])
     (utils/attach-action-keys text-area ["control UP" prev-hist]
                               ["control DOWN" next-hist])))
@@ -150,6 +202,7 @@
           :mouse-clicked (fn [e] (let [yes-no-option (option-windows/close-repl-dialogue)]
                                    (if (= yes-no-option 0)
                                      (do
+                                        (sys-cmd repl :quit)
                                         (tab/remove-repl repl)
                                         (sketchpad.project/remove-repl-from-project repl)))))))
 

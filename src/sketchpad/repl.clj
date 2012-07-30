@@ -291,38 +291,6 @@
                    (create-outside-repl (app :repl-out-writer) project-path))]
       (reset! (:repl app) repl))))
 
-
-
-(defn attach-lein-repl-handler [rsta]
-  (let [ta-in rsta
-        editor-repl-history (get-meta rsta :repl-history)
-        repl (get-meta :repl rsta)
-        get-caret-pos #(.getCaretPosition ta-in)
-        ready #(let [caret-pos (get-caret-pos)
-                     txt (.getText ta-in)
-                     trim-txt (string/trimr txt)]
-                 (and
-                   (pos? (.length trim-txt))
-                   (<= (.length trim-txt)
-                       caret-pos)
-                   (= -1 (first (find-enclosing-brackets
-                                  txt
-                                  caret-pos)))))
-        submit #(when-let [txt (get-last-cmd rsta)]
-                  (let [pos (editor-repl-history :pos)]
-                    (if (correct-expression? txt)
-                      (do 
-                        (send-to-lein-repl rsta txt)
-                        (swap! pos (fn [p] 0))))))
-        at-top #(zero? (.getLineOfOffset ta-in (get-caret-pos)))
-        at-bottom #(= (.getLineOfOffset ta-in (get-caret-pos))
-                      (.getLineOfOffset ta-in (.. ta-in getText length)))
-        prev-hist #(update-repl-history-display-position ta-in :dec)
-        next-hist #(update-repl-history-display-position ta-in :inc)]
-    (attach-child-action-keys ta-in ["ENTER" ready submit])
-    (attach-action-keys ta-in ["control UP" prev-hist]
-                              ["control DOWN" next-hist])))
-
 (defn add-repl-input-handler [rsta]
   (let [ta-in rsta
         editor-repl-history (get-meta rsta :repl-history)
@@ -339,17 +307,16 @@
                                   caret-pos)))))
         submit #(when-let [txt (get-last-cmd rsta)]
                   (let [pos (editor-repl-history :pos)]
-                    (if (correct-expression? txt)
                       (do 
                         (send-to-editor-repl rsta txt)
-                        (swap! pos (fn [p] 0))))))
+                        (swap! pos (fn [p] 0)))))
 
         at-top #(zero? (.getLineOfOffset ta-in (get-caret-pos)))
         at-bottom #(= (.getLineOfOffset ta-in (get-caret-pos))
                       (.getLineOfOffset ta-in (.. ta-in getText length)))
         prev-hist #(update-repl-history-display-position ta-in :dec)
         next-hist #(update-repl-history-display-position ta-in :inc)]
-    (attach-child-action-keys ta-in ["ENTER" ready submit])
+    (attach-action-keys ta-in ["ENTER" submit])
     (attach-action-keys ta-in ["control UP" prev-hist]
                               ["control DOWN" next-hist])))
 

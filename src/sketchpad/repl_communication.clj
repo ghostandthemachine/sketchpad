@@ -71,34 +71,34 @@
                    *file* ~file]
            (last (map eval ~read-string-code)))))))
   
-(defn send-to-lein-repl
-  ([rsta cmd] (send-to-lein-repl rsta cmd "NO_SOURCE_PATH" 0))
-  ([rsta cmd file line]
-  (awtevent
-    (let [cmd-ln (str \newline (.trim cmd) \newline)
-          cmd-trim (.trim cmd)]
-      (buffer.action/append-text-update rsta (str \newline))
-      (let [repl-server (get-meta rsta :repl-server)
-            repl-history (get-meta rsta :repl-history)
-            items (repl-history :items)
-            cmd-str (cmd-attach-file-and-line (get-last-cmd rsta) file line)
-						server-port (repl-server :port)]
-				(with-open [conn (nrepl/connect :port server-port)]
-		     (let [response (-> (nrepl/client conn 1000)    ; message receive timeout required
-									       (nrepl/message {:op :eval :code cmd})
-									       nrepl/response-values)
-              response-str (str (first response))
-              prompt-ns (-> (nrepl/client conn 1000)    ; message receive timeout required
-                         (nrepl/message {:op :eval :code "(ns-name *ns*)"})
-                         nrepl/response-values)
-              promp-str (str \newline (first prompt-ns) "=> ")]
-		       (buffer.action/append-text-update rsta response-str)
-           (buffer.action/append-text-update rsta promp-str)))
-       (when (not= cmd-trim (first @items))
-          (swap! items
-                 replace-first cmd-trim)
-          (swap! items conj ""))
-      	(swap! (repl-history :pos) (fn [pos] 0)))))))
+; (defn send-to-lein-repl
+;   ([rsta cmd] (send-to-lein-repl rsta cmd "NO_SOURCE_PATH" 0))
+;   ([rsta cmd file line]
+;   (awtevent
+;     (let [cmd-ln (str \newline (.trim cmd) \newline)
+;           cmd-trim (.trim cmd)]
+;       (buffer.action/append-text-update rsta (str \newline))
+;       (let [repl-server (get-meta rsta :repl-server)
+;             repl-history (get-meta rsta :repl-history)
+;             items (repl-history :items)
+;             cmd-str (cmd-attach-file-and-line (get-last-cmd rsta) file line)
+; 						server-port (repl-server :port)]
+; 				(with-open [conn (nrepl/connect :port server-port)]
+; 		     (let [response (-> (nrepl/client conn 1000)    ; message receive timeout required
+; 									       (nrepl/message {:op :eval :code cmd})
+; 									       nrepl/response-values)
+;               response-str (str (first response))
+;               prompt-ns (-> (nrepl/client conn 1000)    ; message receive timeout required
+;                          (nrepl/message {:op :eval :code "(ns-name *ns*)"})
+;                          nrepl/response-values)
+;               promp-str (str \newline (first prompt-ns) "=> ")]
+; 		       (buffer.action/append-text-update rsta response-str)
+;            (buffer.action/append-text-update rsta promp-str)))
+;        (when (not= cmd-trim (first @items))
+;           (swap! items
+;                  replace-first cmd-trim)
+;           (swap! items conj ""))
+;       	(swap! (repl-history :pos) (fn [pos] 0)))))))
 
 (defn send-to-editor-repl
   ([rsta cmd] (send-to-editor-repl rsta cmd "NO_SOURCE_PATH" 0) :repl)

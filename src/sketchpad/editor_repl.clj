@@ -12,7 +12,8 @@
 
 (defn sketchpad-prompt [rsta]
   (buffer.action/append-text rsta (str \newline (ns-name *ns*) "=> "))
-  (.setCaretPosition rsta (.getLastVisibleOffset rsta)))
+  (.setCaretPosition rsta (.getLastVisibleOffset rsta))
+  (.discardAllEdits rsta))
 
 (defn sketchpad-printer [rsta value]
   (buffer.action/append-text rsta (str value)))

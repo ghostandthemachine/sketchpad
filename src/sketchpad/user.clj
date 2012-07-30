@@ -21,7 +21,7 @@
 
 (def app sketchpad.state/app)
 
-(def projects (:projects @app))
+(defn projects [] (:projects @app))
 
 (defn pp [& args]
 	(pprint/pprint args))
@@ -255,6 +255,10 @@
 "show seesaw widget optoins for the given component"
 	(seesaw.dev/show-options c))
 
+(defn show-evs [c]
+"show seesaw widget optoins for the given component"
+	(seesaw.dev/show-events c))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Shorthand. mostly for dev
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -303,7 +307,7 @@
   (tab/current-buffer))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Buffer
+;; Project
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn current-project
@@ -312,6 +316,15 @@
   (let [cur-buffer (current-buffer)
       current-project (project/project-from-path (:project cur-buffer))]
     current-project))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; REPL
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; (defn repl-at 
+; "Returns the REPL map for a given repl tab index."
+;   [idx]
+;     (let [repl (tab/current-re)]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Bookmarks

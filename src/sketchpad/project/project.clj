@@ -55,21 +55,6 @@
 		  (when-let [lein-project (lein-project/read (str project-path "/project.clj"))]
 		  	(swap! projects (fn [m] (assoc-in m [project-path :lein-project] lein-project)))))))
 
-(defn add-buffer-to-project! [project-path buffer] 
-	(let [text-area (:text-area buffer)
-		  title (:title buffer)
-		  projects-map @(@state/app :projects)
-		  project (projects-map project-path)
-		  project-buffers (project :buffers)]   	
-	(swap! project-buffers (fn [buffers] (assoc buffers title buffer)))))
-
-(defn remove-buffer-from-project! [project-path buffer]
-	(let [title (:title buffer)
-		  projects @(@state/app :projects)
-		  project (projects project-path)
-		  project-buffers (project :buffers)]
-	(swap! project-buffers (fn [buffers] (dissoc buffers title)))))
-
 (defn setup-non-project-map []
 	(add-project @state/app "/default"))
 
@@ -95,7 +80,7 @@
   (swap! buffers assoc (:uuid repl) repl)))
 
 (defn remove-repl-from-project [repl]
-  	(let [buffers (get-in @(@state/app :projects) [(:project-path repl) :repls])]
+  	(let [buffers (get-in @(@state/app :projects) [(:project repl) :repls])]
   (swap! buffers dissoc (:uuid repl))))
 
 (defn project-from-path [project-path]
