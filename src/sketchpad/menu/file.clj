@@ -50,7 +50,7 @@
         (reset! (:new-file? buffer) false)
         (reset! (:title buffer) (.getName new-file)))))))
 
-(defn make-file-menu-items [app-atom]
+(defn make-file-menu-items []
  {:new-file (seesaw.core/menu-item :text "New File" 
                               :mnemonic "N" 
                               :key (keystroke/keystroke "meta N") 
@@ -65,8 +65,8 @@
                               :listen [:action (fn [_] (save-file-as!))])})
 
 (defn make-file-menu
-  [app-atom]
-  (let [menu-items (make-file-menu-items app-atom)]
+  []
+  (let [menu-items (make-file-menu-items)]
     (seesaw.core/menu :text "File"
           :mnemonic "F"
           :items [

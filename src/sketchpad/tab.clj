@@ -74,8 +74,19 @@
 (defn index-of [tabbed-panel name]
 	(.indexOfTab tabbed-panel name))
 
-(defn set-selected! [tabbed-panel index]
-	(.setSelectedIndex tabbed-panel index))
+(defn set-selected!
+([index] (set-selected! (@state/app :editor-tabbed-panel) index))
+([tabbed-panel index]
+	(.setSelectedIndex tabbed-panel index)))
+
+(defn set-selected-component
+	([c] 
+		(set-selected-component (@state/app :editor-tabbed-panel) c))
+	([tabbed-panel c]
+		(.setSelectedComponent tabbed-panel c)))
+
+
+
 
 (defn index-of-buffer [buffer]
 	(.indexOfComponent (@state/app :editor-tabbed-panel) (get buffer :container)))
@@ -190,9 +201,9 @@
 ([tabbed-panel]
 	(get-meta (current-text-area tabbed-panel) :uuid)))
 
-(defn current-buffer 
+(defn current-editor-buffer 
 ([]
-	(current-buffer (@state/app :editor-tabbed-panel)))
+	(current-editor-buffer (@state/app :editor-tabbed-panel)))
 ([tabbed-panel]
   (if (tabs? tabbed-panel)
 	(do 
@@ -218,7 +229,7 @@
 	(mark-tab-state! buffer :clean)))
 
 (defn mark-current-tab-clean! []
-	(mark-tab-clean! (current-buffer)))
+	(mark-tab-clean! (current-editor-buffer)))
 
 (defn mark-tab-dirty!
 ([buffer]
@@ -235,13 +246,13 @@
 (defn close-tab 
 ([]
 	(if (tabs? (@state/app :editor-tabbed-panel))
-		(remove-tab! (current-buffer))))
+		(remove-tab! (current-editor-buffer))))
 ([tabbed-panel]
 	(if (tabs? tabbed-panel)
-		(remove-tab! tabbed-panel (current-buffer)))))
+		(remove-tab! tabbed-panel (current-editor-buffer)))))
 
 (defn close-current-tab []
-	(remove-tab! (@state/app :editor-tabbed-panel) (current-buffer)))
+	(remove-tab! (@state/app :editor-tabbed-panel) (current-editor-buffer)))
 
 (defn get-file-from-tab-index [app i]
 	(i @(app :current-files)))
@@ -249,13 +260,16 @@
 (defn get-tab-rsta [tabbed-panel i]
 	(select (component-at tabbed-panel i) [:#editor]))
 
+(defn focus [text-area]
+	(.grabFocus text-area))
+
 (defn focus-buffer [buffer]
 	(when (not (nil? buffer))
-	  (.grabFocus (:text-area buffer))))
+	  (focus (:text-area buffer))))
 
 (defn focus-repl [repl]
 	(when (not (nil? repl))
-	  (.grabFocus (:text-area repl))))
+	  (focus (:text-area repl))))
 
 (defn add-buffer [buffer]
 	(add-tab! @(:title buffer) (:container buffer)))
@@ -282,7 +296,7 @@
 
 (defn update-tree-selection-from-tab []
 	(when (tabs?)
-		(let [buffer (current-buffer)]
+		(let [buffer (current-editor-buffer)]
 			(when-not @(:new-file? buffer)
 				(let [file @(:file buffer)
 					  file-path (.getAbsolutePath file)]
@@ -302,7 +316,7 @@
 
 (defn current-buffer 
 ([]
-	(current-buffer (@state/app :editor-tabbed-panel)))
+	(current-editor-buffer (@state/app :editor-tabbed-panel)))
 ([tabbed-panel]
   (if (tabs? tabbed-panel)
 	(do 
@@ -314,6 +328,10 @@
 	(let [text-area (select (component-at tabbed-panel idx) [:#editor])]
 		(get-meta text-area :uuid)))
 
+(defn focus-editor-repl []
+	(set-selected-component (@state/app :repl-tabbed-panel) (@state/app :repl-container))
+	(focus (@state/app :repl-container))
+	(focus (@state/app :editor-repl)))
 
 
 

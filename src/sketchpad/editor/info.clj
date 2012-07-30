@@ -37,7 +37,7 @@
 										:maximum-size [10000 :by 20] ;; HACK. need to figure out the safe way to set max height when no tab is present
 										:id :editor-info
 										:paint paint-info-panel)]
-		(swap! state/app (fn [a] (assoc a :editor-info editor-info :doc-position-atom doc-position-atom :doc-title-atom doc-title-atom)))
+		(swap! state/app (fn [a] (assoc a :editor-info editor-info :doc-position-atom doc-position-atom :doc-title-atom doc-title-atom :doc-title-label doc-title-label)))
 	  	(bind/bind doc-title-atom (bind/transform (fn [s] s)) (bind/property doc-title-label :text))
 		(bind/bind doc-position-atom (bind/transform (fn [s] s)) (bind/property doc-position-label :text))
 		editor-info))

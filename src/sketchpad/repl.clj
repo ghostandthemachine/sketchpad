@@ -24,6 +24,7 @@
             [sketchpad.buffer.action :as buffer.action]
             [sketchpad.editor.ui :as editor.ui]
             [sketchpad.rtextscrollpane :as sp]
+            [sketchpad.state :as state]
             [clojure.tools.nrepl :as repl]
             [sketchpad.repl.tab :as repl.tab]
             [leiningen.core.project :as lein])
@@ -355,6 +356,27 @@
 (defn print-stack-trace [app]
     (send-to-repl app "(.printStackTrace *e)"))
 
+; (defn attach-tab-change-handler [repl-tabbed-panel]
+;   (listen repl-tabbed-panel :selection 
+;        (fn [e] 
+;          (let [num-tabs (tab-count repl-tabbed-panel)]
+;           (if (> 0 num-tabs)
+;             (swap! state/app assoc :doc-title-atom (current-editor-buffer repl-tabbed-panel)))))))
+
+(defn init-repl-tabbed-panel [repl-tabbed-panel repl]
+  (let [text-area (get-in repl [:component :text-area])
+        scroller (get-in repl [:component :scroller])
+        container (get-in repl [:component :container])]
+    (.setUI repl-tabbed-panel (editor.ui/sketchpad-tab-ui repl-tabbed-panel))
+    (add-tab! repl-tabbed-panel "Sketchpad" container)
+    (repl-tab-component! repl-tabbed-panel repl)
+    (set-input-map! text-area (default-input-map))
+    (add-repl-input-handler text-area)
+    (install-auto-completion text-area)
+    (config! scroller :background config/app-color)
+    (config/apply-repl-prefs! text-area)
+    (send-to-editor-repl text-area "(require 'sketchpad.user)(in-ns 'sketchpad.user)")))
+
 (defn repl
   [app-atom]
   (let [repl-tabbed-panel   (tabbed-panel :placement :top
@@ -379,37 +401,18 @@
         repl-que (create-editor-repl editor-repl)
         tab (repl.tab/label-tab {:container repl-container
                                   :title repl-title})
-       repl {:type :editor-repl
-             :container repl-container
-             :component {:container repl-container :text-area editor-repl}
-             :title repl-title
-             :history repl-history
-             :que repl-que
-             :tab tab}]
+        repl {:type :editor-repl
+              :component {:container repl-container :text-area editor-repl :scroller repl-in-scroll-pane}
+              :title repl-title
+              :history repl-history
+              :que repl-que
+              :tab tab}]
 
     (put-meta! editor-repl :repl-history repl-history)
     (put-meta! editor-repl :repl-que repl-que)
     
-    (.setUI repl-tabbed-panel (editor.ui/sketchpad-tab-ui repl-tabbed-panel))
-    
-    ; (listen repl-tabbed-panel :selection 
-    ;    (fn [e] 
-    ;      (let [num-tabs (tab-count repl-tabbed-panel)]
-    ;       (if (> 0 num-tabs)
-    ;         (swap! app-atom (fn [app] (assoc app :current-repl (current-buffer (app :repl-tabbed-panel)))))))))
-    (add-tab! repl-tabbed-panel "Sketchpad" repl-container)
-    (repl-tab-component! repl-tabbed-panel repl)
-    
-    (set-input-map! editor-repl (default-input-map))
-    
-    (add-repl-input-handler editor-repl)
-    
-    (install-auto-completion editor-repl)
-    
-    (config! repl-in-scroll-pane :background config/app-color)
-    (config/apply-repl-prefs! editor-repl)
+    (init-repl-tabbed-panel repl-tabbed-panel repl)
 
-		(send-to-editor-repl editor-repl "(require 'sketchpad.user)(in-ns 'sketchpad.user)")
     
     (swap! app-atom conj (gen-map
                             repl-tabbed-panel

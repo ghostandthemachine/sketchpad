@@ -1,7 +1,6 @@
 (ns sketchpad.user
 	(:refer-clojure :exclude [find replace])
-	(:use [sketchpad tab]
-				[seesaw meta dev core]
+	(:use [seesaw meta dev core]
 			  [clojure.repl]
 			  [sketchpad.config]
         [sketchpad.tree.tree]
@@ -39,14 +38,14 @@
 (defn current-text []
 "return the text from the current buffer component"
 	(try
-		(.getText (current-text-area))
+		(.getText (tab/current-text-area))
 		(catch java.lang.IllegalArgumentException e
 			(println "no buffer open editor"))))
 			
 ; (defn current-project []
 ; "return the current Leiningen project being edited in the editor component"
 ; 	(try
-; 		(when-let [cur-project (get-meta (current-text-area) :project)]
+; 		(when-let [cur-project (get-meta (tab/current-text-area) :project)]
 ; 			cur-project)
 ; 		(catch java.lang.IllegalArgumentException e
 ; 			(println "no project open in editor buffers"))))
@@ -78,14 +77,14 @@
 (defn cursor-point
   "Return the current position of the cursor as a character count."
 ([]
-  (cursor-point (current-text-area)))
+  (cursor-point (tab/current-text-area)))
 ([buffer]
   (buffer-cursor-point buffer)))
 
 (defn cursor-pos
   "Returns the position of the cursor [<column> <line>]."
 ([]
-  (buffer-cursor-pos (current-text-area)))
+  (buffer-cursor-pos (tab/current-text-area)))
 ([buffer]
   (buffer-cursor-pos buffer)))
 
@@ -96,14 +95,14 @@
 (defn current-col
   "Return the column number of the cursor in the current buffer."
 ([]
-  (current-col (current-text-area)))
+  (current-col (tab/current-text-area)))
 ([buffer]
   (first (cursor-pos buffer))))
 
 (defn current-line
   "Return the line number of the cursor in the current buffer."
 ([]
-  (current-line (current-text-area)))
+  (current-line (tab/current-text-area)))
 ([buffer]
   (second (cursor-pos buffer))))
   
@@ -113,15 +112,15 @@
 
 (defn goto-next-char
   []
-  (buffer-goto-next-char (current-text-area)))
+  (buffer-goto-next-char (tab/current-text-area)))
 
 (defn goto-prev-char
   []
-  (buffer-goto-prev-char (current-text-area)))
+  (buffer-goto-prev-char (tab/current-text-area)))
 
 (defn goto-nth-char
   [n]
-  (buffer-goto-prev-char (current-text-area) n))
+  (buffer-goto-prev-char (tab/current-text-area) n))
 
 (defn goto-prev-word
   [])
@@ -196,13 +195,20 @@
 ;; Search and replace
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn search
-  "Find a regexp pattern in the current buffer."
-  [regexp]
-  )
+(defn search 
+"Search for a word in the current buffer from the current caret position."
+  [s] 
+  (search/search (tab/current-text-area) s))
 
-(defn search-and-replace
-  [])
+(defn search-replace
+"Search for a word in the current buffer from the current caret position and replace the next occurence of it."
+ [s r]
+ (search/search-replace (tab/current-text-area) s r))
+
+(defn search-replace-all
+"Search for a word in the current buffer from the current caret position and replace all occurences of it."
+ [s r]
+ (search/search-replace-all (tab/current-text-area) s r))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; File and directory operations
@@ -253,26 +259,26 @@
 ;; Shorthand. mostly for dev
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn f [s] (search/search (current-text-area) s))
-(defn fr [s r] (search/search-replace (current-text-area) s r))
-(defn fra [s r] (search/search-replace-all (current-text-area) s r))
+(defn f [s] (search/search (tab/current-text-area) s))
+(defn fr [s r] (search/search-replace (tab/current-text-area) s r))
+(defn fra [s r] (search/search-replace-all (tab/current-text-area) s r))
 
 (defn mark-occurrences
 ([b]
-  (mark-occurrences (current-text-area) b))
+  (mark-occurrences (tab/current-text-area) b))
 ([buffer b]
   (.clearMarkAllHighlights buffer)
   (.setMarkOccurrences buffer b)))
 
 (defn mark-all
 ([str-to-mark]
-  (mark-all (current-text-area) str-to-mark))
+  (mark-all (tab/current-text-area) str-to-mark))
 ([buffer str-to-mark]
   (.markAll buffer str-to-mark false false false)))
 
 (defn clear-marks
 ([]
-  (clear-marks (current-text-area)))
+  (clear-marks (tab/current-text-area)))
 ([buffer]
   (.clearMarkAllHighlights buffer)
   (.repaint buffer)))
@@ -289,25 +295,34 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Buffer
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn current-buffer
+"Returns the map of the current buffer if one is open."
+  []
+  (tab/current-buffer))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Bookmarks
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn gutter 
 "Returns the gutter from a given buffer."
 [buffer]
-  (let [scroller (get-meta buffer :scroller)
+  (let [scroller (get-in buffer [:component :scroller])
         gutter (.getGutter scroller)]
     gutter))
 
 (defn show-bookmarks! 
 "Show the bookmark panel."
-([] (show-bookmarks! (current-text-area)))
+([] (show-bookmarks! (current-buffer)))
 ([buffer]
   (.setBookmarkingEnabled (gutter buffer) true)))
 
 (defn hide-bookmarks!
 "Hide the bookmark panel."
-([] (hide-bookmarks! (current-text-area)))
+([] (hide-bookmarks! (current-buffer)))
 ([buffer]
   (.setBookmarkingEnabled (gutter buffer) false)))
 
@@ -322,7 +337,7 @@
   (bookmark-line buffer (current-line)))
 
 (defmethod foo java.lang.Long [line]
-  (bookmark-line (current-text-area) line))
+  (bookmark-line (tab/current-text-area) line))
 
 (defmethod foo clojure.lang.PersistentVector [[buffer line]] 
   (bookmark-line buffer line))

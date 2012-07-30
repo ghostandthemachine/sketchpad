@@ -1,7 +1,8 @@
 (ns sketchpad.editor.info-utils
 	(:use [seesaw core])
 	(:require [sketchpad.state :as state]
-		[sketchpad.tab :as tab]))
+		[sketchpad.tab :as tab]
+		[sketchpad.state :as state]))
 
 (defn format-position-str [line column]
   (str "Line " line ", Column " column))
@@ -28,8 +29,10 @@
 "Update the currently displayed doc title in the info panel"
 [e]
 	(if (tab/tabs?)
-		(swap! (@state/app :doc-title-atom) (fn [_] (tab/title))))
-		(swap! (@state/app :doc-title-atom) (fn [_] "")))
+		; (swap! (@state/app :doc-title-atom) (fn [_] (tab/title))))
+		; (swap! (@state/app :doc-title-atom) (fn [_] ""))
+		(config! (:doc-title-label @state/app) :text (tab/title))
+		(config! (:doc-title-label @state/app) :text "")))
 
 (defn attach-caret-handler [text-area]
 	(listen text-area :caret-update update-doc-position-label!))

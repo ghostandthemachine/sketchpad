@@ -319,7 +319,6 @@
 
 
 (defn buffer-cursor-point [rta]
-  (println "buffer.edit")
   (.getCaretPosition rta))
 
 (defn get-last-cmd [text-area]
