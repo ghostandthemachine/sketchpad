@@ -2,6 +2,7 @@
   (:require [seesaw.bind :as bind]
             [sketchpad.project.project :as project]
             [sketchpad.utils :as utils]
+            [sketchpad.tab :as tab]
             [clojure.string :as string])
   (:use [seesaw core dev meta])
   (:import (java.io File StringReader BufferedWriter OutputStreamWriter FileOutputStream)
@@ -115,6 +116,14 @@
           "Oops" JOptionPane/ERROR_MESSAGE)))))
 
 
+(defn current-project
+"Returns the current SketchPad project."
+  []
+  (let [cur-buffer (tab/current-buffer)
+        current-project (project/project-from-path (:project cur-buffer))]
+    current-project))
+
+
 (defn set-global-rsta!
   [app-atom comp]
   (let [rsta (first (select comp [:.syntax-editor]))]
@@ -127,7 +136,7 @@
 
 (defn new-file! []
   (try
-    (when-let [new-file (utils/choose-file (@app :frame) "New file" (project/current-project app) false)]
+    (when-let [new-file (utils/choose-file (@app :frame) "New file" (current-project) false)]
       (utils/awt-event
         (let [path (.getAbsolutePath new-file)]
           (spit path "")
@@ -140,7 +149,7 @@
 
 (defn save-file-as! []
   (try
-    (when-let [new-file (utils/choose-file (@app :frame) "Save file as" (project/current-project) false)]
+    (when-let [new-file (utils/choose-file (@app :frame) "Save file as" (current-project) false)]
       (utils/awt-event
         (let [path (.getAbsolutePath new-file)]
           (spit path "")))
