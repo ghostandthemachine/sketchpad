@@ -27,8 +27,11 @@
     (swap! current-connections assoc @cur-connection-uuid conn)
     (println "created connection: " conn)))
 
-(defonce lein-repl-server (nrepl.server/start-server :port ack-port :handler ack-handler))
-
+;(defonce lein-repl-server (nrepl.server/start-server :port ack-port :handler ack-handler))
+(def lein-repl-server
+  (delay (nrepl.server/start-server
+           :handler (nrepl.ack/handle-ack nrepl.server/unknown-op))))
+           
 (defn- repl-port [project]
   (Integer. (or (System/getenv "LEIN_REPL_PORT")
                 (-> project :repl-options :port)
@@ -91,20 +94,22 @@
           (start-server (and project (vary-meta project assoc
                                                  :prepped prepped))
                          (repl-port project)
-                         (.getLocalPort (:ss @lein-repl-server))))))
+                          (-> @lein-repl-server deref :ss .getLocalPort)))))
        (and project @prepped)
-       ; (if-let [repl-port (nrepl.ack/wait-for-ack (or (-> project
-       ;                                                    :repl-options
-       ;                                                    :timeout)
-       ;                                                30000))]
-       ;   ; (with-open [conn (repl.connection/connection repl-port)]
-       ;   ; 	(println conn)
-       ;   ; 	conn)
-       ; (println repl-port)
-       (let [conn-uuid (.. UUID randomUUID toString)]
-          (reset! cur-connection-uuid conn-uuid)
-          (println "created new connection uuid: " conn-uuid)
-          conn-uuid)))
+       (if-let [repl-port (nrepl.ack/wait-for-ack (or (-> project
+                                                           :repl-options
+                                                           :timeout)
+                                                       20000))]
+;        (with-open [conn (repl.connection/connection repl-port)]
+;        	(println conn)
+;        	conn)
+;        	(println "REPL server launch timed out."))
+;       (let [conn-uuid (.. UUID randomUUID toString)]
+;          (reset! cur-connection-uuid conn-uuid)
+;          (println "created new connection uuid: " conn-uuid)
+;          conn-uuid)
+           repl-port
+          )))
 
 
 ; (defn repl

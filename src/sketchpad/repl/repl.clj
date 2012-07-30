@@ -83,14 +83,13 @@
 ([repl cmd] (send-repl-cmd repl cmd "NO_SOURCE_PATH" 0))
 ([repl cmd file line]
   (utils/awtevent
-    (if-let [conn (get @repl.server/current-connections (:conn repl))]
   	  (let [repl-server (:server repl)
   	        repl-history (:history repl)
+  	        conn (:conn repl)
             text-area (get-in repl [:component :text-area])
   	        items (:items repl-history)
   	        cmd-str (cmd-attach-file-and-line (buffer.action/get-last-cmd (get-in repl [:component :text-area])  ) file line)]
         (buffer.action/append-text-update text-area (str \newline))
-        (buffer.action/append-text-update text-area (str "=> "))
   		    (when-let [response (-> (nrepl/client conn config/repl-response-timeout)
   	   						        (nrepl/message {:op :eval :code cmd})
   								    nrepl/response-values)]
@@ -104,8 +103,7 @@
   	   (when (not= cmd-str (first @items))
   	      (swap! items replace-first cmd-str)
   	      (swap! items conj ""))
-  	  	(swap! (repl-history :pos) (fn [pos] 0)))
-      (buffer.action/append-text-update (get-in repl [:component :text-area]) "Server not loaded yet...")))))
+  	  	(swap! (repl-history :pos) (fn [pos] 0))))))
 
 (defn add-repl-behaviors [repl]
   (let [text-area (get-in repl [:component :text-area])
@@ -146,12 +144,12 @@
 (defn- repl-panel
   [project]
   (let [component    (repl.component/repl-component)
-        conn-uuid  (repl.server/repl-server project)
+        server-port  (repl.server/repl-server project)
         repl {:type :repl
               :component   component
               :text-area   (:text-area component)
-              :server-port (atom nil)
-              :conn        conn-uuid
+              :server-port server-port
+              :conn        (nrepl/connect :port server-port)
               :title       (:title component)
               :project     (:path project)
               :uuid        (.. UUID randomUUID toString)
