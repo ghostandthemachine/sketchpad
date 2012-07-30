@@ -27,15 +27,15 @@
 
 
 (defn make-source-menu-items []
- {:find (seesaw.core/menu-item :text "Find..." 
+ {:search (seesaw.core/menu-item :text "Search..." 
                               :mnemonic "F" 
                               :key (keystroke/keystroke "meta F") 
                               :listen [:action (fn [_] (search))])
- :find-replace (seesaw.core/menu-item :text "Find Replace..." 
+ :search-replace (seesaw.core/menu-item :text "Search Replace..." 
                               :mnemonic "F" 
                               :key (keystroke/keystroke "meta shift F") 
                               :listen [:action (fn [_] (search-replace))])
- :find-replace-all (seesaw.core/menu-item :text "Find Replace All..." 
+ :search-replace-all (seesaw.core/menu-item :text "Search Replace All..." 
                               :mnemonic "F" 
                               :key (keystroke/keystroke "meta control F") 
                               :listen [:action (fn [_] (search-replace-all))])})
@@ -46,6 +46,6 @@
     (seesaw.core/menu :text "Source"
           :mnemonic "S"
           :items [
-                  (menu-items :find)
-                  (menu-items :find-replace)
-                  (menu-items :find-replace-all)])))
+                  (menu-items :search)
+                  (menu-items :search-replace)
+                  (menu-items :search-replace-all)])))

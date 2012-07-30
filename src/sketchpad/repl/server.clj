@@ -16,18 +16,6 @@
 	    [sketchpad.repl.print :as repl.print])
   (:import [java.util UUID]))
 
-(defonce ack-port 4567)
-
-(defonce current-connections (atom {}))
-(defonce cur-connection-uuid (atom nil))
-
-(defn ack-handler [msg]
-  (println "ack-handler msg: " msg)
-  (with-open [conn (nrepl/connect :port (:port msg))]
-    (swap! current-connections assoc @cur-connection-uuid conn)
-    (println "created connection: " conn)))
-
-;(defonce lein-repl-server (nrepl.server/start-server :port ack-port :handler ack-handler))
 (def lein-repl-server
   (delay (nrepl.server/start-server
            :handler (nrepl.ack/handle-ack nrepl.server/unknown-op))))

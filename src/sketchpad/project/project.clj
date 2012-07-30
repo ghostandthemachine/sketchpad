@@ -29,14 +29,6 @@
 (defn lein-project-file? []
   (not= (kind "project.clj") :non-existent))
 
-(defn buffer
-"return the text from the current buffer component"
-[]
-(let [tabbed-panel (@state/app :editor-tabbed-panel)
-	cur-idx (.getSelectedIndex tabbed-panel)
-	cur-buffer (.getComponentAt tabbed-panel cur-idx)]
-	cur-buffer))
-
 (defn projects []
 	@project.state/project-map)
 
@@ -128,9 +120,4 @@
 	(let [short-keys (map #(last (clojure.string/split (str %) #"/")) (keys @(:projects @state/app)))
 		  long-keys (keys @(:projects @state/app))]
 		 (or (contains? short-keys project-name) (contains? long-keys project-name))))
-
-(defn current-project []
-	(let [cur-buffer (buffer)
-		  current-project (project-from-path (:project cur-buffer))]
-		current-project))
 

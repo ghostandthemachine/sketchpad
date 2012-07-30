@@ -93,7 +93,6 @@
   		    (when-let [response (-> (nrepl/client conn config/repl-response-timeout)
   	   						        (nrepl/message {:op :eval :code cmd})
   								    nrepl/combine-responses)]
-          (println response)
             (let [response-str 
                     (str  
                       (cond
@@ -106,13 +105,15 @@
                       \newline)
                   ns-response (-> (nrepl/client conn config/repl-response-timeout)
                           (nrepl/message {:op :eval :code "(str *ns*)"})
-                      nrepl/response-values)
-                  prompt-str (str (first ns-response) "=> ")]
-  		      (when (contains? response :status) 
+                      nrepl/combine-responses)
+                  _ (println ns-response)
+                  prompt-str (str (:ns ns-response) "=> ")]
+  		      ; (when (contains? response :status) 
               (buffer.action/append-text-update text-area response-str)
-  	          (buffer.action/append-text-update text-area prompt-str))))
-  	   (when (not= cmd-str (first @items))
-  	      (swap! items replace-first cmd-str)
+  	          (buffer.action/append-text-update text-area prompt-str)))
+; )
+  	   (when (not= cmd (first @items))
+  	      (swap! items replace-first cmd)
   	      (swap! items conj ""))
   	  	(swap! (repl-history :pos) (fn [pos] 0))))))
 

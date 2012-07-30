@@ -324,6 +324,7 @@
 			  buffers @(current-buffers)]
   			(get buffers uuid)))
   	"No buffers are currently open")))
+
 (defn uuid-at [idx]
 	(let [text-area (select (component-at tabbed-panel idx) [:#editor])]
 		(get-meta text-area :uuid)))
