@@ -106,7 +106,6 @@
                   ns-response (-> (nrepl/client conn config/repl-response-timeout)
                           (nrepl/message {:op :eval :code "(str *ns*)"})
                       nrepl/combine-responses)
-                  _ (println ns-response)
                   prompt-str (str (:ns ns-response) "=> ")]
   		      ; (when (contains? response :status) 
               (buffer.action/append-text-update text-area response-str)
