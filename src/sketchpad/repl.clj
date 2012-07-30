@@ -356,12 +356,12 @@
 (defn print-stack-trace [app]
     (send-to-repl app "(.printStackTrace *e)"))
 
-; (defn attach-tab-change-handler [repl-tabbed-panel]
-;   (listen repl-tabbed-panel :selection 
-;        (fn [e] 
-;          (let [num-tabs (tab-count repl-tabbed-panel)]
-;           (if (> 0 num-tabs)
-;             (swap! state/app assoc :doc-title-atom (current-editor-buffer repl-tabbed-panel)))))))
+ (defn attach-tab-change-handler [repl-tabbed-panel]
+   (listen repl-tabbed-panel :selection 
+        (fn [e] 
+          (let [num-tabs (tab-count repl-tabbed-panel)]
+           (if (> 0 num-tabs)
+             (swap! state/app assoc :doc-title-atom (current-editor-buffer repl-tabbed-panel)))))))
 
 (defn init-repl-tabbed-panel [repl-tabbed-panel repl]
   (let [text-area (get-in repl [:component :text-area])
@@ -413,6 +413,7 @@
     
     (init-repl-tabbed-panel repl-tabbed-panel repl)
 
+    (attach-tab-change-handler repl-tabbed-panel)
     
     (swap! app-atom conj (gen-map
                             repl-tabbed-panel

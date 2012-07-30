@@ -78,10 +78,14 @@
         (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_DOWN
                                             shift)
         DefaultEditorKit/selectionDownAction)
-      (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_DOWN
-                                            (bit-or default-modifier alt))
-        RTextAreaEditorKit/rtaScrollDownAction)
+      ; (.put
+      ;   (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_DOWN
+      ;                                       (bit-or default-modifier alt))
+      ;   RTextAreaEditorKit/rtaScrollDownAction)
+      ; (.put
+      ;   (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_UP
+      ;                                       (bit-or default-modifier alt))
+      ;   RTextAreaEditorKit/rtaScrollUpAction)
       (.put
         (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_DOWN
                                             alt)
@@ -110,10 +114,6 @@
         (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_UP
                                             shift)
         DefaultEditorKit/selectionUpAction)
-      (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_UP
-                                            (bit-or default-modifier alt))
-        RTextAreaEditorKit/rtaScrollUpAction)
       (.put
         (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_UP
                                             alt)

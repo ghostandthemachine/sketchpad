@@ -159,8 +159,9 @@
 [repl]
 	(set-selected! (@state/app :repl-tabbed-panel) (index-of-repl repl)))
 
-(defn next-tab []
-	(let [tabbed-panel (@state/app :editor-tabbed-panel)]
+(defn next-tab
+	([] (next-tab (@state/app :editor-tabbed-panel)))
+	([tabbed-panel]
 		(when (tabs? tabbed-panel)
 			(let [current-index (.getSelectedIndex tabbed-panel)
 						num-tabs (.getTabCount tabbed-panel)]
@@ -172,18 +173,19 @@
 					:else 
 						(.setSelectedIndex tabbed-panel 0))))))
 
-(defn previous-tab []
-	(let [tabbed-panel (@state/app :editor-tabbed-panel)]
-		(when (tabs? tabbed-panel)
-			(let [current-index (.getSelectedIndex tabbed-panel)
-						num-tabs (.getTabCount tabbed-panel)]
-				(cond 
-					(> current-index 0)
-						(.setSelectedIndex tabbed-panel (- current-index 1))
-					(= current-index 0)
-						(.setSelectedIndex tabbed-panel (- num-tabs 1))
-					:else 
-						(.setSelectedIndex tabbed-panel (- num-tabs 1)))))))
+(defn previous-tab 
+	([] (previous-tab (@state/app :editor-tabbed-panel)))
+	([tabbed-panel]
+	(when (tabs? tabbed-panel)
+		(let [current-index (.getSelectedIndex tabbed-panel)
+					num-tabs (.getTabCount tabbed-panel)]
+			(cond 
+				(> current-index 0)
+					(.setSelectedIndex tabbed-panel (- current-index 1))
+				(= current-index 0)
+					(.setSelectedIndex tabbed-panel (- num-tabs 1))
+				:else 
+					(.setSelectedIndex tabbed-panel (- num-tabs 1)))))))
 
 
 (defn current-tab-file-name 

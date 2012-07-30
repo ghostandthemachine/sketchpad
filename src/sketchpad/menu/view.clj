@@ -59,12 +59,12 @@
 	(tab/previous-tab)
   (tab/update-tree-selection-from-tab))
 
-(defn next-repl-tab
+(defn next-repl
 "Display the next available tab in the editor tabbed panel."
   []
   (tab/next-tab (@state/app :repl-tabbed-panel)))
 
-(defn previous-repl-tab
+(defn previous-repl
 "Display the previous available tab in the editor tabbed panel."
   []
   (tab/previous-tab (@state/app :repl-tabbed-panel)))
@@ -125,12 +125,12 @@
      :previous-tab    	(seesaw.core/menu-item 	:text "Previous tab"
                 					 			:key (keystroke/keystroke "meta alt LEFT")
                 					 			:listen [:action (fn [_] (previous-tab))])
-     :next-repl-tab      (seesaw.core/menu-item  :text "Next REPL tab"
+     :next-repl      (seesaw.core/menu-item  :text "Next REPL tab"
                                 :key (keystroke/keystroke "meta alt DOWN")
-                                :listen [:action (fn [_] (next-tab))])
-     :previous-repl-tab      (seesaw.core/menu-item  :text "Previous REPL tab"
+                                :listen [:action (fn [_] (next-repl))])
+     :previous-repl      (seesaw.core/menu-item  :text "Previous REPL tab"
                                 :key (keystroke/keystroke "meta alt UP")
-                                :listen [:action (fn [_] (previous-tab))])
+                                :listen [:action (fn [_] (previous-repl))])
      :close-tab 		(seesaw.core/menu-item 	:text "Close tab"
                            						:key (keystroke/keystroke "meta W")
                            						:listen [:action (fn [_] (close-tab))])})
@@ -160,8 +160,8 @@
         		    (menu-items :next-tab)
         		    (menu-items :previous-tab)
                 (seesaw.core/separator)
-                (menu-items :next-repl-tab)
-                (menu-items :previous-repl-tab)
+                (menu-items :next-repl)
+                (menu-items :previous-repl)
                 (seesaw.core/separator)
                 (menu-items :close-tab)])))
 
