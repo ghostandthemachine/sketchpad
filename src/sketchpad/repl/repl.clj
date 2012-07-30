@@ -12,6 +12,7 @@
     [sketchpad.option-windows :as option-windows]
 		[sketchpad.config :as config]
     [sketchpad.tab :as tab]
+    [sketchpad.repl.info :as repl.info]
     [sketchpad.state :as state]
     [sketchpad.project.project :as sketchpad.project]
     [clojure.tools.nrepl :as nrepl])
@@ -175,6 +176,7 @@
     (sketchpad.project/add-repl-to-project (:path project) repl)
     (add-repl-behaviors repl)
     (add-repl-mouse-handlers repl project)
+    (repl.info/attach-caret-handler (get-in repl [:component :text-area]))
     (tab/add-repl repl)
     (tab/show-repl repl)
     (tab/focus-repl repl)

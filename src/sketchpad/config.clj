@@ -186,23 +186,6 @@ You never have to change the opaque property yourself; it is always done for you
 [text-area pref]
   (.setFadeCurrentLineHighlight text-area pref))
 
-(defn margin-line
-"Enables or disables the margin line."
-[text-area pref]
-  (.setMarginLineEnabled text-area pref))
-
-(defn margin-line-position
-"Sets the number of 'm' widths the margin line is over.\n
-Parameters:\n
-\tsize - The margin size. #see #getDefaultMarginLinePosition"
-[text-area pref]
-  (.setMarginLinePosition text-area pref))
-
-(defn margin-line-color
-"Sets the color used to paint the margin line."
-[text-area pref]
-  (.setMarginLineColor text-area (apply c/color pref)))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Sketchpad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -380,14 +363,16 @@ Parameters:\n
    :templates-enabled templates-enabled                  
    :close-curly-braces close-curly-braces                  
    :buffer-theme text-area-theme
-   ; :current-line-highlight current-line-highlight
-   ; :current-line-highlight-fade current-line-highlight-fade
-   ; :current-line-highlight-color current-line-highlight-color
-   ; :margin-line margin-line
-   ; :margin-line-position margin-line-size
-   ; :margin-line-color margin-line-color
-   })
+   :current-line-highlight current-line-highlight
+   :current-line-highlight-fade current-line-highlight-fade
+   :current-line-highlight-color current-line-highlight-color})
 
+(def buffer-scroller-pref-handlers
+  {:vertical-scroll-bar vertical-scroll-bar
+   :horizontal-scroll-bar horizontal-scroll-bar
+   :fold-indicator-enabled fold-indicator-enabled
+   :line-numbers-enabled  line-numbers-enabled
+   :scroller-border-enabled scroller-border-enabled})
 
 (def repl-pref-handlers ^{:doc "default handlers for config settings found in config/default.clj"}
   {:whitespace-visible whitespace-visible                  
@@ -416,13 +401,15 @@ Parameters:\n
    :templates-enabled templates-enabled                  
    :close-curly-braces close-curly-braces                  
    :buffer-theme text-area-theme
-   ; :current-line-highlight current-line-highlight
-   ; :current-line-highlight-fade current-line-highlight-fade
-   ; :current-line-highlight-color current-line-highlight-color
-   ; :margin-line margin-line
-   ; :margin-line-position margin-line-size
-   ; :margin-line-color margin-line-color
-   })
+   :current-line-highlight current-line-highlight
+   :current-line-highlight-fade current-line-highlight-fade
+   :current-line-highlight-color current-line-highlight-color})
+
+(def repl-scroller-pref-handlers
+  {:vertical-scroll-bar vertical-scroll-bar
+   :horizontal-scroll-bar horizontal-scroll-bar
+   :scroller-border-enabled scroller-border-enabled})
+
 
 (def repl-response-timeout (default-repl-prefs :response-timeout))
 
@@ -453,12 +440,7 @@ Parameters:\n
 (def file-tree-pref-handlers
   {})
 
-(def buffer-scroller-pref-handlers
-  {:vertical-scroll-bar vertical-scroll-bar
-   :horizontal-scroll-bar horizontal-scroll-bar
-   :fold-indicator-enabled fold-indicator-enabled
-   :line-numbers-enabled  line-numbers-enabled
-   :scroller-border-enabled scroller-border-enabled})
+
 
 (def project-theme-colors default-project-style-prefs)
 

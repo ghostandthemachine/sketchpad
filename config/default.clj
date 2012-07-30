@@ -7,7 +7,7 @@
 	;; params after this point will overide those set by the theme selection above
 	; :background-image "img/invisible.png"
 	:whitespace-visible false
-	:line-wrap 	false
+	:line-wrap 	true
 	:rounded-selection-edges true
 	:animate-bracket-matching true
 	:anti-aliasing true
@@ -25,21 +25,14 @@
 	:tab-lines-enabled true
 	:tab-lines-color [100 100 100 100]
 	:templates-enabled true
-	:close-curly-braces true
-	; :current-line-highlight false
-	; :current-line-highlight-fade false
-	; :current-line-highlight-color [150 150 150]
-	; :margin-line true
-	; :margin-line-position 10
-	; :margin-line-color [255 255 255]
-	})
+	:close-curly-braces true})
 
 (def default-repl-prefs
    {:buffer-theme "themes/dark.xml" ;; load RSyntaxTextArea from xml theme file
 	;; params after this point will overide those set by the theme selection above
 	; :background-image "img/invisible.png"
 	:whitespace-visible false
-	:line-wrap 	false
+	:line-wrap 	true
 	:rounded-selection-edges true
 	:animate-bracket-matching true
 	:anti-aliasing true
@@ -58,14 +51,12 @@
 	:tab-lines-color [100 100 100 100]
 	:templates-enabled true
 	:close-curly-braces true
-	; :current-line-highlight false
-	; :current-line-highlight-fade false
-	; :current-line-highlight-color [150 150 150]
-	; :margin-line true
-	; :margin-line-position 10
-	; :margin-line-color [255 255 255]
-	:response-timeout 1000
-	})
+	:response-timeout 1000})
+
+(def default-repl-scroller-prefs
+  {:vertical-scroll-bar false
+   :horizontal-scroll-bar false
+   :scroller-border-enabled false})
 
 (def default-auto-completion-prefs
   { :auto-complete true

@@ -28,6 +28,7 @@
             [sketchpad.project.project :as project]
             [sketchpad.menu.menu-bar :as menu]
             [sketchpad.editor.info :as info]
+            [sketchpad.repl.info :as repl.info]
             [sketchpad.state :as sketchpad.state]))
 
 (defn set-osx-icon
@@ -44,11 +45,17 @@
   (let [;; editor-info MUST init before editor so it is selectable
         editor-info (info/editor-info)
         editor    (sketchpad.editor/editor)
-        file-tree (file-tree state/app)
-        repl      (srepl/repl state/app)
         doc-info-split-pane (vertical-panel :items[editor
                                                    :fill-h
                                                    editor-info]
+                                            :background config/app-color
+                                            :border (empty-border :thickness 0))
+        file-tree (file-tree state/app)
+        repl      (srepl/repl state/app)
+        repl-info (repl.info/repl-info)
+        repl-info-split-pane (vertical-panel :items[repl
+                                                   :fill-h
+                                                   repl-info]
                                             :background config/app-color
                                             :border (empty-border :thickness 0))
         doc-split-pane (left-right-split
@@ -61,7 +68,7 @@
                          :background config/app-color)
         split-pane (top-bottom-split
                      doc-split-pane
-                     repl
+                     repl-info-split-pane
                      :divider-location 0.66
                      :resize-weight 0.66
                      :divider-size 3
@@ -97,6 +104,9 @@
   [app-atom]
   (let [app @app-atom]
     (setup-tree app-atom)
+
+    ;; this should happen when the repl tabbed panel is created probably
+    (repl.info/attach-repl-info-handler (:repl-tabbed-panel app))
     ;; global
     (add-visibility-shortcut app)))
 

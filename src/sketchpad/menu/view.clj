@@ -5,6 +5,7 @@
 		[sketchpad.layout-config :as layout-config]
 		[sketchpad.tab :as tab]
     [sketchpad.app :as app]
+    [sketchpad.state :as state]
     [sketchpad.file.file :as file]
     [sketchpad.buffer.io :as buffer.io]
     [sketchpad.project.project :as sketchpad.project]
@@ -24,12 +25,12 @@
 (defn focus-repl
 "Focus the REPL tabbed panel. This will focus the current REPL tab and ready it for text input."
 []
-	(app/focus-repl))
+	(tab/focus-repl))
 
 (defn focus-editor
 "Focus the editor tabbed panel. This will focus the current editor tab and ready it for text input."
 []
-	(app/focus-editor))
+	(tab/focus-editor-text-area))
 
 (defn focus-file-tree
 "Focus the file tree tabbed panel. This will focus the current file tree tab and ready it for text input."
@@ -57,6 +58,16 @@
   []
 	(tab/previous-tab)
   (tab/update-tree-selection-from-tab))
+
+(defn next-repl-tab
+"Display the next available tab in the editor tabbed panel."
+  []
+  (tab/next-tab (@state/app :repl-tabbed-panel)))
+
+(defn previous-repl-tab
+"Display the previous available tab in the editor tabbed panel."
+  []
+  (tab/previous-tab (@state/app :repl-tabbed-panel)))
 
 (defn close-tab
 "Close the current tab. If the current buffer is dirty this will ask if you are sure you want to close the tab."
@@ -114,6 +125,12 @@
      :previous-tab    	(seesaw.core/menu-item 	:text "Previous tab"
                 					 			:key (keystroke/keystroke "meta alt LEFT")
                 					 			:listen [:action (fn [_] (previous-tab))])
+     :next-repl-tab      (seesaw.core/menu-item  :text "Next REPL tab"
+                                :key (keystroke/keystroke "meta alt DOWN")
+                                :listen [:action (fn [_] (next-tab))])
+     :previous-repl-tab      (seesaw.core/menu-item  :text "Previous REPL tab"
+                                :key (keystroke/keystroke "meta alt UP")
+                                :listen [:action (fn [_] (previous-tab))])
      :close-tab 		(seesaw.core/menu-item 	:text "Close tab"
                            						:key (keystroke/keystroke "meta W")
                            						:listen [:action (fn [_] (close-tab))])})
@@ -142,6 +159,9 @@
                 (seesaw.core/separator)
         		    (menu-items :next-tab)
         		    (menu-items :previous-tab)
+                (seesaw.core/separator)
+                (menu-items :next-repl-tab)
+                (menu-items :previous-repl-tab)
                 (seesaw.core/separator)
                 (menu-items :close-tab)])))
 

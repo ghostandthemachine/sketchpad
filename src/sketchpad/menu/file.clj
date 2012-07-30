@@ -14,15 +14,15 @@
 "Returns the src path of a Leiningen project."
 (first (lein-project :source-paths)))
 
-(defn new-file!
+(defn new-file
 "Create a new file"
 []
   (editor.buffer/blank-clj-buffer!))
 
-(defn save-file!
-([] (save-file! (tab/current-buffer)))
-([buffer]
+(defn save
 "Save the current buffer."
+([] (save (tab/current-buffer)))
+([buffer]
 (let [new-file? @(buffer :new-file?)]
   (if new-file?
     (do
@@ -38,10 +38,10 @@
       (when (file/save-file! buffer)
             (tab/mark-current-tab-clean!)))))))
 
-(defn save-file-as!
-([] (save-file-as! (tab/current-buffer)))
-([buffer]
+(defn save-as
 "Open the save as dialog for the current buffer."
+([] (save-as (tab/current-buffer)))
+([buffer]
   (let [text-area (:text-area buffer)
         file @(:file buffer)
        file-path (tree.utils/get-selected-file-path @state/app)]
@@ -54,15 +54,15 @@
  {:new-file (seesaw.core/menu-item :text "New File" 
                               :mnemonic "N" 
                               :key (keystroke/keystroke "meta N") 
-                              :listen [:action (fn [_] (new-file!))])
+                              :listen [:action (fn [_] (new-file))])
   :save     (seesaw.core/menu-item :text "Save" 
                               :mnemonic "S" 
                               :key (keystroke/keystroke "meta S") 
-                              :listen [:action (fn [_] (save-file!))])
+                              :listen [:action (fn [_] (save))])
   :save-as  (seesaw.core/menu-item :text "Save as..." 
                               :mnemonic "M" 
                               :key (keystroke/keystroke "meta shift S")
-                              :listen [:action (fn [_] (save-file-as!))])})
+                              :listen [:action (fn [_] (save-as))])})
 
 (defn make-file-menu
   []

@@ -150,7 +150,7 @@
 
 									(getContentBorderInsets [placement]
 									  (if @sketchpad.sketchpad-prefs/show-tabs?
-  										(Insets. 1 0 0 0)
+  										(Insets. 0 0 0 0)
   										(Insets. 0 0 0 0)))
 
 									(getTabsOverlapBorder []

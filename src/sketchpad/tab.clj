@@ -26,7 +26,9 @@
 (defn current-index 
 "Index of current tab."
 ([]
-	(.getSelectedIndex (@state/app :editor-tabbed-panel))))
+	(current-index (@state/app :editor-tabbed-panel)))
+([tabbed-panel]
+	(.getSelectedIndex tabbed-panel)))
 
 (defn tabs? 
 ([]
@@ -68,8 +70,11 @@
 		(if (>= idx 0)
 			(title-at idx)
 			"no file open")))
-([buffer]
-	(title-at (index-of-component buffer))))
+([tabbed-panel]
+	(let [idx (current-index tabbed-panel)]
+		(if (>= idx 0)
+			(title-at tabbed-panel idx)
+			"no file open"))))
 
 (defn index-of [tabbed-panel name]
 	(.indexOfTab tabbed-panel name))
@@ -267,10 +272,6 @@
 	(when (not (nil? buffer))
 	  (focus (:text-area buffer))))
 
-(defn focus-repl [repl]
-	(when (not (nil? repl))
-	  (focus (:text-area repl))))
-
 (defn add-buffer [buffer]
 	(add-tab! @(:title buffer) (:container buffer)))
 
@@ -329,10 +330,21 @@
 	(let [text-area (select (component-at tabbed-panel idx) [:#editor])]
 		(get-meta text-area :uuid)))
 
+(defn focus-editor-text-area
+"Focus the current editor text area if a buffer is open."
+	[]
+	(if (tabs?)
+		(focus (current-text-area))))
+
 (defn focus-editor-repl []
 	(set-selected-component (@state/app :repl-tabbed-panel) (@state/app :repl-container))
 	(focus (@state/app :repl-container))
 	(focus (@state/app :editor-repl)))
 
-
+(defn focus-repl 
+"Focus the REPL panel."
+	([] (focus (current-repl-text-area)))
+	([repl]
+	(when (not (nil? repl))
+	  (focus (:text-area repl)))))
 
