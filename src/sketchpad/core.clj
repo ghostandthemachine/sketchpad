@@ -14,14 +14,14 @@
         [sketchpad.config.prefs])
   (:require [sketchpad.wrapper.theme :as theme]
             [sketchpad.config.config :as config]
-            [sketchpad.repl :as srepl]
-            [sketchpad.state :as state]
+            [sketchpad.repl.app.repl :as app.repl]
+            [sketchpad.state.state :as state]
             [sketchpad.editor.editor :as sketchpad.editor]
             [sketchpad.project.project :as project]
             [sketchpad.menu.menu-bar :as menu]
             [sketchpad.editor.info :as info]
             [sketchpad.repl.info :as repl.info]
-            [sketchpad.state :as sketchpad.state]))
+            [sketchpad.state.state :as sketchpad.state]))
 
 (defn set-osx-icon
   [icon]
@@ -43,7 +43,7 @@
                                             :background config/app-color
                                             :border (empty-border :thickness 0))
         file-tree (file-tree state/app)
-        repl      (srepl/repl state/app)
+        repl      (app.repl/repl state/app)
         repl-info (repl.info/repl-info)
         repl-info-split-pane (vertical-panel :items[repl
                                                    :fill-h
@@ -134,16 +134,16 @@
 (defn show []
   (reset! embedded false)
   (invoke-later
-    (reset! sketchpad.state/app (create-app))
+    (reset! sketchpad.state.state/app (create-app))
     (->
-      (startup-sketchpad sketchpad.state/app)
+      (startup-sketchpad sketchpad.state.state/app)
       show!)))
 
 (defn -main [& args]
   (reset! embedded false)
   (invoke-later
-    (reset! sketchpad.state/app (create-app))
+    (reset! sketchpad.state.state/app (create-app))
     (->
-      (startup-sketchpad sketchpad.state/app)
+      (startup-sketchpad sketchpad.state.state/app)
       show!)))
 

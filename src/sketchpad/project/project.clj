@@ -1,7 +1,7 @@
 (ns sketchpad.project.project
 	(:use [clojure.pprint]
 				[seesaw color meta])
-	(:require [sketchpad.state :as state]
+	(:require [sketchpad.state.state :as state]
 		[sketchpad.project.theme :as theme]
 		[sketchpad.project.state :as project.state]
 		[sketchpad.auto-complete.auto-complete :as auto-complete]

@@ -5,7 +5,7 @@
 		[sketchpad.config.layout :as config.layout]
 		[sketchpad.util.tab :as tab]
     [sketchpad.config.app :as app]
-    [sketchpad.state :as state]
+    [sketchpad.state.state :as state]
     [sketchpad.file.file :as file]
     [sketchpad.buffer.io :as buffer.io]
     [sketchpad.project.project :as sketchpad.project]

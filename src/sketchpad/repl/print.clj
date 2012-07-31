@@ -3,7 +3,7 @@
             [sketchpad.buffer.action :as buffer.action]
             [sketchpad.wrapper.rsyntaxtextarea :as rsta]
             [sketchpad.util.tab :as tab]
-            [sketchpad.state :as state]))
+            [sketchpad.state.state :as state]))
 
 (defn prompt
 ([]

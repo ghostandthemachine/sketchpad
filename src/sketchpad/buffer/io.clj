@@ -3,7 +3,7 @@
 			[sketchpad.file.file :as file]
 			[sketchpad.util.tab :as tab]
 			[sketchpad.tree.utils :as tree.utils]
-			[sketchpad.state :as state]))
+			[sketchpad.state.state :as state]))
 
 (defn update-info-title [title]
 	(swap! (@state/app :doc-title-atom) (fn [lbl] title)))

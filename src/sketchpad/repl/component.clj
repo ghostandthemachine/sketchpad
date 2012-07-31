@@ -1,6 +1,6 @@
 (ns sketchpad.repl.component
   (:use [seesaw core border meta color]
-        [sketchpad.repl]
+        [sketchpad.repl.app.repl]
         [sketchpad.input.default])
   (:require [sketchpad.rsyntax :as rsyntax]
             [sketchpad.config.config :as config]

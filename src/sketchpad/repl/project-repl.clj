@@ -13,7 +13,7 @@
 		[sketchpad.config.config :as config]
     [sketchpad.util.tab :as tab]
     [sketchpad.repl.info :as repl.info]
-    [sketchpad.state :as state]
+    [sketchpad.state.state :as state]
     [sketchpad.project.project :as sketchpad.project]
     [clojure.tools.nrepl :as nrepl])
   (:import  (java.util UUID)

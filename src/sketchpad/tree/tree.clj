@@ -13,7 +13,7 @@
             [sketchpad.project.state :as project-state]
             [sketchpad.editor.buffer :as editor.buffer]
             [sketchpad.tree.popup :as popup]
-            [sketchpad.state :as state]
+            [sketchpad.state.state :as state]
             [sketchpad.buffer.action :as buffer.action]
             [leiningen.core.project :as lein-project])
   (:import 

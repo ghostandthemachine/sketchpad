@@ -1,9 +1,9 @@
 (ns sketchpad.config.app
 	(:use [seesaw.core :only [select]])
-	(:require [sketchpad.state :as sketchpad.state]
+	(:require [sketchpad.state.state :as sketchpad.state]
 						[sketchpad.util.tab :as tab]))
 
-(defonce app sketchpad.state/app)
+(defonce app sketchpad.state.state/app)
 
 (defn buffer
 "return the text from the current buffer component"

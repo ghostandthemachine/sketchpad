@@ -18,7 +18,7 @@
 			 		(org.fife.ui.rsyntaxtextarea.RSyntaxTextArea)
 			 		(java.awt.event ActionEvent)))
 
-(def app sketchpad.state/app)
+(def app sketchpad.state.state/app)
 
 (defn projects [] (:projects @app))
 

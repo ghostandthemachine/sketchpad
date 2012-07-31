@@ -7,7 +7,7 @@
 			[seesaw.core :as seesaw]
 			[sketchpad.util.tab :as tab]
 			[sketchpad.project.project :as sketchpad.project]
-			[sketchpad.state :as state]
+			[sketchpad.state.state :as state]
 			[sketchpad.tree.utils :as tree.utils]
 			[leiningen.core.project :as lein-project]
 			[clojure.string :as string]

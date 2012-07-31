@@ -8,7 +8,7 @@
            (java.awt.BasicStoke)
            (java.awt Color Dimension Graphics2D FlowLayout))
   (:require [seesaw.bind :as bind]
-            [sketchpad.state :as state]
+            [sketchpad.state.state :as state]
             [seesaw.font :as font]
             [sketchpad.project.project :as project]
             [sketchpad.config.prefs :as sketchpad.config.prefs]))

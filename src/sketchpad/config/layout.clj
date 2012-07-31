@@ -1,8 +1,8 @@
 (ns sketchpad.config.layout
   (:use [seesaw.core])
-  (:require [sketchpad.state :as sketchpad.state]))
+  (:require [sketchpad.state.state :as sketchpad.state]))
 
-(defonce app sketchpad.state/app)
+(defonce app sketchpad.state.state/app)
 
 (defonce show-file-tree (atom true))
 (defonce file-tree-divider-position (atom nil))

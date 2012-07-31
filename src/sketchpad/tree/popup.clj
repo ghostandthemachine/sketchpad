@@ -1,5 +1,5 @@
 (ns sketchpad.tree.popup
-	(:require [sketchpad.state :as state]
+	(:require [sketchpad.state.state :as state]
 			[seesaw.core :as seesaw]
 			[seesaw.keystroke :as keystroke]
       [sketchpad.menu.file :as menu.file]

@@ -6,7 +6,7 @@
         [sketchpad.editor.buffer :as editor.buffer]
         [sketchpad.file.file :as file]
 			  [sketchpad.wrapper.rsyntaxtextarea :as rsyntaxtextarea]
-        [sketchpad.state :as state]
+        [sketchpad.state.state :as state]
         [seesaw.core :as seesaw.core]
         [seesaw.keystroke :as keystroke]))
 

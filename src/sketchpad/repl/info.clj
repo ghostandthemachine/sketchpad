@@ -2,7 +2,7 @@
 	(:use [seesaw core border color graphics])
 	(:require [sketchpad.config.config :as config]
 		[seesaw.bind :as bind]
-		[sketchpad.state :as state]
+		[sketchpad.state.state :as state]
 		[sketchpad.util.tab :as tab]))
 
 (defonce repl-title-atom (atom ""))

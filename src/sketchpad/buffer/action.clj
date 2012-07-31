@@ -8,7 +8,7 @@
   	(:require 	[clojure.string :as string]
   				[sketchpad.config.app :as app]
           [sketchpad.util.tab :as tab]
-          [sketchpad.state :as state]
+          [sketchpad.state.state :as state]
           [sketchpad.util.utils :as utils]
           [seesaw.core :as seesaw]))
 

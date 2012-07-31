@@ -9,7 +9,7 @@
            (java.awt.event.KeyEvent)
            (javax.swing  JOptionPane)))
 
-(def app sketchpad.state/app)
+(def app sketchpad.state.state/app)
 
 (defn ends-with? [file-name ext]
   (.endsWith file-name ext))

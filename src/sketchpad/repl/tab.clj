@@ -6,7 +6,7 @@
 					 (java.awt.event ActionListener MouseListener)
 					 (java.awt.BasicStoke)
 					 (java.awt Color Dimension Graphics2D FlowLayout))
-	(:require [sketchpad.state :as state]
+	(:require [sketchpad.state.state :as state]
 				[sketchpad.config.styles :as styles]
 				[sketchpad.project.project :as sketchpad.project]
 				[seesaw.bind :as bind]

@@ -7,7 +7,7 @@
             [seesaw.font :as font]
             [seesaw.core :as seesaw]
             [sketchpad.wrapper.theme :as theme]
-            [sketchpad.state :as state]
+            [sketchpad.state.state :as state]
             [sketchpad.config.prefs :as sketchpad-prefs])
   (:import [org.fife.ui.rtextarea RTextArea]
            [java.io FileNotFoundException]

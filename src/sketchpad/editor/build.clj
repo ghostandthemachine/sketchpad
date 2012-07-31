@@ -9,7 +9,7 @@
 				[clojure pprint]
 				[seesaw meta core border color])
 	(:require [clojure.string :as str]
-						[sketchpad.state :as state]
+						[sketchpad.state.state :as state]
 						[sketchpad.editor.tab :as button-tab]
 						[sketchpad.util.tab :as tab]
 						[sketchpad.util.utils :as utils]

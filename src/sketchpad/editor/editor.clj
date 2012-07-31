@@ -3,7 +3,7 @@
         [sketchpad.config.prefs])
   (:require [sketchpad.editor.ui :as editor.ui]
             [sketchpad.editor.info-utils :as editor.info-utils]
-            [sketchpad.state :as state])
+            [sketchpad.state.state :as state])
   (:import (javax.swing UIManager)))
 
 (defn put [laf k v]

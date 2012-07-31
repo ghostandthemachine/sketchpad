@@ -10,7 +10,7 @@
 				[seesaw meta core border])
 	(:require [clojure.string :as string]
     		[sketchpad.tree.utils :as tree.utils]
-			[sketchpad.state :as state]))
+			[sketchpad.state.state :as state]))
 
 (defn chop
   "Removes the last character of string."
