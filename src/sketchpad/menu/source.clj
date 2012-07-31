@@ -25,6 +25,11 @@
   (sketchpad.repl.print/append-command (str "(search-replace-all \"\")") -2)
   (tab/focus-editor-repl)))
 
+(defn toggle-comment
+"Comment out the current line."
+([]
+  (buffer.action/toggle-comment)))
+
 
 (defn make-source-menu-items []
  {:search (seesaw.core/menu-item :text "Search..." 
@@ -38,7 +43,12 @@
  :search-replace-all (seesaw.core/menu-item :text "Search Replace All..." 
                               :mnemonic "F" 
                               :key (keystroke/keystroke "meta control F") 
-                              :listen [:action (fn [_] (search-replace-all))])})
+                              :listen [:action (fn [_] (search-replace-all))])
+ :toggle-comment (seesaw.core/menu-item :text "Toggle Comment" 
+                              :mnemonic "T" 
+                              :key (keystroke/keystroke "meta BACK_SLASH") 
+                              :listen [:action (fn [_] (toggle-comment))])
+ })
 
 (defn make-source-menu
   []
@@ -48,4 +58,6 @@
           :items [
                   (menu-items :search)
                   (menu-items :search-replace)
-                  (menu-items :search-replace-all)])))
+                  (menu-items :search-replace-all)
+                  (seesaw.core/separator)
+                  (menu-items :toggle-comment)])))

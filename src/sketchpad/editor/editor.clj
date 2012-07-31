@@ -3,8 +3,7 @@
         [sketchpad prefs utils]
         [clojure.pprint]
         [sketchpad.vim-mode]
-        [sketchpad.toggle-vim-mode-action]
-        [rounded-border.core])
+        [sketchpad.toggle-vim-mode-action])
   (:require [sketchpad.rsyntax :as rsyntax]
             [sketchpad.editor.ui :as editor.ui]
             [sketchpad.editor.info-utils :as editor.info-utils]

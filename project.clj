@@ -1,4 +1,3 @@
-
 (defproject sketchpad "0.0.1-SNAPSHOT"
   :description "A light weight IDE for programming with Overtone and Clojure"
   :main sketchpad.core
@@ -11,6 +10,5 @@
                  [language-builder "1.0.0-SNAPSHOT"]
                  [auto-complete "0.1.0-SNAPSHOT"]
                  [leiningen "2.0.0-preview7"]
-                 [timbre "0.5.1-SNAPSHOT"]
-                 [org.lpetit/paredit.clj "0.12.4.STABLE01"]]
+                 [timbre "0.5.1-SNAPSHOT"]]
   :jvm-opts ~(if (= (System/getProperty "os.name") "Mac OS X") ["-Xdock:name=Sketchpad"] []))

@@ -1,7 +1,8 @@
 (ns sketchpad.completion-builder
   (:use [clojure.pprint])
   (:require [clojure.string :as s]
-            [clojure.repl :as repl])
+            [clojure.repl :as repl]
+            [sketchpad.lein.core.ns :as lein.core.ns])
   (:import (org.fife.ui.autocomplete AutoCompletion VariableCompletion ClojureFunctionCompletion ParameterizedCompletion)
            (org.fife.ui.autocomplete.DefaultCompletionProvider)
            (org.fife.ui.autocomplete.DefaultCompletionProvider)
@@ -90,4 +91,13 @@
   (let [all-namespaces (all-ns)]
     (doseq [namespace all-namespaces]
       (add-completions-from-ns provider namespace))))
+
+(defn build-project-completions
+"Takes a Completion Provider and a class path. Returns the Completion Provider with all ns completions added."
+  [provider project-path]
+  [provider]
+  (let [all-namespaces (lein.core.ns/namespaces-in-dir project-path)]
+    (doseq [namespace all-namespaces]
+      (add-completions-from-ns provider namespace))
+    provider))
 

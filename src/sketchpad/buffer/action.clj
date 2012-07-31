@@ -1,5 +1,6 @@
 (ns sketchpad.buffer.action
-	(:use 		[sketchpad search-context])
+	(:use 		[sketchpad search-context]
+            [seesaw.core :only [invoke-later]])
   	(:import 	(java.util UUID)
               (org.fife.ui.rsyntaxtextarea RSyntaxTextAreaEditorKit)
            		(org.fife.ui.rtextarea RTextAreaEditorKit)
@@ -18,10 +19,11 @@
   (ActionEvent. c 0 (.. UUID randomUUID toString)))
 
 (defn perform-action [action e rta]
-  (utils/awtevent 
-    (.actionPerformedImpl action e rta)
-    (when-not (nil? (repl-panel))
-      (.grabFocus (repl-panel)))))
+  (invoke-later
+    (utils/awtevent
+      (.actionPerformedImpl action e rta)
+      (when-not (nil? (repl-panel))
+        (.grabFocus (repl-panel))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; RTextArea Actions
@@ -83,6 +85,15 @@
 ([rta]
   (perform-action 
     (org.fife.ui.rtextarea.RTextAreaEditorKit$NextWordAction. "select-next-word" true)
+    (action-event rta) 
+    rta)))
+
+(defn toggle-comment
+"Toggle comment for the current buffer line."
+([] (toggle-comment (tab/current-text-area)))
+([rta]
+  (perform-action 
+    (org.fife.ui.rsyntaxtextarea.RSyntaxTextAreaEditorKit$ToggleCommentAction. )
     (action-event rta) 
     rta)))
 
@@ -375,13 +386,15 @@
 (defn append-text [text-pane text]
   (when-let [doc (.getDocument text-pane)]
     (try
-      (.insertString doc (.getLength doc) text nil)
+      (invoke-later
+        (.insertString doc (.getLength doc) text nil))
       (catch java.lang.ClassCastException e ))))
 
 (defn append-text-update [rsta s]
   (try
     (append-text rsta (str s))
-    (.setCaretPosition rsta (.getLastVisibleOffset rsta))
+    (invoke-later
+      (.setCaretPosition rsta (.getLastVisibleOffset rsta)))
     (catch java.lang.NullPointerException e)))
 
 (defn trim-enclosing-char [s cl cr]

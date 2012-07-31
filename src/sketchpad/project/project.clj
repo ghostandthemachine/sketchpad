@@ -4,6 +4,7 @@
 	(:require [sketchpad.state :as state]
 		[sketchpad.project.theme :as theme]
 		[sketchpad.project.state :as project.state]
+		[sketchpad.auto-complete :as auto-complete]
 		[leiningen.core.project :as lein-project])
 	(:import [java.io File]))
 
@@ -15,6 +16,8 @@
 	 :theme theme
 	 :repls (atom #{})
 	 :buffers (atom nil)})
+
+(defonce auto-completion-providers (atom {}))
 
 (def project-ids (atom -1))
  
@@ -41,14 +44,16 @@
 (defn add-project [project-path]
   (let [id (get-project-id!)
   		theme (theme/get-new-theme id)
-  		projects (@state/app :projects)]
+  		projects (@state/app :projects)
+  		]
 	  (swap! (@state/app :project-set) conj project-path)
 	  (swap! projects 
 	  		(fn [m] 
 	  			(assoc m project-path {:type :project
 	  									:path project-path
 	  									:id id 
-	  									:theme theme 
+	  									:theme theme
+	  									; :completion-provider (auto-complete/build-project-completion-provider project-path)
 	  									:repls (atom {}) 
 	  									:buffers (atom {})})))
 	  (if (lein-project-file?)

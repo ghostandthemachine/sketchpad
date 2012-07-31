@@ -14,7 +14,7 @@
         [clooj.help :only (get-var-maps)]
         [clj-inspector.jars :only (get-entries-in-jar jar-files)]
         [seesaw core color border meta]
-        [sketchpad repl-dep-loader repl-communication editor-repl rsyntaxtextarea tab auto-complete default-mode sketchpad-repl]
+        [sketchpad repl-communication editor-repl rsyntaxtextarea tab auto-complete default-mode sketchpad-repl]
         [clojure.tools.nrepl.server :only (start-server stop-server)])
   (:require [clojure.string :as string]
             [sketchpad.rsyntax :as rsyntax]
@@ -295,22 +295,11 @@
   (let [ta-in rsta
         editor-repl-history (get-meta rsta :repl-history)
         get-caret-pos #(.getCaretPosition ta-in)
-        ready #(let [caret-pos (get-caret-pos)
-                     txt (.getText ta-in)
-                     trim-txt (string/trimr txt)]
-                 (and
-                   (pos? (.length trim-txt))
-                   (<= (.length trim-txt)
-                       caret-pos)
-                   (= -1 (first (find-enclosing-brackets
-                                  txt
-                                  caret-pos)))))
         submit #(when-let [txt (get-last-cmd rsta)]
                   (let [pos (editor-repl-history :pos)]
                       (do 
                         (send-to-editor-repl rsta txt)
                         (swap! pos (fn [p] 0)))))
-
         at-top #(zero? (.getLineOfOffset ta-in (get-caret-pos)))
         at-bottom #(= (.getLineOfOffset ta-in (get-caret-pos))
                       (.getLineOfOffset ta-in (.. ta-in getText length)))

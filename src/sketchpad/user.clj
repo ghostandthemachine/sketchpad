@@ -197,17 +197,24 @@
 
 (defn search 
 "Search for a word in the current buffer from the current caret position."
-  [s] 
-  (search/search (tab/current-text-area) s))
+  ([s] (search s :default))
+  ([s flag]
+    (cond 
+        (= flag :default)
+          (search/search (tab/current-text-area) s)
+        (or (= flag :all)(= flag :a)(= flag :start)(= flag :s))
+          (search/search (tab/current-text-area) s)
+        ))
+    )
 
 (defn search-replace
 "Search for a word in the current buffer from the current caret position and replace the next occurence of it."
- [s r]
+ [s r flag]
  (search/search-replace (tab/current-text-area) s r))
 
 (defn search-replace-all
 "Search for a word in the current buffer from the current caret position and replace all occurences of it."
- [s r]
+ [s r flag]
  (search/search-replace-all (tab/current-text-area) s r))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -252,11 +259,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn show-opts [c]
-"show seesaw widget optoins for the given component"
+"Show seesaw widget optoins for the given component"
 	(seesaw.dev/show-options c))
 
 (defn show-evs [c]
-"show seesaw widget optoins for the given component"
+"Show seesaw widget optoins for the given component"
 	(seesaw.dev/show-events c))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -267,35 +274,27 @@
 (defn fr [s r] (search/search-replace (tab/current-text-area) s r))
 (defn fra [s r] (search/search-replace-all (tab/current-text-area) s r))
 
-(defn mark-occurrences
-([b]
-  (mark-occurrences (tab/current-text-area) b))
-([buffer b]
-  (.clearMarkAllHighlights buffer)
-  (.setMarkOccurrences buffer b)))
-
 (defn mark-all
+"Mark all occurences of a given string in the active buffer."
 ([str-to-mark]
   (mark-all (tab/current-text-area) str-to-mark))
 ([buffer str-to-mark]
-  (.markAll buffer str-to-mark false false false)))
+  (invoke-later
+    (.markAll buffer str-to-mark false false false))))
 
 (defn clear-marks
-([]
-  (clear-marks (tab/current-text-area)))
-([buffer]
-  (.clearMarkAllHighlights buffer)
-  (.repaint buffer)))
+"Clear the current marks."
+  ([]
+    (clear-marks (tab/current-text-area)))
+  ([buffer]
+    (invoke-later
+     (.clearMarkAllHighlights buffer))))
 
-(defn buffer-scroller
-"Returns the buffers parent RScrollPanel."
-[buffer]
-  (get-meta buffer :scroller))
-
-(defn buffer-gutter
-"Returns the buffers Gutter component."
-[buffer]
-  (.getGutter (buffer-scroller buffer)))
+(defn mark
+"Mark all occurences of a given string in the active buffer. Takes a string to mark or no args to clear."
+  ([] (clear-marks))
+  ([str-to-mark]
+  (mark-all str-to-mark)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Buffer
@@ -329,6 +328,16 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Bookmarks
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn scroller
+"Returns the buffers parent RScrollPanel."
+[buffer]
+  (get-in buffer [:component :scroller]))
+
+(defn buffer-gutter
+"Returns the buffers Gutter component."
+[buffer]
+  (.getGutter (buffer-scroller buffer)))
 
 (defn gutter 
 "Returns the gutter from a given buffer."

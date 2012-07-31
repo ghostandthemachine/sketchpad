@@ -1,5 +1,6 @@
 (ns sketchpad.repl.server
-  (:use [clojure.pprint])
+  (:use [clojure.pprint]
+        [seesaw.core])
 	(:require clojure.main
 	    clojure.set
 	    [leiningen.core.eval :as eval]

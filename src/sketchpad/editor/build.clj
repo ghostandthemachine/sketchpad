@@ -4,7 +4,7 @@
 					(java.io File StringReader BufferedWriter OutputStreamWriter FileOutputStream)
 					(javax.swing JButton JOptionPane JWindow ImageIcon)
 					(javax.swing.event DocumentListener))
-	(:use [sketchpad shortcuts styles option-windows file-manager prefs]
+	(:use [sketchpad styles option-windows file-manager prefs]
 				[clojure pprint]
 				[seesaw meta core border color])
 	(:require [clojure.string :as str]

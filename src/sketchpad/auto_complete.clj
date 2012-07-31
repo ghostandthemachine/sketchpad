@@ -14,6 +14,23 @@
 
 (defn install-auto-completion
   [rta]
-  (let [auto-complete (org.fife.ui.autocomplete.AutoCompletion. provider)]
-    (config/apply-auto-completion-prefs! auto-complete)
-    (.install auto-complete rta)))
+  (let [completion-provider (org.fife.ui.autocomplete.AutoCompletion. provider)]
+    (config/apply-auto-completion-prefs! completion-provider)
+    (.install completion-provider rta)))
+
+(defn install-project-auto-completion
+"Adds all project ns completions to a text area. Takes a text-area and a SketchPad project."
+  [rsta  completion-provider]
+    (config/apply-auto-completion-prefs! completion-provider)
+    (.install completion-provider rsta))
+
+(defn create-provider
+  ([]
+   (let [cp (org.fife.ui.autocomplete.ClojureCompletionProvider. )]
+     (.setParameterizedCompletionParams cp \space " " \))
+     cp)))
+
+(defn build-project-completion-provider
+"Builds a Completion Provider for a project."
+  [project-path]
+  (build-project-completions (create-provider) project-path))
