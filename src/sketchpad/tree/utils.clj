@@ -3,8 +3,8 @@
            (javax.swing.tree DefaultTreeCellRenderer DefaultMutableTreeNode DefaultTreeModel
                              TreePath TreeSelectionModel)
            (javax.swing JButton JTree JOptionPane JWindow))
-  (:use [sketchpad.prefs]
-        [sketchpad utils])
+  (:use [sketchpad.config.prefs]
+        [sketchpad.util.utils])
   (:require [sketchpad.project.state :as project.state]
             [sketchpad.project.project :as project]
             [sketchpad.state :as state]))

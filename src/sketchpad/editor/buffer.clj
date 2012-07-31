@@ -5,7 +5,7 @@
 	(:require [sketchpad.editor.build :as editor.build]
 			[sketchpad.file.file :as file]
 			[seesaw.core :as seesaw]
-			[sketchpad.tab :as tab]
+			[sketchpad.util.tab :as tab]
 			[sketchpad.project.project :as sketchpad.project]
 			[sketchpad.state :as state]
 			[sketchpad.tree.utils :as tree.utils]

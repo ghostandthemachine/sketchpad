@@ -1,15 +1,15 @@
 (ns sketchpad.buffer.action
-	(:use 		[sketchpad search-context]
+	(:use 		[sketchpad.wrapper.search-context]
             [seesaw.core :only [invoke-later]])
   	(:import 	(java.util UUID)
               (org.fife.ui.rsyntaxtextarea RSyntaxTextAreaEditorKit)
            		(org.fife.ui.rtextarea RTextAreaEditorKit)
            		(java.awt.event ActionEvent))
   	(:require 	[clojure.string :as string]
-  				[sketchpad.app :as app]
-          [sketchpad.tab :as tab]
+  				[sketchpad.config.app :as app]
+          [sketchpad.util.tab :as tab]
           [sketchpad.state :as state]
-          [sketchpad.utils :as utils]
+          [sketchpad.util.utils :as utils]
           [seesaw.core :as seesaw]))
 
 (defn repl-panel []

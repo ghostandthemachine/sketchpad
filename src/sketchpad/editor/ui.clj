@@ -1,6 +1,6 @@
 (ns sketchpad.editor.ui
 	(:use [seesaw core color graphics style])
-	(:require [sketchpad.sketchpad-prefs :as sketchpad-prefs])
+	(:require [sketchpad.config.prefs :as sketchpad-prefs])
 	(:import (javax.swing.plaf.basic.BasicTabbedPaneUI)
 					 (java.lang.reflect.Array)
 					 (java.awt.geom.GeneralPath)
@@ -87,7 +87,7 @@
 				height-pad 13
 				tab-ui  (proxy [javax.swing.plaf.basic.BasicTabbedPaneUI] []
 									(paint [gfx comp]
-										(when @sketchpad.sketchpad-prefs/show-tabs?
+										(when @sketchpad.config.prefs/show-tabs?
 											(proxy-super paint gfx comp)
 											(.setRenderingHint gfx RenderingHints/KEY_ANTIALIASING RenderingHints/VALUE_ANTIALIAS_ON)
 											(if (= (.getTabCount comp) 0)
@@ -121,7 +121,7 @@
 														(style :background (unselected-tab-graient x (+ y h) x y)))))))
 										
 									(calculateTabHeight [placement index font-height]
-										(if @sketchpad.sketchpad-prefs/show-tabs?
+										(if @sketchpad.config.prefs/show-tabs?
 											(+ font-height height-pad)
 											0))
 
@@ -144,12 +144,12 @@
 													(style :foreground (color 20 20 20 100) :thickness 1))))))
 
 									(getTabAreaInsets [placement]
-									  (if @sketchpad.sketchpad-prefs/show-tabs?
+									  (if @sketchpad.config.prefs/show-tabs?
   										(Insets. 5 10 0 10)
   										(Insets. 0 0 0 0)))
 
 									(getContentBorderInsets [placement]
-									  (if @sketchpad.sketchpad-prefs/show-tabs?
+									  (if @sketchpad.config.prefs/show-tabs?
   										(Insets. 0 0 0 0)
   										(Insets. 0 0 0 0)))
 
@@ -183,7 +183,7 @@
 												(style :foreground selected-border-color :stroke 3))))))
 
 									(getTabInsets [placement index]
-      						  (if @sketchpad.sketchpad-prefs/show-tabs?
+      						  (if @sketchpad.config.prefs/show-tabs?
 							  		  (do
 							  		    (let [insets (proxy-super getTabInsets placement index)
 						  			  			h-pad 0

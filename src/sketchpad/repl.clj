@@ -7,24 +7,27 @@
            (clojure.lang LineNumberingPushbackReader)
            (java.awt Rectangle)
            (java.net URL URLClassLoader URLDecoder))
-  (:use [sketchpad.utils :only (attach-child-action-keys attach-action-keys
+  (:use [sketchpad.util.utils :only (attach-child-action-keys attach-action-keys
                             gen-map get-temp-file awt-event get-file-ns
                             when-lets get-text-str get-directories)]
         [clooj.brackets :only (find-line-group find-enclosing-brackets)]
         [clooj.help :only (get-var-maps)]
         [clj-inspector.jars :only (get-entries-in-jar jar-files)]
         [seesaw core color border meta]
-        [sketchpad repl-communication editor-repl rsyntaxtextarea tab auto-complete default-mode sketchpad-repl]
+        [sketchpad.repl.app.repl]
+        [sketchpad.util.tab]
         [clojure.tools.nrepl.server :only (start-server stop-server)])
   (:require [clojure.string :as string]
             [sketchpad.rsyntax :as rsyntax]
             [clojure.java.io :as io]
-            [sketchpad.editor-kit :as kit]
-            [sketchpad.config :as config]
+            [sketchpad.config.config :as config]
             [sketchpad.buffer.action :as buffer.action]
             [sketchpad.editor.ui :as editor.ui]
-            [sketchpad.rtextscrollpane :as sp]
+            [sketchpad.wrapper.rtextscrollpane :as sp]
+            [sketchpad.wrapper.rsyntaxtextarea :as wrapper.rsyntaxtextarea]
             [sketchpad.state :as state]
+            [sketchpad.auto-complete.auto-complete :as auto-complete]
+            [sketchpad.input.default :as input.default]
             [clojure.tools.nrepl :as repl]
             [sketchpad.repl.tab :as repl.tab]
             [leiningen.core.project :as lein])
@@ -32,9 +35,6 @@
            (java.io.IOException)))
 
 (use 'clojure.java.javadoc)
-
-(def repl-history {:items (atom nil) :pos (atom 0) :last-end-pos (atom 0)})
-
 
 (def repl-history (atom {}))  
 
@@ -326,9 +326,9 @@
     (.setUI repl-tabbed-panel (editor.ui/sketchpad-tab-ui repl-tabbed-panel))
     (add-tab! repl-tabbed-panel "Sketchpad" container)
     (repl-tab-component! repl-tabbed-panel repl)
-    (set-input-map! text-area (default-input-map))
+    (wrapper.rsyntaxtextarea/set-input-map! text-area (input.default/default-input-map))
     (add-repl-input-handler text-area)
-    (install-auto-completion text-area)
+    (auto-complete/install-auto-completion text-area)
     (config! scroller :background config/app-color)
     (config/apply-repl-prefs! text-area)
     (send-to-editor-repl text-area "(require 'sketchpad.user)(in-ns 'sketchpad.user)")))

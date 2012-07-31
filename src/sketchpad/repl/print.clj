@@ -1,8 +1,8 @@
 (ns sketchpad.repl.print
   (:require [clojure.string :as string]
             [sketchpad.buffer.action :as buffer.action]
-            [sketchpad.rsyntaxtextarea :as rsta]
-            [sketchpad.tab :as tab]
+            [sketchpad.wrapper.rsyntaxtextarea :as rsta]
+            [sketchpad.util.tab :as tab]
             [sketchpad.state :as state]))
 
 (defn prompt

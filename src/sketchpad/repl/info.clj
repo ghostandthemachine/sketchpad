@@ -1,9 +1,9 @@
 (ns sketchpad.repl.info
 	(:use [seesaw core border color graphics])
-	(:require [sketchpad.config :as config]
+	(:require [sketchpad.config.config :as config]
 		[seesaw.bind :as bind]
 		[sketchpad.state :as state]
-		[sketchpad.tab :as tab]))
+		[sketchpad.util.tab :as tab]))
 
 (defonce repl-title-atom (atom ""))
 (defonce repl-position-atom (atom (str "Line " "Column ")))

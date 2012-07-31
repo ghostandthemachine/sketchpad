@@ -1,6 +1,6 @@
 (ns sketchpad.project.theme
 	(:use [seesaw color])
-	(:require [sketchpad.config :as config]))
+	(:require [sketchpad.config.config :as config]))
 
 (comment 
 	"Sketchpad Theme format."

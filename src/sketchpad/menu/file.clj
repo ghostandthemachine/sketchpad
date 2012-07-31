@@ -2,10 +2,10 @@
 	(:use [seesaw meta])
 	(:require [sketchpad.menu.menu-utils :as menu-utils]
         [sketchpad.tree.utils :as tree.utils]
-			  [sketchpad.tab :as tab]
+			  [sketchpad.util.tab :as tab]
         [sketchpad.editor.buffer :as editor.buffer]
         [sketchpad.file.file :as file]
-			  [sketchpad.rsyntaxtextarea :as rsyntaxtextarea]
+			  [sketchpad.wrapper.rsyntaxtextarea :as rsyntaxtextarea]
         [sketchpad.state :as state]
         [seesaw.core :as seesaw.core]
         [seesaw.keystroke :as keystroke]))

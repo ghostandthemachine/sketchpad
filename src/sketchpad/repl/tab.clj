@@ -1,21 +1,21 @@
 (ns sketchpad.repl.tab
 	(:use [seesaw core color border graphics meta]
-				[sketchpad option-windows])
+				[sketchpad.util.option-windows])
 	(:import (javax.swing JPanel JLabel BorderFactory AbstractButton JButton)
 					 (javax.swing.plaf.basic.BasicButtonUI)
 					 (java.awt.event ActionListener MouseListener)
 					 (java.awt.BasicStoke)
 					 (java.awt Color Dimension Graphics2D FlowLayout))
 	(:require [sketchpad.state :as state]
-				[sketchpad.styles :as styles]
+				[sketchpad.config.styles :as styles]
 				[sketchpad.project.project :as sketchpad.project]
 				[seesaw.bind :as bind]
-				[sketchpad.sketchpad-prefs :as sketchpad.sketchpad-prefs]))	
+				[sketchpad.config.prefs :as sketchpad.config.prefs]))	
 
 (defn paint-button 
 "custom renderer for tab x"
 [repl c g]
-	(when sketchpad.sketchpad-prefs/show-tabs?
+	(when sketchpad.config.prefs/show-tabs?
 		(let [project-color @(sketchpad.project/repl-color repl)
 				w          (width c)
 		    h          (height c)

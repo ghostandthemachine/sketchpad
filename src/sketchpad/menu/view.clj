@@ -2,14 +2,14 @@
   (:use [seesaw meta])
 	(:require [seesaw.core :as seesaw.core]
 		[seesaw.keystroke :as keystroke]
-		[sketchpad.layout-config :as layout-config]
-		[sketchpad.tab :as tab]
-    [sketchpad.app :as app]
+		[sketchpad.config.layout :as config.layout]
+		[sketchpad.util.tab :as tab]
+    [sketchpad.config.app :as app]
     [sketchpad.state :as state]
     [sketchpad.file.file :as file]
     [sketchpad.buffer.io :as buffer.io]
     [sketchpad.project.project :as sketchpad.project]
-    [sketchpad.option-windows :as option-windows]))
+    [sketchpad.util.option-windows :as option-windows]))
 
 (defonce edit-menu-item-state 
   { :focus-repl (atom true)
@@ -40,12 +40,12 @@
 (defn show-file-tree
 "Toggle displaying the file tree component."
 []
-	(layout-config/toggle-file-tree-panel))
+	(config.layout/toggle-file-tree-panel))
 
 (defn show-repl
 "Toggle displaying the repl component."
 []
-	(layout-config/toggle-repl))
+	(config.layout/toggle-repl))
 
 (defn next-tab
 "Display the next available tab in the editor tabbed panel."

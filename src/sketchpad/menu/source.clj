@@ -3,7 +3,7 @@
              [seesaw.keystroke :as keystroke]
              [sketchpad.buffer.action :as buffer.action]
              [sketchpad.repl.print :as sketchpad.repl.print]
-             [sketchpad.tab :as tab]))
+             [sketchpad.util.tab :as tab]))
 
 
    

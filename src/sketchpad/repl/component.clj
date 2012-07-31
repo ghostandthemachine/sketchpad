@@ -1,9 +1,12 @@
 (ns sketchpad.repl.component
   (:use [seesaw core border meta color]
-        [sketchpad repl auto-complete rsyntaxtextarea default-mode])
+        [sketchpad.repl]
+        [sketchpad.input.default])
   (:require [sketchpad.rsyntax :as rsyntax]
-            [sketchpad.config :as config]
+            [sketchpad.config.config :as config]
             [sketchpad.buffer.action :as buffer.action]
+            [sketchpad.wrapper.rsyntaxtextarea :as wrapper.rsyntaxtextarea]
+            [sketchpad.auto-complete.auto-complete :as auto-complete]
             [clojure.string :as string])
   (:import (org.fife.ui.rtextarea RTextScrollPane)
            (java.io BufferedReader BufferedWriter PipedReader PipedWriter PrintWriter Writer
@@ -23,8 +26,8 @@ Examples from clojuredocs.org: [clojuredocs or cdoc]\n\n")
 "Init the repl component prefs and handlers."
 [text-area]
   (config/apply-repl-prefs! text-area)
-  (set-input-map! text-area (default-input-map))
-  (install-auto-completion text-area)  
+  (wrapper.rsyntaxtextarea/set-input-map! text-area (default-input-map))
+  (auto-complete/install-auto-completion text-area)  
   (init-prompt text-area))
 
 (defn repl-component 

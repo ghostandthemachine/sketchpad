@@ -4,7 +4,7 @@
 	(:require [sketchpad.state :as state]
 		[sketchpad.project.theme :as theme]
 		[sketchpad.project.state :as project.state]
-		[sketchpad.auto-complete :as auto-complete]
+		[sketchpad.auto-complete.auto-complete :as auto-complete]
 		[leiningen.core.project :as lein-project])
 	(:import [java.io File]))
 

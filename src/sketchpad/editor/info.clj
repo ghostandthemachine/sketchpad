@@ -1,9 +1,9 @@
 (ns sketchpad.editor.info
 	(:use [seesaw core border color graphics])
-	(:require [sketchpad.config :as config]
+	(:require [sketchpad.config.config :as config]
 		[seesaw.bind :as bind]
 		[sketchpad.state :as state]
-		[sketchpad.tab :as tab])
+		[sketchpad.util.tab :as tab])
 	(:import (org.fife.ui.rtextarea.RTextAreaBase)))
 
 (defonce doc-title-atom (atom "no file open"))

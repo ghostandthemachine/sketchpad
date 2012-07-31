@@ -1,7 +1,7 @@
 (ns sketchpad.buffer.search
-  (:use [sketchpad search-context]
+  (:use [sketchpad.wrapper.search-context]
         [seesaw.core :only [invoke-later]])
-  (:require [sketchpad.search-engine :as search]))
+  (:require [sketchpad.wrapper.search-engine :as search]))
 
 (defn search
   [rta search-str]

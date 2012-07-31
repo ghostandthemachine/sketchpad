@@ -1,6 +1,6 @@
 (ns sketchpad.editor.tab
   (:use [seesaw core color border graphics meta]
-        [sketchpad option-windows]
+        [sketchpad.util.option-windows]
         [clojure.pprint])
   (:import (javax.swing JPanel JLabel BorderFactory AbstractButton JButton)
            (javax.swing.plaf.basic.BasicButtonUI)
@@ -11,7 +11,7 @@
             [sketchpad.state :as state]
             [seesaw.font :as font]
             [sketchpad.project.project :as project]
-            [sketchpad.sketchpad-prefs :as sketchpad.sketchpad-prefs]))
+            [sketchpad.config.prefs :as sketchpad.config.prefs]))
 
 (defn text-area-from-index [tabbed-panel i]
   (select (.getComponentAt tabbed-panel i) [:#editor]))
@@ -65,7 +65,7 @@
         container (flow-panel :align :right
                               :items [label button]
                               :class :button-tab)]
-    (when-not  @sketchpad.sketchpad-prefs/show-tabs?
+    (when-not  @sketchpad.config.prefs/show-tabs?
       (config! container :visible? false))
     (bind/bind (:title buffer) (bind/transform (fn [s] s)) (bind/property label :text))
     (doto container

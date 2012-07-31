@@ -1,5 +1,5 @@
 (ns sketchpad.repl.connection
-	(:require [sketchpad.config :as config]
+	(:require [sketchpad.config.config :as config]
 		[clojure.tools.nrepl :as nrepl]))
 
 (defn connection

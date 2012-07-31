@@ -59,7 +59,7 @@
 	+ Repl text areas
 	+ Buffer gutters
 	+ File tree
-- All prefs can be set in config/default.clj and all configuration functions can be accessed from sketchpad.user (default editor ns) or directly in sketchpad.config
+- All prefs can be set in config/default.clj and all configuration functions can be accessed from sketchpad.user (default editor ns) or directly in sketchpad.config.config
 * Hide/Show scroll bars
 
 

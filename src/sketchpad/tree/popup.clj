@@ -3,7 +3,7 @@
 			[seesaw.core :as seesaw]
 			[seesaw.keystroke :as keystroke]
       [sketchpad.menu.file :as menu.file]
-      [sketchpad.repl.repl :as repl]
+      [sketchpad.repl.project-repl :as repl]
       [sketchpad.project.project :as project]
 			[sketchpad.tree.utils :as utils]))
 

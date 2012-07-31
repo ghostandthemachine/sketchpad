@@ -4,14 +4,15 @@
 					(java.io File StringReader BufferedWriter OutputStreamWriter FileOutputStream)
 					(javax.swing JButton JOptionPane JWindow ImageIcon)
 					(javax.swing.event DocumentListener))
-	(:use [sketchpad styles option-windows file-manager prefs]
+	(:use [sketchpad.config.styles]
+		[sketchpad.config.prefs]
 				[clojure pprint]
 				[seesaw meta core border color])
 	(:require [clojure.string :as str]
 						[sketchpad.state :as state]
 						[sketchpad.editor.tab :as button-tab]
-						[sketchpad.tab :as tab]
-						[sketchpad.utils :as utils]
+						[sketchpad.util.tab :as tab]
+						[sketchpad.util.utils :as utils]
 						[sketchpad.project.project :as sketchpad.project]
 						[sketchpad.editor.component :as editor.component]
 						[sketchpad.editor.info-utils :as editor.info-utils]

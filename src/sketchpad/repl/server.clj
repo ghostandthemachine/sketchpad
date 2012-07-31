@@ -12,7 +12,7 @@
 	    [leiningen.core.classpath :as classpath]
 	    [leiningen.core.main :as main]
 	    [leiningen.core.user :as user]
-	    [sketchpad.config :as config]
+	    [sketchpad.config.config :as config]
 	    [sketchpad.repl.connection :as repl.connection]
 	    [sketchpad.repl.print :as repl.print])
   (:import [java.util UUID]))

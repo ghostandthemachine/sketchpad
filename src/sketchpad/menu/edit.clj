@@ -1,9 +1,6 @@
 (ns sketchpad.menu.edit 
   (:use [seesaw core keystroke])
-  (:require [sketchpad.rsyntaxtextarea :as rsyntaxtextarea]
-            [sketchpad.rtextarea :as rtext]
-            [sketchpad.tab :as tab]
-            [sketchpad.buffer.action :as buffer.action]
+  (:require [sketchpad.buffer.action :as buffer.action]
             [sketchpad.menu.menu-utils :as menu-utils]))
 
 (defn undo

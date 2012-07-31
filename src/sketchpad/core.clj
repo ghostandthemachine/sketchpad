@@ -1,17 +1,7 @@
 (ns sketchpad.core
   (:gen-class :name "Sketchpad")
   (:import (javax.swing.TollTipManager)
-           (org.fife.ui.rsyntaxtextarea.RSyntaTextArea)
-           (org.fife.ui.rtextarea.ToolTipSupplier)
-           (org.fife.ui.rtextarea.RTextArea)
-           (org.fife.ui.autocomplete AutoCompletion FunctionCompletion ParameterizedCompletion)
-           (org.fife.ui.autocomplete.ClojureCompletionProvider)
-           (org.fife.ui.autocomplete.demo.CCellRenderer)
-           (java.io.File)
-           (java.util.Vector)
-           (java.awt Toolkit)
-           (javax.swing UIManager JTabbedPane)
-           (javax.swing.plaf.nimbus.NimbusLookAndFeel))
+           (java.awt Toolkit))
   (:use [seesaw core graphics color border font meta]
         [clojure.pprint]
         [clooj.navigate]
@@ -19,9 +9,11 @@
         [clooj.indent]
         [sketchpad.tree.tree]
         [sketchpad.tree.utils]
-        [sketchpad prefs auto-complete tab utils edit-mode default-mode completion-builder rsyntaxtextarea help])
-  (:require [sketchpad.theme :as theme]
-            [sketchpad.config :as config]
+        [sketchpad.util.tab]
+        [sketchpad.util.utils]
+        [sketchpad.config.prefs])
+  (:require [sketchpad.wrapper.theme :as theme]
+            [sketchpad.config.config :as config]
             [sketchpad.repl :as srepl]
             [sketchpad.state :as state]
             [sketchpad.editor.editor :as sketchpad.editor]

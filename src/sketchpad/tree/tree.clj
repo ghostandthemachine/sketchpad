@@ -1,20 +1,20 @@
 (ns sketchpad.tree.tree
   (:use [seesaw core keystroke border meta]
-        [sketchpad utils prefs]
+        [sketchpad.util.utils]
+        [sketchpad.config.prefs]
         [sketchpad.tree.utils]
         [clojure.pprint])
   (:require [seesaw.color :as c]
             [seesaw.chooser :as chooser]
             [clojure.java.io :as io]
             [clojure.string :as string]
-            [sketchpad.config :as config]
+            [sketchpad.config.config :as config]
             [sketchpad.file.file :as file]
             [sketchpad.project.state :as project-state]
             [sketchpad.editor.buffer :as editor.buffer]
             [sketchpad.tree.popup :as popup]
             [sketchpad.state :as state]
             [sketchpad.buffer.action :as buffer.action]
-            [sketchpad.lein-manager :as lein-manager]
             [leiningen.core.project :as lein-project])
   (:import 
          (java.io File StringReader BufferedWriter OutputStreamWriter FileOutputStream)

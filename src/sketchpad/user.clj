@@ -2,18 +2,17 @@
 	(:refer-clojure :exclude [find replace])
 	(:use [seesaw meta dev core]
 			  [clojure.repl]
-			  [sketchpad.config]
+			  [sketchpad.config.config]
         [sketchpad.tree.tree]
 			  [sketchpad.buffer.action])
-	(:require [sketchpad.tab :as tab]
-					  [sketchpad.rsyntaxtextarea :as rsta]
+	(:require [sketchpad.util.tab :as tab]
+					  [sketchpad.wrapper.rsyntaxtextarea :as rsta]
 					  [sketchpad.core :as core]
 					  [sketchpad.buffer.search :as search]
             [sketchpad.project.project :as project]
 					  [clojure.pprint :as pprint]
 					  [clojure.stacktrace :as stack-trace]
-					  [seesaw.dev :as seesaw.dev]
-					  [sketchpad.repl-communication :as repl-communication])
+					  [seesaw.dev :as seesaw.dev])
 	(:import 	(org.fife.ui.rsyntaxtextarea RSyntaxTextAreaEditorKit)
 			 		(org.fife.ui.rtextarea RTextAreaEditorKit)
 			 		(org.fife.ui.rsyntaxtextarea.RSyntaxTextArea)
@@ -209,12 +208,12 @@
 
 (defn search-replace
 "Search for a word in the current buffer from the current caret position and replace the next occurence of it."
- [s r flag]
+ [s r]
  (search/search-replace (tab/current-text-area) s r))
 
 (defn search-replace-all
 "Search for a word in the current buffer from the current caret position and replace all occurences of it."
- [s r flag]
+ [s r]
  (search/search-replace-all (tab/current-text-area) s r))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -337,7 +336,7 @@
 (defn buffer-gutter
 "Returns the buffers Gutter component."
 [buffer]
-  (.getGutter (buffer-scroller buffer)))
+  (.getGutter (scroller buffer)))
 
 (defn gutter 
 "Returns the gutter from a given buffer."
@@ -345,31 +344,3 @@
   (let [scroller (get-in buffer [:component :scroller])
         gutter (.getGutter scroller)]
     gutter))
-
-(defn show-bookmarks! 
-"Show the bookmark panel."
-([] (show-bookmarks! (current-buffer)))
-([buffer]
-  (.setBookmarkingEnabled (gutter buffer) true)))
-
-(defn hide-bookmarks!
-"Hide the bookmark panel."
-([] (hide-bookmarks! (current-buffer)))
-([buffer]
-  (.setBookmarkingEnabled (gutter buffer) false)))
-
-(defn bookmark-line
-"Bookmark a then line of the given buffer."
-[buffer line]
-  (.toggleBookmark (gutter buffer) line))
-
-(defmulti foo class)
-
-(defmethod foo org.fife.ui.rsyntaxtextarea.RSyntaxTextArea [buffer] 
-  (bookmark-line buffer (current-line)))
-
-(defmethod foo java.lang.Long [line]
-  (bookmark-line (tab/current-text-area) line))
-
-(defmethod foo clojure.lang.PersistentVector [[buffer line]] 
-  (bookmark-line buffer line))

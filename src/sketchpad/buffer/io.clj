@@ -1,7 +1,7 @@
 (ns sketchpad.buffer.io
 	(:require 
 			[sketchpad.file.file :as file]
-			[sketchpad.tab :as tab]
+			[sketchpad.util.tab :as tab]
 			[sketchpad.tree.utils :as tree.utils]
 			[sketchpad.state :as state]))
 

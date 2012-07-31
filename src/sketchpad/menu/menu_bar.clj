@@ -1,7 +1,7 @@
 (ns sketchpad.menu.menu-bar
   (:use [seesaw core keystroke meta])
   (:require 
-        [sketchpad.tab :as tab]
+        [sketchpad.util.tab :as tab]
         [sketchpad.project.project :as project]
         [sketchpad.menu.file :as sketchpad.menu.file]
         [sketchpad.menu.edit :as sketchpad.menu.edit]

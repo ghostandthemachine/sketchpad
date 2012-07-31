@@ -1,8 +1,8 @@
 (ns sketchpad.file.file
   (:require [seesaw.bind :as bind]
             [sketchpad.project.project :as project]
-            [sketchpad.utils :as utils]
-            [sketchpad.tab :as tab]
+            [sketchpad.util.utils :as utils]
+            [sketchpad.util.tab :as tab]
             [clojure.string :as string])
   (:use [seesaw core dev meta])
   (:import (java.io File StringReader BufferedWriter OutputStreamWriter FileOutputStream)

@@ -1,7 +1,7 @@
 (ns sketchpad.repl.history
 	(:require [sketchpad.buffer.action :as buffer]
             [clojure.string :as string]
-            [sketchpad.rsyntaxtextarea :as rsta]))
+            [sketchpad.wrapper.rsyntaxtextarea :as rsta]))
 
 (defn replace-first [coll x]
   (cons x (next coll)))

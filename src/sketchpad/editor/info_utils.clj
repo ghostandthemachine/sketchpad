@@ -1,7 +1,7 @@
 (ns sketchpad.editor.info-utils
 	(:use [seesaw core])
 	(:require [sketchpad.state :as state]
-		[sketchpad.tab :as tab]
+		[sketchpad.util.tab :as tab]
 		[sketchpad.state :as state]))
 
 (defn format-position-str [line column]
