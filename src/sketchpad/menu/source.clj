@@ -11,19 +11,19 @@
 "Focus the editor REPL and create a search function."
 ([]
   (sketchpad.repl.print/append-command (str "(search \"\")") -2)
-  (tab/focus-editor-repl)))
+  (tab/focus-application-repl)))
 
 (defn search-replace
 "Focus the editor REPL and create a search replace function."
 ([]
   (sketchpad.repl.print/append-command (str "(search-replace \"\")") -2)
-  (tab/focus-editor-repl)))
+  (tab/focus-application-repl)))
 
 (defn search-replace-all
 "Focus the editor REPL and create a search replace all function."
 ([]
   (sketchpad.repl.print/append-command (str "(search-replace-all \"\")") -2)
-  (tab/focus-editor-repl)))
+  (tab/focus-application-repl)))
 
 (defn toggle-comment
 "Comment out the current line."

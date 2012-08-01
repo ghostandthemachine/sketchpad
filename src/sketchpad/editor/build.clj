@@ -20,7 +20,7 @@
 						[sketchpad.file.file :as file]))
 
 (defn app-tabbed-panel []
-	(@state/app :editor-tabbed-panel))
+	(get-in (:buffer-tabbed-panel @state/app) [:component :container]))
 
 (defn add-mouse-handlers [buffer]
 	(let [label-color (get-in buffer [:tab :label-color])

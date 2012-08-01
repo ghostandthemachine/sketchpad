@@ -108,7 +108,6 @@
                           (nrepl/message {:op :eval :code "(str *ns*)"})
                       nrepl/combine-responses)
                   prompt-str (str (:ns ns-response) "=> ")]
-                  (println response-str)
               (buffer.action/append-text-update text-area response-str)
   	          (buffer.action/append-text-update text-area prompt-str)
   	          (.discardAllEdits text-area))
@@ -138,9 +137,7 @@
                 (all-ns)))))))))]
         (when-let [response (-> (nrepl/client conn config/repl-response-timeout)
 						        (nrepl/message {:op :eval :code cmd-str})
-					    nrepl/combine-responses)]
-                (println response)
-                ))))
+					    nrepl/combine-responses)]))))
 
 (defn completion-cmd-str [cmd complete-ns]
   (println (str "(complete.core/completions \"" cmd "\" " " '"complete-ns ")"))

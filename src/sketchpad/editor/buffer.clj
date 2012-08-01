@@ -14,13 +14,13 @@
 			[seesaw.bind :as bind]
 			[seesaw.core :as seesaw]))
 
-(defn update-editor-info-file-title [title]
+(defn update-buffer-info-file-title [title]
 	(swap! (@state/app :doc-title-atom) (fn [lbl] title)))
 
 (defn init-buffer-tab-state [buffer]
 	(let [text-area (:text-area buffer)]
 	  (tab/focus-buffer buffer)
-	  (update-editor-info-file-title (tab/title))
+	  (update-buffer-info-file-title (tab/title))
 	  (tab/mark-tab-clean! buffer)
 	  (.discardAllEdits text-area)
 	  (.setCaretPosition text-area 0)))

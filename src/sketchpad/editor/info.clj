@@ -21,23 +21,31 @@
 		(rect 0 0 (width c) (height c))
 		(style :foreground (color 20 20 20) :background (info-panel-bg))))
 
-(defn editor-info []
+(defn buffer-info []
 	(let [doc-position-label (label :text ""
 													:border nil
 													:foreground (color :white)
-													:id :editor-info-label)
+													:id :buffer-info-label)
 		doc-title-label (label :text ""
 													:border nil
 													:foreground (color :white)
-													:id :editor-info-label)
-		editor-info (horizontal-panel
+													:id :buffer-info-label)
+		buffer-info-panel (horizontal-panel
 										:items [[:fill-h 10] doc-position-label :fill-h doc-title-label [:fill-h 10]]
 										:background config/app-color
 										:border nil
 										:maximum-size [10000 :by 20] ;; HACK. need to figure out the safe way to set max height when no tab is present
-										:id :editor-info
-										:paint paint-info-panel)]
-		(swap! state/app (fn [a] (assoc a :editor-info editor-info :doc-position-atom doc-position-atom :doc-title-atom doc-title-atom :doc-title-label doc-title-label)))
+										:id :buffer-info-panel
+										:paint paint-info-panel)
+		buffer-info {:type :buffer-info
+					 :component {:container buffer-info-panel 
+					             :doc-title-label doc-title-label
+					         	 :doc-position-label doc-position-label}
+					 :buffer-title-atom doc-title-atom
+					 :buffer-position-atom doc-position-atom}]
+		(swap! state/app 
+			(fn [a] 
+				(assoc a :buffer-info buffer-info :doc-position-atom doc-position-atom :doc-title-atom doc-title-atom :doc-title-label doc-title-label)))
 	  	(bind/bind doc-title-atom (bind/transform (fn [s] s)) (bind/property doc-title-label :text))
 		(bind/bind doc-position-atom (bind/transform (fn [s] s)) (bind/property doc-position-label :text))
-		editor-info))
+		buffer-info))

@@ -43,11 +43,11 @@
   []
   (if @show-repl
     (do 
-      (swap! show-repl (fn [_] false))
+      (reset! show-repl false)
       (swap! repl-divider-position (fn [_] (.getDividerLocation (@app :split-pane))))
       (.remove (@app :split-pane) (@app :repl-tabbed-panel)))
     (do 
-      (swap! show-repl (fn [_] true))
+      (reset! show-repl true)
       (.setBottomComponent (@app :split-pane) (@app :repl-tabbed-panel))
       (.setDividerLocation (@app :split-pane) @repl-divider-position)
       (.requestFocus (@app :repl-tabbed-panel) true))))

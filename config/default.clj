@@ -32,7 +32,7 @@
 	;; params after this point will overide those set by the theme selection above
 	; :background-image "img/invisible.png"
 	:whitespace-visible false
-	:line-wrap 	true
+	:line-wrap 	false
 	:rounded-selection-edges true
 	:animate-bracket-matching true
 	:anti-aliasing true

@@ -14,7 +14,7 @@
 "return the text from the current buffer text"
 []
 	(try
-		(.getText (tab/current-buffer (tab/current-tab (@app :editor-tabbed-panel))))
+		(.getText (tab/current-buffer (tab/current-tab (@app :buffer-tabbed-panel))))
 		(catch java.lang.IllegalArgumentException e
 			(println "no buffer open in editor"))))
 
@@ -42,7 +42,7 @@
 
 (defn focus-editor []
 "Focus the editor tabbed panel. This will focus the current editor tab and ready it for text input."
-	(.requestFocusInWindow (:editor-tabbed-panel @app)))
+	(.requestFocusInWindow (:buffer-tabbed-panel @app)))
 
 (defn focus-file-tree []
 "Focus the file tree tabbed panel. This will focus the current file tree tab and ready it for text input."

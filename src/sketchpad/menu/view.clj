@@ -62,12 +62,12 @@
 (defn next-repl
 "Display the next available tab in the editor tabbed panel."
   []
-  (tab/next-tab (@state/app :repl-tabbed-panel)))
+  (tab/next-tab (get-in (@state/app :repl-tabbed-panel) [:component :container])))
 
 (defn previous-repl
 "Display the previous available tab in the editor tabbed panel."
   []
-  (tab/previous-tab (@state/app :repl-tabbed-panel)))
+  (tab/previous-tab (get-in (@state/app :repl-tabbed-panel) [:component :container])))
 
 (defn close-tab
 "Close the current tab. If the current buffer is dirty this will ask if you are sure you want to close the tab."

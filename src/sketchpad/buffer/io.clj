@@ -14,7 +14,7 @@
 		  (when (file/save-file! buffer new-file)
 		    (assoc (:file buffer) new-file)
 		    (tab/title-at! (tab/index-of-buffer buffer) new-file-title)
-		    (tab/mark-current-tab-clean! (@state/app :editor-tabbed-panel))
+		    (tab/mark-current-tab-clean! (get-in (:buffer-tabbed-panel @state/app) [:component :container]))
 		    (tree.utils/update-tree)
 			(update-info-title (tab/title))))))
 

@@ -9,16 +9,17 @@
 (defn put [laf k v]
   (.put laf (str "TabbedPane." k) v))
 
-(defn tab-change-handler [editor-tabbed-panel]
-  (listen editor-tabbed-panel :selection editor.info-utils/update-doc-title-label!)
-  (listen editor-tabbed-panel :selection editor.info-utils/update-doc-position-label!))
+(defn tab-change-handler [buffer-tabbed-panel]
+  (listen buffer-tabbed-panel :selection editor.info-utils/update-doc-title-label!)
+  (listen buffer-tabbed-panel :selection editor.info-utils/update-doc-position-label!))
 
-(defn editor []
-  (let [editor-tabbed-panel   (tabbed-panel :placement :top
+(defn buffer-tabbed-panel []
+  (let [buffer-tabbed-panel   (tabbed-panel :placement :top
                                             :overflow :wrap
                                             :background (color :black)
                                             :border (empty-border :thickness 0))]
-    (.setUI editor-tabbed-panel (editor.ui/sketchpad-tab-ui editor-tabbed-panel))
-    (swap! state/app assoc :editor-tabbed-panel editor-tabbed-panel)
-    (tab-change-handler editor-tabbed-panel)
-  editor-tabbed-panel))
+    (.setUI buffer-tabbed-panel (editor.ui/sketchpad-tab-ui buffer-tabbed-panel))
+    (swap! state/app assoc :buffer-tabbed-panel buffer-tabbed-panel)
+    (tab-change-handler buffer-tabbed-panel)
+  {:type :buffer-tabbed-panel
+   :component {:container buffer-tabbed-panel}}))

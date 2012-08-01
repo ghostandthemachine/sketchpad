@@ -12,36 +12,37 @@
   (str "Line " line ", Column " column))
 
 (defn get-coords [text-comp offset]
-  (let [row (.getLineOfOffset text-comp offset)
-        col (- offset (.getLineStartOffset text-comp row))]
-    [row col]))
+	(invoke-later
+		(let [row (.getLineOfOffset text-comp offset)
+		    col (- offset (.getLineStartOffset text-comp row))]
+		[row col])))
 
 (defn get-caret-coords [text-comp]
-  (get-coords text-comp (.getCaretPosition text-comp)))
+	(invoke-later
+		(get-coords text-comp (.getCaretPosition text-comp))))
 
 (defn update-repl-position-label!
 "Update the repl info position label."
-[e]
-	(if (tab/tabs? (@state/app :repl-tabbed-panel))
-		(do
-			(let [current-text-area (tab/current-text-area (@state/app :repl-tabbed-panel))
-			      coords (get-caret-coords current-text-area)]
-				(swap! (@state/app :repl-position-atom) (fn [_] (format-position-str (first coords) (second coords))))))
-		(swap! (@state/app :repl-position-atom) (fn [_] ""))))
+[tabbed-panel e]
+	(let [current-text-area (tab/current-text-area tabbed-panel)
+	      coords (get-caret-coords current-text-area)]
+			(swap! (@state/app :repl-position-atom) (fn [_] (format-position-str (first coords) (second coords))))
+	(swap! (@state/app :repl-position-atom) (fn [_] ""))))
 
 (defn update-repl-title-label!
 "Update the currently displayed repl title in the info panel"
-[e]
-	(if (tab/tabs?)
-		(config! (:repl-title-label @state/app) :text (tab/title (:repl-tabbed-panel @state/app)))
+[tabbed-panel e]
+	(if (tab/tabs? tabbed-panel)
+		(config! (:repl-title-label @state/app) :text (tab/title tabbed-panel))
 		(config! (:repl-title-label @state/app) :text "")))
 
 (defn attach-caret-handler [text-area]
-	(listen text-area :caret-update update-repl-position-label!))
+	(listen text-area :caret-update (partial update-repl-position-label! (get-in (:repl-tabbed-panel @state/app) [:component :container]))))
 
-(defn attach-repl-info-handler [tabbed-panel]
-  (listen tabbed-panel :selection update-repl-title-label!)
-  (listen tabbed-panel :selection update-repl-position-label!))
+(defn attach-repl-info-handler [app-atom]
+	(let [tabbed-panel (get-in (:repl-tabbed-panel @app-atom) [:component :container])]
+		(listen tabbed-panel :selection (partial update-repl-title-label! tabbed-panel))
+  		(listen tabbed-panel :selection (partial update-repl-position-label! tabbed-panel))))
 
 (defn info-panel-bg []
 	(seesaw.graphics/linear-gradient 
@@ -64,13 +65,13 @@
 													:border nil
 													:foreground (color :white)
 													:id :repl-info-label)
-		repl-info (horizontal-panel
-										:items [[:fill-h 10] repl-position-label :fill-h repl-title-label [:fill-h 10]]
-										:background config/app-color
-										:border nil
-										:maximum-size [10000 :by 20] ;; HACK. need to figure out the safe way to set max height when no tab is present
-										:id :repl-info
-										:paint paint-info-panel)]
+		repl-info {:type :repl-info
+			       :component {:container (horizontal-panel :items [[:fill-h 10] repl-position-label :fill-h repl-title-label [:fill-h 10]]
+															:background config/app-color
+															:border nil
+															:maximum-size [10000 :by 20] ;; HACK. need to figure out the safe way to set max height when no tab is present
+															:id :repl-info
+															:paint paint-info-panel)}}]
 		(swap! state/app (fn [a] (assoc a :repl-info repl-info :repl-position-atom repl-position-atom :repl-title-atom repl-title-atom :repl-title-label repl-title-label)))
 	  	(bind/bind repl-title-atom (bind/transform (fn [s] s)) (bind/property repl-title-label :text))
 		(bind/bind repl-position-atom (bind/transform (fn [s] s)) (bind/property repl-position-label :text))

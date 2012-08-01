@@ -45,5 +45,4 @@
                         :listen [:action (fn [_] (create-repl))])
               (seesaw/separator)
               (seesaw/menu-item :text "Delete" 
-                        :listen [:action (fn [_] (utils/delete-file app))])
-              ])))
+                        :listen [:action (fn [_] (utils/delete-file app))])])))

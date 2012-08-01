@@ -73,7 +73,7 @@
 (def non-token-chars [\; \~ \@ \( \) \[ \] \{ \} \  \. \newline \/ \" \'])
 
 (defn current-ns-form [app]
-  (let [tabbed-panel (app :editor-tabbed-panel)
+  (let [tabbed-panel (app :buffer-tabbed-panel)
         current-rta (select (current-tab tabbed-panel) [:#editor])]
     (-> current-rta .getText read-string)))
 

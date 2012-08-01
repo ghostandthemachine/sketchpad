@@ -19,7 +19,7 @@
 
 (defn tab-count 
 ([]
-	(tab-count (@state/app :editor-tabbed-panel)))
+	(tab-count (get-in (:buffer-tabbed-panel @state/app) [:component :container])))
 ([tabbed-panel]
 	(let [tabbed-panel tabbed-panel]
 		(.getTabCount tabbed-panel))))
@@ -27,13 +27,13 @@
 (defn current-index 
 "Index of current tab."
 ([]
-	(current-index (@state/app :editor-tabbed-panel)))
+	(current-index (get-in (:buffer-tabbed-panel @state/app) [:component :container])))
 ([tabbed-panel]
 	(.getSelectedIndex tabbed-panel)))
 
 (defn tabs? 
 ([]
-	(tabs? (@state/app :editor-tabbed-panel)))
+	(tabs? (get-in (:buffer-tabbed-panel @state/app) [:component :container])))
 ([tabbed-panel]
 	(> (tab-count tabbed-panel) 0)))
 
@@ -46,21 +46,21 @@
 	(.setComponentAt tabbed-panel index comp))
 
 (defn title-at
-([] (title-at (@state/app :editor-tabbed-panel) (current-index)))
+([] (title-at (get-in (:buffer-tabbed-panel @state/app) [:component :container]) (current-index)))
 ([index]
-	(title-at (@state/app :editor-tabbed-panel) index))
+	(title-at (get-in (:buffer-tabbed-panel @state/app) [:component :container]) index))
 ([tabbed-panel index]
 	(.getTitleAt tabbed-panel index)))
 
 (defn title-at!
 ([index s]
-	(title-at! (@state/app :editor-tabbed-panel) index s))
+	(title-at! (get-in (:buffer-tabbed-panel @state/app) [:component :container]) index s))
 ([tabbed-panel index s]
 	(.setTitleAt tabbed-panel index s)))
 
 (defn index-of-component 
 	([comp]
-		(index-of-component (@state/app :editor-tabbed-panel) (get-meta comp :parent)))
+		(index-of-component (get-in (:buffer-tabbed-panel @state/app) [:component :container]) (get-meta comp :parent)))
 	([tabbed-panel comp]
 	(.indexOfComponent tabbed-panel comp)))
 
@@ -81,63 +81,60 @@
 	(.indexOfTab tabbed-panel name))
 
 (defn set-selected!
-([index] (set-selected! (@state/app :editor-tabbed-panel) index))
+([index] (set-selected! (get-in (:buffer-tabbed-panel @state/app) [:component :container]) index))
 ([tabbed-panel index]
 	(.setSelectedIndex tabbed-panel index)))
 
 (defn set-selected-component
 	([c] 
-		(set-selected-component (@state/app :editor-tabbed-panel) c))
+		(set-selected-component (get-in (:buffer-tabbed-panel @state/app) [:component :container]) c))
 	([tabbed-panel c]
 		(.setSelectedComponent tabbed-panel c)))
 
-
-
-
 (defn index-of-buffer [buffer]
-	(.indexOfComponent (@state/app :editor-tabbed-panel) (get buffer :container)))
+	(.indexOfComponent (get-in (:buffer-tabbed-panel @state/app) [:component :container]) (get buffer :container)))
 
 (defn index-of-repl 
-([repl] (index-of-repl (@state/app :repl-tabbed-panel) repl))
+([repl] (index-of-repl (get-in (:repl-tabbed-panel @state/app) [:component :container]) repl))
 ([tabbed-panel repl]
 	(.indexOfComponent tabbed-panel (get-in repl [:component :container]))))
 
 (defn insert-tab!
-([title comp i] (insert-tab! (:editor-tabbed-panel @state/app) title comp i))
+([title comp i] (insert-tab! (:buffer-tabbed-panel @state/app) title comp i))
 ([tabbed-panel title comp i] (insert-tab! tabbed-panel title nil comp nil i))
 ([tabbed-panel title icon comp tip i]
 	(.insertTab tabbed-panel title icon comp tip i)))
 
 (defn add-tab! 
 ([title comp]
-	(add-tab! (@state/app :editor-tabbed-panel) title comp))
+	(add-tab! (get-in (:buffer-tabbed-panel @state/app) [:component :container]) title comp))
 ([tabbed-panel title comp]
 	(.addTab tabbed-panel title comp)))
 
 (defn add-repl
 [repl]
-	(.addTab (@state/app :repl-tabbed-panel) @(:title repl) (get-in repl [:component :container])))
+	(.addTab (get-in (@state/app :repl-tabbed-panel) [:component :container]) @(:title repl) (get-in repl [:component :container])))
 
 (defn remove-tab! 
 	([buffer]
 		(remove-tab! 
-			(@state/app :editor-tabbed-panel) 
+			(get-in (:buffer-tabbed-panel @state/app) [:component :container]) 
 			buffer))
 	([tabbed-panel buffer]
 	(.removeTabAt tabbed-panel (index-of-buffer buffer))))
 
 (defn remove-repl
 [repl]
-	(.removeTabAt (@state/app :repl-tabbed-panel) (index-of-repl repl)))
+	(.removeTabAt (get-in (@state/app :repl-tabbed-panel) [:component :container]) (index-of-repl repl)))
 
 (defn current-tab-index 
-([] (current-tab-index (@state/app :editor-tabbed-panel)))
+([] (current-tab-index (get-in (:buffer-tabbed-panel @state/app) [:component :container])))
 ([tabbed-panel]
 	(.getSelectedIndex tabbed-panel)))
 
 (defn current-tab 
 ([]
-	(current-tab (@state/app :editor-tabbed-panel)))
+	(current-tab (get-in (:buffer-tabbed-panel @state/app) [:component :container])))
 ([tabbed-panel]
 	(component-at tabbed-panel (current-tab-index tabbed-panel))))
 
@@ -148,20 +145,20 @@
 
 (defn show-tab! 
 ([buffer]
-	(set-selected! (@state/app :editor-tabbed-panel) (index-of-buffer buffer)))
+	(set-selected! (get-in (:buffer-tabbed-panel @state/app) [:component :container]) (index-of-buffer buffer)))
 ([tabbed-panel buffer]
 	(set-selected! tabbed-panel (index-of-component tabbed-panel (:container buffer)))))
 
 (defn show-buffer
 [buffer]
-	(set-selected! (@state/app :editor-tabbed-panel) (index-of-component (@state/app :editor-tabbed-panel) (:container buffer))))
+	(set-selected! (get-in (:buffer-tabbed-panel @state/app) [:component :container]) (index-of-component (get-in (:buffer-tabbed-panel @state/app) [:component :container]) (:container buffer))))
 
 (defn show-repl
 [repl]
-	(set-selected! (@state/app :repl-tabbed-panel) (index-of-repl repl)))
+	(set-selected! (get-in (@state/app :repl-tabbed-panel) [:component :container]) (index-of-repl repl)))
 
 (defn next-tab
-	([] (next-tab (@state/app :editor-tabbed-panel)))
+	([] (next-tab (get-in (:buffer-tabbed-panel @state/app) [:component :container])))
 	([tabbed-panel]
 		(when (tabs? tabbed-panel)
 			(let [current-index (.getSelectedIndex tabbed-panel)
@@ -175,7 +172,7 @@
 						(.setSelectedIndex tabbed-panel 0))))))
 
 (defn previous-tab 
-	([] (previous-tab (@state/app :editor-tabbed-panel)))
+	([] (previous-tab (get-in (:buffer-tabbed-panel @state/app) [:component :container])))
 	([tabbed-panel]
 	(when (tabs? tabbed-panel)
 		(let [current-index (.getSelectedIndex tabbed-panel)
@@ -191,13 +188,13 @@
 
 (defn current-tab-file-name 
 ([]
-	(current-tab-file-name (:editor-tabbed-panel @state/app)))
+	(current-tab-file-name (:buffer-tabbed-panel @state/app)))
 ([tabbed-panel]
 	(.getAbsolutePath (get-meta (select (current-tab tabbed-panel) [:#editor]) :file))))
 
 (defn current-text-area 
 ([]
-	(current-text-area (@state/app :editor-tabbed-panel)))
+	(current-text-area (get-in (:buffer-tabbed-panel @state/app) [:component :container])))
 ([tabbed-panel]
 	(select (current-tab tabbed-panel) [:#editor])))
 
@@ -205,13 +202,13 @@
 	(get @state/app :current-buffers))
 
 (defn current-buffer-uuid
-([] (current-buffer-uuid (@state/app :editor-tabbed-panel)))
+([] (current-buffer-uuid (get-in (:buffer-tabbed-panel @state/app) [:component :container])))
 ([tabbed-panel]
 	(get-meta (current-text-area tabbed-panel) :uuid)))
 
 (defn current-editor-buffer 
 ([]
-	(current-editor-buffer (@state/app :editor-tabbed-panel)))
+	(current-editor-buffer (get-in (:buffer-tabbed-panel @state/app) [:component :container])))
 ([tabbed-panel]
   (if (tabs? tabbed-panel)
 	(do 
@@ -253,14 +250,14 @@
 
 (defn close-tab 
 ([]
-	(if (tabs? (@state/app :editor-tabbed-panel))
+	(if (tabs? (get-in (:buffer-tabbed-panel @state/app) [:component :container]))
 		(remove-tab! (current-editor-buffer))))
 ([tabbed-panel]
 	(if (tabs? tabbed-panel)
 		(remove-tab! tabbed-panel (current-editor-buffer)))))
 
 (defn close-current-tab []
-	(remove-tab! (@state/app :editor-tabbed-panel) (current-editor-buffer)))
+	(remove-tab! (get-in (:buffer-tabbed-panel @state/app) [:component :container]) (current-editor-buffer)))
 
 (defn get-file-from-tab-index [app i]
 	(i @(app :current-files)))
@@ -279,10 +276,10 @@
 	(add-tab! @(:title buffer) (:container buffer)))
 
 (defn buffer-tab-component! [buffer]
-	(.setTabComponentAt (:editor-tabbed-panel @state/app) (index-of-buffer buffer) (get-in buffer [:tab :container])))
+	(.setTabComponentAt (get-in (:buffer-tabbed-panel @state/app) [:component :container]) (index-of-buffer buffer) (get-in buffer [:tab :container])))
 
 (defn repl-tab-component! 
-([repl] (repl-tab-component! (@state/app :repl-tabbed-panel) repl))
+([repl] (repl-tab-component! (get-in (:repl-tabbed-panel @state/app) [:component :container]) repl))
 ([tabbed-panel repl] (repl-tab-component! tabbed-panel repl (get-in repl [:tab :container])))
 ([tabbed-panel repl tab]
 	(.setTabComponentAt tabbed-panel (index-of-repl tabbed-panel repl) tab)))
@@ -307,10 +304,10 @@
 					(tree.utils/set-tree-selection file-path))))))
 
 (defn current-repl-tab []
-  (current-tab (@state/app :repl-tabbed-panel)))
+  (current-tab (get-in (:repl-tabbed-panel @state/app) [:component :container])))
 
 (defn current-repl-text-area []
-  (select (current-tab (@state/app :repl-tabbed-panel)) [:#editor]))
+  (select (current-tab (get-in (:repl-tabbed-panel @state/app) [:component :container])) [:#editor]))
 
 (defn get-repl-uuid []
   (get-meta (current-repl-text-area) :uuid))
@@ -320,7 +317,7 @@
 
 (defn current-buffer 
 ([]
-	(current-editor-buffer (@state/app :editor-tabbed-panel)))
+	(current-editor-buffer (get-in (:buffer-tabbed-panel @state/app) [:component :container])))
 ([tabbed-panel]
   (if (tabs? tabbed-panel)
 	(do 
@@ -339,15 +336,21 @@
 	(if (tabs?)
 		(focus (current-text-area))))
 
-(defn focus-editor-repl []
-	(set-selected-component (@state/app :repl-tabbed-panel) (@state/app :repl-container))
-	(focus (@state/app :repl-container))
-	(focus (@state/app :editor-repl)))
+(defn focus-application-repl []
+	(set-selected-component 
+		(get-in 
+			(@state/app :repl-tabbed-panel)
+			[:component :container])
+		(get-in
+			(@state/app :application-repl)
+			[:component :container]))
+	(focus (get-in
+				(@state/app :application-repl)
+				[:component :container])))
 
 (defn focus-repl 
 "Focus the REPL panel."
 	([] (focus (current-repl-text-area)))
 	([repl]
-	(when (not (nil? repl))
-	  (focus (:text-area repl)))))
+	  (focus-buffer repl)))
 

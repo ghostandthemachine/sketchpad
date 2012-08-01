@@ -34,25 +34,27 @@
 
 (defn create-app
   []
-  (let [;; editor-info MUST init before editor so it is selectable
-        editor-info (info/editor-info)
-        editor    (sketchpad.editor/editor)
-        doc-info-split-pane (vertical-panel :items[editor
-                                                   :fill-h
-                                                   editor-info]
-                                            :background config/app-color
-                                            :border (empty-border :thickness 0))
-        file-tree (file-tree state/app)
-        repl      (app.repl/repl state/app)
+  (let [buffer-info (info/buffer-info)
+        buffer-tabbed-panel (sketchpad.editor/buffer-tabbed-panel)
+        buffer-component {:type :buffer-component
+                          :component {:container (vertical-panel :items[(get-in buffer-tabbed-panel [:component :container])
+                                                                        :fill-h
+                                                                        (get-in buffer-info [:component :container])]
+                                                                 :background config/app-color
+                                                                 :border (empty-border :thickness 0))}}
+        file-tree {:type :file-tree
+                   :component {:container (file-tree state/app)}}
+
+        repl-tabbed-panel      (app.repl/repl-tabbed-panel)
         repl-info (repl.info/repl-info)
-        repl-info-split-pane (vertical-panel :items[repl
+        repl-component (vertical-panel :items[(get-in repl-tabbed-panel [:component :container])
                                                    :fill-h
-                                                   repl-info]
+                                                   (get-in repl-info [:component :container])]
                                             :background config/app-color
                                             :border (empty-border :thickness 0))
         doc-split-pane (left-right-split
-                         file-tree
-                         doc-info-split-pane
+                         (get-in file-tree [:component :container])
+                         (get-in buffer-component [:component :container])
                          :divider-location 0.25
                          :resize-weight 0.25
                          :divider-size 3
@@ -60,7 +62,7 @@
                          :background config/app-color)
         split-pane (top-bottom-split
                      doc-split-pane
-                     repl-info-split-pane
+                     repl-component
                      :divider-location 0.66
                      :resize-weight 0.66
                      :divider-size 3
@@ -83,6 +85,12 @@
                    @state/app
                    (gen-map
                      frame
+                     buffer-tabbed-panel
+                     buffer-info
+                     buffer-component
+                     repl-info
+                     repl-tabbed-panel
+                     repl-component
                      doc-split-pane
                      split-pane))
         icon-url (clojure.java.io/resource "sketchpad-icon.png")
@@ -98,7 +106,7 @@
     (setup-tree app-atom)
 
     ;; this should happen when the repl tabbed panel is created probably
-    (repl.info/attach-repl-info-handler (:repl-tabbed-panel app))
+    (repl.info/attach-repl-info-handler app-atom)
     ;; global
     (add-visibility-shortcut app)))
 

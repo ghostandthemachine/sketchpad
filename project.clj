@@ -3,7 +3,7 @@
   :main sketchpad.core
   :dependencies [[org.clojure/clojure-contrib "1.2.0"]
                  [org.clojure/clojure "1.3.0"]
-                 [ghostandthemachine/seesaw "1.4.2-SNAPSHOT"]
+                 [seesaw "1.4.2"]
                  [clooj "0.3.4.2-SNAPSHOT"]
                  [rounded-border "0.0.1-SNAPSHOT"]
                  [rsyntax-clojars "0.1.0-SNAPSHOT"]

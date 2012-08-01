@@ -241,7 +241,7 @@
 
 ;; Interactive
 ; I'm not sure the best way to do it, but it will probably be necessary for some commands and scripts
-; to ask the user for input.  Maybe it should bring the editor-repl to the foreground,
+; to ask the user for input.  Maybe it should bring the application-repl to the foreground,
 ; and then modify the prompt to ask for user input?
 
 

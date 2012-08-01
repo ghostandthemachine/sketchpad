@@ -1,7 +1,7 @@
 (ns sketchpad.preview.manager
 	(:use [sketchpad tab tab-builder]
 				[seesaw.core])
-	(:require [sketchpad.rsyntax :as rsyntax]
+	(:require [seesaw.rsyntax :as rsyntax]
             [sketchpad.wrapper.rtextscrollpane :as sp]
             [sketchpad.wrapper.rsyntaxtextarea :as rs]
             [sketchpad.file.file :as fm]
@@ -88,7 +88,7 @@
 	(let [app @app-atom
 				preview (app :preview)
 				preview-comp (@preview :preview-comp)
-				tabbed-panel (app :editor-tabbed-panel)
+				tabbed-panel (app :buffer-tabbed-panel)
 				current-tab-index (current-tab-index app)]
 		(let [current-tab (current-tab app)
 					tab-container (if (nil? container)
@@ -107,7 +107,7 @@
 (defn reset-original-comp! [app-atom]
 	(let [app @app-atom
 				preview (app :preview)
-				tabbed-panel (app :editor-tabbed-panel)
+				tabbed-panel (app :buffer-tabbed-panel)
 				original-comp (@preview :hidden-comp)]
 		(set-global-rsta-to-editor! app-atom)
 		(add! (select (current-tab app) [:.container]) original-comp)))
@@ -116,7 +116,7 @@
 	(let [app @app-atom
 				preview (app :preview)
 				preview-comp (@preview :preview-comp)
-				tabbed-panel (app :editor-tabbed-panel)]
+				tabbed-panel (app :buffer-tabbed-panel)]
 		(clear-preview! preview)
 		(clean! preview)
 		(reset-original-comp! app-atom)
@@ -125,12 +125,12 @@
 (defn load-preview-content! [app]
 	(let [preview (app :preview)
 				preview-comp (@preview :preview-rta)
-				tabbed-panel (app :editor-tabbed-panel)
+				tabbed-panel (app :buffer-tabbed-panel)
 				current-tab-index (current-tab-index app)]))
 
 (defn preview-file! [app-atom file]
   (let [file-name (fm/file-name file)]
-  	(if (tabs? (@app-atom :editor-tabbed-panel))
+  	(if (tabs? (@app-atom :buffer-tabbed-panel))
     	(show-preview! app-atom file)
     	(do 
     		(new-file-tab! @app-atom (ec/make-editor-component))

@@ -18,7 +18,7 @@
         [sketchpad.util.tab]
         [clojure.tools.nrepl.server :only (start-server stop-server)])
   (:require [clojure.string :as string]
-            [sketchpad.rsyntax :as rsyntax]
+            [seesaw.rsyntax :as rsyntax]
             [clojure.java.io :as io]
             [sketchpad.config.config :as config]
             [sketchpad.buffer.action :as buffer.action]
@@ -30,8 +30,9 @@
             [sketchpad.input.default :as input.default]
             [clojure.tools.nrepl :as repl]
             [sketchpad.repl.tab :as repl.tab]
+            [sketchpad.repl.app.component :as repl.app.component]
             [leiningen.core.project :as lein])
-  (:import (org.fife.ui.rtextarea RTextScrollPane)
+  (:import 
            (java.io.IOException)))
 
 (use 'clojure.java.javadoc)
@@ -164,7 +165,7 @@
 
 (defn update-repl-history [app]
   (swap! (:items repl-history) replace-first
-         (get-text-str (app :editor-repl))))
+         (get-text-str (app :application-repl))))
 
 (defn correct-expression? [cmd]
   (when-not (empty? (.trim cmd))
@@ -233,7 +234,7 @@
     (send-to-repl app text (relative-file app) 0)))
 
 (defn update-repl-text [app]
-  (let [rsta (:editor-repl app)
+  (let [rsta (:application-repl app)
         last-pos @(:last-end-pos repl-history)
         items @(:items repl-history)]
     (when (pos? (count items))
@@ -275,7 +276,7 @@
            current-ns)))
 
 (defn restart-repl [app project-path]
-  (buffer.action/append-text (app :editor-repl)
+  (buffer.action/append-text (app :application-repl)
                (str "\n=== RESTARTING " project-path " REPL ===\n"))
   (when-let [proc (-> app :repl deref :proc)]
     (.destroy proc))
@@ -285,7 +286,7 @@
 (defn switch-repl [app project-path]
   (when (and project-path
              (not= project-path (-> app :repl deref :project-path)))
-    (buffer.action/append-text (app :editor-repl)
+    (buffer.action/append-text (app :application-repl)
                  (str "\n\n=== Switching to " project-path " REPL ===\n"))
     (let [repl (or (get @repls project-path)
                    (create-outside-repl (app :repl-out-writer) project-path))]
@@ -293,12 +294,12 @@
 
 (defn add-repl-input-handler [rsta]
   (let [ta-in rsta
-        editor-repl-history (get-meta rsta :repl-history)
+        application-repl-history (get-meta rsta :repl-history)
         get-caret-pos #(.getCaretPosition ta-in)
         submit #(when-let [txt (get-last-cmd rsta)]
-                  (let [pos (editor-repl-history :pos)]
+                  (let [pos (application-repl-history :pos)]
                       (do 
-                        (send-to-editor-repl rsta txt)
+                        (send-to-application-repl rsta txt)
                         (swap! pos (fn [p] 0)))))
         at-top #(zero? (.getLineOfOffset ta-in (get-caret-pos)))
         at-bottom #(= (.getLineOfOffset ta-in (get-caret-pos))
@@ -331,51 +332,20 @@
     (auto-complete/install-auto-completion text-area)
     (config! scroller :background config/app-color)
     (config/apply-repl-prefs! text-area)
-    (send-to-editor-repl text-area "(require 'sketchpad.user)(in-ns 'sketchpad.user)")))
+    (send-to-application-repl text-area "(require 'sketchpad.user)(in-ns 'sketchpad.user)")))
 
-(defn repl
-  [app-atom]
+(defn repl-tabbed-panel
+  []
   (let [repl-tabbed-panel   (tabbed-panel :placement :top
                                             :overflow :wrap
                                             :background (color :black)
                                             :border nil)
-        editor-repl (rsyntax/text-area 
-                                      :syntax          :clojure    
-                                      :border          (line-border :thickness 1 :color config/app-color)                          
-                                      :id             :editor
-                                      :class          :repl)
-
-        repl-title (atom "Sketchpad")
-
-        repl-history {:items (atom nil) :pos (atom 0) :last-end-pos (atom 0)}
-        repl-in-scroll-pane (RTextScrollPane. editor-repl false) ;; default to no linenumbers
-        repl-container (vertical-panel 
-                                      :items          [repl-in-scroll-pane]                                      
-                                      :id             :repl-container
-                                      :class          :repl)
-        repl-undo-count (atom 0)
-        repl-que (create-editor-repl editor-repl)
-        tab (repl.tab/label-tab {:container repl-container
-                                  :title repl-title})
-        repl {:type :editor-repl
-              :component {:container repl-container :text-area editor-repl :scroller repl-in-scroll-pane}
-              :title repl-title
-              :history repl-history
-              :que repl-que
-              :tab tab}]
-
-    (put-meta! editor-repl :repl-history repl-history)
-    (put-meta! editor-repl :repl-que repl-que)
-    
-    (init-repl-tabbed-panel repl-tabbed-panel repl)
-
+        application-repl (repl.app.component/application-repl-component)]
+    (init-repl-tabbed-panel repl-tabbed-panel application-repl)
     (attach-tab-change-handler repl-tabbed-panel)
-    
-    (swap! app-atom conj (gen-map
+    (swap! state/app conj (gen-map
                             repl-tabbed-panel
-                            repl-que
-                            editor-repl
-                            repl-in-scroll-pane
-                            repl-container))
-    repl-tabbed-panel))
+                            application-repl))
+    {:type :repl-tabbed-panel
+     :component {:container repl-tabbed-panel}}))
 

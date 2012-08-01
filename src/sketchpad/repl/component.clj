@@ -2,7 +2,7 @@
   (:use [seesaw core border meta color]
         [sketchpad.repl.app.repl]
         [sketchpad.input.default])
-  (:require [sketchpad.rsyntax :as rsyntax]
+  (:require [seesaw.rsyntax :as rsyntax]
             [sketchpad.config.config :as config]
             [sketchpad.buffer.action :as buffer.action]
             [sketchpad.wrapper.rsyntaxtextarea :as wrapper.rsyntaxtextarea]
@@ -39,7 +39,7 @@ Examples from clojuredocs.org: [clojuredocs or cdoc]\n\n")
                                 :class  :repl)
         repl-scroll-pane (RTextScrollPane. text-area false)
         repl-container (vertical-panel :items [repl-scroll-pane] :class :repl-container)]
-    (config! repl-scroll-pane :border (line-border :thickness 1 :color config/app-color))
+    (config! repl-scroll-pane :border nil)
     (init-repl text-area)
     {:container repl-container
      :text-area text-area

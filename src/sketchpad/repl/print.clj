@@ -7,7 +7,7 @@
 
 (defn prompt
 ([]
-	(prompt (:editor-repl @state/app) nil))
+	(prompt (get-in (:application-repl @state/app) [:component :text-area]) nil))
 ([rsta prompt-ns]
   (buffer.action/append-text rsta (str \newline  "sketchpad.user=> "))
   ; (buffer.action/append-text rsta (str \newline (ns-name prompt-ns) "=> "))
@@ -20,5 +20,5 @@
 "Takes a command string to append, and the offset to possibly go back with and appends it to the editor repl."
 	([cmd-str caret-offset]
 		(prompt)
-		(buffer.action/append-text-update (:editor-repl @state/app) cmd-str)
-		(buffer.action/buffer-move-pos-by-char (:editor-repl @state/app) caret-offset)))
+		(buffer.action/append-text-update (get-in (:application-repl @state/app) [:component :text-area]) cmd-str)
+		(buffer.action/buffer-move-pos-by-char (get-in (:application-repl @state/app) [:component :text-area]) caret-offset)))
