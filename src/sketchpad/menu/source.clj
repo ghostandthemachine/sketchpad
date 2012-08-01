@@ -28,7 +28,8 @@
 (defn toggle-comment
 "Comment out the current line."
 ([]
-  (buffer.action/toggle-comment)))
+  (when (tab/tabs?)
+    (buffer.action/toggle-comment))))
 
 
 (defn make-source-menu-items []

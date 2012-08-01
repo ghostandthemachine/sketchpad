@@ -1,32 +1,38 @@
 (ns sketchpad.menu.edit 
   (:use [seesaw core keystroke])
   (:require [sketchpad.buffer.action :as buffer.action]
-            [sketchpad.menu.menu-utils :as menu-utils]))
+            [sketchpad.menu.menu-utils :as menu-utils]
+            [sketchpad.util.tab :as tab]))
 
 (defn undo
 "undo last recordable action"
   []
-  (buffer.action/undo))
+  (when (tab/tabs?)
+    (buffer.action/undo)))
 
 (defn redo
 "redo last recordable action"
   []
-  (buffer.action/redo))
+  (when (tab/tabs?)
+    (buffer.action/redo)))
 
 (defn copy
 "copy the current selection"
   []
-  (buffer.action/copy))
+  (when (tab/tabs?)
+    (buffer.action/copy)))
 
 (defn cut
 "cut the current selection"
   []
-  (buffer.action/cut))
+  (when (tab/tabs?)
+    (buffer.action/cut)))
 
 (defn paste
 "Paste the current selection"
   []
-  (buffer.action/paste))
+  (when (tab/tabs?)
+    (buffer.action/paste)))
 
 (defn make-edit-menu-items []
   {:undo  (menu-item :text "Undo" 

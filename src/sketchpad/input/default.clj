@@ -1,4 +1,6 @@
 (ns sketchpad.input.default
+  (:require [sketchpad.config.config :as config]
+            [seesaw.keystroke :as keystroke])
   (:import (java.awt Toolkit)
            (java.awt.event InputEvent KeyEvent)
            (javax.swing InputMap KeyStroke)
@@ -17,251 +19,234 @@
 
     (doto input-map
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_ESCAPE
-                                            0)
-        "toggle-vim-mode")
-      (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_LEFT
-                                            default-modifier)
+        (keystroke/keystroke (:begin-line config/default-buffer-key-bindings))
         DefaultEditorKit/beginLineAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_LEFT
-                                            (bit-or default-modifier shift))
+        (keystroke/keystroke (:selection-begin-line config/default-buffer-key-bindings))
         DefaultEditorKit/selectionBeginLineAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_UP
-                                            default-modifier)
+        (keystroke/keystroke (:begin config/default-buffer-key-bindings))
         DefaultEditorKit/beginAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_UP
-                                            (bit-or default-modifier shift))
+        (keystroke/keystroke (:selection-begin config/default-buffer-key-bindings))
         DefaultEditorKit/selectionBeginAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_RIGHT
-                                            default-modifier)
+        (keystroke/keystroke (:end-line config/default-buffer-key-bindings))
         DefaultEditorKit/endLineAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_RIGHT
-                                            (bit-or default-modifier shift))
+        (keystroke/keystroke (:selection-end-line config/default-buffer-key-bindings))
         DefaultEditorKit/selectionEndLineAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_DOWN
-                                            default-modifier)
+        (keystroke/keystroke (:end config/default-buffer-key-bindings))
         DefaultEditorKit/endAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_DOWN
-                                            (bit-or default-modifier shift))
+        (keystroke/keystroke (:selection-end config/default-buffer-key-bindings))
         DefaultEditorKit/selectionEndAction)
 
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_LEFT
-                                            0)
+        (keystroke/keystroke (:backward config/default-buffer-key-bindings))
         DefaultEditorKit/backwardAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_LEFT
-                                            shift)
+        (keystroke/keystroke (:selection-backward config/default-buffer-key-bindings))
         DefaultEditorKit/selectionBackwardAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_LEFT
-                                            alt)
+        (keystroke/keystroke (:previous-word config/default-buffer-key-bindings))
         DefaultEditorKit/previousWordAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_LEFT
-                                            (bit-or alt shift))
+        (keystroke/keystroke (:selection-previous-word config/default-buffer-key-bindings))
         DefaultEditorKit/selectionPreviousWordAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_DOWN
-                                            0)
+        (keystroke/keystroke (:down config/default-buffer-key-bindings))
         DefaultEditorKit/downAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_DOWN
-                                            shift)
+        (keystroke/keystroke (:selection-down config/default-buffer-key-bindings))
         DefaultEditorKit/selectionDownAction)
-      ; (.put
-      ;   (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_DOWN
-      ;                                       (bit-or default-modifier alt))
-      ;   RTextAreaEditorKit/rtaScrollDownAction)
-      ; (.put
-      ;   (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_UP
-      ;                                       (bit-or default-modifier alt))
-      ;   RTextAreaEditorKit/rtaScrollUpAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_DOWN
-                                            alt)
+        (keystroke/keystroke (:scroll-down config/default-buffer-key-bindings))
+        RTextAreaEditorKit/rtaScrollDownAction)
+
+      (.put
+        (keystroke/keystroke (:scroll-up config/default-buffer-key-bindings))
+        RTextAreaEditorKit/rtaScrollUpAction)
+
+      (.put
+        (keystroke/keystroke (:linedown config/default-buffer-key-bindings))
         RTextAreaEditorKit/rtaLineDownAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_RIGHT
-                                            0)
+        (keystroke/keystroke (:forward config/default-buffer-key-bindings))
         DefaultEditorKit/forwardAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_RIGHT
-                                            shift)
+        (keystroke/keystroke (:selection-forward config/default-buffer-key-bindings))
         DefaultEditorKit/selectionForwardAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_RIGHT
-                                            alt)
+        (keystroke/keystroke (:next-word config/default-buffer-key-bindings))
         DefaultEditorKit/nextWordAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_RIGHT
-                                            (bit-or alt shift))
+        (keystroke/keystroke (:selection-next-word config/default-buffer-key-bindings))
         DefaultEditorKit/selectionNextWordAction)
+      
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_UP
-                                            0)
+        (keystroke/keystroke (:up config/default-buffer-key-bindings))
         DefaultEditorKit/upAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_UP
-                                            shift)
+        (keystroke/keystroke (:selection-up config/default-buffer-key-bindings))
         DefaultEditorKit/selectionUpAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_UP
-                                            alt)
+        (keystroke/keystroke (:line-up config/default-buffer-key-bindings))
         RTextAreaEditorKit/rtaLineUpAction)
-
+      
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_PAGE_UP
-                                            0)
+        (keystroke/keystroke (:page-up config/default-buffer-key-bindings))
         DefaultEditorKit/pageUpAction)
+        
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_PAGE_UP
-                                            shift)
+        (keystroke/keystroke (:selection-page-up config/default-buffer-key-bindings))
         RTextAreaEditorKit/rtaSelectionPageUpAction)
+      
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_PAGE_UP
-                                            (bit-or default-modifier shift))
+        (keystroke/keystroke (:selection-page-left config/default-buffer-key-bindings))
         RTextAreaEditorKit/rtaSelectionPageLeftAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_PAGE_DOWN
-                                            0)
+        (keystroke/keystroke (:page-down config/default-buffer-key-bindings))
         DefaultEditorKit/pageDownAction)
+      
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_PAGE_DOWN
-                                            shift)
+        (keystroke/keystroke (:selection-page-down config/default-buffer-key-bindings))
         RTextAreaEditorKit/rtaSelectionPageDownAction)
+        
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_PAGE_DOWN
-                                            (bit-or default-modifier shift))
+        (keystroke/keystroke (:selection-page-right config/default-buffer-key-bindings))
         RTextAreaEditorKit/rtaSelectionPageRightAction)
-
+      
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_CUT
-                                            0)
+        (keystroke/keystroke (:key-cut config/default-buffer-key-bindings))
         DefaultEditorKit/cutAction)
+      
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_COPY
-                                            0)
+        (keystroke/keystroke (:key-copy config/default-buffer-key-bindings))
         DefaultEditorKit/copyAction)
+      
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_PASTE
-                                            0)
+        (keystroke/keystroke (:key-paste config/default-buffer-key-bindings))
         DefaultEditorKit/pasteAction)
 
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_X
-                                            default-modifier)
+        (keystroke/keystroke (:delete-cut config/default-buffer-key-bindings))
         DefaultEditorKit/cutAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_C
-                                            default-modifier)
+        (keystroke/keystroke (:insert-copy config/default-buffer-key-bindings))
         DefaultEditorKit/copyAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_V
-                                            default-modifier)
+        (keystroke/keystroke (:insert-paste config/default-buffer-key-bindings))
         DefaultEditorKit/pasteAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_DELETE
-                                            0)
+        (keystroke/keystroke (:cut config/default-buffer-key-bindings))
+        DefaultEditorKit/cutAction)
+
+      (.put
+        (keystroke/keystroke (:paste config/default-buffer-key-bindings))
+        DefaultEditorKit/pasteAction)
+
+      (.put
+        (keystroke/keystroke (:copy config/default-buffer-key-bindings))
+        DefaultEditorKit/copyAction)
+
+      (.put
+        (keystroke/keystroke (:delete-next-char config/default-buffer-key-bindings))
         DefaultEditorKit/deleteNextCharAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_DELETE
-                                            shift)
-        DefaultEditorKit/cutAction)
-      (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_DELETE
-                                            default-modifier)
+        (keystroke/keystroke (:delete-rest-of-line config/default-buffer-key-bindings))
         RTextAreaEditorKit/rtaDeleteRestOfLineAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_INSERT
-                                            0)
+        (keystroke/keystroke (:toggle-text-mode config/default-buffer-key-bindings))
         RTextAreaEditorKit/rtaToggleTextModeAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_INSERT
-                                            shift)
-        DefaultEditorKit/pasteAction)
-      (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_INSERT
-                                            default-modifier)
-        DefaultEditorKit/copyAction)
-      (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_A
-                                            default-modifier)
+        (keystroke/keystroke (:select-all config/default-buffer-key-bindings))
         DefaultEditorKit/selectAllAction)
 
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_D
-                                            default-modifier)
+        (keystroke/keystroke (:delete-line config/default-buffer-key-bindings))
         RTextAreaEditorKit/rtaDeleteLineAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_J
-                                            default-modifier)
+        (keystroke/keystroke (:join-lines config/default-buffer-key-bindings))
         RTextAreaEditorKit/rtaJoinLinesAction)
 
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_BACK_SPACE
-                                            shift)
+        (keystroke/keystroke (:delete-prev-char config/default-buffer-key-bindings))
         DefaultEditorKit/deletePrevCharAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_BACK_SPACE
-                                            default-modifier)
+        (keystroke/keystroke (:delete-prev-word config/default-buffer-key-bindings))
         RTextAreaEditorKit/rtaDeletePrevWordAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_TAB
-                                            0)
+        (keystroke/keystroke (:insert-tab config/default-buffer-key-bindings))
         DefaultEditorKit/insertTabAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_ENTER
-                                            0)
+        (keystroke/keystroke (:insert-break config/default-buffer-key-bindings))
         DefaultEditorKit/insertBreakAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_ENTER
-                                            shift)
+        (keystroke/keystroke (:shift-insert-break config/default-buffer-key-bindings))
         DefaultEditorKit/insertBreakAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_TAB
-                                            0)
+        (keystroke/keystroke (:dumb-complete-word config/default-buffer-key-bindings))
         RTextAreaEditorKit/rtaDumbCompleteWordAction)
 
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_Z
-                                            default-modifier)
+        (keystroke/keystroke (:undo config/default-buffer-key-bindings))
         RTextAreaEditorKit/rtaUndoAction)
-      (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_Z
-                                            (bit-or default-modifier shift))
-        RTextAreaEditorKit/rtaRedoAction)
 
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_F2
-                                            0)
+        (keystroke/keystroke (:redo config/default-buffer-key-bindings))
+        RTextAreaEditorKit/rtaRedoAction)
+      
+      (.put
+        (keystroke/keystroke (:next-bookmark config/default-buffer-key-bindings))
         RTextAreaEditorKit/rtaNextBookmarkAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_F2
-                                            shift)
+        (keystroke/keystroke (:prev-bookmark config/default-buffer-key-bindings))
         RTextAreaEditorKit/rtaPrevBookmarkAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_F2
-                                            default-modifier)
+        (keystroke/keystroke (:toggle-bookmark config/default-buffer-key-bindings))
         RTextAreaEditorKit/rtaToggleBookmarkAction)
 
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_K
-                                            (bit-or default-modifier shift))
+        (keystroke/keystroke (:prev-occurrence config/default-buffer-key-bindings))
         RTextAreaEditorKit/rtaPrevOccurrenceAction)
+
       (.put
-        (javax.swing.KeyStroke/getKeyStroke java.awt.event.KeyEvent/VK_K
-                                            default-modifier)
-        RTextAreaEditorKit/rtaNextOccurrenceAction)
-      )
+        (keystroke/keystroke (:next-occurrence config/default-buffer-key-bindings))
+        RTextAreaEditorKit/rtaNextOccurrenceAction))
     input-map))
-
-
