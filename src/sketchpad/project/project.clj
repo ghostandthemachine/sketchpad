@@ -1,6 +1,7 @@
 (ns sketchpad.project.project
 	(:use [clojure.pprint]
-				[seesaw color meta])
+				[seesaw color meta]
+				[sketchpad.util.look-up])
 	(:require [sketchpad.state.state :as state]
 		[sketchpad.project.theme :as theme]
 		[sketchpad.project.state :as project.state]
@@ -57,8 +58,13 @@
 	  									:repls (atom {}) 
 	  									:buffers (atom {})})))
 	  (if (lein-project-file?)
-		  (when-let [lein-project (lein-project/read (str project-path "/project.clj"))]
-		  	(swap! projects (fn [m] (assoc-in m [project-path :lein-project] lein-project)))))))
+	  		(try
+		  		(when-let [lein-project (lein-project/read (str project-path "/project.clj"))]
+		  		(swap! projects (fn [m] (assoc-in m [project-path :lein-project] lein-project))))
+		  		(catch Exception e)))))
+
+(defn clear-project-set []
+(reset! (:project-set @state/app) (sorted-set)))
 
 (defn setup-non-project-map []
 	(add-project @state/app "/default"))

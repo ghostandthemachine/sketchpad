@@ -13,13 +13,13 @@
   []
   (if @show-file-tree
     (do 
-      (swap! file-tree-divider-position (fn [_] (.getDividerLocation (@app :doc-split-pane))))
+      (swap! file-tree-divider-position (fn [_] (.getDividerLocation (@app :top-horizontal-split-panel))))
       (swap! show-file-tree (fn [_] false))
-      (remove! (@app :doc-split-pane) (@app :docs-tree-panel)))
+      (remove! (@app :top-horizontal-split-panel) (@app :docs-tree-panel)))
     (do 
       (swap! show-file-tree (fn [_] true))
-      (.setLeftComponent (@app :doc-split-pane) (@app :docs-tree-panel))
-      (.setDividerLocation (@app :doc-split-pane) @file-tree-divider-position)
+      (.setLeftComponent (@app :top-horizontal-split-panel) (@app :docs-tree-panel))
+      (.setDividerLocation (@app :top-horizontal-split-panel) @file-tree-divider-position)
       (.requestFocus (@app :docs-tree) true))))
   
 (defonce show-editor (atom true))
@@ -30,10 +30,10 @@
   (if @show-file-tree
     (do 
       (swap! show-editor (fn [_] false))
-      (remove! (@app :doc-split-pane) (@app :doc-text-panel)))
+      (remove! (@app :top-horizontal-split-panel) (@app :doc-text-panel)))
     (do 
       (swap! show-editor (fn [_] true))
-      (add! (@app :doc-split-pane) (@app :doc-text-panel)))))
+      (add! (@app :top-horizontal-split-panel) (@app :doc-text-panel)))))
 
 (defonce show-repl (atom true))
 (defonce repl-divider-position (atom nil))
@@ -45,12 +45,12 @@
     (if @show-repl
       (do 
         (reset! show-repl false)
-        (swap! repl-divider-position (fn [_] (.getDividerLocation (@app :split-pane))))
-        (.remove (@app :split-pane) repl-tabbed-panel))
+        (swap! repl-divider-position (fn [_] (.getDividerLocation (@app :main-vertical-split-pane))))
+        (.remove (@app :main-vertical-split-pane) repl-tabbed-panel))
       (do 
         (reset! show-repl true)
-        (.setBottomComponent (@app :split-pane) repl-tabbed-panel)
-        (.setDividerLocation (@app :split-pane) @repl-divider-position)
+        (.setBottomComponent (@app :main-vertical-split-pane) repl-tabbed-panel)
+        (.setDividerLocation (@app :main-vertical-split-pane) @repl-divider-position)
         (.requestFocus repl-tabbed-panel true)))))
 
 (defonce show-search-panel (atom true))

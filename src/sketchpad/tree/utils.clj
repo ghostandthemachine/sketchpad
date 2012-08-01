@@ -4,16 +4,12 @@
                              TreePath TreeSelectionModel)
            (javax.swing JButton JTree JOptionPane JWindow))
   (:use [sketchpad.config.prefs]
-        [sketchpad.util.utils])
+        [sketchpad.util.utils]
+        [sketchpad.util.look-up])
   (:require [sketchpad.project.state :as project.state]
             [sketchpad.project.project :as project]
-            [sketchpad.state.state :as state]))
-
-
-
-(defn update-tree []
-  ; (update-project-tree (@tree-app :docs-tree))
-  (.reload (.getModel (@state/app :docs-tree))))
+            [sketchpad.state.state :as state]
+            [seesaw.core :as seesaw]))
 
 (defn save-project-set []
   (write-value-to-prefs sketchpad-prefs "project-set" @project.state/project-set))
@@ -129,7 +125,7 @@
               root)))
 
 (defn get-root-path 
-([] (get-root-path (@state/app :docs-tree)))
+([] (get-root-path (get-file-tree)))
 ([tree]
   (TreePath. (.. tree getModel getRoot))))
 
@@ -176,7 +172,7 @@
       node)))
 
 (defn set-tree-selection 
-([path] (set-tree-selection (@state/app :docs-tree) path))
+([path] (set-tree-selection (get-file-tree) path))
 ([tree path]
   (awt-event
     (when-let [node (path-to-node tree path)]
@@ -225,14 +221,15 @@
 (defn get-selected-projects 
 ([] (get-selected-projects @state/app))
 ([app]
-  (let [tree (app :docs-tree)
+  (let [tree (get-file-tree)
         selections (.getSelectionPaths tree)]
     (for [selection selections]
       (->> selection .getLastPathComponent (get-project-node tree)
            .getUserObject .getAbsolutePath)))))
 
-(defn update-project-tree [tree]
-  (let [model (project-set-to-tree-model)]
+(defn update-project-tree []
+ (let [tree (get-file-tree)
+       model (project-set-to-tree-model)]
     (awt-event
       (.setModel tree model)
       (save-project-set)
@@ -240,17 +237,32 @@
       (load-expanded-paths tree)
       (load-tree-selection tree)
       (save-expanded-paths tree))))
+
+(defn update-tree []
+ (let [tree (get-file-tree)]
+  (seesaw/invoke-later
+    (update-project-tree)
+    (.reload (.getModel tree)))))
+
+(defn create-file [app project-dir default-namespace]
+   (when-let [[file namespace] (specify-source project-dir
+                                          "Create a source file"
+                                          default-namespace)]
+     (let [tree (get-file-tree)]
+       (spit file (str "(ns " namespace ")\n"))
+       (update-tree)
+       (set-tree-selection tree (.getAbsolutePath file)))))
   
 (defn rename-file [app]
   (when-let [old-file @(app :current-file)]
-    (let [tree (app :docs-tree)
+    (let [tree (get-file-tree)
           [file namespace] (specify-source
                              (first (get-selected-projects app))
                              "Rename a source file"
                              (get-selected-namespace tree))]
       (when file
         (.renameTo @(app :current-file) file)
-        (update-project-tree (:docs-tree app))
+        (update-project-tree)
         (awt-event (set-tree-selection tree (.getAbsolutePath file)))))))
 
 (defn delete-file [app]
@@ -263,38 +275,36 @@
       (let [f (File. path)]
         (println "Delete file: " f)
         (.delete f))
-      (update-project-tree (app :docs-tree)))))
+      (update-project-tree))))
 
 (defn open-project [app]
   (when-let [dir (choose-directory (app :f) "Choose a project directory")]
     (let [project-dir (if (= (.getName dir) "src") (.getParentFile dir) dir)]
       (write-value-to-prefs sketchpad-prefs "last-open-dir" (.getAbsolutePath (.getParentFile project-dir)))
       (project/add-project (.getAbsolutePath project-dir))
-      (update-project-tree (:docs-tree app))
+      (update-project-tree)
       (when-let [clj-file (or (-> (File. project-dir "src")
                                  .getAbsolutePath
                                  (get-code-files ".clj")
                                  first)
                               project-dir)]
-        (awt-event (set-tree-selection (app :docs-tree) (.getAbsolutePath clj-file)))))))
+        (awt-event (set-tree-selection (get-file-tree) (.getAbsolutePath clj-file)))))))
 
-(defn new-project [app-atom]
-  (let [app @app-atom]
-    (try
-      (when-let [dir (choose-file (@app-atom :frame) "Create a project directory" nil false)]
-        (awt-event
-          (let [path (.getAbsolutePath dir)]
-            (.mkdirs (File. dir "src"))
-            (new-project-clj app dir)
-            (project/add-project app path)
-            (update-project-tree (:docs-tree app))
-            (set-tree-selection (app :docs-tree) path)
-            ; (create-file app-atom dir (str (.getName dir) ".core"))
-            )))
-        (catch Exception e (do (JOptionPane/showMessageDialog nil
-                                 "Unable to create project."
-                                 "Oops" JOptionPane/ERROR_MESSAGE)
-                             (.printStackTrace e))))))
+(defn new-project []
+  (try
+    (when-let [dir (choose-file (@state/app :frame) "Create a project directory" nil false)]
+      (awt-event
+        (let [path (.getAbsolutePath dir)]
+          (.mkdirs (File. dir "src"))
+          (new-project-clj @state/app dir)
+          (project/add-project path)
+          (update-project-tree)
+          (set-tree-selection (get-file-tree) path)
+          (create-file state/app dir (str (.getName dir) ".core")))))
+      (catch Exception e (do (JOptionPane/showMessageDialog nil
+                               "Unable to create project."
+                               "Oops" JOptionPane/ERROR_MESSAGE)
+                           (.printStackTrace e)))))
 
 (defn rename-project [app]
   (when-let [dir (choose-file (app :frame) "Move/rename project directory" nil false)]
@@ -303,17 +313,24 @@
         (do
           (swap! project.state/project-set
                  #(-> % (disj old-project) (conj (.getAbsolutePath dir))))
-          (update-project-tree (:docs-tree app)))
+          (update-project-tree))
         (JOptionPane/showMessageDialog nil "Unable to move project.")))))
 
 (defn remove-selected-project [app]
   (apply swap! project.state/project-set disj (get-selected-projects app))
-  (update-project-tree (app :docs-tree)))  
+  (update-project-tree) )
 
 (defn remove-project [app]
   (when (confirmed? "Remove the project from list? (No files will be deleted.)"
                     "Remove project")
     (remove-selected-project app)))
+
+(defn clear-projects
+"Clear all projects in the workspace."
+  []
+  (seesaw/invoke-later
+    (project/clear-project-set)
+    (update-project-tree)))
 
 (defn revert-file [app]
   (when-let [f @(:file app)]
@@ -322,5 +339,5 @@
         (let [path (.getAbsolutePath f)]
           (when (confirmed? "Revert the file? This cannot be undone." path)
             (.delete temp-file)
-            (update-project-tree (:docs-tree app))
+            (update-project-tree)
             (restart-doc app f))))))

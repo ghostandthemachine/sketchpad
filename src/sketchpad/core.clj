@@ -43,7 +43,7 @@
                                                                  :background config/app-color
                                                                  :border (empty-border :thickness 0))}}
         file-tree {:type :file-tree
-                   :component {:container (file-tree state/app)}}
+                   :component (file-tree state/app)}
 
         repl-tabbed-panel      (app.repl/repl-tabbed-panel)
         repl-info (repl.info/repl-info)
@@ -52,7 +52,7 @@
                                                    (get-in repl-info [:component :container])]
                                             :background config/app-color
                                             :border (empty-border :thickness 0))
-        doc-split-pane (left-right-split
+        top-horizontal-split-panel (left-right-split
                          (get-in file-tree [:component :container])
                          (get-in buffer-component [:component :container])
                          :divider-location 0.25
@@ -60,8 +60,8 @@
                          :divider-size 3
                          :border (empty-border :thickness 0)
                          :background config/app-color)
-        split-pane (top-bottom-split
-                     doc-split-pane
+        main-vertical-split-pane (top-bottom-split
+                     top-horizontal-split-panel
                      repl-component
                      :divider-location 0.66
                      :resize-weight 0.66
@@ -73,7 +73,7 @@
                      :height 700
                      :on-close :exit
                      :minimum-size [500 :by 350]
-                     :content split-pane)
+                     :content main-vertical-split-pane)
         app (merge {:current-files (atom {})
                     :current-file (atom nil)
                     :current-buffers (atom {})
@@ -85,15 +85,16 @@
                    @state/app
                    (gen-map
                      frame
+                     file-tree
                      buffer-tabbed-panel
                      buffer-info
                      buffer-component
                      repl-info
                      repl-tabbed-panel
                      repl-component
-                     doc-split-pane
-                     split-pane))
-        icon-url (clojure.java.io/resource "sketchpad-icon.png")
+                     main-vertical-split-pane
+                     top-horizontal-split-panel))
+        icon-url (clojure.java.io/resource "sketchpad-lambda-logo.png")
         icon (.createImage (Toolkit/getDefaultToolkit) icon-url)]
     (.setIconImage frame icon)
     (set-osx-icon icon)
@@ -135,7 +136,7 @@
       (load-tree-selection tree))
     (let [frame (app :frame)]
       (persist-window-shape sketchpad-prefs "main-window" frame)
-      (on-window-activation frame #(update-project-tree (app :docs-tree))))
+      (on-window-activation frame #(update-project-tree)))
     (config/apply-sketchpad-prefs!)
     (app :frame)))
 

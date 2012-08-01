@@ -115,7 +115,6 @@
           nil "Unable to save file."
           "Oops" JOptionPane/ERROR_MESSAGE)))))
 
-
 (defn current-project
 "Returns the current SketchPad project."
   []

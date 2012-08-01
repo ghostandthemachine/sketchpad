@@ -388,7 +388,7 @@
         [:window {:x (.getX comp) :y (.getY comp)
                   :w (.getWidth comp) :h (.getHeight comp)}]
       JSplitPane
-        [:split-pane {:location (.getDividerLocation comp)}]
+        [:main-vertical-split-pane {:location (.getDividerLocation comp)}]
       nil)))
 
 (defn watch-shape [components fun]
@@ -415,7 +415,7 @@
             :window
             (let [{:keys [x y w h]} (second shape)]
               (.setBounds comp x y w h))
-            :split-pane
+            :main-vertical-split-pane
             (.setDividerLocation comp (:location (second shape)))
             nil))
         (catch Exception e nil)))

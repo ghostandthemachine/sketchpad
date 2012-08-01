@@ -144,4 +144,7 @@
                           docs-tree-scroll-pane
                           docs-tree-label
                           docs-tree-panel))
-  docs-tree-panel))
+  {:type :file-tree-component
+   :container docs-tree-panel
+   :tree docs-tree
+   :label docs-tree-label}))
