@@ -41,16 +41,17 @@
 (defn toggle-repl
 "Toggle if the repl component is displayed"
   []
-  (if @show-repl
-    (do 
-      (reset! show-repl false)
-      (swap! repl-divider-position (fn [_] (.getDividerLocation (@app :split-pane))))
-      (.remove (@app :split-pane) (@app :repl-tabbed-panel)))
-    (do 
-      (reset! show-repl true)
-      (.setBottomComponent (@app :split-pane) (@app :repl-tabbed-panel))
-      (.setDividerLocation (@app :split-pane) @repl-divider-position)
-      (.requestFocus (@app :repl-tabbed-panel) true))))
+  (let [repl-tabbed-panel (get-in (@app :repl-tabbed-panel) [:component :container])]
+    (if @show-repl
+      (do 
+        (reset! show-repl false)
+        (swap! repl-divider-position (fn [_] (.getDividerLocation (@app :split-pane))))
+        (.remove (@app :split-pane) repl-tabbed-panel))
+      (do 
+        (reset! show-repl true)
+        (.setBottomComponent (@app :split-pane) repl-tabbed-panel)
+        (.setDividerLocation (@app :split-pane) @repl-divider-position)
+        (.requestFocus repl-tabbed-panel true)))))
 
 (defonce show-search-panel (atom true))
 
