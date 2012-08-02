@@ -3,12 +3,23 @@
   (:require [clojure.string :as s]
             [clojure.repl :as repl]
             [sketchpad.lein.core.ns :as lein.core.ns])
-  (:import (org.fife.ui.autocomplete AutoCompletion VariableCompletion ClojureFunctionCompletion ParameterizedCompletion)
+  (:import (org.fife.ui.autocomplete ShorthandCompletion AutoCompletion VariableCompletion ClojureFunctionCompletion ParameterizedCompletion)
            (org.fife.ui.autocomplete.DefaultCompletionProvider)
            (org.fife.ui.autocomplete.DefaultCompletionProvider)
            (org.fife.ui.autocomplete.demo.CCellRenderer)
            (java.io.File)
            (java.util.Vector)))
+
+(defn trim-enclosing-char [s cl cr]
+  (let [drop-first (s/replace s cl "")
+        drop-last (s/replace drop-first cr "")]
+    drop-last))
+
+(defn trim-parens [s]
+  (trim-enclosing-char s "(" ")"))
+
+(defn trim-brackets [s]
+  (trim-enclosing-char s "[" "]"))
 
 (defn ns-publics-to-map [name-space]
   (let [ns-pubs (ns-publics name-space)
@@ -91,6 +102,24 @@
   (let [all-namespaces (all-ns)]
     (doseq [namespace all-namespaces]
       (add-completions-from-ns provider namespace))))
+
+(defn jar-string-list []
+	(when-let [jar-str (slurp "http://clojars.org/repo/all-jars.clj")]
+		(s/split jar-str #"\n")))
+
+(defn clojar-completion-seq [jar-list]
+	(map #(-> % trim-brackets (s/split #"\s")) jar-list))
+
+(defn add-completion-from-repo [provider repo-str]
+	(let [full-str repo-str
+				shorthand (first (s/split (trim-brackets full-str) #"\s"))
+				completion (ShorthandCompletion. provider shorthand (str full-str \newline) full-str full-str)]
+    (.addCompletion provider completion)))
+
+(defn build-clojar-completions [provider]
+	(doseq [repo-str (jar-string-list)]
+		(add-completion-from-repo provider repo-str))
+		provider)
 
 (defn build-project-completions
 "Takes a Completion Provider and a class path. Returns the Completion Provider with all ns completions added."

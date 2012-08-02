@@ -33,7 +33,7 @@
           (when (file/save-file! buffer)
             (tab/title-at! (tab/index-of-buffer buffer) new-file-title)
             (reset! (:title buffer) new-file-title)
-            (tab/mark-current-tab-clean! (get-in (:buffer-tabbed-panel @state/app) [:component :container]))))))
+            (tab/mark-current-tab-clean!)))))
     (do
       (when (file/save-file! buffer)
             (tab/mark-current-tab-clean!)))))))

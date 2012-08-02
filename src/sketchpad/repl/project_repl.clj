@@ -79,6 +79,13 @@
                    *file* ~file]
            (last (map eval ~read-string-code)))))))
 
+;; from reply
+(def exit-str
+  (str 
+    "(shutdown-agents)
+    (flush)
+    (System/exit 0)"))
+
 (defn send-repl-cmd
 "Send a given command to the specified outside REPL."
 ([repl cmd] (send-repl-cmd repl cmd "NO_SOURCE_PATH" 0))
@@ -123,7 +130,9 @@
           cmd-str
     (cond
       (= kwarg :quit)
-        "(quit)"
+        (do
+          (println "Closing repl  for path: " (:project repl))
+          exit-str)
       (= kwarg :completions)
         (str `(doall 
                 (map 

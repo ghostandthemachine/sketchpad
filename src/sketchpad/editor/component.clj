@@ -1,7 +1,7 @@
 (ns sketchpad.editor.component
   (:use [seesaw core border meta color graphics])
   (:import (java.awt Dimension))
-  (:require [seesaw.rsyntax :as rsyntax]
+  (:require [sketchpad.rsyntax :as rsyntax]
             [sketchpad.wrapper.rtextscrollpane :as sp]
             [sketchpad.wrapper.rsyntaxtextarea :as wrapper.rsyntaxtextarea]
             [sketchpad.config.config :as config]

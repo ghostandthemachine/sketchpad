@@ -85,9 +85,9 @@
 (def default-gutter-prefs
   {:border-color                       [0 0 0 0]
    :bookmarking-enabled                false
-   :fold-indicator-enabled             false  ;; not functional until new Clojure Lexxer is integrated
+   :fold-indicator-enabled             true  ;; not functional until new Clojure Lexxer is integrated
    :line-number-color                  [143 144 134]
-   :line-number-font                   "MENLO-10"
+   :line-number-font                   "MENLO-12"
    :line-number-start-index            1
    :active-range-color 				   [50 50 41]})
 

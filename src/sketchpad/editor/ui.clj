@@ -18,7 +18,7 @@
 (defn unselected-tab-graient [x1 y1 x2 y2] (linear-gradient :start [x1 y1] :end [x2 y2] :fractions [0 0.1 0.8] :colors [(color 46 47 44) (color 57 57 55) (color 77 77 75)]))
 (defn selected-tab-graient [x1 y1 x2 y2] (linear-gradient :start [x1 y1] :end [x2 y2] :fractions [0.2 1] :colors [(color 42 43 40) (color 54 55 50)]))
 
-(defonce bg-img (ImageIcon. "img/Clojure-glyph-overlay.png"))
+(defonce bg-img (ImageIcon. "img/sketchpad-lambda-logo-light.png"))
 (def pad 4)
 
 (defn tab-shape [rect kw]

@@ -6,7 +6,7 @@
                  [seesaw "1.4.2"]
                  [clooj "0.3.4.2-SNAPSHOT"]
                  [rounded-border "0.0.1-SNAPSHOT"]
-                 [rsyntax-clojars "0.1.0-SNAPSHOT"]
+                 [rsta "0.1.0-SNAPSHOT"]
                  [language-builder "1.0.0-SNAPSHOT"]
                  [auto-complete "0.1.0-SNAPSHOT"]
                  [leiningen "2.0.0-preview7"]

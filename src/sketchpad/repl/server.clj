@@ -35,7 +35,7 @@
 	(let [server-starting-form
 	        `(let [server# (clojure.tools.nrepl.server/start-server
 	                        :port ~port :ack-port ~ack-port)]
-                (println "Created server on port " (-> server# deref :ss .getLocalPort))
+                (println "Created REPL on port " (-> server# deref :ss .getLocalPort))
 	           (while true (Thread/sleep Long/MAX_VALUE)))]
     	(eval/eval-in-project
     		(project/merge-profiles project [(:repl (user/profiles) profile)])

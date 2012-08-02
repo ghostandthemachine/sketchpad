@@ -1,6 +1,8 @@
 (ns sketchpad.auto-complete.auto-complete
   (:use [sketchpad.auto-complete.completion-builder])
-  (:require [sketchpad.config.config :as config]))
+  (:require [sketchpad.config.config :as config]
+            [sketchpad.wrapper.rsyntaxtextarea :as wrapper.rsyntaxtextarea]
+            [sketchpad.input.default :as input.default]))
 
 (defn create-completion-provider
   ([] (create-completion-provider :default))
@@ -26,11 +28,25 @@
 
 (defn create-provider
   ([]
-   (let [cp (org.fife.ui.autocomplete.ClojureCompletionProvider. )]
+   (let [cp (org.fife.ui.autocomplete.DefaultCompletionProvider.)]
      (.setParameterizedCompletionParams cp \space " " \))
      cp)))
+
+(defn make-clojar-completion-provider
+"Builds a Completion Provider from the available repo on Clojars."
+	[]
+	(build-clojar-completions (create-provider)))
+
+(defonce clojar-completion-provider (org.fife.ui.autocomplete.AutoCompletion. (make-clojar-completion-provider)))
+
+(defn install-clojars-auto-completions
+"Adds all project ns completions to a text area. Takes a text-area and a SketchPad project."
+  [text-area]
+    (config/apply-auto-completion-prefs! clojar-completion-provider)
+    (wrapper.rsyntaxtextarea/set-input-map! text-area (input.default/default-input-map))
+    (.install clojar-completion-provider text-area))
 
 (defn build-project-completion-provider
 "Builds a Completion Provider for a project."
   [project-path]
-  (build-project-completions (create-provider) project-path))
+  (build-project-completions (create-provider) project-path)) 

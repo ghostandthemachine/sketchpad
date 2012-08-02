@@ -409,12 +409,14 @@
   (trim-enclosing-char s "[" "]"))
 
 (defn append-text [text-pane text]
-  (when-let [doc (.getDocument text-pane)]
-    (try
-      (.insertString doc (.getLength doc) text nil)
-      (catch java.lang.ClassCastException e ))))
+	(invoke-later
+	  (when-let [doc (.getDocument text-pane)]
+	    (try
+	      (.insertString doc (.getLength doc) text nil)
+	      (catch java.lang.ClassCastException e )))))
 
 (defn append-text-update [buffer s]
   (append-text buffer (str s))
-  (.setCaretPosition buffer (.getLastVisibleOffset buffer)))
+  (invoke-later
+	  (.setCaretPosition buffer (.getLastVisibleOffset buffer))))
 
