@@ -1,78 +1,71 @@
 (ns sketchpad.core
   (:gen-class :name "Sketchpad")
   (:import (javax.swing.TollTipManager)
-           (org.fife.ui.rsyntaxtextarea.RSyntaTextArea)
-           (org.fife.ui.rtextarea.ToolTipSupplier)
-           (org.fife.ui.rtextarea.RTextArea)
-           (org.fife.ui.autocomplete AutoCompletion FunctionCompletion ParameterizedCompletion)
-           (org.fife.ui.autocomplete.ClojureCompletionProvider)
-           (org.fife.ui.autocomplete.demo.CCellRenderer)
-           (java.io.File)
-           (java.util.Vector)
-           (java.awt Toolkit)
-           (javax.swing UIManager JTabbedPane)
-           (javax.swing.plaf.nimbus.NimbusLookAndFeel))
+           (java.awt Toolkit))
   (:use [seesaw core graphics color border font meta]
         [clojure.pprint]
         [clooj.navigate]
         [clooj.dev-tools]
         [clooj.indent]
-        [sketchpad prefs auto-complete tab-manager utils filetree editor edit-mode default-mode completion-builder rsyntaxtextarea help])
-  (:require [sketchpad.theme :as theme]
-            [sketchpad.config :as config]
-            [sketchpad.preview-manager :as pm]
-            [sketchpad.repl :as srepl]
-            [sketchpad.project-manager :as project]
-            [sketchpad.menu.menu-bar :as menu]))
+        [sketchpad.tree.tree]
+        [sketchpad.tree.utils]
+        [sketchpad.util.tab]
+        [sketchpad.util.utils]
+        [sketchpad.config.prefs])
+  (:require [sketchpad.wrapper.theme :as theme]
+            [sketchpad.config.config :as config]
+            [sketchpad.repl.app.repl :as app.repl]
+            [sketchpad.state.state :as state]
+            [sketchpad.editor.editor :as sketchpad.editor]
+            [sketchpad.project.project :as project]
+            [sketchpad.menu.menu-bar :as menu]
+            [sketchpad.editor.info :as info]
+            [sketchpad.repl.info :as repl.info]
+            [sketchpad.state.state :as sketchpad.state]))
 
-(defn set-laf [laf-string]
-  (UIManager/setLookAndFeel laf-string))
-
-(def overtone-handlers
-  {:update-caret-position update-caret-position
-   :save-caret-position save-caret-position
-   :setup-autoindent setup-autoindent
-   ; :switch-repl switch-repl
-   :get-selected-projects get-selected-projects
-   ; :apply-namespace-to-repl apply-namespace-to-repl
-   :find-file find-file})
+(defn set-osx-icon
+  [icon]
+  (try
+    (import 'com.apple.eawt.Application)
+    (.setDockIconImage (com.apple.eawt.Application/getApplication) icon)
+    (catch Exception e
+      false))
+  true)
 
 (defn create-app
   []
-  (let [app-init  (atom {})
-        ;; editor-info MUST init before editor so it is selectable
-        ; editor-info (editor-info app-init)
-        ; search-toolbar (search-toolbar app-init)
-        editor    (editor app-init)
+  (let [buffer-info (info/buffer-info)
+        buffer-tabbed-panel (sketchpad.editor/buffer-tabbed-panel)
+        buffer-component {:type :buffer-component
+                          :component {:container (vertical-panel :items[(get-in buffer-tabbed-panel [:component :container])
+                                                                        :fill-h
+                                                                        (get-in buffer-info [:component :container])]
+                                                                 :background config/app-color
+                                                                 :border (empty-border :thickness 0))}}
+        file-tree {:type :file-tree
+                   :component (file-tree state/app)}
 
-        file-tree (file-tree app-init)
-        repl      (srepl/repl app-init)
-
-        ; info-panel (top-bottom-split search-toolbar editor-info)
-
-        doc-split-pane (left-right-split
-                         file-tree
-                         editor
-                         :border (empty-border :thickness 0)
+        repl-tabbed-panel      (app.repl/repl-tabbed-panel)
+        repl-info (repl.info/repl-info)
+        repl-component (vertical-panel :items[(get-in repl-tabbed-panel [:component :container])
+                                                   :fill-h
+                                                   (get-in repl-info [:component :container])]
+                                            :background config/app-color
+                                            :border (empty-border :thickness 0))
+        top-horizontal-split-panel (left-right-split
+                         (get-in file-tree [:component :container])
+                         (get-in buffer-component [:component :container])
                          :divider-location 0.25
                          :resize-weight 0.25
                          :divider-size 3
+                         :border (empty-border :thickness 0)
                          :background config/app-color)
-        ; doc-info-split-pane (top-bottom-split
-        ;               doc-split-pane
-        ;               info-panel
-        ;               ; :divider-location 0.66
-        ;               ; :resize-weight 0.66
-        ;               :divider-size 1
-        ;               :border (empty-border :thickness 0)
-        ;               :background config/app-color)
-
-        split-pane (top-bottom-split
-                     doc-split-pane
-                     repl
+        main-vertical-split-pane (top-bottom-split
+                     top-horizontal-split-panel
+                     repl-component
                      :divider-location 0.66
                      :resize-weight 0.66
-                     :divider-size 1
+                     :divider-size 3
                      :border (empty-border :thickness 0)
                      :background config/app-color)
         frame (frame :title "Sketchpad"
@@ -80,37 +73,51 @@
                      :height 700
                      :on-close :exit
                      :minimum-size [500 :by 350]
-                     :content split-pane)
-
+                     :content main-vertical-split-pane)
         app (merge {:current-files (atom {})
                     :current-file (atom nil)
+                    :current-buffers (atom {})
                     :current-tab -1
                     :repls (atom {})
                     :changed   false
                     :doc-text-area nil
                     :doc-scroll-pane nil}
-                   @app-init
-                   overtone-handlers
+                   @state/app
                    (gen-map
                      frame
-                     doc-split-pane
-                     split-pane))]
-    (config! doc-split-pane :background (color :black))
+                     file-tree
+                     buffer-tabbed-panel
+                     buffer-info
+                     buffer-component
+                     repl-info
+                     repl-tabbed-panel
+                     repl-component
+                     main-vertical-split-pane
+                     top-horizontal-split-panel))
+        icon-url (clojure.java.io/resource "sketchpad-lambda-logo.png")
+        icon (.createImage (Toolkit/getDefaultToolkit) icon-url)]
+    (.setIconImage frame icon)
+    (set-osx-icon icon)
     app))
 
 
 (defn add-behaviors
   [app-atom]
   (let [app @app-atom]
-    ;; file tree
     (setup-tree app-atom)
-    (listen (app :editor-tabbed-panel) :selection (fn [e]
-                                                    (let [cur-tab (cast JTabbedPane (.getSource e))
-                                                          rsta (select cur-tab [:#editor])
-                                                          current-tab-index (current-tab-index (app :editor-tabbed-panel))]
-                                                      (save-tab-selections app))))
+
+    ;; this should happen when the repl tabbed panel is created probably
+    (repl.info/attach-repl-info-handler app-atom)
     ;; global
     (add-visibility-shortcut app)))
+
+(defn- get-classpath []
+   (sort (map (memfn getPath) 
+              (seq (.getURLs (java.lang.ClassLoader/getSystemClassLoader))))))
+
+(defn init-projects []
+  (project/add-project "tmp")
+  (doall (map #(project/add-project %) (load-project-set))))
 
 ;; startup
 (defn startup-sketchpad [app-atom]
@@ -121,32 +128,31 @@
           (println thread) (.printStackTrace exception))))
     (add-behaviors app-atom)
     (menu/make-menus app-atom)
-    (project/setup-non-project-map app-atom)
-    (doall (map #(project/add-project app %) (load-project-set)))
-    (let [frame (app :frame)]
-      (persist-window-shape sketchpad-prefs "main-window" frame)
-      (on-window-activation frame #(update-project-tree (app :docs-tree))))
+    
+    (init-projects)
+
     (let [tree (app :docs-tree)]
       (load-expanded-paths tree)
       (load-tree-selection tree))
+    (let [frame (app :frame)]
+      (persist-window-shape sketchpad-prefs "main-window" frame)
+      (on-window-activation frame #(update-project-tree)))
+    (config/apply-sketchpad-prefs!)
     (app :frame)))
-
-(defonce current-app (atom nil))
 
 (defn show []
   (reset! embedded false)
   (invoke-later
-    (reset! current-app (create-app))
+    (reset! sketchpad.state.state/app (create-app))
     (->
-      (startup-sketchpad current-app)
+      (startup-sketchpad sketchpad.state.state/app)
       show!)))
 
 (defn -main [& args]
   (reset! embedded false)
   (invoke-later
-    (reset! current-app (create-app))
+    (reset! sketchpad.state.state/app (create-app))
     (->
-      (startup-sketchpad current-app)
+      (startup-sketchpad sketchpad.state.state/app)
       show!)))
-
 

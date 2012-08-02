@@ -8,21 +8,25 @@
     :rename-project (atom false)
     :remove-project (atom false)})
 
-(defn create-leiningen-projet [app-atom]
+(defn create-leiningen-projet
 "Create a new Leiningen project."
-(new-project @app-atom))
+  [app-atom]
+  (new-project @app-atom))
 
-(defn open-leiningen-project [app-atom]
+(defn open-leiningen-project
 "Open Leiningen project."
-(open-project @app-atom))
+  [app-atom]
+  (open-project @app-atom))
 
-(defn rename-leiningen-project [app-atom]
+(defn rename-leiningen-project
 "Rename a Leiningen project."
-(open-project @app-atom))
+  [app-atom]
+  (open-project @app-atom))
 
-(defn remove-leiningen-project [app-atom]
+(defn remove-leiningen-project
 "Remove a project from the session."
-(remove-project @app-atom))
+  [app-atom]
+  (remove-project @app-atom))
 
 (defn make-project-menu-items [app-atom]
 	{:new-project 	(seesaw.core/menu-item :text "New..." 

@@ -11,7 +11,7 @@
 - search and replace functions
 - lein project functions
 - record and playback editing macros
-- more than double record-able (macro supported) text actions
+- more than double recordable (macro supported) text actions
 * Leiningen integration for projects and per project REPL's
 * Scratch buffers
 * Save as
@@ -36,7 +36,11 @@
 
 ### For next week
 * Merge tab and buffer management updates which
+<<<<<<< HEAD
 - Have a way more intuitive work flow for creating new buffers
+=======
+- Have a way more intuitive workflow for creating new buffers
+>>>>>>> dev
 - Better saving of new buffers
 - Renaming files
 * Add additional config options for hiding and showing tabs
@@ -53,7 +57,7 @@
 * Scratch buffers
 * Show/hide tabs
 * More config options 
-* Config functions now documents and available via user ns
+* Config functions now documents are availble via user ns
 - Configurable components
 	+ Buffer/Editor text areas
 	+ Repl text areas

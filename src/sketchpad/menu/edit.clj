@@ -1,64 +1,78 @@
 (ns sketchpad.menu.edit 
   (:use [seesaw core keystroke])
-  (:require [sketchpad.rsyntaxtextarea :as rsyntaxtextarea]
-            [sketchpad.rtextarea :as rtext]
-            [sketchpad.tab-manager :as tab-manager]))
+  (:require [sketchpad.buffer.action :as buffer.action]
+            [sketchpad.menu.menu-utils :as menu-utils]
+            [sketchpad.util.tab :as tab]))
 
-(defonce edit-menu-item-state 
-  { :undo (atom false)
-    :redo (atom false)
-    :cut (atom false)
-    :copy (atom false)
-    :paste (atom false)})
+(defn undo
+"undo last recordable action"
+  []
+  (when (tab/tabs?)
+    (buffer.action/undo)))
 
-(defn copy [rta]
-"Copy the text currently selected in the visible editor buffer to the system clipboard."
-(.copy rta))
+(defn redo
+"redo last recordable action"
+  []
+  (when (tab/tabs?)
+    (buffer.action/redo)))
 
-(defn cut [rta]
-"Cut the text currently selected in the visible editor buffer to the system clipboard."
-(.cut rta))
+(defn copy
+"copy the current selection"
+  []
+  (when (tab/tabs?)
+    (buffer.action/copy)))
 
-(defn paste [rta]
-"Paste what is stored in the current clipboard to the current carret location of the active buffer."
-(.paste rta))
+(defn cut
+"cut the current selection"
+  []
+  (when (tab/tabs?)
+    (buffer.action/cut)))
 
-(defn undo [rta]
-"Undo the last edit action in the current buffer."
-(.undoLastAction rta))
+(defn paste
+"Paste the current selection"
+  []
+  (when (tab/tabs?)
+    (buffer.action/paste)))
 
-(defn redo [rta]
-"Redo the last edit action in the current buffer."
-(.redoLastAction rta))
-
-(defn make-edit-menu-items [app-atom]
+(defn make-edit-menu-items []
   {:undo  (menu-item :text "Undo" 
                      :mnemonic "U" 
                      :key (keystroke "meta Z")
-                     :listen [:action (fn [_] (undo (tab-manager/current-text-area (@app-atom :editor-tabbed-panel))))])
+                     :listen [:action (fn [_] (undo))])
   :redo   (menu-item :text "Redo" 
                      :mnemonic "Y"
                      :key (keystroke "meta shift Z") 
-                     :listen [:action (fn [_] (undo (tab-manager/current-text-area (@app-atom :editor-tabbed-panel))))])
+                     :listen [:action (fn [_] (redo))])
   :copy   (menu-item :text "Copy" 
                      :mnemonic "C" 
                      :key (keystroke "meta C") 
-                     :listen [:action (fn [_] (copy (tab-manager/current-text-area (@app-atom :editor-tabbed-panel))))])
+                     :listen [:action (fn [_] (copy))])
   :paste  (menu-item :text "Paste" 
                      :mnemonic "P" 
                      :key (keystroke "meta V") 
-                     :listen [:action (fn [_] (paste (tab-manager/current-text-area (@app-atom :editor-tabbed-panel))))])
+                     :listen [:action (fn [_] (paste))])
   :cut    (menu-item :text "Cut" 
                      :mnemonic "X" 
                      :key (keystroke "meta X") 
-                     :listen [:action (fn [_] (cut (tab-manager/current-text-area (@app-atom :editor-tabbed-panel))))])})
+                     :listen [:action (fn [_] (cut))])})
+
+(def edit-menu-items
+  [[:undo "Undo" "meta Z" undo]
+   [:redo "Redo" "meta shift Z" redo]
+   [:copy "Copy" "meta C" copy]
+   [:copy "Paste" "meta V" paste]
+   [:copy "Cut" "meta X" cut]])
+
+;(defn make-edit-menu-items []
+;   (menu-utils/make-menu edit-menu-items))
 
 (defn make-edit-menu
-  [app-atom]
-  (let [menu-items (make-edit-menu-items app-atom)]
+  []
+  (let [menu-items (make-edit-menu-items)]
     (menu :text "Edit" 
           :mnemonic "E"
-          :items [(menu-items :undo)
+          :items [
+                  (menu-items :undo)
                   (menu-items :redo)
                   (separator)
                   (menu-items :copy)

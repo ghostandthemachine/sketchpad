@@ -1,22 +1,12 @@
 (ns sketchpad.menu.menu-bar
-  (:use [clojure.pprint]
-        [seesaw core keystroke meta]
-        [sketchpad repl-tab-builder tab-builder help file-manager tab-manager repl-communication utils edit-menu vim-mode default-mode edit-mode vim-mode layout-config toggle-vim-mode-action filetree completion-builder]
-        [clooj project dev-tools indent editor doc-browser style indent])
+  (:use [seesaw core keystroke meta])
   (:require 
-        [sketchpad.rtextscrollpane :as sp]
-        [sketchpad.rsyntaxtextarea :as cr]
-        [sketchpad.rtextarea :as rt]
-        [sketchpad.tab-manager :as tab-manager]
-        [sketchpad.lein-manager :as lein]
+        [sketchpad.util.tab :as tab]
+        [sketchpad.project.project :as project]
         [sketchpad.menu.file :as sketchpad.menu.file]
         [sketchpad.menu.edit :as sketchpad.menu.edit]
+        [sketchpad.menu.source :as sketchpad.menu.source]
         [sketchpad.menu.view :as sketchpad.menu.view]))
-
-(defn update-menu-state [tabbed-panel]
-"Based on the state of the tabbed panel, set active menu items"
-  
-)
 
 (defn make-help-menu
   []
@@ -24,34 +14,19 @@
         :mnemonic "H"
         :items []))
 
-(defn make-repl-menu
-  [app-atom]
-  (menu :text "REPL"
-        :mnemonic "R"
-        :items [  (menu-item :text "Create new REPL" 
-                             :mnemonic "N" 
-                             :key (keystroke "meta control R") 
-                             :listen [:action (fn [_] 
-                                              (new-repl-tab! 
-                                                app-atom))])
-                    (separator)]))
-
 (defn make-menus
   [app-atom]
   (let [app @app-atom
-        file-menu (sketchpad.menu.file/make-file-menu app-atom)
-        edit-menu (sketchpad.menu.edit/make-edit-menu app-atom)
-        view-menu (sketchpad.menu.view/make-view-menu app-atom)
-        repl-menu (make-repl-menu app-atom)
+        file-menu (sketchpad.menu.file/make-file-menu)
+        edit-menu (sketchpad.menu.edit/make-edit-menu)
+        view-menu (sketchpad.menu.view/make-view-menu)
+        source-menu (sketchpad.menu.source/make-source-menu)
         help-menu (make-help-menu)]
     (config! 
       (:frame @app-atom) :menubar 
-                      (menubar :items [ file-menu
-                                        edit-menu
-                                          view-menu
-                                        repl-menu
-                                        help-menu]))))
-
-
-
-
+                      (menubar :items [ 
+                        file-menu
+                        edit-menu
+                        view-menu
+                        source-menu
+                        help-menu]))))
