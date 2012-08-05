@@ -36,11 +36,7 @@
 
 ### For next week
 * Merge tab and buffer management updates which
-<<<<<<< HEAD
-- Have a way more intuitive work flow for creating new buffers
-=======
 - Have a way more intuitive workflow for creating new buffers
->>>>>>> dev
 - Better saving of new buffers
 - Renaming files
 * Add additional config options for hiding and showing tabs
@@ -57,7 +53,7 @@
 * Scratch buffers
 * Show/hide tabs
 * More config options 
-* Config functions now documents are availble via user ns
+* Config functions now documents are available via user ns
 - Configurable components
 	+ Buffer/Editor text areas
 	+ Repl text areas
@@ -67,7 +63,7 @@
 * Hide/Show scroll bars
 
 
-### Buf fixes
+### Bug fixes
 * Fix file tree resizing. Now the resize update is drawn.
 * Update repl tab labels to be more visible
 * Fix files loading in dirty state
@@ -78,3 +74,46 @@
 * Begin creating the lein + SketchPad build tool for packaging sketchpad and any project
 * Update projects structure to support refactoring project paths etc.
 * Integrate updated RSyntaxTextArea ClojureTokenMaker
+
+
+##Version 0.0.1 (5th August 2012)
+
+### Updates
+* Leiningen projects
+	- Leiningen project builder:
+		+ Generates project.clj
+		+ Auto Completion dependency input that is generated from available dependencies on Clojars.org. This will show all available deps for a given repo name.
+	- Per project REPL's
+		+ Each project REPL is created in an outside process via Leiningen
+		+ All project deps are downloaded and managed by Pomegranate and require no local install of Leiningen
+		+ nREPL server/client
+* Merged dev updates into master
+	- Substantially more config options for:
+		+ Editor text areas
+			- show/hide scrollbars
+			- color schemes
+		+ REPL text areas
+			- show/hide scrollbars
+			- color schemes
+		+ Buffer Gutters
+			- line number font
+			- color schemes
+			- index start
+		+ File tree
+			- show/hide scrollbars
+
+### Bug fixes
+* Menu item `Source->Find` now focuses Editor REPL and adds search function call.
+* Source -> Toggle comment works correctly now on active buffer.
+* Fixed and added methods for creating Leiningen project:
+	- `File->New Project`
+	- file tree right-click popup menu  `New Project`
+	- SketchPad REPL, `sketchpad.user => (create-project)`
+* Fixed painting bugs caused by EDT threading issues for
+	- `sketchpad.user => (search "word"), (search-replace "word" "replace"), (search-replace-all "word" "replace")`
+	- `sketchpad.user => (mark-occurrences "word")`
+
+### For next week
+* Continue refining Leiningen project management and creation process.
+* Update documentation
+* Add new tutorials for creating and managing projects and dependencies all from within SketchPad.
