@@ -11,4 +11,4 @@
                  [auto-complete "0.1.0-SNAPSHOT"]
                  [leiningen "2.0.0-preview7"]
                  [timbre "0.5.1-SNAPSHOT"]]
-  :jvm-opts ~(if (= (System/getProperty "os.name") "Mac OS X") ["-Xdock:name=Sketchpad"] []))
+  :jvm-opts ~(if (= (System/getProperty "os.name") "Mac OS X") ["-Xdock:name=SketchPad"] []))

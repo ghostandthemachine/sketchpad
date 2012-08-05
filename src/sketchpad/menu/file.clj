@@ -3,12 +3,14 @@
 	(:require [sketchpad.menu.menu-utils :as menu-utils]
         [sketchpad.tree.utils :as tree.utils]
 			  [sketchpad.util.tab :as tab]
+        [sketchpad.project.project :as project]
         [sketchpad.editor.buffer :as editor.buffer]
         [sketchpad.file.file :as file]
 			  [sketchpad.wrapper.rsyntaxtextarea :as rsyntaxtextarea]
         [sketchpad.state.state :as state]
         [seesaw.core :as seesaw.core]
-        [seesaw.keystroke :as keystroke]))
+        [seesaw.keystroke :as keystroke]
+        [sketchpad.tree.utils :as tree.utils]))
 
 (defn lein-project-path [lein-project]
 "Returns the src path of a Leiningen project."
@@ -36,7 +38,9 @@
             (tab/mark-current-tab-clean!)))))
     (do
       (when (file/save-file! buffer)
-            (tab/mark-current-tab-clean!)))))))
+            (tab/mark-current-tab-clean!))))
+  (when (= @(:title buffer) "project.clj")
+    (project/update-lein-project! (project/project-from-buffer buffer))))))
 
 (defn save-as
 "Open the save as dialog for the current buffer."
@@ -62,7 +66,23 @@
   :save-as  (seesaw.core/menu-item :text "Save as..." 
                               :mnemonic "M" 
                               :key (keystroke/keystroke "meta shift S")
-                              :listen [:action (fn [_] (save-as))])})
+                              :listen [:action (fn [_] (save-as))])
+  :new-project (seesaw.core/menu-item :text "New Project" 
+                        :mnemonic "N" 
+                        :key (keystroke/keystroke "meta shift N")
+                        :listen [:action (fn [_] (tree.utils/new-project))])
+  :open-project (seesaw.core/menu-item :text "Open Project" 
+                        :mnemonic "O" 
+                        :key (keystroke/keystroke "meta shift O")
+                        :listen [:action (fn [_] (tree.utils/open-project @state/app))])
+  :remove-project (seesaw.core/menu-item :text "Remove Project" 
+                        :key (keystroke/keystroke "meta shift R")
+                        :mnemonic "R" 
+                        :listen [:action (fn [_] (tree.utils/remove-project @state/app))])  
+  :clear-projects (seesaw.core/menu-item :text "Clear All Projects" 
+                        :mnemonic "C" 
+                        :listen [:action (fn [_] (tree.utils/clear-projects))])})
+
 
 (defn make-file-menu
   []
@@ -71,6 +91,13 @@
           :mnemonic "F"
           :items [
                   (menu-items :new-file)
+                  (seesaw.core/separator)
                   (menu-items :save)
-                  (menu-items :save-as)])))
+                  (menu-items :save-as)
+                  (seesaw.core/separator)
+                  (menu-items :new-project)
+                  (menu-items :open-project)
+                  (seesaw.core/separator)
+                  (menu-items :remove-project)
+                  (menu-items :clear-projects)])))
 

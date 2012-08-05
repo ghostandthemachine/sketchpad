@@ -10,9 +10,11 @@
 					  [sketchpad.core :as core]
 					  [sketchpad.buffer.search :as search]
             [sketchpad.project.project :as project]
+            [sketchpad.project.form :as project.form]
 					  [clojure.pprint :as pprint]
 					  [clojure.stacktrace :as stack-trace]
-					  [seesaw.dev :as seesaw.dev])
+					  [seesaw.dev :as seesaw.dev]
+            [clojure.string :as string])
 	(:import 	(org.fife.ui.rsyntaxtextarea RSyntaxTextAreaEditorKit)
 			 		(org.fife.ui.rtextarea RTextAreaEditorKit)
 			 		(org.fife.ui.rsyntaxtextarea.RSyntaxTextArea)
@@ -307,6 +309,14 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Project
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn create-project
+"Create a new Leiningen project. With no project opts map a creation form will open"
+  ([]
+    (project.form/create-new-project))
+  ([project-map]
+    (project.form/create-new-project project-map)))
+
 
 (defn current-project
 "Returns the current SketchPad project."

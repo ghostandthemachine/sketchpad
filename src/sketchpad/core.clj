@@ -1,5 +1,5 @@
 (ns sketchpad.core
-  (:gen-class :name "Sketchpad")
+  (:gen-class :name "SketchPad")
   (:import (javax.swing.TollTipManager)
            (java.awt Toolkit))
   (:use [seesaw core graphics color border font meta]
@@ -20,6 +20,7 @@
             [sketchpad.project.project :as project]
             [sketchpad.menu.menu-bar :as menu]
             [sketchpad.editor.info :as info]
+            [sketchpad.buffer.action :as buffer.action]
             [sketchpad.repl.info :as repl.info]
             [sketchpad.state.state :as sketchpad.state]))
 
@@ -68,7 +69,7 @@
                      :divider-size 3
                      :border (empty-border :thickness 0)
                      :background config/app-color)
-        frame (frame :title "Sketchpad"
+        frame (frame :title "SketchPad"
                      :width 950
                      :height 700
                      :on-close :exit
@@ -153,6 +154,5 @@
   (invoke-later
     (reset! sketchpad.state.state/app (create-app))
     (->
-      (startup-sketchpad sketchpad.state.state/app)
-      show!)))
-
+        (startup-sketchpad sketchpad.state.state/app)
+        show!)))

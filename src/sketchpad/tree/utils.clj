@@ -318,6 +318,7 @@
 
 (defn remove-selected-project [app]
   (apply swap! project.state/project-set disj (get-selected-projects app))
+  (project/remove-project (get-selected-projects app))
   (update-project-tree) )
 
 (defn remove-project [app]
@@ -330,6 +331,7 @@
   []
   (seesaw/invoke-later
     (project/clear-project-set)
+    (project/clear-projects)
     (update-project-tree)))
 
 (defn revert-file [app]

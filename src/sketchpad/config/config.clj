@@ -187,7 +187,7 @@ You never have to change the opaque property yourself; it is always done for you
   (.setFadeCurrentLineHighlight text-area pref))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Sketchpad
+;; SketchPad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn show-tabs!
@@ -440,7 +440,7 @@ You never have to change the opaque property yourself; it is always done for you
 (def file-tree-pref-handlers
   {})
 
-
+(def project-path project-dir-path)
 
 (def project-theme-colors default-project-style-prefs)
 

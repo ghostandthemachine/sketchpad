@@ -265,12 +265,12 @@
 (defn get-tab-rsta [tabbed-panel i]
 	(select (component-at tabbed-panel i) [:#editor]))
 
-(defn focus [text-area]
-	(.grabFocus text-area))
+(defn focus [component]
+	(.grabFocus component))
 
 (defn focus-buffer [buffer]
 	(when (not (nil? buffer))
-	  (focus (:text-area buffer))))
+	  (focus (get-in buffer [:component :text-area]))))
 
 (defn add-buffer [buffer]
 	(add-tab! @(:title buffer) (:container buffer)))

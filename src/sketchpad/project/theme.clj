@@ -3,7 +3,7 @@
 	(:require [sketchpad.config.config :as config]))
 
 (comment 
-	"Sketchpad Theme format."
+	"SketchPad Theme format."
 	{:color theme-color})
 
 (defn get-project-theme-color [id]

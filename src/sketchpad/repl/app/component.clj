@@ -39,7 +39,7 @@
                                             :border          (border/line-border :thickness 1 :color config.config/app-color)                          
                                             :id             :editor
                                             :class          :repl)
-				repl-title (atom "Sketchpad")
+				repl-title (atom "SketchPad")
 				repl-history {:items (atom nil) :pos (atom 0) :last-end-pos (atom 0)}
 				repl-in-scroll-pane (RTextScrollPane. text-area false) ;; default to no linenumbers
 				repl-container (seesaw/vertical-panel 

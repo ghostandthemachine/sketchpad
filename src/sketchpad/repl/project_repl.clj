@@ -90,38 +90,38 @@
 "Send a given command to the specified outside REPL."
 ([repl cmd] (send-repl-cmd repl cmd "NO_SOURCE_PATH" 0))
 ([repl cmd file line]
-  (utils/awtevent
-  	  (let [repl-server (:server repl)
-  	        repl-history (:history repl)
-  	        conn (:conn repl)
-            text-area (get-in repl [:component :text-area])
-  	        items (:items repl-history)
-  	        cmd-str (cmd-attach-file-and-line (buffer.action/get-last-cmd (get-in repl [:component :text-area])  ) file line)]
-        (buffer.action/append-text-update text-area (str \newline))
-  		    (when-let [response (-> (nrepl/client conn config/repl-response-timeout)
-  	   						        (nrepl/message {:op :eval :code cmd})
-  								    nrepl/combine-responses)]
-            (let [response-str 
-                    (str  
-                      (cond
-                        (contains? response :err)
-                            (:err response)
-                        (contains? response :out)
-                            (:out response)
-                        :default
-                          (first (:value response)))
-                      \newline)
-                  ns-response (-> (nrepl/client conn config/repl-response-timeout)
-                          (nrepl/message {:op :eval :code "(str *ns*)"})
-                      nrepl/combine-responses)
-                  prompt-str (str (:ns ns-response) "=> ")]
-              (buffer.action/append-text-update text-area response-str)
-  	          (buffer.action/append-text-update text-area prompt-str)
-  	          (.discardAllEdits text-area))
-  	   (when (not= cmd (first @items))
-  	      (swap! items replace-first cmd)
-  	      (swap! items conj ""))
-  	  	(swap! (repl-history :pos) (fn [pos] 0)))))))
+	  (let [repl-server (:server repl)
+	        repl-history (:history repl)
+	        conn (:conn repl)
+          text-area (get-in repl [:component :text-area])
+	        items (:items repl-history)
+	        ; cmd-str (cmd-attach-file-and-line (buffer.action/get-last-cmd (get-in repl [:component :text-area])  ) file line)
+          ]
+      (buffer.action/append-text-update text-area (str \newline))
+		    (when-let [response (-> (nrepl/client conn config/repl-response-timeout)
+	   						        (nrepl/message {:op :eval :code cmd})
+								    nrepl/combine-responses)]
+          (let [response-str 
+                  (str  
+                    (cond
+                      (contains? response :err)
+                          (:err response)
+                      (contains? response :out)
+                          (:out response)
+                      :default
+                        (first (:value response)))
+                    \newline)
+                ns-response (-> (nrepl/client conn config/repl-response-timeout)
+                        (nrepl/message {:op :eval :code "(str *ns*)"})
+                    nrepl/combine-responses)
+                prompt-str (str (:ns ns-response) "=> ")]
+            (buffer.action/append-text-update text-area response-str)
+	          (buffer.action/append-text-update text-area prompt-str)
+	          (.discardAllEdits text-area))
+	   (when (not= cmd (first @items))
+	      (swap! items replace-first cmd)
+	      (swap! items conj ""))
+	  	(swap! (repl-history :pos) (fn [pos] 0))))))
 
 (defn sys-cmd 
   ([repl kwarg] (sys-cmd repl kwarg nil))
@@ -173,11 +173,19 @@
                 (all-ns)))))))"
                 ))))
 
-(defn add-repl-behaviors [repl]
-  (let [text-area (get-in repl [:component :text-area])
-        repl-history (:repl-history repl)
-        get-caret-pos #(.getCaretPosition text-area)
-        ready #(let [caret-pos (get-caret-pos)
+(defn submit [repl]
+  (seesaw/invoke-later
+    (let [text-area (get-in repl [:component :text-area])
+          txt (buffer.action/get-last-cmd text-area)
+          pos (get-in repl [:history :pos])]
+        (if (correct-expression? txt)
+          (do
+            (send-repl-cmd repl txt)
+            (reset! pos 0))))))
+
+(defn- ready [text-area]
+  (let [get-caret-pos #(.getCaretPosition text-area)
+        caret-pos (get-caret-pos)
                      txt (.getText text-area)
                      trim-txt (string/trimr txt)]
                  (and
@@ -186,13 +194,13 @@
                        caret-pos)
                    (= -1 (first (brackets/find-enclosing-brackets
                                   txt
-                                  caret-pos)))))
-        submit #(let [txt (buffer.action/get-last-cmd text-area)
-                      pos (get-in repl [:history :pos])]
-                    (if (correct-expression? txt)
-                      (do
-                        (send-repl-cmd repl txt)
-                        (reset! pos 0))))
+                                  caret-pos))))))
+
+(defn add-repl-behaviors [repl]
+  (let [text-area (get-in repl [:component :text-area])
+        repl-history (:repl-history repl)
+        ready (partial ready text-area)
+        submit (partial submit repl)
         prev-hist #(repl.history/update-repl-history-display-position repl :dec)
         next-hist #(repl.history/update-repl-history-display-position repl :inc)
         completions #(get-completions repl)]

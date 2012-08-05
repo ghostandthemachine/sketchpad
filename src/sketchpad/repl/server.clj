@@ -47,7 +47,6 @@
 (defn repl-server
 "Create an outside REPL process for a given project and buffer."
 [sketchpad-project]
-  (println "create a server for project: " (:path sketchpad-project))
   (nrepl.ack/reset-ack-port!)
   (let [prepped (promise)
   	    project (:lein-project sketchpad-project)]

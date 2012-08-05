@@ -96,6 +96,8 @@
 
 (defn find-form-string [text pos]
   (let [[left right] (find-enclosing-brackets text pos)]
+  	(println left right)
+  	(println (.substring text left right))
     (when (> (.length text) left)
       (.substring text (inc left)))))
 

@@ -5,12 +5,14 @@
 	(:require [sketchpad.state.state :as state]
 		[sketchpad.project.theme :as theme]
 		[sketchpad.project.state :as project.state]
+		; [sketchpad.repl.print :as repl.print]
 		[sketchpad.auto-complete.auto-complete :as auto-complete]
+						[seesaw.core :as seesaw]
 		[leiningen.core.project :as lein-project])
 	(:import [java.io File]))
 
 (comment
-	"Sketchpad project format."
+	"SketchPad project format."
 	{:path project-root-path
 	 :lein-project lein-project
 	 :id uuid
@@ -57,14 +59,31 @@
 	  									; :completion-provider (auto-complete/build-project-completion-provider project-path)
 	  									:repls (atom {}) 
 	  									:buffers (atom {})})))
+	  (println "add project with path key: " project-path)
 	  (if (lein-project-file?)
 	  		(try
 		  		(when-let [lein-project (lein-project/read (str project-path "/project.clj"))]
 		  		(swap! projects (fn [m] (assoc-in m [project-path :lein-project] lein-project))))
 		  		(catch Exception e)))))
 
+(defn remove-project [project-paths]
+	(let [current-project-path (first project-paths)
+				projects (:projects @state/app)]
+		(swap! projects dissoc current-project-path)))
+
+(defn update-lein-project! [project]
+	(let [projects (@state/app :projects)
+		 project-path (:path project)]
+		(try
+			(when-let [lein-project (lein-project/read (str project-path "/project.clj"))]
+				(swap! projects (fn [m] (assoc-in m [project-path :lein-project] lein-project))))
+			(catch Exception e))))
+
 (defn clear-project-set []
 (reset! (:project-set @state/app) (sorted-set)))
+
+(defn clear-projects []
+	(reset! (:projects @state/app) {}))
 
 (defn setup-non-project-map []
 	(add-project @state/app "/default"))
@@ -97,6 +116,9 @@
 (defn project-from-path [project-path]
 	(get @(@state/app :projects) project-path))
 
+(defn project-from-buffer [buffer]
+	(project-from-path (:project buffer)))
+
 (defn project-theme [project-path]
 	(:theme (project-from-path project-path)))
 
@@ -116,4 +138,3 @@
 	(let [short-keys (map #(last (clojure.string/split (str %) #"/")) (keys @(:projects @state/app)))
 		  long-keys (keys @(:projects @state/app))]
 		 (or (contains? short-keys project-name) (contains? long-keys project-name))))
-

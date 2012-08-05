@@ -94,6 +94,8 @@
 (def default-sketchpad-prefs
 	{:show-tabs? true})
 
+(def project-dir-path "projects/")
+
 (def default-project-style-prefs
 	[(color :white) (color :orange) (color :green) (color :yellow) (color :blue) (color :red) (color :purple) (color :pink)])
 

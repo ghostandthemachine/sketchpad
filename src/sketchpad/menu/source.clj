@@ -10,7 +10,7 @@
 (defn search
 "Focus the editor REPL and create a search function."
 ([]
-  (sketchpad.repl.print/append-command (str "(search \"\")") -2)
+  (sketchpad.repl.print/append-command (str "(search \"\")") -5)
   (tab/focus-application-repl)))
 
 (defn search-replace

@@ -30,6 +30,7 @@
   ([]
    (let [cp (org.fife.ui.autocomplete.DefaultCompletionProvider.)]
      (.setParameterizedCompletionParams cp \space " " \))
+     (.setAutoActivationRules cp true "")
      cp)))
 
 (defn make-clojar-completion-provider
@@ -37,13 +38,18 @@
 	[]
 	(build-clojar-completions (create-provider)))
 
-(defonce clojar-completion-provider (org.fife.ui.autocomplete.AutoCompletion. (make-clojar-completion-provider)))
+(def clojar-completion-provider (org.fife.ui.autocomplete.AutoCompletion. (make-clojar-completion-provider)))
 
 (defn install-clojars-auto-completions
 "Adds all project ns completions to a text area. Takes a text-area and a SketchPad project."
   [text-area]
     (config/apply-auto-completion-prefs! clojar-completion-provider)
     (wrapper.rsyntaxtextarea/set-input-map! text-area (input.default/default-input-map))
+    (doto 
+      clojar-completion-provider
+      (.setAutoActivationEnabled true)
+      ; (.setAutoActivationDelay 100)
+      (.setShowDescWindow false))
     (.install clojar-completion-provider text-area))
 
 (defn build-project-completion-provider

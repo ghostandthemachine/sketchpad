@@ -20,10 +20,9 @@
 
 (defn perform-action [action e rta]
   (invoke-later
-    (utils/awtevent
-      (.actionPerformedImpl action e rta)
-      (when-not (nil? (repl-panel))
-        (.grabFocus (repl-panel))))))
+    (.actionPerformedImpl action e rta)
+    (when-not (nil? (repl-panel))
+      (.grabFocus (repl-panel)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; RTextArea Actions
@@ -334,7 +333,7 @@
 
 (defn get-last-cmd [text-area]
   (let [text (seesaw/config text-area :text)]
-   (string/trim (last (string/split text #"=>")))))
+     (string/trim (last (string/split text #"=>")))))
 
 (defn buffer-cursor-pos 
 ([] (buffer-cursor-pos ))
@@ -377,6 +376,9 @@
         drop-last (string/replace drop-first cr "")]
     drop-last))
 
+(defn trim-enclosing [s]
+  (.substring s 1 (- (count s) 1)))
+
 (defn trim-parens [s]
   (trim-enclosing-char s "(" ")"))
 
@@ -386,15 +388,13 @@
 (defn append-text [text-pane text]
   (when-let [doc (.getDocument text-pane)]
     (try
-      (invoke-later
-        (.insertString doc (.getLength doc) text nil))
+        (.append text-pane text)
       (catch java.lang.ClassCastException e ))))
 
 (defn append-text-update [rsta s]
   (try
-    (append-text rsta (str s))
-    (invoke-later
-      (.setCaretPosition rsta (.getLastVisibleOffset rsta)))
+      (append-text rsta (str s))
+      (.setCaretPosition rsta (.getLastVisibleOffset rsta))
     (catch java.lang.NullPointerException e)))
 
 (defn trim-enclosing-char [s cl cr]
@@ -408,15 +408,12 @@
 (defn trim-brackets [s]
   (trim-enclosing-char s "[" "]"))
 
-(defn append-text [text-pane text]
-	(invoke-later
-	  (when-let [doc (.getDocument text-pane)]
-	    (try
-	      (.insertString doc (.getLength doc) text nil)
-	      (catch java.lang.ClassCastException e )))))
+; (defn append-text [text-pane text]
+;   (invoke-later
+;     (.append text-pane text)))
 
-(defn append-text-update [buffer s]
-  (append-text buffer (str s))
-  (invoke-later
-	  (.setCaretPosition buffer (.getLastVisibleOffset buffer))))
+; (defn append-text-update [buffer s]
+;   (append-text buffer (str s))
+;   (invoke-later
+; 	  (.setCaretPosition buffer (.getLastVisibleOffset buffer))))
 

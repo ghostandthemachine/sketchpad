@@ -1,4 +1,4 @@
-# Sketchpad Change Log
+# SketchPad Change Log
 
 ##Version 0.0.1 (21st July 2012)
 
@@ -22,7 +22,7 @@
 * Fixed New File dialog to have proper title
 * Seesaw selector errors when no buffer is open
 * Double clicking directory nodes in the file tree threw error
-* Sketchpad.user ns functioning properly again
+* SketchPad.user ns functioning properly again
 
 ### Bug fixes
 * Errors cause by canceling a file save operation

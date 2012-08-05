@@ -1,4 +1,4 @@
-# Sketchpad Road Map
+# SketchPad Road Map
 
 ## Project Goals
 - Create a cross platform application for programming Clojure and Overtone with these core features:
@@ -16,17 +16,17 @@
 	+ Extract clooj application components from clooj.core and create a new clooj.dev-tools namespace which will contain all of the application components.
 	+ Update clooj.core to build standard Clooj with simple (create-application) function where the desired components can be added and styled.  
 
-- Create Sketchpad in sketchpad.core
-	+ Use the clooj.dev-tools namespace to create custom Clooj base application as base of Sketchpad
+- Create SketchPad in sketchpad.core
+	+ Use the clooj.dev-tools namespace to create custom Clooj base application as base of SketchPad
 	+ Overhaul standard Clooj layout to be more suited to Overtone:
 	+ Use less real estate by making components collapsible
 	+ Style and minimize seesaw borders and dividers to maximize frame space
 	+ Implement tab system for multiple files being open at one time
 	+ Boot overtone server on startup
 	
-### Sketchpad features
+### SketchPad features
 - Complete reworking of Clooj menus in seesaw with new features
-     + Putting the menu construction into seesaw will make for more readbale code and a cleaner way to add more features that fit in the Sketchpad key binding system
+     + Putting the menu construction into seesaw will make for more readbale code and a cleaner way to add more features that fit in the SketchPad key binding system
 
 - Edit and command modes
      + Easy to configure edit modes for vim and emacs style text navigating and manipulation
