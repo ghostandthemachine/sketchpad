@@ -1,8 +1,7 @@
 (defproject sketchpad "0.0.1-SNAPSHOT"
   :description "A light weight IDE for programming with Overtone and Clojure"
   :main sketchpad.core
-  :dependencies [[org.clojure/clojure-contrib "1.2.0"]
-                 [org.clojure/clojure "1.3.0"]
+  :dependencies [[org.clojure/clojure "1.4.0"]
                  [seesaw "1.4.2"]
                  [clooj "0.3.4.2-SNAPSHOT"]
                  [rounded-border "0.0.1-SNAPSHOT"]
