@@ -21,15 +21,15 @@ The SketchPad project system is base on [Leiningen](https://github.com/technoman
 
 ## Creating a project
 
-<div style="float:right">
-    <img src="https://raw.github.com/ghostandthemachine/sketchpad/master/img/quil-tone-creation-form.png"/>
-</div>
-
 New projects can be created in a few ways:
 
 * Through the file menu, `File -> New Project...`
 * or the file tree popup menu `New Project...`
 * or from the SketchPad REPL with `sketchpad.user => (create-project)`
+
+<div style="float:right">
+    <img src="https://raw.github.com/ghostandthemachine/sketchpad/master/img/quil-tone-creation-form.png"/>
+</div>
 
 This will open the project setup from. The project creation form creates the new project's `project.clj` file based on the project param fields. One handy feature incorporated into the creation form is that you can use shorthand names for dependencies available on Clojars.org. The auto completion will query Clojars.org for matching dependencies and display all available versions etc. 
 
