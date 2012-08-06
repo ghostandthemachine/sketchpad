@@ -104,8 +104,10 @@
       (add-completions-from-ns provider namespace))))
 
 (defn jar-string-list []
-	(when-let [jar-str (slurp "http://clojars.org/repo/all-jars.clj")]
-		(s/split jar-str #"\n")))
+	(try 
+    (when-let [jar-str (slurp "http://clojars.org/repo/all-jars.clj")]
+		  (s/split jar-str #"\n"))
+    (catch java.net.UnknownHostException e)))
 
 (defn clojar-completion-seq [jar-list]
 	(map #(-> % trim-brackets (s/split #"\s")) jar-list))

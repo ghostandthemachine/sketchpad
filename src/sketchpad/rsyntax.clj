@@ -10,7 +10,7 @@
 
 (ns ^{:doc "Support for RSyntaxTextArea: http://fifesoft.com/rsyntaxtextarea/index.php"
       :author "Dave Ray"}
-  sketchpad.rsyntax
+  seesaw.rsyntax
   (:require [seesaw.core :as core]
             [seesaw.util :as util]
             [seesaw.options :as options]

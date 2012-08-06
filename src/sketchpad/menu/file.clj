@@ -8,6 +8,7 @@
         [sketchpad.file.file :as file]
 			  [sketchpad.wrapper.rsyntaxtextarea :as rsyntaxtextarea]
         [sketchpad.state.state :as state]
+        [sketchpad.project.form :as project.form]
         [seesaw.core :as seesaw.core]
         [seesaw.keystroke :as keystroke]
         [sketchpad.tree.utils :as tree.utils]))
@@ -54,6 +55,11 @@
         (reset! (:new-file? buffer) false)
         (reset! (:title buffer) (.getName new-file)))))))
 
+(defn new-project 
+"Create a new Leiningen project."
+  []
+  (project.form/create-new-project))
+
 (defn make-file-menu-items []
  {:new-file (seesaw.core/menu-item :text "New File" 
                               :mnemonic "N" 
@@ -70,7 +76,7 @@
   :new-project (seesaw.core/menu-item :text "New Project" 
                         :mnemonic "N" 
                         :key (keystroke/keystroke "meta shift N")
-                        :listen [:action (fn [_] (tree.utils/new-project))])
+                        :listen [:action (fn [_] (new-project))])
   :open-project (seesaw.core/menu-item :text "Open Project" 
                         :mnemonic "O" 
                         :key (keystroke/keystroke "meta shift O")

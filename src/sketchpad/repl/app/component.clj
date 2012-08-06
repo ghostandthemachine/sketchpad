@@ -2,7 +2,7 @@
 	(:require [seesaw.core :as seesaw]
             [seesaw.border :as border]
             [seesaw.meta :as meta]
-            [sketchpad.rsyntax :as rsyntax]
+            [seesaw.rsyntax :as rsyntax]
             [sketchpad.state.state :as state]
 		        [sketchpad.repl.tab :as repl.tab]
             [sketchpad.config.config :as config.config]

@@ -21,20 +21,19 @@ The SketchPad project system is base on [Leiningen](https://github.com/technoman
 
 ## Creating a project
 
-To create a new project you can either right click in the file tree component and select `New Project` or select `File -> New Project`. This will open a dialog to choose a project directory title and location. So to create our new Overtone project we will:
+<div style="float:right">
+    <img src="https://raw.github.com/ghostandthemachine/sketchpad/master/img/quil-tone-creation-form.png"/>
+</div>
 
-1. `File -> New Project`.
-2. For this tutorial, select the sketchpad/projects directory and title the new directory `overtone-tutorial`.
-3. When the namespace prompt appears hit enter to verify naming the project namespace `overtone-tutorial.core`.
+New projects can be created in a few ways:
 
-This will complete the Leiningen project creation process and the new project will now be loaded in the projects file tree. Now we just need to add the project's dependencies in the project.clj and we'll be ready for Leiningen to handle the rest. In the new `overtone-tutorial` project, double click the `project.clj` and update the dependencies to include Overtone:
+* Through the file menu, `File -> New Project...`
+* or the file tree popup menu `New Project...`
+* or from the SketchPad REPL with `sketchpad.user => (create-project)`
 
-```clj
-	(defproject foobar "1.0.0-SNAPSHOT"
-	    :description "FIXME: write"
-	    :dependencies [[org.clojure/clojure "1.3.0"]
-	  	               [overtone "0.8.0-SNAPSHOT"]])
-```
+This will open the project setup from. The project creation form creates the new project's `project.clj` file based on the project param fields. One handy feature incorporated into the creation form is that you can use shorthand names for dependencies available on Clojars.org. The auto completion will query Clojars.org for matching dependencies and display all available versions etc. 
+
+For this example we'll use Overtone and Quil to make a simple drawing and synth example. The dependencies text area will 
 
 ## Opening a project REPL
 

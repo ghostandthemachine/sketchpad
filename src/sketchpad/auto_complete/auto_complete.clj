@@ -18,6 +18,7 @@
   [rta]
   (let [completion-provider (org.fife.ui.autocomplete.AutoCompletion. provider)]
     (config/apply-auto-completion-prefs! completion-provider)
+    (.setAutoActivationEnabled completion-provider true)
     (.install completion-provider rta)))
 
 (defn install-project-auto-completion
@@ -49,6 +50,7 @@
       clojar-completion-provider
       (.setAutoActivationEnabled true)
       ; (.setAutoActivationDelay 100)
+      (.setDescriptionWindowSize 300 500) 
       (.setShowDescWindow false))
     (.install clojar-completion-provider text-area))
 

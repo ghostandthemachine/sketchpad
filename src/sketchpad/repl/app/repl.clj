@@ -18,7 +18,7 @@
         [sketchpad.util.tab]
         [clojure.tools.nrepl.server :only (start-server stop-server)])
   (:require [clojure.string :as string]
-            [sketchpad.rsyntax :as rsyntax]
+            [seesaw.rsyntax :as rsyntax]
             [clojure.java.io :as io]
             [sketchpad.config.config :as config]
             [sketchpad.buffer.action :as buffer.action]

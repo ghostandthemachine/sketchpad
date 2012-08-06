@@ -2,7 +2,7 @@
   (:use [seesaw core border meta color]
         [sketchpad.repl.app.repl]
         [sketchpad.input.default])
-  (:require [sketchpad.rsyntax :as rsyntax]
+  (:require [seesaw.rsyntax :as rsyntax]
             [sketchpad.config.config :as config]
             [sketchpad.buffer.action :as buffer.action]
             [sketchpad.wrapper.rsyntaxtextarea :as wrapper.rsyntaxtextarea]

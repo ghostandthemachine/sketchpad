@@ -3,6 +3,7 @@
 			[seesaw.core :as seesaw]
 			[seesaw.keystroke :as keystroke]
       [sketchpad.menu.file :as menu.file]
+      [sketchpad.project.form :as project.form]
       [sketchpad.repl.project-repl :as repl]
       [sketchpad.project.project :as project]
 			[sketchpad.tree.utils :as tree.utils]))
@@ -25,7 +26,7 @@
               ; (separator)
               (seesaw/menu-item :text "New Project" 
                         :mnemonic "N" 
-                        :listen [:action (fn [_] (tree.utils/new-project))])
+                        :listen [:action (fn [_] (project.form/create-new-project))])
               (seesaw/menu-item :text "Open Project" 
                         :mnemonic "O" 
                         :listen [:action (fn [_] (tree.utils/open-project app))])
@@ -46,5 +47,5 @@
                         :mnemonic "R" 
                         :listen [:action (fn [_] (create-repl))])
               (seesaw/separator)
-              (seesaw/menu-item :text "Delete" 
+              (seesaw/menu-item :text "Delete file" 
                         :listen [:action (fn [_] (tree.utils/delete-file app))])])))
