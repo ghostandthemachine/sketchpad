@@ -46,7 +46,7 @@ For this example we'll use Overtone and Quil to make a simple drawing and synth 
 
 ## Some example code
 
-With the project created it's time to make some circles and sounds. For this example will use the basic Quil example and add a random synth noise that is fired when a new circle is drawn. Here is the code:
+With the project created it's time to make some circles and sounds. For this example will use the basic Quil example and add a random synth noise that is fired when a new circle is drawn. Paste this code into your `quil_tone/src/quil_tone/quil_tone.clj` file.
 
 ```clj
 	(ns quil-tone.core

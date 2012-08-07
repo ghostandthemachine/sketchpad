@@ -11,17 +11,6 @@
 (defn put [laf k v]
   (.put laf (str "TabbedPane." k) v))
 
-(defn update-tree-popup-context [e]
-  (let [file? #(.isFile (selected-file-path))
-        directory? #(.isDirectory (selected-file-path))
-        tree (get-in (:file-tree @state/app) [:component :tree])]
-        (println e)
-    (cond 
-      (file?)
-        (config! tree :popup popup/file-popup)
-      (directory?)
-        (config! tree :popup popup/directory-popup))))
-
 (defn tab-change-handler [buffer-tabbed-panel]
   (listen buffer-tabbed-panel :selection editor.info-utils/update-doc-title-label!)
   (listen buffer-tabbed-panel :selection editor.info-utils/update-doc-position-label!))

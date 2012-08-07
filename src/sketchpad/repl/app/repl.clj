@@ -7,14 +7,14 @@
            (clojure.lang LineNumberingPushbackReader)
            (java.awt Rectangle)
            (java.net URL URLClassLoader URLDecoder))
-  (:use [sketchpad.util.utils :only (attach-child-action-keys attach-action-keys
+  (:use [sketchpad.repl.app.util]
+        [sketchpad.util.utils :only (attach-child-action-keys attach-action-keys
                             gen-map get-temp-file awt-event get-file-ns
                             when-lets get-text-str get-directories)]
         [clooj.brackets :only (find-line-group find-enclosing-brackets)]
         [clooj.help :only (get-var-maps)]
         [clj-inspector.jars :only (get-entries-in-jar jar-files)]
         [seesaw core color border meta]
-        [sketchpad.repl.app.util]
         [sketchpad.util.tab]
         [clojure.tools.nrepl.server :only (start-server stop-server)])
   (:require [clojure.string :as string]
@@ -163,39 +163,34 @@
       (catch java.io.IOException e
         (println "Could not create outside REPL for path: " project-path)))))
 
+; (defn replace-first [coll x]
+;   (cons x (next coll)))
+
 (defn update-repl-history [app]
   (swap! (:items repl-history) replace-first
          (get-text-str (app :application-repl))))
 
-(defn correct-expression? [cmd]
-  (when-not (empty? (.trim cmd))
-    (let [rdr (-> cmd StringReader. PushbackReader.)]
-      (try (while (read rdr nil nil))
-           true
-           (catch IllegalArgumentException e true)
-           (catch Exception e false)))))
-
-(defn send-to-repl
-  ([app cmd] (send-to-repl app cmd "NO_SOURCE_PATH" 0) :repl)
-  ([app cmd file line] (send-to-repl app cmd file line :file))
-  ([app cmd file line src-key]
-  (awt-event
-    (let [cmd-ln (str \newline (.trim cmd) \newline)
-          cmd-trim (.trim cmd)]
-      (cond
-          (= src-key :repl)
-            (buffer.action/append-text (app :doc-text-area) (str \newline))
-          (= src-key :file)
-            (buffer.action/append-text (app :doc-text-area) (str \newline)))
-      (let [cmd-str (cmd-attach-file-and-line cmd file line)]
-        (binding [*out* (:input-writer @(app :repl))]
-          (println cmd-str)
-          (flush)))
-      (when (not= cmd-trim (second @(:items repl-history)))
-        (swap! (:items repl-history)
-               replace-first cmd-trim)
-        (swap! (:items repl-history) conj ""))
-      (reset! (:pos repl-history) 0)))))
+; (defn send-to-repl
+;   ([app cmd] (send-to-repl app cmd "NO_SOURCE_PATH" 0) :repl)
+;   ([app cmd file line] (send-to-repl app cmd file line :file))
+;   ([app cmd file line src-key]
+;   (awt-event
+;     (let [cmd-ln (str \newline (.trim cmd) \newline)
+;           cmd-trim (.trim cmd)]
+;       (cond
+;           (= src-key :repl)
+;             (buffer.action/append-text (app :doc-text-area) (str \newline))
+;           (= src-key :file)
+;             (buffer.action/append-text (app :doc-text-area) (str \newline)))
+;       (let [cmd-str (cmd-attach-file-and-line cmd file line)]
+;         (binding [*out* (:input-writer @(app :repl))]
+;           (println cmd-str)
+;           (flush)))
+;       (when (not= cmd-trim (second @(:items repl-history)))
+;         (swap! (:items repl-history)
+;                replace-first cmd-trim)
+;         (swap! (:items repl-history) conj ""))
+;       (reset! (:pos repl-history) 0)))))
 
         
 (defn scroll-to-last [text-area]
@@ -220,18 +215,18 @@
          :start a
          :end b}))))
 
-(defn send-selected-to-repl [app]
-  (let [ta (app :doc-text-area)
-        region (selected-region ta)
-        txt (:text region)]
-    (if-not (and txt (correct-expression? txt))
-        (.setText (app :arglist-label) "Malformed expression")
-         (let [line (.getLineOfOffset ta (:start region))]
-           (send-to-repl app txt (relative-file app) line)))))
+; (defn send-selected-to-repl [app]
+;   (let [ta (app :doc-text-area)
+;         region (selected-region ta)
+;         txt (:text region)]
+;     (if-not (and txt (correct-expression? txt))
+;         (.setText (app :arglist-label) "Malformed expression")
+;          (let [line (.getLineOfOffset ta (:start region))]
+;            (send-to-repl app txt (relative-file app) line)))))
 
-(defn send-doc-to-repl [app]
-  (let [text (->> app :doc-text-area .getText)]
-    (send-to-repl app text (relative-file app) 0)))
+; (defn send-doc-to-repl [app]
+;   (let [text (->> app :doc-text-area .getText)]
+;     (send-to-repl app text (relative-file app) 0)))
 
 (defn update-repl-text [app]
   (let [rsta (:application-repl app)
@@ -250,38 +245,38 @@
             (nth items @(:pos repl-history))
             last-pos))))))
 
-(defn show-previous-repl-entry [app]
-  (when (zero? @(:pos repl-history))
-    (update-repl-history app))
-  (swap! (:pos repl-history)
-         #(min (dec (count @(:items repl-history))) (inc %)))
-  (update-repl-text app))
+; (defn show-previous-repl-entry [app]
+;   (when (zero? @(:pos repl-history))
+;     (update-repl-history app))
+;   (swap! (:pos repl-history)
+;          #(min (dec (count @(:items repl-history))) (inc %)))
+;   (update-repl-text app))
 
-(defn show-next-repl-entry [app]
-  (when (pos? @(:pos repl-history))
-    (swap! (:pos repl-history)
-           #(Math/max 0 (dec %)))
-    (update-repl-text app)))
+; (defn show-next-repl-entry [app]
+;   (when (pos? @(:pos repl-history))
+;     (swap! (:pos repl-history)
+;            #(Math/max 0 (dec %)))
+;     (update-repl-text app)))
 
-(defn load-file-in-repl [app]
-  (when-lets [f0 @(:current-file app)
-              f (or (get-temp-file f0) f0)]
-    (send-to-repl app (str "(load-file \"" (.getAbsolutePath f) "\")"))))
+; (defn load-file-in-repl [app]
+;   (when-lets [f0 @(:current-file app)
+;               f (or (get-temp-file f0) f0)]
+;     (send-to-repl app (str "(load-file \"" (.getAbsolutePath f) "\")"))))
 
-(defn apply-namespace-to-repl [app]
-  (when-let [current-ns (get-file-ns (config (app :doc-text-area) :text))]
-    (send-to-repl app (str "(ns " current-ns ")"))
-    (swap! repls assoc-in
-           [(-> app :repl deref :project-path) :ns]
-           current-ns)))
+; (defn apply-namespace-to-repl [app]
+;   (when-let [current-ns (get-file-ns (config (app :doc-text-area) :text))]
+;     (send-to-repl app (str "(ns " current-ns ")"))
+;     (swap! repls assoc-in
+;            [(-> app :repl deref :project-path) :ns]
+;            current-ns)))
 
-(defn restart-repl [app project-path]
-  (buffer.action/append-text (app :application-repl)
-               (str "\n=== RESTARTING " project-path " REPL ===\n"))
-  (when-let [proc (-> app :repl deref :proc)]
-    (.destroy proc))
-  (reset! (:repl app) (create-outside-repl (app :repl-out-writer) project-path))
-  (apply-namespace-to-repl app))
+; (defn restart-repl [app project-path]
+;   (buffer.action/append-text (app :application-repl)
+;                (str "\n=== RESTARTING " project-path " REPL ===\n"))
+;   (when-let [proc (-> app :repl deref :proc)]
+;     (.destroy proc))
+;   (reset! (:repl app) (create-outside-repl (app :repl-out-writer) project-path))
+;   (apply-namespace-to-repl app))
 
 (defn switch-repl [app project-path]
   (when (and project-path
@@ -296,12 +291,13 @@
   (let [ta-in rsta
         application-repl-history (get-meta rsta :repl-history)
         get-caret-pos #(.getCaretPosition ta-in)
-        submit #(when-let [txt (get-last-cmd rsta)]
-                  (let [pos (application-repl-history :pos)]
-                    (if (correct-expression? txt)
-                      (do
-                        (send-to-application-repl rsta txt)
-                        (swap! pos (fn [p] 0))))))
+        submit #(invoke-later
+                  (when-let [txt (buffer.action/get-last-cmd rsta)]
+                    (let [pos (application-repl-history :pos)]
+                      (if (correct-expression? txt)
+                        (do
+                          (send-to-application-repl rsta txt)
+                          (swap! pos (fn [p] 0)))))))
         at-top #(zero? (.getLineOfOffset ta-in (get-caret-pos)))
         at-bottom #(= (.getLineOfOffset ta-in (get-caret-pos))
                       (.getLineOfOffset ta-in (.. ta-in getText length)))
@@ -310,9 +306,6 @@
     (attach-action-keys ta-in ["ENTER" submit])
     (attach-action-keys ta-in ["control UP" prev-hist]
                               ["control DOWN" next-hist])))
-
-(defn print-stack-trace [app]
-    (send-to-repl app "(.printStackTrace *e)"))
 
  (defn attach-tab-change-handler [repl-tabbed-panel]
    (listen repl-tabbed-panel :selection 

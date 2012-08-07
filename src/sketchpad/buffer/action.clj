@@ -333,6 +333,7 @@
 
 (defn get-last-cmd [text-area]
   (let [text (seesaw/config text-area :text)]
+    (println (string/trim (last (string/split text #"=>"))))
      (string/trim (last (string/split text #"=>")))))
 
 (defn buffer-cursor-pos 

@@ -4,7 +4,12 @@
   (:use [sketchpad.repl.app.sketchpad-repl]
         [seesaw core meta]
         [sketchpad.wrapper.rsyntaxtextarea])
-  (:import (java.util.concurrent LinkedBlockingDeque)))
+   (:import (java.io
+             BufferedReader BufferedWriter
+             InputStreamReader
+             File PipedReader PipedWriter PrintWriter Writer
+                    StringReader PushbackReader)
+            (java.util.concurrent LinkedBlockingDeque)))
   
 (def application-repl-history {:items (atom (list "")) :pos (atom 0)}) 
 
@@ -22,6 +27,7 @@
     
 (defn get-last-cmd [buffer]
   (let [text (config buffer :text)]
+  (println (string/trim (last (string/split text #"=>"))))
    (string/trim (last (string/split text #"=>")))))
 
 (defn clear-repl-input [rsta]
@@ -46,6 +52,14 @@
   "Finds all the tokens in a given string."
   [text]
   (re-seq #"[\w/\.]+" text))
+
+(defn correct-expression? [cmd]
+  (when-not (empty? (.trim cmd))
+    (let [rdr (-> cmd StringReader. PushbackReader.)]
+      (try (while (read rdr nil nil))
+           true
+           (catch IllegalArgumentException e true)
+           (catch Exception e false)))))
 
 (defn namespaces-from-code
   "Take tokens from text and extract namespace symbols."
@@ -116,22 +130,57 @@
     (buffer.action/append-text-update rsta history-str)))
 
 (defn update-repl-history-display-position [rsta kw]
-  (let [repl-history (get-meta rsta :repl-history)
-        history-pos (repl-history :pos)
-        cmd (get-last-cmd rsta)]
-    (if (= @(repl-history :pos) 0)
-      (when-let [items (repl-history :items)]
-          (swap! items replace-first cmd)))
-    (cond 
-      (= kw :dec)
-        (if (< @history-pos (- (count @(repl-history :items)) 1))
-            (swap! history-pos (fn [pos] (+ pos 1)))
-            (swap! history-pos (fn [pos] pos)))
-      (= kw :inc)
-        (if (> @history-pos 1)
-            (swap! history-pos (fn [pos] (- pos 1)))
-            (swap! history-pos (fn [pos] pos))))
-    (clear-repl-input rsta)
-    (append-history-text rsta repl-history)))
+  (invoke-later
+    (let [repl-history (get-meta rsta :repl-history)
+          history-pos (repl-history :pos)
+          cmd (get-last-cmd rsta)]
+      (if (= @(repl-history :pos) 0)
+        (when-let [items (repl-history :items)]
+            (swap! items replace-first cmd)))
+      (cond 
+        (= kw :dec)
+          (if (< @history-pos (- (count @(repl-history :items)) 1))
+              (swap! history-pos (fn [pos] (+ pos 1)))
+              (swap! history-pos (fn [pos] pos)))
+        (= kw :inc)
+          (if (> @history-pos 1)
+              (swap! history-pos (fn [pos] (- pos 1)))
+              (swap! history-pos (fn [pos] pos))))
+      (clear-repl-input rsta)
+      (append-history-text rsta repl-history))))
 
-      
+; (defn send-selected-to-repl [app]
+;   (let [ta (app :doc-text-area)
+;         region (selected-region ta)
+;         txt (:text region)]
+;     (if-not (and txt (correct-expression? txt))
+;         (.setText (app :arglist-label) "Malformed expression")
+;          (let [line (.getLineOfOffset ta (:start region))]
+;            (send-to-project-repl app txt (relative-file app) line)))))
+
+; (defn send-doc-to-repl [app]
+;   (let [text (->> app :doc-text-area .getText)]
+;     (send-to-project-repl app text (relative-file app) 0)))
+
+
+; (defn load-file-in-repl [app]
+;   (when-lets [f0 @(:current-file app)
+;               f (or (get-temp-file f0) f0)]
+;     (send-to-project-repl app (str "(load-file \"" (.getAbsolutePath f) "\")"))))
+
+; (defn apply-namespace-to-repl [app]
+;   (when-let [current-ns (get-file-ns (config (app :doc-text-area) :text))]
+;     (send-to-project-repl app (str "(ns " current-ns ")"))
+;     (swap! repls assoc-in
+;            [(-> app :repl deref :project-path) :ns]
+;            current-ns)))
+
+; (defn restart-repl [app project-path]
+;   (buffer.action/append-text (app :application-repl)
+;                (str "\n=== RESTARTING " project-path " REPL ===\n"))
+;   (when-let [proc (-> app :repl deref :proc)]
+;     (.destroy proc))
+;   (reset! (:repl app) (create-outside-repl (app :repl-out-writer) project-path))
+;   (apply-namespace-to-repl app))
+
+;       

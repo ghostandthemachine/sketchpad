@@ -19,7 +19,7 @@
   (:import 
          (java.io File StringReader BufferedWriter OutputStreamWriter FileOutputStream)
          (java.awt GridLayout)
-         (javax.swing JButton JTree JOptionPane JWindow)
+         (javax.swing JButton JTree JOptionPane JWindow SwingUtilities)
          (javax.swing.event TreeSelectionListener
                             TreeExpansionListener)
          (java.awt.event MouseAdapter MouseListener)
@@ -42,55 +42,56 @@
   (awt-event
     (save-tree-selection tree path))))
 
-(defn handle-single-click [row path app-atom]
-  (.setSelectionRow (@app-atom :docs-tree) row))
+(defn handle-single-click [row path]
+  (.setSelectionRow (@state/app :docs-tree) row))
 
-(defn handle-double-click [row path app-atom]
+(defn handle-double-click [row path]
 (try 
   (let [file (.. path getLastPathComponent getUserObject)
         proj (.getPathComponent path 1)
         project-str (str (buffer.action/trim-parens (last (string/split (.toString proj) #"   "))))]
     (when (file/text-file? file) ;; handle if dir is selected instead of file
       (do 
-        (editor.buffer/open-buffer (get-selected-file-path @app-atom) project-str)
+        (editor.buffer/open-buffer (get-selected-file-path @state/app) project-str)
         (save-tree-selection tree path))))
   (catch java.lang.NullPointerException e)))
 
-(defn path-type [tree path]
-  (let [abs-path (-> path .getLastPathComponent .getUserObject .getAbsolutePath)
-        file? (.isFile (java.io.File. abs-path))]
-    (if file?
-      (do 
-        (println "is a file")
-        (config! tree :popup (popup/file-popup)))
-      (do
-        (println "is a directory")
-        (config! tree :popup (popup/directory-popup))))))
-
-(defn handle-right-click [row path app]
-  (.setSelectionRow (app :docs-tree) row))
+(defn click-handler [e]
+  (let [tree (get-in (@state/app :file-tree) [:component :tree])
+        sel-row (.getRowForLocation tree (.getX e) (.getY e))
+        sel-path (.getPathForLocation tree (.getX e) (.getY e))
+        click-count (.getClickCount e)]
+        (println  sel-path)
+  (.setSelectionPath tree sel-path)
+  (if-not (SwingUtilities/isRightMouseButton e)
+    (do
+      (cond
+        (= click-count 1)
+          (handle-single-click sel-row sel-path)
+        (= click-count 2)
+          (handle-double-click sel-row sel-path)))
+    (do
+      (if-not (nil? (.getLastSelectedPathComponent tree))
+        (let [row (.getClosestRowForLocation tree (.getX e) (.getY e))
+              tree-path (.getPathForLocation tree (.getX e) (.getY e))
+              file-path (-> tree-path .getLastPathComponent .getUserObject .getAbsolutePath)
+              file? (.isFile (java.io.File. file-path))]
+          (if file?
+            (do
+              (.show (popup/file-popup file-path) (.getComponent e) (.getX e) (.getY e)))
+            (do
+              (.show (popup/directory-popup file-path) (.getComponent e) (.getX e) (.getY e)))))
+        (do
+          (.clearSelection tree)
+          (.show (popup/no-selection-popup) (.getComponent e) (.getX e) (.getY e))))))))
 
 (defn tree-listener
 [app-atom]
 (let [app @app-atom
-      tree (app :docs-tree)
       listener (proxy [MouseAdapter] []
-                  (mousePressed [e]
-                    ; (let [sel-row (.getRowForLocation tree (.getX e) (.getY e))
-                    ;       sel-path (.getPathForLocation tree (.getX e) (.getY e))]
-                    ;   (path-type tree sel-path))
-                    )
+                  (mousePressed [e] )
                   (mouseClicked [e]
-                    (let [sel-row (.getRowForLocation tree (.getX e) (.getY e))
-                          sel-path (.getPathForLocation tree (.getX e) (.getY e))
-                          click-count (.getClickCount e)]
-                      (cond
-                        (= click-count 1)
-                          (if (.isMetaDown e)
-                            (handle-right-click sel-row sel-path app)
-                            (handle-single-click sel-row sel-path app-atom))
-                        (= click-count 2)
-                          (handle-double-click sel-row sel-path app-atom)))))]
+                    (invoke-later (click-handler e))))]
       listener))
 
 
@@ -102,7 +103,6 @@
 (let [app @app-atom
       tree (get-in (:file-tree app) [:component :tree])
       save #(save-expanded-paths tree)]
-  (config! tree :popup (popup/make-filetree-popup))
   (doto tree
     (.setRootVisible false)
     (.setShowsRootHandles true)

@@ -4,7 +4,7 @@
 			[sketchpad.tree.utils :as tree.utils]
 			[sketchpad.project.form :as project.form]))
 
-(defn create-projet
+(defn create-project
 "Create a new Leiningen project."
   []
   (project.form/create-new-project))

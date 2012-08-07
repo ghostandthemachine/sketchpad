@@ -11,39 +11,45 @@
       [sketchpad.project.project :as project]
 			[sketchpad.tree.utils :as tree.utils]))
 
-(defn create-repl []
+(defn create-repl [selection-path]
   (let [project-path (first (tree.utils/get-selected-projects))]
     (seesaw/invoke-later 
       (repl/repl (project/project-from-path project-path)))))
 
 (defn directory-popup 
 "Creates a popup menu after a file directory is selected."
-  []
-    [(seesaw/menu-item :text "New File"
-                              :listen [:action menu.file/new-file])
-            ; (seesaw/menu-item :text "New Folder"
-            ;                   :listen [:action menu.project/new-folder])
-            ; (seesaw/menu-item :text "Rename"
-            ;                   :listen [:action menu.project/delete-folder])
-            ; (seesaw/menu-item :text "Delete Folder"
-            ;                   :listen [:action menu.project/delete-folder])
+  [selection-path & opts]
+  (seesaw/popup 
+    :id :directory-popup
+    :class :popup
+    :items [(seesaw/menu-item :text "New File"
+                              :listen [:action 
+                              (fn [_] (menu.file/new-file selection-path))])
             (seesaw/menu-item :text "Reveal in Finder"
-                              :listen [:action desktop/reveal-in-finder])
+                              :listen [:action (fn [_] (desktop/reveal-in-finder selection-path))])
             (seesaw/menu-item :text "Create REPL"
-                              :listen [:action create-repl])])
+                              :listen [:action (fn [_] (create-repl selection-path))])]))
 
 (defn file-popup 
 "Creates a popup menu after a file directory is selected."
-  []
-[
-            ; (seesaw/menu-item :text "Delete File"
-            ;                   :listen [:action menu.project/delete-folder])
-            ; (seesaw/menu-item :text "Rename File"
-            ;                   :listen [:action menu.project/delete-folder])
-            (seesaw/menu-item :text "Create REPL"
-                              :listen [:action create-repl])
+  [selection-path & opts]
+  (seesaw/popup 
+    :id :file-popup
+    :class :popup
+    :items [(seesaw/menu-item :text "Create REPL"
+                              :listen [:action (fn [_] (create-repl selection-path))])
             (seesaw/menu-item :text "Reveal in Finder"
-                              :listen [:action desktop/reveal-in-finder])])
+                              :listen [:action (fn [_] (desktop/reveal-in-finder selection-path))])]))
+
+(defn no-selection-popup
+  [& opts]
+  (seesaw/popup 
+    :id :file-popup
+    :class :popup
+    :items [(seesaw/menu-item :text "New Project"
+                            :listen [:action (fn [_] (menu.project/create-project))])
+            (seesaw/menu-item :text "Open Project"
+                              :listen [:action (fn [_] (menu.project/open-project))])]))
 
 (defn make-filetree-popup
   []
