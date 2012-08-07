@@ -29,8 +29,6 @@
 "Update the currently displayed doc title in the info panel"
 [e]
 	(if (tab/tabs?)
-		; (swap! (@state/app :doc-title-atom) (fn [_] (tab/title))))
-		; (swap! (@state/app :doc-title-atom) (fn [_] ""))
 		(config! (:doc-title-label @state/app) :text (tab/title))
 		(config! (:doc-title-label @state/app) :text "")))
 

@@ -36,7 +36,7 @@
         left (- pos (reckon-dist stacks-before))
         after (.substring text (Math/min (.length text) pos))
         stacks-after (reductions process (first stacks-before) after)
-        right (+ -1 pos (reckon-dist stacks-after))]
+        right (+ 1 pos (reckon-dist stacks-after))]
     [left right]))
 
 (defn find-bad-brackets [text]

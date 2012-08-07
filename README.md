@@ -67,8 +67,8 @@ With the project created it's time to make some circles and sounds. For this exa
 	  (let [diam (random 100)           ;;Set the diameter to a value between 0 and 100
 	        x    (random (width))       ;;Set the x coord randomly within the sketch
 	        y    (random (height))]     ;;Set the y coord randomly within the sketch
-				(overtone/kill baz)
-				(baz (* 6 diam))
+		(overtone/kill baz)
+		(baz (* 6 diam))
 	    (ellipse x y diam diam)))       ;;Draw a circle at x y with the correct diameter
 
 	(defsketch quil-tone-example                  ;;Define a new sketch named example
@@ -103,22 +103,14 @@ You should now see the Quil panel with circles being drawn and random synths!
 
 # SketchPad Feature Overview
 
-## REPL's
+# REPL's
 
+## SketchPad Application REPL 
 A major goal for SketchPad is for the application REPL to be a powerful tool for everything from scripting edits, to managing files, to any other IDE related task. The current features include
 
 - Navigate session history with `control UP` and `control DOWN`
 - Navigate current tab with `meta alt UP` and `meta alt DOWN`
 
-####Access Leiningen functions
-- Docs: 
-	+ (doc function-name-here)
-	+ (find-doc "part-of-name-here")
-- Source: 
-	+ (source function-name-here)
-- Javadoc:
-	+ (javadoc java-object-or-class-here)
-- Examples from clojuredocs.org: [clojuredocs or cdoc]
 ####Search functions for current buffer:
 + Function call from REPL
 	- Search `(search "word")`
@@ -128,9 +120,14 @@ A major goal for SketchPad is for the application REPL to be a powerful tool for
 	- Search `meta F`
 	- Search-replace `meta shift F`
 	- Search-replace-all `meta control F`
++ Mark occurences
+	- Mark a word `(mark "word-to-mark")`
+	- Clear all marked occurences `(mark)`
 ####Buffer edit actions
 
-In addition to all of the copy, paste, undo, redo, etc., commands all of the common IDE edit actions are available. All of these edit actions are macro recordable and include:
+In addition to all of the copy, paste, undo, redo, etc., commands all of the common IDE edit actions are available. All of these edit actions are macro recordable and include.
+
+#### Edit actions from `sketchpad.buffer.action`
 
 + Recordable edit actions that support macro recording and playback:begin-line "meta LEFT"
 - selection-begin-line
@@ -155,12 +152,48 @@ In addition to all of the copy, paste, undo, redo, etc., commands all of the com
 - delete-prev-word
 - and more...
 
+#### Access SketchPad projects
+
++ `(current-project)`
+
+
+
+## Leiningen Project REPL's
+
+####Access Leiningen functions
+
+- Docs: `(doc function-name-here)`, `(find-doc "part-of-name-here")`
+
+- Source: `(source function-name-here)`
+
+- Javadoc: `(javadoc java-object-or-class-here)`
+
+- Examples from clojuredocs.org: `[clojuredocs or cdoc]`
 
 
 
 
+## Managing projects
 
+#### Create a new project
 
+- From the SketchPad application REPL `sketchpad.user => (create-project)`
+	
+- From the Project Menu `Project -> New Project`
+	
+- From the file tree popup menu `New Project`
+
+#### Open an existing project
+
+- From the SketchPad application REPL `sketchpad.user => (open-project "/path/to/project/root")`
+	
+- From the Project Menu `Project -> Open Project`
+	
+- From the file tree popup menu `Open Project`
+
+## Managing buffers and tabs
+
+#### Open a buffer
 
 
 

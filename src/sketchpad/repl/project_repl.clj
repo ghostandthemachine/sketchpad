@@ -101,6 +101,8 @@
 		    (when-let [response (-> (nrepl/client conn config/repl-response-timeout)
 	   						        (nrepl/message {:op :eval :code cmd})
 								    nrepl/combine-responses)]
+        (println "send-repl-cmd reponse:")
+        (println response)
           (let [response-str 
                   (str  
                     (cond

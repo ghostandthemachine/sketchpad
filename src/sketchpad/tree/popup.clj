@@ -1,10 +1,13 @@
 (ns sketchpad.tree.popup
+  (:use [sketchpad.system.desktop])
 	(:require [sketchpad.state.state :as state]
 			[seesaw.core :as seesaw]
 			[seesaw.keystroke :as keystroke]
       [sketchpad.menu.file :as menu.file]
+      [sketchpad.menu.project :as menu.project]
       [sketchpad.project.form :as project.form]
       [sketchpad.repl.project-repl :as repl]
+      [sketchpad.system.desktop :as desktop]
       [sketchpad.project.project :as project]
 			[sketchpad.tree.utils :as tree.utils]))
 
@@ -12,6 +15,35 @@
   (let [project-path (first (tree.utils/get-selected-projects))]
     (seesaw/invoke-later 
       (repl/repl (project/project-from-path project-path)))))
+
+(defn directory-popup 
+"Creates a popup menu after a file directory is selected."
+  []
+    [(seesaw/menu-item :text "New File"
+                              :listen [:action menu.file/new-file])
+            ; (seesaw/menu-item :text "New Folder"
+            ;                   :listen [:action menu.project/new-folder])
+            ; (seesaw/menu-item :text "Rename"
+            ;                   :listen [:action menu.project/delete-folder])
+            ; (seesaw/menu-item :text "Delete Folder"
+            ;                   :listen [:action menu.project/delete-folder])
+            (seesaw/menu-item :text "Reveal in Finder"
+                              :listen [:action desktop/reveal-in-finder])
+            (seesaw/menu-item :text "Create REPL"
+                              :listen [:action create-repl])])
+
+(defn file-popup 
+"Creates a popup menu after a file directory is selected."
+  []
+[
+            ; (seesaw/menu-item :text "Delete File"
+            ;                   :listen [:action menu.project/delete-folder])
+            ; (seesaw/menu-item :text "Rename File"
+            ;                   :listen [:action menu.project/delete-folder])
+            (seesaw/menu-item :text "Create REPL"
+                              :listen [:action create-repl])
+            (seesaw/menu-item :text "Reveal in Finder"
+                              :listen [:action desktop/reveal-in-finder])])
 
 (defn make-filetree-popup
   []

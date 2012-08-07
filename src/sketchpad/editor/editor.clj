@@ -1,13 +1,26 @@
 (ns sketchpad.editor.editor
   (:use [seesaw core graphics color border]
-        [sketchpad.config.prefs])
+        [sketchpad.config.prefs]
+        [sketchpad.system.desktop])
   (:require [sketchpad.editor.ui :as editor.ui]
+            [sketchpad.tree.popup :as popup]
             [sketchpad.editor.info-utils :as editor.info-utils]
             [sketchpad.state.state :as state])
   (:import (javax.swing UIManager)))
 
 (defn put [laf k v]
   (.put laf (str "TabbedPane." k) v))
+
+(defn update-tree-popup-context [e]
+  (let [file? #(.isFile (selected-file-path))
+        directory? #(.isDirectory (selected-file-path))
+        tree (get-in (:file-tree @state/app) [:component :tree])]
+        (println e)
+    (cond 
+      (file?)
+        (config! tree :popup popup/file-popup)
+      (directory?)
+        (config! tree :popup popup/directory-popup))))
 
 (defn tab-change-handler [buffer-tabbed-panel]
   (listen buffer-tabbed-panel :selection editor.info-utils/update-doc-title-label!)

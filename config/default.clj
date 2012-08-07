@@ -61,7 +61,7 @@
 (def default-auto-completion-prefs
   { :auto-complete true
   	:auto-activation true
-  	:auto-activation-delay 1
+  	:auto-activation-delay 1000
   	:auto-complete-single-choice false
   	:show-description-window true
   	:description-window-size [600 300]
@@ -87,7 +87,7 @@
    :bookmarking-enabled                false
    :fold-indicator-enabled             true  ;; not functional until new Clojure Lexxer is integrated
    :line-number-color                  [143 144 134]
-   :line-number-font                   "MENLO-12"
+   :line-number-font                   "MENLO-10"
    :line-number-start-index            1
    :active-range-color 				   [50 50 41]})
 

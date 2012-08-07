@@ -52,12 +52,23 @@
         project-str (str (buffer.action/trim-parens (last (string/split (.toString proj) #"   "))))]
     (when (file/text-file? file) ;; handle if dir is selected instead of file
       (do 
-        (editor.buffer/buffer-from-file! (get-selected-file-path @app-atom) project-str)
+        (editor.buffer/open-buffer (get-selected-file-path @app-atom) project-str)
         (save-tree-selection tree path))))
   (catch java.lang.NullPointerException e)))
 
+(defn path-type [tree path]
+  (let [abs-path (-> path .getLastPathComponent .getUserObject .getAbsolutePath)
+        file? (.isFile (java.io.File. abs-path))]
+    (if file?
+      (do 
+        (println "is a file")
+        (config! tree :popup (popup/file-popup)))
+      (do
+        (println "is a directory")
+        (config! tree :popup (popup/directory-popup))))))
+
 (defn handle-right-click [row path app]
-(.setSelectionRow (app :docs-tree) row))
+  (.setSelectionRow (app :docs-tree) row))
 
 (defn tree-listener
 [app-atom]
@@ -65,6 +76,9 @@
       tree (app :docs-tree)
       listener (proxy [MouseAdapter] []
                   (mousePressed [e]
+                    ; (let [sel-row (.getRowForLocation tree (.getX e) (.getY e))
+                    ;       sel-path (.getPathForLocation tree (.getX e) (.getY e))]
+                    ;   (path-type tree sel-path))
                     )
                   (mouseClicked [e]
                     (let [sel-row (.getRowForLocation tree (.getX e) (.getY e))
@@ -86,7 +100,7 @@
 
 (defn setup-tree [app-atom]
 (let [app @app-atom
-      tree (:docs-tree app)
+      tree (get-in (:file-tree app) [:component :tree])
       save #(save-expanded-paths tree)]
   (config! tree :popup (popup/make-filetree-popup))
   (doto tree

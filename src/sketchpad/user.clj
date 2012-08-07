@@ -4,6 +4,7 @@
 			  [clojure.repl]
 			  [sketchpad.config.config]
         [sketchpad.tree.tree]
+        [sketchpad.util.brackets]
 			  [sketchpad.buffer.action])
 	(:require [sketchpad.util.tab :as tab]
 					  [sketchpad.wrapper.rsyntaxtextarea :as rsta]
@@ -305,6 +306,24 @@
 "Returns the map of the current buffer if one is open."
   []
   (tab/current-buffer))
+
+(defn current-text-area []
+"Returns the current text area."
+  (get-in (current-buffer) [:component :text-area]))
+
+(defn current-form []
+  (let [current-text-area (current-text-area)
+        text (config current-text-area :text)
+        current-point (cursor-point)
+        form-location (find-enclosing-brackets text current-point)]
+    (.substring text (first form-location) (second form-location))))
+
+(defn vec-string [text-area [left right]]
+  (.substring text-area left right))
+
+(defn current-group-form []
+  (let [brackets (find-line-group (current-text-area))]
+    (.substring (config (current-text-area) :text) (first brackets) (second brackets))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Project

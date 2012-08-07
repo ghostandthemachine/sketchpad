@@ -10,6 +10,7 @@
    (let [cp (org.fife.ui.autocomplete.ClojureCompletionProvider. )]
      (add-all-ns-completions cp)
      (.setParameterizedCompletionParams cp \space " " \))
+     (.setAutoActivationRules cp true "")
      cp)))
 
 (def provider (create-completion-provider))
@@ -18,8 +19,8 @@
   [rta]
   (let [completion-provider (org.fife.ui.autocomplete.AutoCompletion. provider)]
     (config/apply-auto-completion-prefs! completion-provider)
-    (.setAutoActivationEnabled completion-provider true)
-    (.install completion-provider rta)))
+    (doto completion-provider
+      (.install rta))))
 
 (defn install-project-auto-completion
 "Adds all project ns completions to a text area. Takes a text-area and a SketchPad project."
@@ -49,7 +50,6 @@
     (doto 
       clojar-completion-provider
       (.setAutoActivationEnabled true)
-      ; (.setAutoActivationDelay 100)
       (.setDescriptionWindowSize 300 500) 
       (.setShowDescWindow false))
     (.install clojar-completion-provider text-area))

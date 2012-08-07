@@ -1,5 +1,5 @@
 (ns sketchpad.core
-  (:gen-class :name "SketchPad")
+  (:gen-class)
   (:import (javax.swing.TollTipManager)
            (java.awt Toolkit))
   (:use [seesaw core graphics color border font meta]

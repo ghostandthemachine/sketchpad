@@ -49,7 +49,7 @@
 		(swap! (:title buffer) (fn [_] (.getName file)))
 		(swap! (:file buffer) (fn [_] file)))))
 
-(defn buffer-from-file! [file-path project-path]
+(defn open-buffer [file-path project-path]
 	(let [project (sketchpad.project/project-from-path project-path)
 		  buffer (editor.build/project-buffer-tab project-path)]
 		(load-file-into-buffer project buffer file-path)
