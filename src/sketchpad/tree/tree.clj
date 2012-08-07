@@ -61,7 +61,6 @@
         sel-row (.getRowForLocation tree (.getX e) (.getY e))
         sel-path (.getPathForLocation tree (.getX e) (.getY e))
         click-count (.getClickCount e)]
-        (println  sel-path)
   (.setSelectionPath tree sel-path)
   (if-not (SwingUtilities/isRightMouseButton e)
     (do
@@ -80,7 +79,10 @@
             (do
               (.show (popup/file-popup file-path) (.getComponent e) (.getX e) (.getY e)))
             (do
-              (.show (popup/directory-popup file-path) (.getComponent e) (.getX e) (.getY e)))))
+              (let [project-dir? (contains? @(:projects @state/app) file-path)]
+                (if project-dir?
+                  (.show (popup/project-popup file-path) (.getComponent e) (.getX e) (.getY e))
+                  (.show (popup/directory-popup file-path) (.getComponent e) (.getX e) (.getY e)))))))
         (do
           (.clearSelection tree)
           (.show (popup/no-selection-popup) (.getComponent e) (.getX e) (.getY e))))))))

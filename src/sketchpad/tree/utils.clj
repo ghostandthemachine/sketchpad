@@ -277,6 +277,17 @@
         (.delete f))
       (update-project-tree))))
 
+(defn delete-project [project-path]
+  (when (confirmed? (str 
+                      "Are you sure you want to delete the project " 
+                      project-path
+                      " ?\n"
+                      "Deleting cannot be undone.") project-path)
+    (let [f (File. project-path)]
+      (println "Delete project: " f)
+      (.delete f))
+    (update-project-tree)))
+
 (defn open-project [app]
   (when-let [dir (choose-directory (app :f) "Choose a project directory")]
     (let [project-dir (if (= (.getName dir) "src") (.getParentFile dir) dir)]

@@ -5,7 +5,8 @@
 
 (ns sketchpad.util.utils
   (:require [clojure.string :as string :only (join split)]
-            [sketchpad.wrapper.rsyntaxtextarea :as rsyntaxtextarea])
+            [sketchpad.wrapper.rsyntaxtextarea :as rsyntaxtextarea]
+            [sketchpad.config.config :as config])
 	(:import (java.util UUID)
            (java.awt FileDialog Point Window)
            (java.awt.event ActionListener MouseAdapter)
@@ -363,7 +364,9 @@
           last-open-dir (read-value-from-prefs sketchpad-prefs "last-open-dir")]
       (doto fc (.setFileSelectionMode JFileChooser/DIRECTORIES_ONLY)
                (.setDialogTitle title)
-               (.setCurrentDirectory (if last-open-dir (File. last-open-dir) nil)))
+               ; (.setCurrentDirectory (if last-open-dir (File. last-open-dir) nil))
+               (.setCurrentDirectory (File. config/project-path))
+               )
        (if (= JFileChooser/APPROVE_OPTION (.showOpenDialog fc parent))
          (.getSelectedFile fc)))))
  

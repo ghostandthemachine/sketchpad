@@ -2,6 +2,12 @@
 	(:require [seesaw.keystroke :as keystroke]
 			[seesaw.core :as seesaw]
 			[sketchpad.tree.utils :as tree.utils]
+      [sketchpad.util.utils :as utils]
+      [sketchpad.project.project :as project]
+      [sketchpad.repl.project-repl :as repl]
+      [sketchpad.state.state :as state]
+      [sketchpad.system.desktop :as desktop]
+      [sketchpad.util.tab :as tab]
 			[sketchpad.project.form :as project.form]))
 
 (defn create-project
@@ -12,88 +18,67 @@
 (defn open-project
 "Open a project."
   []
-  (tree.utils/open-project))
+  (tree.utils/open-project @state/app))
 
 (defn rename-project
 "Rename a project."
   []
-  (open-project))
+  (tree.utils/rename-project @state/app))
 
 (defn remove-project
-"Remove a from the session."
+"Remove a project from the session."
   []
-  (remove-project))
+  (let [project-path (first (tree.utils/get-selected-projects))
+        confirmed? (utils/confirmed? (str "Are you sure you want to remove " project-path " from the current workspace?") "Remove Project")]
+    (when confirmed?
+      (project/remove-project project-path))))
 
-; (defn new-folder
+(defn delete-project
+"Delete a project. !!(This really deletes the proejct)!!"
+  []
+  (let [project-path (first (tree.utils/get-selected-projects))]
+    (tree.utils/delete-project project-path)))
 
-;   ([path]
-;     ))
+(defn clear-projects
+"Clear all projects in the current workspace."
+  []
+  (let [confirmed? (utils/confirmed? "Are you sure you want to clear all projects in the current workspace?" "Clear Projects")]
+    (when confirmed?
+      (project/clear-projects))))
 
-; (defn make-project-menu-items [app-atom]
-; 	{:new-project 	(seesaw.core/menu-item :text "New Project..." 
-; 				                           :mnemonic "N" 
-; 				                           :key (keystroke/keystroke "meta shift N") 
-;                         					:listen [:action (fn [_] (create-projet))])
-; 	 :open-project  (seesaw.core/menu-item :text "Open Project..." 
-; 				                           :mnemonic "O" 
-; 				                           :key (keystroke/keystroke "meta shift O") 
-; 				                           :listen [:action (fn [_] (open-project))])
-; 	 :rename-project (seesaw.core/menu-item :text "Rename project" 
-; 				                           :mnemonic "M" 
-; 				                           :listen [:action (fn [_] (rename-project))])
-; 	 :remove-project (seesaw.core/menu-item :text "Remove project" 
-; 				                           :listen [:action (fn [_] (remove-project))])})
+(defn new-folder
+"Append a folder creation prompt to the SketchPad REPL."
+  ([] (new-folder ""))
+  ([dir-path]
+    (seesaw/invoke-later
+      (sketchpad.repl.print/append-command (str "(new-folder " \" dir-path "/" \" ")") -2)
+      (tab/focus-application-repl))))
 
-; (defn make-project-menu
-; []
-;   (let [menu-items (make-project-menu-items app-atom)]
-; 	  (seesaw.core/menu :text "Project" 
-; 	            		:mnemonic "P"
-; 				        :items [(menu-items :new-project)
-; 				        		(menu-items :open-project)	
-; 				                (separator)
-; 				                (menu-items :rename-project)
-; 				                (menu-items :remove-project)])))
-
+(defn delete-folder
+"Delete a given directory."
+  ([dir-path]
+    (seesaw/invoke-later
+      (desktop/delete-folder dir-path))))
 
 
-; (defn create-repl []
-;   (let [project-path (first (tree.utils/get-selected-projects))]
-;     (seesaw/invoke-later 
-;       (repl/repl (project/project-from-path project-path)))))
+(defn create-repl [selection-path]
+"Create a new project REPL at the given path."
+  (let [project-path (first (tree.utils/get-selected-projects))]
+    (seesaw/invoke-later 
+      (repl/repl (project/project-from-path project-path)))))
 
-; (defn make-filetree-popup
-;   []
-;   (seesaw/popup 
-;     :id :filetree-popup
-;     :class :popup
-;     :items [
-;             ; (menu-item :text "New File" 
-;             ;           :listen [:action (fn [_] (new-file app-atom (first (get-selected-projects app)) ""))])
-;             ; (menu-item :text "New Folder" )
-;             ; (separator)
-;             (seesaw/menu-item :text "New Project" 
-;                       :mnemonic "N" 
-;                       :listen [:action (fn [_] (project.form/create-new-project))])
-;             (seesaw/menu-item :text "Open Project" 
-;                       :mnemonic "O" 
-;                       :listen [:action (fn [_] (tree.utils/open-project app))])
-;             (seesaw/separator)
-;             (seesaw/menu-item :text "Remove Project" 
-;                       :mnemonic "M" 
-;                       :listen [:action (fn [_] (tree.utils/remove-project app))])  
-;             (seesaw/menu-item :text "Clear All Projects" 
-;                       :mnemonic "M" 
-;                       :listen [:action (fn [_] (tree.utils/clear-projects))])
-;             ; (menu-item :text "Rename Project" 
-;             ;           :listen [:action (fn [_] (rename-project app))])
-;             ; (separator)
-;             ; (menu-item :text "Move/Rename" 
-;             ;           :listen [:action (fn [_] (rename-file app))])
-;             (seesaw/separator)
-;             (seesaw/menu-item :text "Create REPL"
-;                       :mnemonic "R" 
-;                       :listen [:action (fn [_] (create-repl))])
-;             (seesaw/separator)
-;             (seesaw/menu-item :text "Delete file" 
-;                       :listen [:action (fn [_] (tree.utils/delete-file app))])]))
+(defn make-project-menu
+  []
+  (seesaw/menu 
+    :id :project-menu
+    :class :menu
+    :text "Project"
+    :items [(seesaw/menu-item :text "New Project"
+                            :listen [:action (fn [_] (create-project))])
+            (seesaw/menu-item :text "Open Project"
+                              :listen [:action (fn [_] (open-project))])
+            (seesaw/separator)
+            (seesaw.core/menu-item :text "Clear All Projects" 
+                        :mnemonic "C" 
+                        :listen [:action (fn [_] (tree.utils/clear-projects))])]))
+

@@ -346,7 +346,7 @@
 			[:component :container]))
 	(focus (get-in
 				(@state/app :application-repl)
-				[:component :container])))
+				[:component :text-area])))
 
 (defn focus-repl 
 "Focus the REPL panel."

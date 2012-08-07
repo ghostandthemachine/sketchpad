@@ -5,7 +5,8 @@
 			  [sketchpad.config.config]
         [sketchpad.tree.tree]
         [sketchpad.util.brackets]
-			  [sketchpad.buffer.action])
+			  [sketchpad.buffer.action]
+        [sketchpad.system.desktop])
 	(:require [sketchpad.util.tab :as tab]
 					  [sketchpad.wrapper.rsyntaxtextarea :as rsta]
 					  [sketchpad.core :as core]

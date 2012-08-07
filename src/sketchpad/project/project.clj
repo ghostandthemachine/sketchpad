@@ -3,12 +3,11 @@
 				[seesaw color meta]
 				[sketchpad.util.look-up])
 	(:require [sketchpad.state.state :as state]
-		[sketchpad.project.theme :as theme]
-		[sketchpad.project.state :as project.state]
-		; [sketchpad.repl.print :as repl.print]
-		[sketchpad.auto-complete.auto-complete :as auto-complete]
+						[sketchpad.project.theme :as theme]
+						[sketchpad.project.state :as project.state]
+						[sketchpad.auto-complete.auto-complete :as auto-complete]
 						[seesaw.core :as seesaw]
-		[leiningen.core.project :as lein-project])
+						[leiningen.core.project :as lein-project])
 	(:import [java.io File]))
 
 (comment
@@ -66,10 +65,9 @@
 		  		(swap! projects (fn [m] (assoc-in m [project-path :lein-project] lein-project))))
 		  		(catch Exception e)))))
 
-(defn remove-project [project-paths]
-	(let [current-project-path (first project-paths)
-				projects (:projects @state/app)]
-		(swap! projects dissoc current-project-path)))
+(defn remove-project [project-path]
+	(let [projects (:projects @state/app)]
+		(swap! projects dissoc project-path)))
 
 (defn update-lein-project! [project]
 	(let [projects (@state/app :projects)

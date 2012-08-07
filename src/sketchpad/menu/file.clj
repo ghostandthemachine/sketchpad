@@ -76,22 +76,7 @@
   :save-as  (seesaw.core/menu-item :text "Save as..." 
                               :mnemonic "M" 
                               :key (keystroke/keystroke "meta shift S")
-                              :listen [:action (fn [_] (save-as))])
-  :new-project (seesaw.core/menu-item :text "New Project" 
-                        :mnemonic "N" 
-                        :key (keystroke/keystroke "meta shift N")
-                        :listen [:action (fn [_] (new-project))])
-  :open-project (seesaw.core/menu-item :text "Open Project" 
-                        :mnemonic "O" 
-                        :key (keystroke/keystroke "meta shift O")
-                        :listen [:action (fn [_] (tree.utils/open-project @state/app))])
-  :remove-project (seesaw.core/menu-item :text "Remove Project" 
-                        :key (keystroke/keystroke "meta shift R")
-                        :mnemonic "R" 
-                        :listen [:action (fn [_] (tree.utils/remove-project @state/app))])  
-  :clear-projects (seesaw.core/menu-item :text "Clear All Projects" 
-                        :mnemonic "C" 
-                        :listen [:action (fn [_] (tree.utils/clear-projects))])})
+                              :listen [:action (fn [_] (save-as))])})
 
 
 (defn make-file-menu
@@ -103,11 +88,5 @@
                   (menu-items :new-file)
                   (seesaw.core/separator)
                   (menu-items :save)
-                  (menu-items :save-as)
-                  (seesaw.core/separator)
-                  (menu-items :new-project)
-                  (menu-items :open-project)
-                  (seesaw.core/separator)
-                  (menu-items :remove-project)
-                  (menu-items :clear-projects)])))
+                  (menu-items :save-as)])))
 
