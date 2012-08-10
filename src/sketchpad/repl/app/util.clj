@@ -27,7 +27,6 @@
     
 (defn get-last-cmd [buffer]
   (let [text (config buffer :text)]
-  (println (string/trim (last (string/split text #"=>"))))
    (string/trim (last (string/split text #"=>")))))
 
 (defn clear-repl-input [rsta]

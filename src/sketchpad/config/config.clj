@@ -15,9 +15,48 @@
            [java.awt Dimension]
            [java.awt.image.BufferedImage]
            [javax.imageio ImageIO]
-           [java.io File]))
+           [java.io File]
+           [org.apache.commons.io FileUtils]))
 
-(load-file "config/default.clj")
+(defn exists? [path]
+  (.exists (java.io.File. path)))
+
+(defonce sketchpad-app-url (str (System/getProperty "user.home") "/.sketchpad"))
+
+(defn add-defaults-if-needed
+"If the .sketchpad/ directory does not exist, create it with defaults from resources."
+  []
+  (when-not (exists? (str sketchpad-app-url "/default.clj"))
+    (let [src-url (clojure.java.io/resource "default.clj")
+          src-file (java.io.File. (.getFile src-url))
+          dst-dir (java.io.File. sketchpad-app-url)
+          dst-file (java.io.File. (str sketchpad-app-url "/default.clj"))]
+      (.mkdirs dst-dir)
+      (println "copy " src-file dst-file)
+      (FileUtils/copyFile src-file dst-file))))
+
+(defn add-themes-if-needed
+"If the .sketchpad/ directory does not exist, create it with defaults from resources."
+  []
+  (when-not (exists? (str sketchpad-app-url "/themes"))
+    (let [themes-resource-url (clojure.java.io/resource "themes")
+          themes-src-file (java.io.File. (.getFile themes-resource-url))
+          themes-dst-file (java.io.File. (str sketchpad-app-url "/themes"))]
+    (org.apache.commons.io.FileUtils/copyDirectory themes-src-file themes-dst-file))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;  Load the config files
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(do
+  (add-defaults-if-needed)
+  (add-themes-if-needed))
+
+(load-string (slurp (str sketchpad-app-url "/default.clj")))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;  Config functions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (def app-color (c/color 39 40 34))
 (def file-tree-bg (c/color 230 230 230))
@@ -160,9 +199,10 @@ This method fires a property change event of type CLOSE_CURLY_BRACES_PROPERTY."
 "Set the current RSyntaxTextArea theme."
 [text-area pref]
   (try
-     (theme/apply! (theme/theme pref) text-area)
+
+     (theme/apply! (theme/theme (str sketchpad-app-url "/" pref)) text-area)
      (catch Exception e
-       (println (str "The theme(defn  " (str pref) " does can not be found...")))))
+       (println (str "The theme " pref " can not be found...")))))
 
 (defn background-img
 "Sets this image as the background image. This method fires a property change event of type RTextAreaBase.BACKGROUND_IMAGE_PROPERTY.
@@ -442,7 +482,13 @@ You never have to change the opaque property yourself; it is always done for you
 
 (def project-path project-dir-path)
 
-(def project-theme-colors default-project-style-prefs)
+; (def project-theme-colors 
+;   (map
+;     #(apply c/color %)
+;     default-project-style-prefs)))
+
+(def project-theme-colors
+  [(c/color :white) (c/color :orange) (c/color :green) (c/color :yellow) (c/color :blue) (c/color :red) (c/color :purple) (c/color :pink)])
 
 (defn apply-buffer-scroller-prefs! [scroller]
   (doseq [[k pref] default-buffer-scroller-prefs]

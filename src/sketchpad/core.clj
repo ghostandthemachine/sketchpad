@@ -22,6 +22,7 @@
             [sketchpad.editor.info :as info]
             [sketchpad.buffer.action :as buffer.action]
             [sketchpad.repl.info :as repl.info]
+            [sketchpad.repl.app.sketchpad-repl :as app.sketchpad-repl]
             [sketchpad.state.state :as sketchpad.state]))
 
 (defn set-osx-icon
@@ -99,7 +100,7 @@
         icon (.createImage (Toolkit/getDefaultToolkit) icon-url)]
     (.setIconImage frame icon)
     (set-osx-icon icon)
-    app))
+  app))
 
 
 (defn add-behaviors
@@ -149,10 +150,16 @@
       (startup-sketchpad sketchpad.state.state/app)
       show!)))
 
+(defn image-icon [path]
+  (javax.swing.ImageIcon. (clojure.java.io/resource path)))
+
 (defn -main [& args]
-  (reset! embedded false)
   (invoke-later
+    (println "reset create-app...")
     (reset! sketchpad.state.state/app (create-app))
-    (->
-        (startup-sketchpad sketchpad.state.state/app)
-        show!)))
+    (println "done with reset create-app...")
+    (let [repl-writer (app.sketchpad-repl/repl-writer (get-in (:application-repl @sketchpad.state.state/app) [:component :text-area]))]
+      (binding [*err* repl-writer
+                *out* repl-writer]
+      (let [app (startup-sketchpad sketchpad.state.state/app)]
+          (show! app))))))

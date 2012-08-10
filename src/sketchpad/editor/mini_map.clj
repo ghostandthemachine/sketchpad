@@ -1,6 +1,6 @@
 (ns sketchpad.editor.mini-map
 	(:require [seesaw.core :as seesaw]
-						[seesaw.rsyntax :as rsyntax]))
+						[sketchpad.rsyntax :as rsyntax]))
 
 
 (defn mini-map 

@@ -387,10 +387,11 @@
   (trim-enclosing-char s "[" "]"))
 
 (defn append-text [text-pane text]
-  (when-let [doc (.getDocument text-pane)]
-    (try
-        (.append text-pane text)
-      (catch java.lang.ClassCastException e ))))
+  (invoke-later
+    (when-let [doc (.getDocument text-pane)]
+      (try
+          (.append text-pane text)
+        (catch Exception e)))))
 
 (defn append-text-update [rsta s]
   (try

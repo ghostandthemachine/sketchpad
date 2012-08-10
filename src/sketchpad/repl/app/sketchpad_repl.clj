@@ -1,7 +1,8 @@
 (ns sketchpad.repl.app.sketchpad-repl
 	(:use [sketchpad.util.utils])
   (:require [clojure.main :as main]
-  	[sketchpad.buffer.action :as buffer.action])
+  	[sketchpad.buffer.action :as buffer.action]
+  	[seesaw.core :as seesaw])
   (:import [clojure.lang LineNumberingPushbackReader]))
 
 (defn repl-writer
@@ -30,11 +31,13 @@
 
 		(write
 		([c]
-			(buffer.action/append-text rsta c)
-			(proxy-super write c))
+			(seesaw/invoke-later
+				(buffer.action/append-text rsta c))
+				(proxy-super write c))
 		([cbuf off len]
-			(buffer.action/append-text rsta (str cbuf))
-			(proxy-super write cbuf off len))))]
+			(seesaw/invoke-later
+				(buffer.action/append-text rsta (str cbuf)))
+				(proxy-super write cbuf off len))))]
 		writer))
 
 

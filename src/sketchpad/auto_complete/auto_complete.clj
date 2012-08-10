@@ -13,7 +13,11 @@
      (.setAutoActivationRules cp true "")
      cp)))
 
-(def provider (create-completion-provider))
+(defonce provider (create-completion-provider))
+
+; (future
+;   (seesaw.core/invoke-later 
+;     (reset! provider (create-completion-provider))))
 
 (defn install-auto-completion
   [rta]

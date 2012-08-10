@@ -2,7 +2,7 @@
 	(:use [seesaw.core]
 				[sketchpad.auto-complete.auto-complete])
 	(:require [seesaw.forms :as forms]
-						[seesaw.rsyntax :as rsyntax]
+						[sketchpad.rsyntax :as rsyntax]
 						[sketchpad.project.create :as create]
 						[sketchpad.project.create :as create]
 						[sketchpad.config.config :as config]))

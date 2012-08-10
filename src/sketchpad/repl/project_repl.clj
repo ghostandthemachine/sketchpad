@@ -72,8 +72,8 @@
 		    (when-let [response (-> (nrepl/client conn config/repl-response-timeout)
 	   						        (nrepl/message {:op :eval :code cmd})
 								    nrepl/combine-responses)]
-        (println "send-repl-cmd reponse:")
-        (println response)
+        ; (println "send-repl-cmd reponse:")
+        ; (println response)
           (let [response-str 
                   (str  
                     (cond
@@ -157,19 +157,20 @@
             (reset! pos 0))))))
 
 (defn- ready [text-area]
-  (let [get-caret-pos #(.getCaretPosition text-area)
-        caret-pos (get-caret-pos)
-                     txt (.getText text-area)
-                     trim-txt (string/trimr txt)]
-                 (and
-                   (pos? (.length trim-txt))
-                   (<= (.length trim-txt)
-                       caret-pos)
-                   (= -1 (first (brackets/find-enclosing-brackets
-                                  txt
-                                  caret-pos))))))
+  (seesaw/invoke-later
+    (let [get-caret-pos #(.getCaretPosition text-area)
+          caret-pos (get-caret-pos)
+                       txt (.getText text-area)
+                       trim-txt (string/trimr txt)]
+                   (and
+                     (pos? (.length trim-txt))
+                     (<= (.length trim-txt)
+                         caret-pos)
+                     (= -1 (first (brackets/find-enclosing-brackets
+                                    txt
+                                    caret-pos)))))))
 
-(defn add-repl-behaviors [repl]
+  (defn add-repl-behaviors [repl]
   (let [text-area (get-in repl [:component :text-area])
         repl-history (:repl-history repl)
         ready (partial ready text-area)

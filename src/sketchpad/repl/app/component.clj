@@ -2,7 +2,7 @@
 	(:require [seesaw.core :as seesaw]
             [seesaw.border :as border]
             [seesaw.meta :as meta]
-            [seesaw.rsyntax :as rsyntax]
+            [sketchpad.rsyntax :as rsyntax]
             [sketchpad.state.state :as state]
 		        [sketchpad.repl.tab :as repl.tab]
             [sketchpad.config.config :as config.config]
@@ -51,11 +51,11 @@
 				tab (repl.tab/label-tab {:container repl-container
 				                  :title repl-title})
 				application-repl {:type :application-repl
-				:component {:container repl-container :text-area text-area :scroller repl-in-scroll-pane}
-				:title repl-title
-				:history repl-history
-				:que repl-que
-				:tab tab}]
+                  				:component {:container repl-container :text-area text-area :scroller repl-in-scroll-pane}
+                  				:title repl-title
+                  				:history repl-history
+                  				:que repl-que
+                  				:tab tab}]
     (meta/put-meta! text-area :repl-history repl-history)
     (meta/put-meta! text-area :repl-que repl-que)
     (swap! state/app assoc :application-repl application-repl)
