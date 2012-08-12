@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>index - SketchPad</title>
+  <title>Home - SketchPad</title>
   <meta name="author" content="">
 
   
-  <meta name="description" content="Index Aug 12th, 2012 SketchPad About the project SketchPad is a Google Summer of Code project which aims to create an IDE inspired by Processing for &hellip;">
+  <meta name="description" content="Home SketchPad About the project SketchPad is a Google Summer of Code project which aims to create an IDE inspired by Processing for programming &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -33,7 +33,7 @@
 
 </head>
 
-<body   >
+<body    class="collapse-sidebar sidebar-footer" >
   <header role="banner"><hgroup>
   <h1><a href="/sketchpad/">SketchPad</a></h1>
   
@@ -55,9 +55,9 @@
 </form>
   
 <ul class="main-navigation">
-  <li><a href="/sketchpad/">About</a></li>
-  <li><a href="/sketchpad/">Domuentation</a></li>
-<!--  <li><a href="/sketchpad/">Blog</a></li>-->
+  <li><a href="/sketchpad/about/">About</a></li>
+  <li><a href="/sketchpad/documentation/">Domuentation</a></li>
+  <li><a href="/sketchpad/tutorials/">Tutorials</a></li>
 </ul>
 
 </nav>
@@ -67,304 +67,28 @@
 <article role="article">
   
   <header>
-    <h1 class="entry-title">Index</h1>
-    <p class="meta">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-08-12T14:04:00-07:00" pubdate data-updated="true">Aug 12<span>th</span>, 2012</time></p>
+    <h1 class="entry-title">Home</h1>
+    
   </header>
   
   <h1>SketchPad</h1>
 
 <h3>About the project</h3>
 
-<p>SketchPad is a Google Summer of Code project which aims to create an IDE inspired by <a href="processing.org">Processing</a> for programming audio with <a href="clojure.org">Clojure</a> and <a href="http://overtone.github.com/">Overtone</a>. Like Processing, the goal is to create an editor and project management application simple enough for a child to download, load an example, and click run. Beyond that it will provide a centralized UI to incorporate new Overtone GUI elements, manage Overtone projects, live code with repl driven development, and most of all worry about sound design and not platforms, dependencies, and environments. The project will be built on top of <a href="https://github.com/arthuredelstein/clooj">Clooj</a> and <a href="https://github.com/daveray/seesaw">seesaw</a>.</p>
+<p>SketchPad is a Google Summer of Code project which aims to create an IDE inspired by <a href="processing.org">Processing</a> for programming audio with <a href="clojure.org">Clojure</a> and <a href="http://overtone.github.com/">Overtone</a>. Like Processing, the goal is to create an editor and project management application simple enough for a child to download, load an example, and click run. Beyond that it will provide a centralized UI to incorporate new Overtone GUI elements, manage Overtone projects, live code with repl driven development, and most of all worry about sound design and not platforms, dependencies, and environments. The project is built on top of and <a href="https://github.com/daveray/seesaw">seesaw</a>, <a href="https://github.com/arthuredelstein/clooj">Clooj</a>, and <a href="http://fifesoft.com/rsyntaxtextarea/">RSyntaxTextArea</a>.</p>
 
-<h1>Introduction tutorial</h1>
-
-<p>To introduce the basic features of SketchPad we&#8217;ll create a new <a href="https://github.com/technomancy/leiningen">Leiningen</a> project to make some sounds with Overtone.</p>
-
-<h2>Running SketchPad</h2>
-
-<p>In the near future there will be a standalone version available. In the meantime the project can be run like any other Leiningen project. From the project directory run</p>
-
-<pre><code>$ lein run
-</code></pre>
-
-<p>This will load SketchPad and any previously opened projects as well as the SketchPad application REPL.</p>
-
-<h2>Working with projects</h2>
-
-<p>The SketchPad project system is base on <a href="https://github.com/technomancy/leiningen/">Leiningen</a> and Clojars. Leiningen is integrated into the application as a core dependency and allows SketchPad to create, build, and run Clojure projets without the need for any other libraries or system dependencies. To begin working on a project you first need to open an existing project or create a new one.</p>
-
-<h2>Creating a project</h2>
-
-<p>New projects can be created in a few ways:</p>
+<h1>Getting Started</h1>
 
 <ul>
-<li>Through the file menu, <code>File -&gt; New Project...</code></li>
-<li>or the file tree popup menu <code>New Project...</code></li>
-<li>or from the SketchPad REPL with <code>sketchpad.user =&gt; (create-project)</code></li>
+<li><a href="">Introduction tutorial</a></li>
 </ul>
 
 
-<div style="float:right">
-    <img src="https://raw.github.com/ghostandthemachine/sketchpad/master/img/quil-tone-creation-form.png"/>
-</div>
-
-
-<p>This will open the project setup from. The project creation form creates the new project&#8217;s <code>project.clj</code> file based on the project param fields. One handy feature incorporated into the creation form is that you can use shorthand names for dependencies available on Clojars.org. The auto completion will query Clojars.org for matching dependencies and display all available versions etc.</p>
-
-<p>For this example we&#8217;ll use Overtone and Quil to make a simple drawing and synth example. To add the dependencies to the project, type in the name of any repo on Clojars and all available matches will be displayed in the auto completion list. Test this out by typing overtone and selecting [overtone &#8220;0.8.0-SNAPSHOT&#8221;]. You&#8217;ll see that the dependencies can be retrieved with shorthand names (<code>overtone -&gt; [overtone "0.8.0-SNAPSHOT"]</code>, <code>quil -&gt; [quil "1.6.0"]</code>). After you have added Overtone and Quil as dependencies, click ok. This will create the new project and a new <code>project.clj</code> file that looks like this:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='clj'><span class='line'><span class="p">(</span><span class="kd">defproject </span><span class="nv">quil-tone</span> <span class="s">&quot;0.0.1-SNAPSHOT&quot;</span>
-</span><span class='line'>  <span class="ss">:description</span> <span class="s">&quot;A SketchPad tutorial project using Overtone and Quil.&quot;</span>
-</span><span class='line'>  <span class="ss">:dependencies</span> <span class="p">[[</span><span class="nv">org.clojure/clojure</span> <span class="s">&quot;1.3.0&quot;</span><span class="p">]</span>
-</span><span class='line'>                 <span class="p">[</span><span class="nv">quil</span> <span class="s">&quot;1.6.0&quot;</span><span class="p">]</span>
-</span><span class='line'>                 <span class="p">[</span><span class="nv">overtone</span> <span class="s">&quot;0.8.0-SNAPSHOT&quot;</span><span class="p">]])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Some example code</h2>
-
-<p>With the project created it&#8217;s time to make some circles and sounds. For this example will use the basic Quil example and add a random synth noise that is fired when a new circle is drawn. Paste this code into your <code>quil_tone/src/quil_tone/quil_tone.clj</code> file.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-</pre></td><td class='code'><pre><code class='clj'><span class='line'><span class="p">(</span><span class="kd">ns </span><span class="nv">quil-tone.core</span>
-</span><span class='line'>  <span class="p">(</span><span class="ss">:use</span> <span class="p">[</span><span class="nv">quil.core</span><span class="p">])</span>
-</span><span class='line'>  <span class="p">(</span><span class="ss">:require</span> <span class="p">[</span><span class="nv">overtone.core</span> <span class="ss">:as</span> <span class="nv">overtone</span><span class="p">]))</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">(</span><span class="nf">overtone/definst</span> <span class="nv">baz</span> <span class="p">[</span><span class="nv">freq</span> <span class="mi">440</span><span class="p">]</span> <span class="p">(</span><span class="nb">* </span><span class="mf">0.3</span> <span class="p">(</span><span class="nf">overtone/saw</span> <span class="nv">freq</span><span class="p">)))</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">(</span><span class="kd">defn </span><span class="nv">setup</span> <span class="p">[]</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">smooth</span><span class="p">)</span>                          <span class="c1">;;Turn on anti-aliasing</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">frame-rate</span> <span class="mi">1</span><span class="p">)</span>                    <span class="c1">;;Set framerate to 1 FPS</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">background</span> <span class="mi">200</span><span class="p">))</span>                 <span class="c1">;;Set the background colour to</span>
-</span><span class='line'>                                    <span class="c1">;;  a nice shade of grey.</span>
-</span><span class='line'><span class="p">(</span><span class="kd">defn </span><span class="nv">draw</span> <span class="p">[]</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">stroke</span> <span class="p">(</span><span class="nf">random</span> <span class="mi">255</span><span class="p">))</span>             <span class="c1">;;Set the stroke colour to a random grey</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">stroke-weight</span> <span class="p">(</span><span class="nf">random</span> <span class="mi">10</span><span class="p">))</span>       <span class="c1">;;Set the stroke thickness randomly</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">fill</span> <span class="p">(</span><span class="nf">random</span> <span class="mi">255</span><span class="p">))</span>               <span class="c1">;;Set the fill colour to a random grey</span>
-</span><span class='line'>  <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">diam</span> <span class="p">(</span><span class="nf">random</span> <span class="mi">100</span><span class="p">)</span>           <span class="c1">;;Set the diameter to a value between 0 and 100</span>
-</span><span class='line'>        <span class="nv">x</span>    <span class="p">(</span><span class="nf">random</span> <span class="p">(</span><span class="nf">width</span><span class="p">))</span>       <span class="c1">;;Set the x coord randomly within the sketch</span>
-</span><span class='line'>        <span class="nv">y</span>    <span class="p">(</span><span class="nf">random</span> <span class="p">(</span><span class="nf">height</span><span class="p">))]</span>     <span class="c1">;;Set the y coord randomly within the sketch</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">overtone/kill</span> <span class="nv">baz</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">baz</span> <span class="p">(</span><span class="nb">* </span><span class="mi">6</span> <span class="nv">diam</span><span class="p">))</span>
-</span><span class='line'>    <span class="p">(</span><span class="nf">ellipse</span> <span class="nv">x</span> <span class="nv">y</span> <span class="nv">diam</span> <span class="nv">diam</span><span class="p">)))</span>       <span class="c1">;;Draw a circle at x y with the correct diameter</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">(</span><span class="nf">defsketch</span> <span class="nv">quil-tone-example</span>                  <span class="c1">;;Define a new sketch named example</span>
-</span><span class='line'>  <span class="ss">:title</span> <span class="s">&quot;Oh so many grey circles&quot;</span>  <span class="c1">;;Set the title of the sketch</span>
-</span><span class='line'>  <span class="ss">:setup</span> <span class="nv">setup</span>                      <span class="c1">;;Specify the setup fn</span>
-</span><span class='line'>  <span class="ss">:draw</span> <span class="nv">draw</span>                        <span class="c1">;;Specify the draw fn</span>
-</span><span class='line'>  <span class="ss">:size</span> <span class="p">[</span><span class="mi">323</span> <span class="mi">200</span><span class="p">])</span>                  <span class="c1">;;You struggle to beat the golden ratio</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now let&#8217;s try it out!</p>
-
-<h2>Opening a project REPL</h2>
-
-<p>A REPL can be created in an outside process by right clicking a node in the new project and selecting <code>Create REPL</code>. Leiningen and Pomegranate will download all required dependencies and the new nREPL will be loaded into a new tab. Once the new tab is loaded you can navigate to the previous and next tabs with the key commands <code>meta alt UP</code> for the next REPL tab and <code>meta alt DOWN</code> for the previous tab.</p>
-
-<p>With the new properly classpathed and loaded REPL we can now boot the Overtone server awestruck by our amazing art.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='clj'><span class='line'><span class="c1">;; boot the server</span>
-</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">use</span> <span class="ss">&#39;overtone.live</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Wait for Overtone server to load&#8230;</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='clj'><span class='line'><span class="c1">;; listen to the joys of a simple sine wave</span>
-</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">use</span> <span class="ss">&#39;quil-tone.core</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>You should now see the Quil panel with circles being drawn and random synths!</p>
-
-<hr />
-
-<h1>SketchPad Feature Overview</h1>
-
-<h1>REPL&#8217;s</h1>
-
-<h2>SketchPad Application REPL</h2>
-
-<p>A major goal for SketchPad is for the application REPL to be a powerful tool for everything from scripting edits, to managing files, to any other IDE related task. The current features include</p>
-
-<ul>
-<li>Navigate session history with <code>control UP</code> and <code>control DOWN</code></li>
-<li>Navigate current tab with <code>meta alt UP</code> and <code>meta alt DOWN</code></li>
-</ul>
-
-
-<h4>Search functions for current buffer:</h4>
-
-<ul>
-<li>Function call from REPL
-
-<ul>
-<li>Search <code>(search "word")</code></li>
-<li>Search-replace <code>(search "word" "replace-word")</code></li>
-<li>Search-replace-all <code>(search "word" "replace-word")</code></li>
-</ul>
-</li>
-<li>Menu hotkey to add function call to REPL text area and focus REPL
-
-<ul>
-<li>Search <code>meta F</code></li>
-<li>Search-replace <code>meta shift F</code></li>
-<li>Search-replace-all <code>meta control F</code></li>
-</ul>
-</li>
-<li>Mark occurences
-
-<ul>
-<li>Mark a word <code>(mark "word-to-mark")</code></li>
-<li>Clear all marked occurences <code>(mark)</code>
-
-<h4>Buffer edit actions</h4></li>
-</ul>
-</li>
-</ul>
-
-
-<p>In addition to all of the copy, paste, undo, redo, etc., commands all of the common IDE edit actions are available. All of these edit actions are macro recordable and include.</p>
-
-<h4>Edit actions from <code>sketchpad.buffer.action</code></h4>
-
-<ul>
-<li>Recordable edit actions that support macro recording and playback:begin-line &#8220;meta LEFT&#8221;</li>
-<li>selection-begin-line</li>
-<li>selection-end-line</li>
-<li>selection-end</li>
-<li>selection-backward</li>
-<li>previous-word</li>
-<li>selection-previous-word</li>
-<li>selection-down</li>
-<li>line-down</li>
-<li>selection-forward</li>
-<li>next-word</li>
-<li>selection-next-word</li>
-<li>selection-up</li>
-<li>selection-page-up</li>
-<li>selection-page-left</li>
-<li>delete-next-char</li>
-<li>delete-rest-of-line</li>
-<li>delete-line</li>
-<li>join-lines</li>
-<li>delete-prev-char</li>
-<li>delete-prev-word</li>
-<li>and more&#8230;</li>
-</ul>
-
-
-<h4>Access SketchPad projects</h4>
-
-<ul>
-<li><code>(current-project)</code></li>
-</ul>
-
-
-<h2>Leiningen Project REPL&#8217;s</h2>
-
-<h4>Access Leiningen functions</h4>
-
-<ul>
-<li><p>Docs: <code>(doc function-name-here)</code>, <code>(find-doc "part-of-name-here")</code></p></li>
-<li><p>Source: <code>(source function-name-here)</code></p></li>
-<li><p>Javadoc: <code>(javadoc java-object-or-class-here)</code></p></li>
-<li><p>Examples from clojuredocs.org: <code>[clojuredocs or cdoc]</code></p></li>
-</ul>
-
-
-<h2>Managing projects</h2>
-
-<h4>Create a new project</h4>
-
-<ul>
-<li><p>From the SketchPad application REPL <code>sketchpad.user =&gt; (create-project)</code></p></li>
-<li><p>From the Project Menu <code>Project -&gt; New Project</code></p></li>
-<li><p>From the file tree popup menu <code>New Project</code></p></li>
-</ul>
-
-
-<h4>Open an existing project</h4>
-
-<ul>
-<li><p>From the SketchPad application REPL <code>sketchpad.user =&gt; (open-project "/path/to/project/root")</code></p></li>
-<li><p>From the Project Menu <code>Project -&gt; Open Project</code></p></li>
-<li><p>From the file tree popup menu <code>Open Project</code></p></li>
-</ul>
-
-
-<h2>Managing buffers and tabs</h2>
-
-<h4>Open a buffer</h4>
+<h1>Github Page</h1>
 
   
     <footer>
-      <p class="meta">
-        
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-08-12T14:04:00-07:00" pubdate data-updated="true">Aug 12<span>th</span>, 2012</time>
-        
-      </p>
+      
       
         <div class="sharing">
   

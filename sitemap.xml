@@ -1,6 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
+        <loc>http://ghostandthemachine.github.com/sketchpad/about/</loc>
+        <lastmod>2012-08-12T14:58:37-07:00</lastmod>
+    </url>
+    <url>
         <loc>http://ghostandthemachine.github.com/sketchpad/blog/archives/</loc>
         <lastmod>2012-08-12T13:17:52-07:00</lastmod>
     </url>
@@ -9,11 +13,43 @@
         <lastmod>2012-08-12T13:17:52-07:00</lastmod>
     </url>
     <url>
-        <loc>http://ghostandthemachine.github.com/sketchpad/</loc>
-        <lastmod>2012-08-12T14:06:06-07:00</lastmod>
+        <loc>http://ghostandthemachine.github.com/sketchpad/documentation/buffers.html</loc>
+        <lastmod>2012-08-12T15:03:06-07:00</lastmod>
     </url>
     <url>
-        <loc>http://ghostandthemachine.github.com/sketchpad/main/</loc>
-        <lastmod>2012-08-12T14:06:02-07:00</lastmod>
+        <loc>http://ghostandthemachine.github.com/sketchpad/documentation/</loc>
+        <lastmod>2012-08-12T15:12:18-07:00</lastmod>
+    </url>
+    <url>
+        <loc>http://ghostandthemachine.github.com/sketchpad/documentation/leiningen.html</loc>
+        <lastmod>2012-08-12T15:02:56-07:00</lastmod>
+    </url>
+    <url>
+        <loc>http://ghostandthemachine.github.com/sketchpad/documentation/projects.html</loc>
+        <lastmod>2012-08-12T15:20:00-07:00</lastmod>
+    </url>
+    <url>
+        <loc>http://ghostandthemachine.github.com/sketchpad/documentation/repl.html</loc>
+        <lastmod>2012-08-12T14:57:35-07:00</lastmod>
+    </url>
+    <url>
+        <loc>http://ghostandthemachine.github.com/sketchpad/</loc>
+        <lastmod>2012-08-12T14:51:33-07:00</lastmod>
+    </url>
+    <url>
+        <loc>http://ghostandthemachine.github.com/sketchpad/</loc>
+        <lastmod>2012-08-12T14:52:25-07:00</lastmod>
+    </url>
+    <url>
+        <loc>http://ghostandthemachine.github.com/sketchpad/tutorials/getting-started.html</loc>
+        <lastmod>2012-08-12T15:03:32-07:00</lastmod>
+    </url>
+    <url>
+        <loc>http://ghostandthemachine.github.com/sketchpad/tutorials/</loc>
+        <lastmod>2012-08-12T15:19:11-07:00</lastmod>
+    </url>
+    <url>
+        <loc>http://ghostandthemachine.github.com/sketchpad/tutorials/quil-tone.html</loc>
+        <lastmod>2012-08-12T15:08:30-07:00</lastmod>
     </url>
 </urlset>
