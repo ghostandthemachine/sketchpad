@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[My Octopress Blog]]></title>
+  <title><![CDATA[SketchPad]]></title>
   <link href="http://ghostandthemachine.github.com/sketchpad/atom.xml" rel="self"/>
   <link href="http://ghostandthemachine.github.com/sketchpad/"/>
-  <updated>2012-08-12T13:56:31-07:00</updated>
+  <updated>2012-08-12T14:09:42-07:00</updated>
   <id>http://ghostandthemachine.github.com/sketchpad/</id>
   <author>
-    <name><![CDATA[Your Name]]></name>
+    <name><![CDATA[]]></name>
     
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
