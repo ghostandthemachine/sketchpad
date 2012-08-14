@@ -21,10 +21,10 @@
 "Create a new file"
   ([] (new-file nil))
   ([selection-path]
-  (let [current-project-path (first (tree.utils/get-selected-projects))]
-    (println current-project-path)
+  (if-let [current-project-path (first (tree.utils/get-selected-projects))]
     (editor.buffer/new-project-buffer! current-project-path)
-    (tree.utils/update-tree))))
+    (editor.buffer/blank-clj-buffer!))
+    (tree.utils/update-tree)))
 
 (defn save
 "Save the current buffer."
