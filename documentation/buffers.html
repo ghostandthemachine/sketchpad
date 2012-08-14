@@ -9,7 +9,7 @@
   <meta name="author" content="">
 
   
-  <meta name="description" content=" Buffers Aug 12th, 2012 Aug 12th, 2012 Tweet Recent Posts ">
+  <meta name="description" content="Buffers Buffer edit actions In addition to all of the copy, paste, undo, redo, etc., commands all of the common IDE edit actions are available. All &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -35,10 +35,19 @@
 
 <body    class="collapse-sidebar sidebar-footer" >
   <header role="banner"><hgroup>
-  <h1><a href="/sketchpad/">SketchPad</a></h1>
-  
-    <h2>A Clojure IDE written in Clojure</h2>
-  
+	<table style="background-color=#333;">
+		<tr style="background-color=#333;">
+			<td style="background-color=#333;">
+			  <h1><a href="/sketchpad/">SketchPad</a></h1>
+			  
+			    <h2>A Clojure IDE written in Clojure</h2>
+			  
+			</td>
+			<td style="background-color=#333;">
+				<img src="favicon.png"/>
+			</td>
+		</tr>
+	</table>
 </hgroup>
 
 </header>
@@ -68,51 +77,44 @@
   
   <header>
     <h1 class="entry-title">Buffers</h1>
-    <p class="meta">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-08-12T15:03:00-07:00" pubdate data-updated="true">Aug 12<span>th</span>, 2012</time></p>
+    
   </header>
   
-  
+  <h4>Buffer edit actions</h4>
+
+<p>In addition to all of the copy, paste, undo, redo, etc., commands all of the common IDE edit actions are available. All of these edit actions are macro recordable and include.</p>
+
+<h4>Edit actions from <code>sketchpad.buffer.action</code></h4>
+
+<ul>
+<li>Recordable edit actions that support macro recording and playback:begin-line &#8220;meta LEFT&#8221;</li>
+<li>selection-begin-line</li>
+<li>selection-end-line</li>
+<li>selection-end</li>
+<li>selection-backward</li>
+<li>previous-word</li>
+<li>selection-previous-word</li>
+<li>selection-down</li>
+<li>line-down</li>
+<li>selection-forward</li>
+<li>next-word</li>
+<li>selection-next-word</li>
+<li>selection-up</li>
+<li>selection-page-up</li>
+<li>selection-page-left</li>
+<li>delete-next-char</li>
+<li>delete-rest-of-line</li>
+<li>delete-line</li>
+<li>join-lines</li>
+<li>delete-prev-char</li>
+<li>delete-prev-word</li>
+<li>and more&#8230;</li>
+</ul>
+
 
   
     <footer>
-      <p class="meta">
-        
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-08-12T15:03:00-07:00" pubdate data-updated="true">Aug 12<span>th</span>, 2012</time>
-        
-      </p>
       
-        <div class="sharing">
-  
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ghostandthemachine.github.com/sketchpad/documentation/buffers.html" data-via="" data-counturl="http://ghostandthemachine.github.com/sketchpad/documentation/buffers.html" >Tweet</a>
-  
-  
-  
-</div>
-
       
     </footer>
   

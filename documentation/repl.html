@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>repl - SketchPad</title>
+  <title>REPL - SketchPad</title>
   <meta name="author" content="">
 
   
-  <meta name="description" content=" Repl Aug 12th, 2012 Aug 12th, 2012 Tweet Recent Posts ">
+  <meta name="description" content="REPL SketchPad Application REPL A major goal for SketchPad is for the application REPL to be a powerful tool for everything from scripting edits, to &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -35,10 +35,19 @@
 
 <body    class="collapse-sidebar sidebar-footer" >
   <header role="banner"><hgroup>
-  <h1><a href="/sketchpad/">SketchPad</a></h1>
-  
-    <h2>A Clojure IDE written in Clojure</h2>
-  
+	<table style="background-color=#333;">
+		<tr style="background-color=#333;">
+			<td style="background-color=#333;">
+			  <h1><a href="/sketchpad/">SketchPad</a></h1>
+			  
+			    <h2>A Clojure IDE written in Clojure</h2>
+			  
+			</td>
+			<td style="background-color=#333;">
+				<img src="favicon.png"/>
+			</td>
+		</tr>
+	</table>
 </hgroup>
 
 </header>
@@ -67,52 +76,141 @@
 <article role="article">
   
   <header>
-    <h1 class="entry-title">Repl</h1>
-    <p class="meta">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-08-12T14:57:00-07:00" pubdate data-updated="true">Aug 12<span>th</span>, 2012</time></p>
+    <h1 class="entry-title">REPL</h1>
+    
   </header>
   
-  
+  <h2>SketchPad Application REPL</h2>
+
+<p>A major goal for SketchPad is for the application REPL to be a powerful tool for everything from scripting edits, to managing files, to any other IDE related task. The current features include</p>
+
+<h1>User namespace <code>sketchpad.user</code></h1>
+
+<h3>Utility functions</h3>
+
+<ul>
+<li>pretty print
+
+<ul>
+<li><code>(pp)</code></li>
+</ul>
+</li>
+<li>print stack trace
+
+<ul>
+<li><code>(stack-trace)</code></li>
+<li><code>(st)</code></li>
+</ul>
+</li>
+<li>pretty print + reflection
+
+<ul>
+<li><code>(preflect java-object)</code></li>
+</ul>
+</li>
+<li>seesaw shortcuts
+
+<ul>
+<li>show a seesaw widget&#8217;s options
+
+<ul>
+<li><code>(show-opts (current-text-area))</code></li>
+</ul>
+</li>
+<li>show a widgets event types
+
+<ul>
+<li><code>(show-evs widget)</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>Projects</h3>
+
+<ul>
+<li>get the current project
+
+<ul>
+<li><code>(current-project)</code></li>
+<li>For project map structure checkout the <a href="">Project</a> description page.</li>
+</ul>
+</li>
+<li>create a new Leiningen project
+
+<ul>
+<li><code>(create-project)</code></li>
+</ul>
+</li>
+</ul>
+
+
+<h3>Buffers</h3>
+
+<ul>
+<li>get the current RSyntaxTextArea buffer
+
+<ul>
+<li><code>(current-text-area)</code></li>
+</ul>
+</li>
+<li>get the current form for the active buffers caret position
+
+<ul>
+<li><code>(current-form)</code></li>
+</ul>
+</li>
+<li>current group form based on \newline delimiters
+
+<ul>
+<li><code>(current-group-form)</code></li>
+</ul>
+</li>
+</ul>
+
+
+<h4>Search</h4>
+
+<ul>
+<li>Function call from REPL
+
+<ul>
+<li>Search <code>(search "word")</code></li>
+<li>Search-replace <code>(search "word" "replace-word")</code></li>
+<li>Search-replace-all <code>(search "word" "replace-word")</code></li>
+</ul>
+</li>
+<li>Menu hotkey to add function call to REPL text area and focus REPL
+
+<ul>
+<li>Search <code>meta F</code></li>
+<li>Search-replace <code>meta shift F</code></li>
+<li>Search-replace-all <code>meta control F</code></li>
+</ul>
+</li>
+</ul>
+
+
+<h3>Mark occurences</h3>
+
+<ul>
+<li>Mark a word
+  -<code>(mark "word-to-mark")</code></li>
+<li>Clear all marked occurences
+
+<ul>
+<li><code>(clear-marks)</code></li>
+<li><code>(mark)</code></li>
+</ul>
+</li>
+</ul>
+
 
   
     <footer>
-      <p class="meta">
-        
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-08-12T14:57:00-07:00" pubdate data-updated="true">Aug 12<span>th</span>, 2012</time>
-        
-      </p>
       
-        <div class="sharing">
-  
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ghostandthemachine.github.com/sketchpad/documentation/repl.html" data-via="" data-counturl="http://ghostandthemachine.github.com/sketchpad/documentation/repl.html" >Tweet</a>
-  
-  
-  
-</div>
-
       
     </footer>
   

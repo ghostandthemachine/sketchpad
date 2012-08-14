@@ -5,13 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Documentation - SketchPad</title>
+  <title>Application - SketchPad</title>
   <meta name="author" content="">
 
   
-  <meta name="description" content="Documentation Application Global menu keybindings
-Default buffer keybindings Projects SketchPad project structure
-Project creation Buffers Editing &hellip;">
+  <meta name="description" content="Application Default Keybindings Global Menus File New File meta N Save current buffer meta S Save current buffer as&#8230; meta shift S Edit Undo &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -20,7 +18,7 @@ Project creation Buffers Editing &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://ghostandthemachine.github.com/sketchpad/documentation/">
+  <link rel="canonical" href="http://ghostandthemachine.github.com/sketchpad/documentation/application.html">
   <link href="/sketchpad/favicon.png" rel="icon">
   <link href="/sketchpad/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/sketchpad/javascripts/modernizr-2.0.js"></script>
@@ -78,50 +76,205 @@ Project creation Buffers Editing &hellip;">
 <article role="article">
   
   <header>
-    <h1 class="entry-title">Documentation</h1>
+    <h1 class="entry-title">Application</h1>
     
   </header>
   
-  <h3><a href="application.html">Application</a></h3>
+  <h2>Default Keybindings</h2>
+
+<h3>Global Menus</h3>
+
+<h4>File</h4>
 
 <ul>
-<li>Global menu keybindings</li>
-<li>Default buffer keybindings</li>
+<li>New File
+
+<ul>
+<li><code>meta N</code></li>
+</ul>
+</li>
+<li>Save current buffer
+
+<ul>
+<li><code>meta S</code></li>
+</ul>
+</li>
+<li>Save current buffer as&#8230;
+
+<ul>
+<li><code>meta shift S</code></li>
+</ul>
+</li>
 </ul>
 
 
-<h3><a href="projects.html">Projects</a></h3>
+<h4>Edit</h4>
 
 <ul>
-<li>SketchPad project structure</li>
-<li>Project creation</li>
+<li>Undo last recordable action in the current buffer
+
+<ul>
+<li><code>meta Z</code></li>
+</ul>
+</li>
+<li>Redo last recordable action in the current buffer
+
+<ul>
+<li><code>meta shift Z</code></li>
+</ul>
+</li>
+<li>Copy selected text to clipboard from current buffer text area
+
+<ul>
+<li><code>meta C</code></li>
+</ul>
+</li>
+<li>Paste current clipboard contents to the current buffer&#8217;s caret position
+
+<ul>
+<li><code>meta V</code></li>
+</ul>
+</li>
+<li>Cut the selected text in the current buffer
+
+<ul>
+<li><code>meta X</code></li>
+</ul>
+</li>
 </ul>
 
 
-<h3><a href="buffers.html">Buffers</a></h3>
+<h4>View</h4>
 
 <ul>
-<li>Editing buffer contents</li>
-<li>Creating macros</li>
+<li>Go to project file tree
+
+<ul>
+<li><code>meta shift 1</code></li>
+</ul>
+</li>
+<li>Go to current buffer
+
+<ul>
+<li><code>meta shift 2</code></li>
+</ul>
+</li>
+<li>Go to current REPL
+
+<ul>
+<li><code>meta shift 3</code></li>
+</ul>
+</li>
+<li>Show/hide file tree
+
+<ul>
+<li><code>meta 1</code></li>
+</ul>
+</li>
+<li>Show/hide REPL
+
+<ul>
+<li><code>meta 2</code></li>
+</ul>
+</li>
+<li>Next buffer tab
+
+<ul>
+<li><code>meta alt RIGHT</code></li>
+</ul>
+</li>
+<li>Previous buffer tab
+
+<ul>
+<li><code>meta alt LEFT</code></li>
+</ul>
+</li>
+<li>Next REPL tab
+
+<ul>
+<li><code>meta alt UP</code></li>
+</ul>
+</li>
+<li>Previous REPL tab
+
+<ul>
+<li><code>meta alt DOWN</code></li>
+</ul>
+</li>
+<li>Close current buffer tab
+
+<ul>
+<li><code>meta W</code></li>
+</ul>
+</li>
 </ul>
 
 
-<h3><a href="repl.html">REPL</a></h3>
+<h4>Source</h4>
 
 <ul>
-<li>Using the <code>sketchpad.user</code> namespace and helper functions</li>
-<li>Working with project REPL&#8217;s</li>
+<li>Search for a word in the current buffer via the application REPL search function
+
+<ul>
+<li><code>meta F</code></li>
+</ul>
+</li>
+<li>Search and replace for a word in the current buffer via the application REPL search function
+
+<ul>
+<li><code>meta shift F</code></li>
+</ul>
+</li>
+<li>Search and replace all occurrences of a word in the current buffer via the application REPL search function
+
+<ul>
+<li><code>meta control F</code></li>
+</ul>
+</li>
+<li>Toggle comment for current line of active buffer
+
+<ul>
+<li><code>meta /</code></li>
+</ul>
+</li>
 </ul>
 
 
-<h3><a href="leiningen.html">Leiningen</a></h3>
+<h2>REPL</h2>
 
 <ul>
-<li>Working with Leiningen projects</li>
-<li>Creating per project REPL&#8217;s in independent processes</li>
+<li>Previous REPL entry
+
+<ul>
+<li><code>control UP</code></li>
+</ul>
+</li>
+<li>Next REPL entry
+
+<ul>
+<li><code>control DOWN</code></li>
+</ul>
+</li>
+<li>Next REPL tab
+
+<ul>
+<li><code>meta alt UP</code></li>
+</ul>
+</li>
+<li>Previous REPL tab
+
+<ul>
+<li><code>meta alt DOWN</code></li>
+</ul>
+</li>
 </ul>
 
 
+  
+    <footer>
+      
+      
+    </footer>
   
 </article>
 

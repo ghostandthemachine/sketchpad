@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>projects - SketchPad</title>
+  <title>Projects - SketchPad</title>
   <meta name="author" content="">
 
   
-  <meta name="description" content=" Projects Tweet Recent Posts ">
+  <meta name="description" content="Projects The SketchPad project system is base on Leiningen and Clojars. Leiningen is integrated into the application as a core dependency and allows &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -35,10 +35,19 @@
 
 <body    class="collapse-sidebar sidebar-footer" >
   <header role="banner"><hgroup>
-  <h1><a href="/sketchpad/">SketchPad</a></h1>
-  
-    <h2>A Clojure IDE written in Clojure</h2>
-  
+	<table style="background-color=#333;">
+		<tr style="background-color=#333;">
+			<td style="background-color=#333;">
+			  <h1><a href="/sketchpad/">SketchPad</a></h1>
+			  
+			    <h2>A Clojure IDE written in Clojure</h2>
+			  
+			</td>
+			<td style="background-color=#333;">
+				<img src="favicon.png"/>
+			</td>
+		</tr>
+	</table>
 </hgroup>
 
 </header>
@@ -71,20 +80,50 @@
     
   </header>
   
-  
+  <p>The SketchPad project system is base on <a href="https://github.com/technomancy/leiningen/">Leiningen</a> and Clojars. Leiningen is integrated into the application as a core dependency and allows SketchPad to create, build, and run Clojure projets without the need for any other libraries or system dependencies. To begin working on a project you first need to open an existing project or create a new one.</p>
+
+<h2>Creating a project</h2>
+
+<p>New projects can be created in a few ways:</p>
+
+<ul>
+<li>Through the file menu, <code>File -&gt; New Project...</code></li>
+<li>or the file tree popup menu <code>New Project...</code></li>
+<li>or from the SketchPad REPL with <code>sketchpad.user =&gt; (create-project)</code></li>
+</ul>
+
+
+<div style="float:right">
+    <img src="https://raw.github.com/ghostandthemachine/sketchpad/master/img/quil-tone-creation-form.png"/>
+</div>
+
+
+<p>This will open the project setup form. The project creation form creates the new project&#8217;s <code>project.clj</code> file based on the project param fields. One handy feature incorporated into the creation form is that you can use shorthand names for dependencies available on Clojars.org. The auto completion will query Clojars.org for matching dependencies and display all available versions etc.</p>
+
+<h3>SketchPad project structure</h3>
+
+<p>SketchPad project are stored in a map with following contents</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='clj'><span class='line'>  <span class="ss">:type</span>
+</span><span class='line'>  <span class="ss">:path</span>
+</span><span class='line'>  <span class="ss">:id</span>
+</span><span class='line'>  <span class="ss">:theme</span>
+</span><span class='line'>  <span class="ss">:repls</span>
+</span><span class='line'>  <span class="ss">:buffers</span>
+</span><span class='line'>  <span class="ss">:lein-project</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
   
     <footer>
       
-      
-        <div class="sharing">
-  
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ghostandthemachine.github.com/sketchpad/documentation/projects.html" data-via="" data-counturl="http://ghostandthemachine.github.com/sketchpad/documentation/projects.html" >Tweet</a>
-  
-  
-  
-</div>
-
       
     </footer>
   
