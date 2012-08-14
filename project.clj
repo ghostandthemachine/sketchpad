@@ -3,7 +3,7 @@
   :main sketchpad.core
   :resource-paths ["resources"] ; non-code files included in classpath/jar
   :dependencies [[org.clojure/clojure "1.4.0"]
-                 [seesaw "1.4.2"]
+                 [ghostandthemachine/seesaw "1.4.3-SNAPSHOT"]
                  [clooj "0.3.4.2-SNAPSHOT"]
                  [rounded-border "0.0.1-SNAPSHOT"]
                  [rsyntaxtextarea-clojars "0.1.0-SNAPSHOT"]

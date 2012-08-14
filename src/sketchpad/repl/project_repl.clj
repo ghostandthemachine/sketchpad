@@ -24,32 +24,6 @@
              File PipedReader PipedWriter PrintWriter Writer
                     StringReader PushbackReader)))
 
-
-; (defn tokens
-;   "Finds all the tokens in a given string."
-;   [text]
-;   (re-seq #"[\w/\.]+" text))
-
-; (defn namespaces-from-code
-;   "Take tokens from text and extract namespace symbols."
-;   [text]
-;   (->> text tokens (filter #(.contains % "/"))
-;        (map #(.split % "/"))
-;        (map first)
-;        (map #(when-not (empty? %) (symbol %)))
-;        (remove nil?)))
-
-; (defn cmd-attach-file-and-line [cmd file line]
-;   (let [read-string-code (read-string-at cmd line)
-;         short-file (last (.split file "/"))
-;         namespaces (namespaces-from-code cmd)]
-;     (pr-str
-;       `(do
-;          (dorun (map #(try (require %) (catch Exception _#)) '~namespaces))
-;          (binding [*source-path* ~short-file
-;                    *file* ~file]
-;            (last (map eval ~read-string-code)))))))
-
 ;; from reply
 (def exit-str
   (str 

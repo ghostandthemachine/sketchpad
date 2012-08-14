@@ -1,7 +1,7 @@
 (ns sketchpad.preview.manager
 	(:use [sketchpad tab tab-builder]
 				[seesaw.core])
-	(:require [sketchpad.rsyntax :as rsyntax]
+	(:require [seesaw.rsyntax :as rsyntax]
             [sketchpad.wrapper.rtextscrollpane :as sp]
             [sketchpad.wrapper.rsyntaxtextarea :as rs]
             [sketchpad.file.file :as fm]

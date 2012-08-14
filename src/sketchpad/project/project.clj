@@ -58,7 +58,7 @@
 	  									; :completion-provider (auto-complete/build-project-completion-provider project-path)
 	  									:repls (atom {}) 
 	  									:buffers (atom {})})))
-	  (println "add project with path key: " project-path)
+	  ; (println "add project with path key: " project-path)
 	  (if (lein-project-file?)
 	  		(try
 		  		(when-let [lein-project (lein-project/read (str project-path "/project.clj"))]

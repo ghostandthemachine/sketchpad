@@ -18,7 +18,7 @@
         [sketchpad.util.tab]
         [clojure.tools.nrepl.server :only (start-server stop-server)])
   (:require [clojure.string :as string]
-            [sketchpad.rsyntax :as rsyntax]
+            [seesaw.rsyntax :as rsyntax]
             [clojure.java.io :as io]
             [sketchpad.config.config :as config]
             [sketchpad.buffer.action :as buffer.action]
@@ -132,32 +132,6 @@
         {:text (.. ta getDocument (getText a (- b a)))
          :start a
          :end b}))))
-
-; (defn update-repl-text [app]
-;   (let [rsta (:application-repl app)
-;         last-pos @(:last-end-pos repl-history)
-;         items @(:items repl-history)]
-;     (when (pos? (count items))
-;       (if (> (- (.getLastVisibleOffset rsta) last-pos) 0)
-;         (do 
-;            (.insert rsta 
-;                 (nth items @(:pos repl-history))
-;                 (- last-pos (count (nth items (- @(:pos repl-history) 1)))))
-;         )
-;         (do 
-;            (println "remove last string from: " last-pos " of length: " (- (.getLastVisibleOffset rsta) last-pos))
-;           (.insert rsta 
-;             (nth items @(:pos repl-history))
-;             last-pos))))))
-
-; (defn switch-repl [app project-path]
-;   (when (and project-path
-;              (not= project-path (-> app :repl deref :project-path)))
-;     (buffer.action/append-text (app :application-repl)
-;                  (str "\n\n=== Switching to " project-path " REPL ===\n"))
-;     (let [repl (or (get @repls project-path)
-;                    (create-outside-repl (app :repl-out-writer) project-path))]
-;       (reset! (:repl app) repl))))
 
 (defn add-repl-input-handler [rsta]
   (let [ta-in rsta

@@ -27,7 +27,7 @@
 (defn append-history-text [text-area m]
   (let [pos @(m :pos)
         history-str (string/trim (str (nth @(m :items) pos)))]
-    (buffer/append-text-update text-area history-str)))
+    (buffer/append-text text-area history-str)))
 
 (defn update-repl-history-display-position [repl kw]
   (let [repl-history (:history repl)

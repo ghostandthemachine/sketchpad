@@ -396,9 +396,6 @@
         (.setCaretPosition text-pane (.getLastVisibleOffset text-pane))
       (catch Throwable e
         (println "append-text ERROR")
-        (println e)
-        (println (type text-pane))
-        (println (type text))
         (append-text text-pane "=> "))))))
 
 (defn append-text-update [rsta s]

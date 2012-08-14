@@ -15,7 +15,7 @@
   (write-value-to-prefs sketchpad-prefs "project-set" @project.state/project-set))
     
 (defn load-project-set []
-  (println (read-value-from-prefs sketchpad-prefs "project-set"))
+  ; (println (read-value-from-prefs sketchpad-prefs "project-set"))
   (reset! project.state/project-set (into (sorted-set)
                             (read-value-from-prefs sketchpad-prefs "project-set"))))
 

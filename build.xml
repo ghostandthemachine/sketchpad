@@ -26,8 +26,33 @@
 			</resourcefileset>
 		</jarbundler>
 	</target>
-</project>
 
+	<property name="launch4j.dir" location="/opt/launch4j"/>
+
+	<taskdef name="launch4j"
+	    classname="net.sf.launch4j.ant.Launch4jTask"
+	    classpath="${launch4j.dir}/launch4j.jar
+	        :${launch4j.dir}/lib/xstream.jar" />
+
+
+	<launch4j configFile="SketchPad.xml"/>
+
+	<launch4j>
+	  <config headerType="gui" outfile="SketchPad.exe"
+	      dontWrapJar="true" jarPath="target/sketchpad-0.0.1-SNAPSHOT-standalone.jar" >
+	    <var>SETTINGS="%HomeDrive%%HomePath%\\settings.ini"</var>
+	    <classPath mainClass="sketchpad.core">
+	        <cp>./lib/looks.jar</cp>
+	        <cp>%USER_LIBS%/*.jar</cp>
+	    </classPath>
+	    <jre minVersion="1.4.0">
+	        <opt>-Dlaunch4j.exedir="%EXEDIR%"</opt>
+	        <opt>-Dlaunch4j.exefile="%EXEFILE%"</opt>
+	    </jre>
+	  </config>
+	</launch4j>
+
+</project>
 
 <!-- 
 	Leiningen plugin format
