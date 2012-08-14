@@ -15,10 +15,7 @@
     (read-string (.take q)))
 
 (defn- sketchpad-prompt [rsta]
-  (buffer.action/append-text rsta (str \newline (ns-name *ns*) "=> "))
-  (seesaw/invoke-later
-    (.setCaretPosition rsta (.getLastVisibleOffset rsta))
-    (.discardAllEdits rsta)))
+  (buffer.action/append-text rsta (str \newline (ns-name *ns*) "=> ")))
 
 (defn- sketchpad-printer [rsta value]
   (buffer.action/append-text rsta (str value)))

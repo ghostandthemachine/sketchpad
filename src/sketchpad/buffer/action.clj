@@ -392,6 +392,7 @@
     (when-let [doc (.getDocument text-pane)]
       (try
         (.append text-pane text)
+        (.discardAllEdits text-pane)
         (.setCaretPosition text-pane (.getLastVisibleOffset text-pane))
       (catch Throwable e
         (println "append-text ERROR")
