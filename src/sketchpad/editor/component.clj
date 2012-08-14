@@ -5,16 +5,14 @@
             [sketchpad.wrapper.rtextscrollpane :as sp]
             [sketchpad.wrapper.rsyntaxtextarea :as wrapper.rsyntaxtextarea]
             [sketchpad.config.config :as config]
-            [sketchpad.input.default :as input.default]
-            [sketchpad.auto-complete.auto-complete :as auto-complete]))
+            [sketchpad.input.default :as input.default]))
 
 (defn buffer-component
   []
-  (let [text-area         	(rsyntax/text-area    ;:border nil
-                                                  :syntax         :clojure
-                                                  :id             :editor
-                                                  :class          [:editor-comp :syntax-editor])
-        doc-scroll-pane       	(sp/scroll-pane text-area)
+  (let [text-area         	(rsyntax/text-area :syntax   :clojure
+                                               :id       :editor
+                                               :class    [:editor-comp :syntax-editor])
+      doc-scroll-pane       	(sp/scroll-pane text-area)
         doc-scroller-container  (vertical-panel :border nil
                                                 :items [doc-scroll-pane] :class :rsta-scroller)
         doc-scroller-gutter     (.getGutter doc-scroll-pane)
@@ -25,7 +23,6 @@
     (config/apply-editor-prefs! text-area)
     (config/apply-buffer-scroller-prefs! doc-scroll-pane)
     (config/apply-gutter-prefs! (.getGutter doc-scroll-pane))
-    (auto-complete/install-auto-completion text-area)
 
     (.setPreferredSize (.getVerticalScrollBar doc-scroll-pane) (Dimension. 0 0))
     (.setPreferredSize (.getHorizontalScrollBar doc-scroll-pane) (Dimension. 0 0))
@@ -36,5 +33,3 @@
      :title (atom "untitled")
      :state (atom {:clean true :new false :active nil :index nil})
      :scroller doc-scroll-pane}))
-
-

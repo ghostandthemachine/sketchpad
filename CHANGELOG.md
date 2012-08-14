@@ -117,3 +117,12 @@
 * Continue refining Leiningen project management and creation process.
 * Update documentation
 * Add new tutorials for creating and managing projects and dependencies all from within SketchPad.
+
+
+##Version 0.0.1 (12th August 2012)
+
+### Updates
+
+### Bug fixes
+
+### For next week

@@ -66,14 +66,12 @@
 	        conn (:conn repl)
           text-area (get-in repl [:component :text-area])
 	        items (:items repl-history)
-	        ; cmd-str (cmd-attach-file-and-line (buffer.action/get-last-cmd (get-in repl [:component :text-area])  ) file line)
+	        cmd-str (cmd-attach-file-and-line (buffer.action/get-last-cmd (get-in repl [:component :text-area])  ) file line)
           ]
-      (buffer.action/append-text-update text-area (str \newline))
+      (buffer.action/append-text text-area (str \newline))
 		    (when-let [response (-> (nrepl/client conn config/repl-response-timeout)
 	   						        (nrepl/message {:op :eval :code cmd})
 								    nrepl/combine-responses)]
-        ; (println "send-repl-cmd reponse:")
-        ; (println response)
           (let [response-str 
                   (str  
                     (cond
@@ -88,8 +86,8 @@
                         (nrepl/message {:op :eval :code "(str *ns*)"})
                     nrepl/combine-responses)
                 prompt-str (str (:ns ns-response) "=> ")]
-            (buffer.action/append-text-update text-area response-str)
-	          (buffer.action/append-text-update text-area prompt-str)
+            (buffer.action/append-text text-area response-str)
+	          (buffer.action/append-text text-area prompt-str)
 	          (.discardAllEdits text-area))
 	   (when (not= cmd (first @items))
 	      (swap! items replace-first cmd)
@@ -147,14 +145,13 @@
                 ))))
 
 (defn submit [repl]
-  (seesaw/invoke-later
-    (let [text-area (get-in repl [:component :text-area])
-          txt (buffer.action/get-last-cmd text-area)
-          pos (get-in repl [:history :pos])]
-        (if (correct-expression? txt)
-          (do
-            (send-repl-cmd repl txt)
-            (reset! pos 0))))))
+  (let [text-area (get-in repl [:component :text-area])
+        txt (buffer.action/get-last-cmd text-area)
+        pos (get-in repl [:history :pos])]
+      (if (correct-expression? txt)
+        (do
+          (send-repl-cmd repl txt)
+          (reset! pos 0)))))
 
 (defn- ready [text-area]
   (seesaw/invoke-later
@@ -179,7 +176,7 @@
         next-hist #(repl.history/update-repl-history-display-position repl :inc)
         completions #(get-completions repl)]
     (utils/attach-action-keys text-area ["TAB" completions])
-    (utils/attach-child-action-keys text-area ["ENTER" ready submit])
+    (utils/attach-action-keys text-area ["ENTER" submit])
     (utils/attach-action-keys text-area ["control UP" prev-hist]
                               ["control DOWN" next-hist])))
 

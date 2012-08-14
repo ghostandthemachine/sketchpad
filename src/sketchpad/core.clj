@@ -155,9 +155,7 @@
 
 (defn -main [& args]
   (invoke-later
-    (println "reset create-app...")
     (reset! sketchpad.state.state/app (create-app))
-    (println "done with reset create-app...")
     (let [repl-writer (app.sketchpad-repl/repl-writer (get-in (:application-repl @sketchpad.state.state/app) [:component :text-area]))]
       (binding [*err* repl-writer
                 *out* repl-writer]

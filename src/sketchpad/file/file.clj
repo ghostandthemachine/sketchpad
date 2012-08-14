@@ -106,7 +106,7 @@
                            (OutputStreamWriter.
                              (FileOutputStream. @(:file buffer))
                              "UTF-8"))]
-        (.write (:text-area buffer) writer)
+        (.write (get-in buffer [:component :text-area]) writer)
       true)
     (catch Exception e
       (do

@@ -364,7 +364,8 @@
     (println (str "line: \t" line))))
 
 (defn buffer-move-pos-by-char [rta offset]
-  (.setCaretPosition rta (+ (buffer-cursor-point rta) offset)))
+  (invoke-later
+    (.setCaretPosition rta (+ (buffer-cursor-point rta) offset))))
 
 (defn buffer-goto-next-char [rta]
   (buffer-move-pos-by-char rta 1))
@@ -390,13 +391,18 @@
   (invoke-later
     (when-let [doc (.getDocument text-pane)]
       (try
-          (.append text-pane text)
-        (catch Exception e)))))
+        (.append text-pane text)
+        (.setCaretPosition text-pane (.getLastVisibleOffset text-pane))
+      (catch Throwable e
+        (println "append-text ERROR")
+        (println e)
+        (println (type text-pane))
+        (println (type text))
+        (append-text text-pane "=> "))))))
 
 (defn append-text-update [rsta s]
   (try
       (append-text rsta (str s))
-      (.setCaretPosition rsta (.getLastVisibleOffset rsta))
     (catch java.lang.NullPointerException e)))
 
 (defn trim-enclosing-char [s cl cr]
@@ -409,13 +415,3 @@
 
 (defn trim-brackets [s]
   (trim-enclosing-char s "[" "]"))
-
-; (defn append-text [text-pane text]
-;   (invoke-later
-;     (.append text-pane text)))
-
-; (defn append-text-update [buffer s]
-;   (append-text buffer (str s))
-;   (invoke-later
-; 	  (.setCaretPosition buffer (.getLastVisibleOffset buffer))))
-

@@ -19,13 +19,12 @@
 
 (defn new-file
 "Create a new file"
-  ([] (editor.buffer/blank-clj-buffer!))
+  ([] (new-file nil))
   ([selection-path]
-  (let [selected-file (java.io.File. selection-path)
-        parent-dir (if (file/text-file? selected-file)
-                      (.getParent selected-file)
-                      (.getAbsolutePath selected-file))]
-    (editor.buffer/blank-clj-buffer! parent-dir))))
+  (let [current-project-path (first (tree.utils/get-selected-projects))]
+    (println current-project-path)
+    (editor.buffer/new-project-buffer! current-project-path)
+    (tree.utils/update-tree))))
 
 (defn save
 "Save the current buffer."

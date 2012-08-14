@@ -42,6 +42,12 @@
 		(.getComponentAt tabbed-panel index)
 		(catch java.lang.ArrayIndexOutOfBoundsException e)))
 
+(defn text-area-at
+"Returns the text area at a given tab index."
+	([idx] (text-area-at (:buffer-tabbed-panel @state/app) idx))
+	([tabbed-panel idx]
+		(select (component-at tabbed-panel idx) [:#editor])))
+
 (defn component-at! [tabbed-panel index comp]
 	(.setComponentAt tabbed-panel index comp))
 

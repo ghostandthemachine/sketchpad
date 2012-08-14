@@ -89,7 +89,7 @@
           cmd-ln (str \newline (.trim cmd) \newline)
           cmd-trim (.trim cmd)]
       ;; go to next line
-      (buffer.action/append-text-update rsta (str \newline))
+      (buffer.action/append-text rsta (str \newline))
       (let [cmd-str (cmd-attach-file-and-line cmd file line)
             repl-history (get-meta rsta :repl-history)]
         (offer! (get-meta rsta :repl-que) cmd-str))
@@ -126,7 +126,7 @@
 (defn append-history-text [rsta m]
   (let [pos @(m :pos)
         history-str (string/trim (str (nth @(m :items) pos)))]
-    (buffer.action/append-text-update rsta history-str)))
+    (buffer.action/append-text rsta history-str)))
 
 (defn update-repl-history-display-position [rsta kw]
   (invoke-later

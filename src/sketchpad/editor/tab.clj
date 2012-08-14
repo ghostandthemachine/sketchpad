@@ -23,8 +23,8 @@
           w          (width c)
           h          (height c)
           line-style (style :foreground button-base-color :stroke 2 :cap :round)
-          project-color @(project/buffer-color buffer)
-          border-style (style :foreground project-color :stroke 0.5)
+          project-color (project/buffer-color buffer)
+          border-style (style :foreground @project-color :stroke 0.5)
           ellipse-style (style :foreground button-base-color :background button-base-color :stroke 1 :cap :round)
           d 3
           lp 7]

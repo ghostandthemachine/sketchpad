@@ -6,11 +6,10 @@
             [sketchpad.state.state :as state]))
 
 (defn prompt
-([]
+	([]
 	(prompt (get-in (:application-repl @state/app) [:component :text-area]) nil))
-([rsta prompt-ns]
-  (buffer.action/append-text rsta (str \newline  "sketchpad.user=> "))
-  (.setCaretPosition rsta (.getLastVisibleOffset rsta))))
+	([rsta prompt-ns]
+  (buffer.action/append-text rsta (str \newline  "sketchpad.user=> "))))
 
 (defn pln 
 [& values]
@@ -20,7 +19,7 @@
 "Takes a command string to append, and the offset to possibly go back with and appends it to the editor repl."
 	([cmd-str caret-offset]
 		(prompt)
-		(buffer.action/append-text-update
+		(buffer.action/append-text
 			(get-in (:application-repl @state/app) 
 			[:component :text-area]) 
 			cmd-str)

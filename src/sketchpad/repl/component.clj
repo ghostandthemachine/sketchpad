@@ -13,14 +13,14 @@
                     StringReader PushbackReader)))
 
 (defn- init-prompt [rta]
-  (buffer.action/append-text-update
+  (buffer.action/append-text
     rta
 "Docs: (doc function-name-here)
        (find-doc \"part-of-name-here\")
 Source: (source function-name-here)
 Javadoc: (javadoc java-object-or-class-here)
 Examples from clojuredocs.org: [clojuredocs or cdoc]\n\n")
-  (buffer.action/append-text-update rta "user=> "))
+  (buffer.action/append-text rta "user=> "))
 
 (defn init-repl 
 "Init the repl component prefs and handlers."

@@ -10,6 +10,7 @@
 			[sketchpad.state.state :as state]
 			[sketchpad.tree.utils :as tree.utils]
 			[leiningen.core.project :as lein-project]
+			[sketchpad.auto-complete.auto-complete :as auto-complete]
 			[clojure.string :as string]
 			[seesaw.bind :as bind]
 			[seesaw.core :as seesaw]))
@@ -17,13 +18,23 @@
 (defn update-buffer-info-file-title [title]
 	(swap! (@state/app :doc-title-atom) (fn [lbl] title)))
 
+(defn add-auto-completion-from-type
+	[buffer]
+	(when @(:file buffer)
+		(let [suffix (last (clojure.string/split (.getName @(:file buffer)) #"\."))]
+			(println "open file suffix: " suffix)
+			(println "open file name " (.getName @(:file buffer)))
+			(cond (= suffix "clj")
+				(auto-complete/install-auto-completion (get-in buffer [:component :text-area]))))))
+
 (defn init-buffer-tab-state [buffer]
 	(let [text-area (:text-area buffer)]
 	  (tab/focus-buffer buffer)
 	  (update-buffer-info-file-title (tab/title))
 	  (tab/mark-tab-clean! buffer)
-	  (.discardAllEdits text-area)
-	  (.setCaretPosition text-area 0)))
+	  (seesaw/invoke-later
+		  (.discardAllEdits text-area)
+		  (.setCaretPosition text-area 0))))
 
 (defn selected-file-path []
   (when-let [tree-path (-> @state/app :docs-tree .getSelectionPaths first)]
@@ -47,7 +58,9 @@
 		(update-buffer-syntax-style text-area file-path)
 		(update-buffer-label-from-file buffer file-path)
 		(swap! (:title buffer) (fn [_] (.getName file)))
-		(swap! (:file buffer) (fn [_] file)))))
+		(swap! (:file buffer) (fn [_] file))
+		(reset! (:new-file? buffer) false)
+		(add-auto-completion-from-type buffer))))
 
 (defn open-buffer [file-path project-path]
 	(let [project (sketchpad.project/project-from-path project-path)
@@ -66,3 +79,11 @@
 		(sketchpad.project/add-buffer-to-app buffer)
 		(tab/show-buffer buffer))))
 
+(defn new-project-buffer!
+"Create a new buffer for a loaded project."
+	[project-path]
+	(let [buffer (editor.build/project-buffer-tab project-path)]
+		(init-buffer-tab-state buffer)
+		(sketchpad.project/add-buffer-to-project project-path buffer)
+		(sketchpad.project/add-buffer-to-app buffer)
+		(tab/show-buffer buffer)))

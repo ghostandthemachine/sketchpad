@@ -15,10 +15,6 @@
 
 (defonce provider (create-completion-provider))
 
-; (future
-;   (seesaw.core/invoke-later 
-;     (reset! provider (create-completion-provider))))
-
 (defn install-auto-completion
   [rta]
   (let [completion-provider (org.fife.ui.autocomplete.AutoCompletion. provider)]

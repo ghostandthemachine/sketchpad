@@ -28,29 +28,25 @@
   []
   (when-not (exists? (str sketchpad-app-url "/default.clj"))
     (let [src-url (clojure.java.io/resource "default.clj")
-          src-file (java.io.File. (.getFile src-url))
           dst-dir (java.io.File. sketchpad-app-url)
           dst-file (java.io.File. (str sketchpad-app-url "/default.clj"))]
       (.mkdirs dst-dir)
-      (println "copy " src-file dst-file)
-      (FileUtils/copyFile src-file dst-file))))
+      (spit (str sketchpad-app-url "/default.clj") (slurp src-url)))))
 
-(defn add-themes-if-needed
-"If the .sketchpad/ directory does not exist, create it with defaults from resources."
+(defn add-theme-if-needed
   []
-  (when-not (exists? (str sketchpad-app-url "/themes"))
-    (let [themes-resource-url (clojure.java.io/resource "themes")
-          themes-src-file (java.io.File. (.getFile themes-resource-url))
-          themes-dst-file (java.io.File. (str sketchpad-app-url "/themes"))]
-    (org.apache.commons.io.FileUtils/copyDirectory themes-src-file themes-dst-file))))
-
+  (when-not (exists? (str sketchpad-app-url "/dark.xml"))
+    (let [src-url (clojure.java.io/resource "dark.xml")
+          dst-dir (java.io.File. sketchpad-app-url)
+          dst-file (java.io.File. (str sketchpad-app-url "/dark.xml"))]
+      (spit (str sketchpad-app-url "/dark.xml") (slurp src-url)))))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;  Load the config files
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (do
   (add-defaults-if-needed)
-  (add-themes-if-needed))
+  (add-theme-if-needed))
 
 (load-string (slurp (str sketchpad-app-url "/default.clj")))
 
