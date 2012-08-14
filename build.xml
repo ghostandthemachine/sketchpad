@@ -1,0 +1,39 @@
+
+<project name="SketchPad" default="dist" basedir=".">
+  <description>
+      SketchPad jarbuilder file.
+  </description>
+  <!-- set global properties for this build -->
+  <property name="src" location="src"/>
+  <property name="build" location="build"/>
+  <property name="dist"  location="dist"/>
+	<taskdef name="jarbundler" 
+	         classname="net.sourceforge.jarbundler.JarBundler" />
+	<target name="make-app">
+		<jarbundler dir="release"
+		            name="SketchPad"
+		            mainclass="sketchpad.core"
+		            jar="target/sketchpad-0.0.1-SNAPSHOT-standalone.jar"
+		            icon="img/app.icns">
+		    <documenttype name="Clojure text file"
+		            	  extensions="clj"
+		            	  iconFile="img/file-icon.icns" 
+		            	  role="Editor"/>
+		    			  
+			<resourcefileset dir="resources">
+				<include name="default.clj" />
+				<include name="themes/*" />
+			</resourcefileset>
+		</jarbundler>
+	</target>
+</project>
+
+
+<!-- 
+	Leiningen plugin format
+:osx-app {:jar-bundler {:dir "release"
+									  		:name "SketchPad"
+												:mainclass "sketchpad.core"
+												:jar "target/sketchpad-0.0.1-SNAPSHOT-standalone.jar"
+												:icon "img/app.icns"
+											  :resource-file-set {:include ["default.clj" "themes/*"]}}} -->
