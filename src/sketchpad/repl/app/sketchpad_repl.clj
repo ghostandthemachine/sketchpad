@@ -34,8 +34,8 @@
 			(buffer.action/append-text rsta c)
 			(proxy-super write c))
 		([cbuf off len]
-			(buffer.action/append-text rsta (str cbuf)))
-			(proxy-super write cbuf off len))]
+			(buffer.action/append-text rsta (str cbuf))
+			(proxy-super write cbuf off len))))]
 		writer))
 
 
