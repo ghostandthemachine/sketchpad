@@ -1,9 +1,7 @@
-; (use '[seesaw color])
-
 (def default-background-color [39 49 34])
 
 (def default-editor-prefs
-   {:buffer-theme "dark.xml" ;; load RSyntaxTextArea from xml theme file
+   {:buffer-theme "sublime.xml" ;; load RSyntaxTextArea from xml theme file
 	;; params after this point will overide those set by the theme selection above
 	; :background-image "img/invisible.png"
 	:whitespace-visible false
@@ -14,7 +12,7 @@
 	:code-folding true
 	:auto-indent true
 	:eol-marker false
-	:font "MENLO-BOLD-10"
+	:font "MENLO-BOLD-12"
 	:tab-size 				2
 	:hyper-links-enabled false
 	:mark-occurences false
@@ -28,7 +26,7 @@
 	:close-curly-braces true})
 
 (def default-repl-prefs
-   {:buffer-theme "themes/dark.xml" ;; load RSyntaxTextArea from xml theme file
+   {:buffer-theme "sublime.xml" ;; load RSyntaxTextArea from xml theme file
 	;; params after this point will overide those set by the theme selection above
 	; :background-image "img/invisible.png"
 	:whitespace-visible false
@@ -39,7 +37,7 @@
 	:code-folding true
 	:auto-indent true
 	:eol-marker false
-	:font "MENLO-BOLD-10"
+	:font "MENLO-BOLD-12"
 	:tab-size 				2
 	:hyper-links-enabled false
 	:mark-occurences false
@@ -87,7 +85,7 @@
    :bookmarking-enabled                false
    :fold-indicator-enabled             true  ;; not functional until new Clojure Lexxer is integrated
    :line-number-color                  [143 144 134]
-   :line-number-font                   "MENLO-10"
+   :line-number-font                   "MENLO-12-BOLD"
    :line-number-start-index            1
    :active-range-color 				   [50 50 41]})
 

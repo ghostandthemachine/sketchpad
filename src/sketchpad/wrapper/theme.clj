@@ -8,8 +8,8 @@ Parameters: in - The input stream to read from. This will be closed when this me
 Returns: The theme.\n
 Throws:	java.io.IOException - If an IO error occurs.\n
 See Also: save(OutputStream)"
-	[file-name]
-	(Theme/load (io/input-stream file-name)))
+	([file-name]
+	(Theme/load (io/input-stream file-name))))
 
 (defn apply!
 "Applies this theme to a text area.\n

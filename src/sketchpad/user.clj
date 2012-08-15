@@ -6,10 +6,12 @@
         [sketchpad.tree.tree]
         [sketchpad.util.brackets]
 			  [sketchpad.buffer.action]
-        [sketchpad.system.desktop])
+        [sketchpad.system.desktop]
+				[sketchpad.auto-complete.template])
 	(:require [sketchpad.util.tab :as tab]
 					  [sketchpad.wrapper.rsyntaxtextarea :as rsta]
 					  [sketchpad.core :as core]
+            [sketchpad.wrapper.gutter :as gutter]
 					  [sketchpad.buffer.search :as search]
             [sketchpad.project.project :as project]
             [sketchpad.project.form :as project.form]
@@ -348,11 +350,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; REPL
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-; (defn repl-at 
-; "Returns the REPL map for a given repl tab index."
-;   [idx]
-;     (let [repl (tab/current-re)]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Bookmarks

@@ -2,12 +2,12 @@
 <!DOCTYPE RSyntaxTheme SYSTEM "theme.dtd">
 
 <!--
-	Dark theme based off of Notepad++'s Obsidian theme.
+   Dark theme based off of Notepad++'s Obsidian theme.
 -->
 <RSyntaxTheme version="1.0">
-
+   
    <!-- Specify family="..." attribute to override system default monospaced. -->
-   <baseFont size="14"/>
+   <baseFont size="12"/>
    
    <!--  General editor colors. -->
    <background color="272822"/>
@@ -19,10 +19,16 @@
    <markOccurrencesHighlight color="6b8189" border="true"/>
    <matchedBracket fg="6A8088" bg="6b8189" animate="true"/>
    <hyperlinks fg="A082BD"/>
+
+   <secondaryLanguages>
+      <language index="1" bg="334455"/>
+      <language index="2" bg="223322"/>
+      <language index="3" bg="ffe0f0"/>
+   </secondaryLanguages>
    
    <!-- Gutter styling. -->
    <gutterBorder color="81969A"/>
-   <lineNumbers fg="8F908A"/>
+   <lineNumbers fg="81969A"/>
    <foldIndicator fg="6A8088" iconBg="2f383c"/>
    <iconRowHeader activeLineRange="3399ff"/>
    

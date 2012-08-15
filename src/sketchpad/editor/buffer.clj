@@ -1,7 +1,17 @@
 (ns sketchpad.editor.buffer
 	(:use [seesaw meta])
 	(:import 
-           (java.io File StringReader BufferedWriter OutputStreamWriter FileOutputStream))
+           (java.io File StringReader BufferedWriter OutputStreamWriter FileOutputStream)
+           (org.fife.rsta.ac.html HtmlLanguageSupport)
+           (org.fife.rsta.ac.java JavaLanguageSupport)
+           (org.fife.rsta.ac.c CLanguageSupport)
+           (org.fife.rsta.ac.groovy GroovyLanguageSupport)
+           (org.fife.rsta.ac.js JavaScriptLanguageSupport)
+           (org.fife.rsta.ac.perl PerlLanguageSupport)
+           (org.fife.rsta.ac.php PhpLanguageSupport)
+           (org.fife.rsta.ac.jsp JspLanguageSupport)
+           (org.fife.rsta.ac.xml XmlLanguageSupport)
+           (org.fife.rsta.ac.sh ShellLanguageSupport))
 	(:require [sketchpad.editor.build :as editor.build]
 			[sketchpad.file.file :as file]
 			[seesaw.core :as seesaw]
@@ -22,10 +32,40 @@
 	[buffer]
 	(when @(:file buffer)
 		(let [suffix (last (clojure.string/split (.getName @(:file buffer)) #"\."))]
-			(println "open file suffix: " suffix)
-			(println "open file name " (.getName @(:file buffer)))
-			(cond (= suffix "clj")
-				(auto-complete/install-auto-completion (get-in buffer [:component :text-area]))))))
+			(cond
+				(= suffix "clj")
+					(auto-complete/install-auto-completion (get-in buffer [:component :text-area]))
+				(= suffix "java")
+					(let [java-lang-support (JavaLanguageSupport. )]
+						(.install java-lang-support (get-in buffer [:component :text-area])))
+				(= suffix "c")
+					(let [c-lang-support (CLanguageSupport. )]
+						(.install c-lang-support (get-in buffer [:component :text-area])))
+				(= suffix "groovy")
+					(let [groovy-lang-support (GroovyLanguageSupport. )]
+						(.install groovy-lang-support (get-in buffer [:component :text-area])))
+				(= suffix "js")
+					(let [js-lang-support (JavaScriptLanguageSupport. )]
+						(.install js-lang-support (get-in buffer [:component :text-area])))
+				(= suffix "perl")
+					(let [perl-lang-support (PerlLanguageSupport. )]
+						(.install perl-lang-support (get-in buffer [:component :text-area])))
+				(= suffix "php")
+					(let [php-lang-support (PhpLanguageSupport. )]
+						(.install php-lang-support (get-in buffer [:component :text-area])))
+				(= suffix "jsp")
+					(let [jsp-lang-support (JspLanguageSupport. )]
+						(.install jsp-lang-support (get-in buffer [:component :text-area])))
+				; not working correctly. There is some print out bug when looking at ac clomplets list
+				; (= suffix "sh")
+				; 	(let [sh-lang-support (ShellLanguageSupport. )]
+				; 		(.install sh-lang-support (get-in buffer [:component :text-area])))
+				(= suffix "xml")
+					(let [xml-lang-support (XmlLanguageSupport. )]
+						(.install xml-lang-support (get-in buffer [:component :text-area])))
+				(= suffix "html")
+					(let [html-lang-support (HtmlLanguageSupport. )]
+						(.install html-lang-support (get-in buffer [:component :text-area])))))))
 
 (defn init-buffer-tab-state [buffer]
 	(let [text-area (:text-area buffer)]

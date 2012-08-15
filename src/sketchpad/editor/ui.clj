@@ -61,8 +61,7 @@
 			(.moveTo x0 y0)
 			(.curveTo cx1 cy1 cx2 cy2 x3 y3)
 			(.lineTo x4 y4)
-			(.curveTo cx5 cy5 cx6 cy6 x7 y7))
-		)))
+			(.curveTo cx5 cy5 cx6 cy6 x7 y7)))))
 
 (def base-color (color 39 40 34))
 (def base-color2 (color 57 57 55))

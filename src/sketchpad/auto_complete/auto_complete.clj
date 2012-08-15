@@ -1,4 +1,5 @@
 (ns sketchpad.auto-complete.auto-complete
+  (:import (org.fife.rsta.ac.html.HtmlCompletionProvider))
   (:use [sketchpad.auto-complete.completion-builder])
   (:require [sketchpad.config.config :as config]
             [sketchpad.wrapper.rsyntaxtextarea :as wrapper.rsyntaxtextarea]
@@ -13,20 +14,27 @@
      (.setAutoActivationRules cp true "")
      cp)))
 
-(defonce provider (create-completion-provider))
+(defonce completion-provider (create-completion-provider))
+
+(defonce default-auto-completion (org.fife.ui.autocomplete.AutoCompletion. completion-provider))
 
 (defn install-auto-completion
-  [rta]
-  (let [completion-provider (org.fife.ui.autocomplete.AutoCompletion. provider)]
-    (config/apply-auto-completion-prefs! completion-provider)
-    (doto completion-provider
-      (.install rta))))
+  [rta] 
+    (config/apply-auto-completion-prefs! default-auto-completion)
+    (.install default-auto-completion rta))
 
 (defn install-project-auto-completion
 "Adds all project ns completions to a text area. Takes a text-area and a SketchPad project."
   [rsta  completion-provider]
     (config/apply-auto-completion-prefs! completion-provider)
     (.install completion-provider rsta))
+
+(defn install-html-auto-completion
+  [rta]
+  (let [completion-provider (org.fife.ui.autocomplete.AutoCompletion. (org.fife.rsta.ac.html.HtmlCompletionProvider.))]
+    (config/apply-auto-completion-prefs! completion-provider)
+    (doto completion-provider
+      (.install rta))))
 
 (defn create-provider
   ([]

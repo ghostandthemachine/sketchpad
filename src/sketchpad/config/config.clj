@@ -35,11 +35,12 @@
 
 (defn add-theme-if-needed
   []
-  (when-not (exists? (str sketchpad-app-url "/dark.xml"))
-    (let [src-url (clojure.java.io/resource "dark.xml")
+  (when-not (exists? (str sketchpad-app-url "/sublime.xml"))
+    (let [src-url (clojure.java.io/resource "sublime.xml")
           dst-dir (java.io.File. sketchpad-app-url)
-          dst-file (java.io.File. (str sketchpad-app-url "/dark.xml"))]
-      (spit (str sketchpad-app-url "/dark.xml") (slurp src-url)))))
+          dst-file (java.io.File. (str sketchpad-app-url "/sublime.xml"))]
+      (spit (str sketchpad-app-url "/sublime.xml") (slurp src-url)))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;  Load the config files
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -173,7 +174,8 @@
 [text-area pref]
   (.setTabLineColor text-area (apply c/color pref)))
 
-(defn templates-enabled "Enables or disables templates. Templates are a set of \"shorthand
+(defn templates-enabled
+"Enables or disables templates. Templates are a set of \"shorthand
 identifiers\" that you can configure so that you only have to type a short identifier (such as
 \"forb\") to insert a larger amount of code into the document (such as:
 
@@ -195,7 +197,6 @@ This method fires a property change event of type CLOSE_CURLY_BRACES_PROPERTY."
 "Set the current RSyntaxTextArea theme."
 [text-area pref]
   (try
-
      (theme/apply! (theme/theme (str sketchpad-app-url "/" pref)) text-area)
      (catch Exception e
        (println (str "The theme " pref " can not be found...")))))
@@ -372,7 +373,8 @@ You never have to change the opaque property yourself; it is always done for you
 ;; Handler Maps
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def editor-pref-handlers ^{:doc "default handlers for config settings found in config/default.clj"}
+(def editor-pref-handlers
+^{:doc "default handlers for config settings found in config/default.clj"}
   {:whitespace-visible whitespace-visible                  
    :clear-whitespace-lines clear-whitespace-lines              
    :line-wrap line-wrap                          
@@ -410,7 +412,8 @@ You never have to change the opaque property yourself; it is always done for you
    :line-numbers-enabled  line-numbers-enabled
    :scroller-border-enabled scroller-border-enabled})
 
-(def repl-pref-handlers ^{:doc "default handlers for config settings found in config/default.clj"}
+(def repl-pref-handlers
+^{:doc "default handlers for config settings found in config/default.clj"}
   {:whitespace-visible whitespace-visible                  
    :clear-whitespace-lines clear-whitespace-lines              
    :line-wrap line-wrap                          
@@ -446,7 +449,6 @@ You never have to change the opaque property yourself; it is always done for you
    :horizontal-scroll-bar horizontal-scroll-bar
    :scroller-border-enabled scroller-border-enabled})
 
-
 (def repl-response-timeout (default-repl-prefs :response-timeout))
 
 (def gutter-pref-handlers
@@ -477,11 +479,6 @@ You never have to change the opaque property yourself; it is always done for you
   {})
 
 (def project-path project-dir-path)
-
-; (def project-theme-colors 
-;   (map
-;     #(apply c/color %)
-;     default-project-style-prefs)))
 
 (def project-theme-colors
   [(c/color :white) (c/color :orange) (c/color :green) (c/color :yellow) (c/color :blue) (c/color :red) (c/color :purple) (c/color :pink)])

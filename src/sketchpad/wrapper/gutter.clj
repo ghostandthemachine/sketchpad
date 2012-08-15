@@ -37,7 +37,7 @@
 	[obj x]
 	(.setLineNumberFont obj x))
 
-(defn toggle-bookmark?
+(defn toggle-bookmark
 "
         args:  [int]
        flags:  :public
