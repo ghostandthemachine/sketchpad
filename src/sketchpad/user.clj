@@ -21,6 +21,7 @@
             [clojure.string :as string])
 	(:import 	(org.fife.ui.rsyntaxtextarea RSyntaxTextAreaEditorKit)
 			 		(org.fife.ui.rtextarea RTextAreaEditorKit)
+			 		(org.fife.ui.rsyntaxtextarea.RSyntaxUtilities)
 			 		(org.fife.ui.rsyntaxtextarea.RSyntaxTextArea)
 			 		(java.awt.event ActionEvent)))
 
@@ -181,8 +182,7 @@
 (defn set-line!
   "Set the current line of text."
   ([txt] (set-line! (current-line) txt))
-  ([line txt]
-   ))
+  ([line txt]))
 
 (defn indent-line!
   ([])
@@ -371,3 +371,23 @@
   (let [scroller (get-in buffer [:component :scroller])
         gutter (.getGutter scroller)]
     gutter))
+
+(defn token-list-for-line
+"Returns the token list for a given line."
+	[]
+	(let [text-area (current-text-area)
+				doc (.getDocument text-area)
+				line (.getCaretLine text-area)
+				token (.getTokenListForLine doc line)]
+		token))
+
+(defn current-token 
+"Returns the Token object for the current token."	
+	[]
+	(let [text-area (current-text-area)
+				doc (.getDocument text-area)
+				line (.getCaretLine text-area)
+				token (.getTokenListForLine doc line)
+				dot (.getCaretPosition text-area)
+				cur-token (org.fife.ui.rsyntaxtextarea.RSyntaxUtilities/getTokenAtOffset token dot)]
+		cur-token))

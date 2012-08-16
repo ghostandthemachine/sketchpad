@@ -369,6 +369,12 @@ You never have to change the opaque property yourself; it is always done for you
   [ac pref]
   (.setTriggerKey ac (key/keystroke pref)))
 
+
+(defn spell-checker-underline-color
+"Set the color of the spell checker squiggly line."
+	[sc pref]
+	(.setSquiggleUnderlineColor sc (c/color pref)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Handler Maps
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -475,6 +481,9 @@ You never have to change the opaque property yourself; it is always done for you
   {:vertical-scroll-bar tree-vertical-scroll-bar
    :horizontal-scroll-bar tree-horizontal-scroll-bar})
 
+(def spell-checker-pref-handlers
+	{:underline-color spell-checker-underline-color})
+
 (def file-tree-pref-handlers
   {})
 
@@ -514,3 +523,7 @@ You never have to change the opaque property yourself; it is always done for you
 (defn apply-sketchpad-prefs! []
   (doseq [[k pref] default-sketchpad-prefs]
     ((k sketchpad-pref-handlers) pref)))
+
+(defn apply-spell-checker-prefs! [spell-checker]
+  (doseq [[k pref] default-spell-checker-prefs]
+    ((k spell-checker-pref-handlers) spell-checker pref)))

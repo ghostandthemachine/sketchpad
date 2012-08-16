@@ -92,6 +92,9 @@
 (def default-sketchpad-prefs
 	{:show-tabs? true})
 
+(def default-spell-checker-prefs
+	{:underline-color :orange})
+
 (def project-dir-path "projects/")
 
 (def default-project-style-prefs
