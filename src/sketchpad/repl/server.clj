@@ -50,6 +50,8 @@
   (nrepl.ack/reset-ack-port!)
   (let [prepped (promise)
   	    project (:lein-project sketchpad-project)]
+    (println "Creating repl server for lein project: ")
+    (clojure.pprint/pprint project)
 	(.start
 	  (Thread. 
 	    (bound-fn []

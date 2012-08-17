@@ -15,6 +15,7 @@
 						[sketchpad.util.utils :as utils]
 						[sketchpad.project.project :as sketchpad.project]
 						[sketchpad.editor.component :as editor.component]
+						[sketchpad.editor.quil-component :as editor.quil-component]
 						[sketchpad.editor.info-utils :as editor.info-utils]
 						[sketchpad.menu.view :as sketchpad.menu.view]
 						[sketchpad.file.file :as file]))

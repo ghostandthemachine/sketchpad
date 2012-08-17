@@ -64,8 +64,7 @@
 (defn create-repl [selection-path]
 "Create a new project REPL at the given path."
   (let [project-path (first (tree.utils/get-selected-projects))]
-    (seesaw/invoke-later 
-      (repl/repl (project/project-from-path project-path)))))
+    (repl/repl (project/project-from-path project-path))))
 
 (defn make-project-menu
   []

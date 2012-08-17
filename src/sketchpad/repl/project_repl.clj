@@ -40,8 +40,7 @@
 	        conn (:conn repl)
           text-area (get-in repl [:component :text-area])
 	        items (:items repl-history)
-	        cmd-str (cmd-attach-file-and-line (buffer.action/get-last-cmd (get-in repl [:component :text-area])  ) file line)
-          ]
+	        cmd-str (cmd-attach-file-and-line (buffer.action/get-last-cmd (get-in repl [:component :text-area])) file line)]
       (buffer.action/append-text text-area (str \newline))
 		    (when-let [response (-> (nrepl/client conn config/repl-response-timeout)
 	   						        (nrepl/message {:op :eval :code cmd})
@@ -167,13 +166,11 @@
 
 (defn- repl-panel
   [project]
-  (let [component    (repl.component/repl-component)
-        server-port  (repl.server/repl-server project)
+  (let [
+        component (repl.component/repl-component)
         repl {:type :repl
               :component   component
               :text-area   (:text-area component)
-              :server-port server-port
-              :conn        (nrepl/connect :port server-port)
               :title       (:title component)
               :project     (:path project)
               :uuid        (.. UUID randomUUID toString)
@@ -184,16 +181,22 @@
 (defn repl
 "Builds a new REPL component for a given project."
 [project]
-  (let [repl (repl-panel project)]
-    (sketchpad.project/add-repl-to-project (:path project) repl)
-    (add-repl-behaviors repl)
-    (add-repl-mouse-handlers repl project)
-    (repl.info/attach-caret-handler (get-in repl [:component :text-area]))
-    (tab/add-repl repl)
-    (tab/show-repl repl)
-    (tab/focus-repl repl)
-    (tab/repl-tab-component! repl)
-  repl))
+  (let [server-port (future (repl.server/repl-server project))]
+    (future
+      (let [port @server-port
+            conn (nrepl/connect :port port)]
+        (seesaw/invoke-later 
+          (let[repl (repl-panel project)
+               repl (assoc repl :port port :conn conn)]
+            (sketchpad.project/add-repl-to-project (:path project) repl)
+            (add-repl-behaviors repl)
+            (add-repl-mouse-handlers repl project)
+            (repl.info/attach-caret-handler (get-in repl [:component :text-area]))
+            (tab/add-repl repl)
+            (tab/show-repl repl)
+            (tab/focus-repl repl)
+            (tab/repl-tab-component! repl)
+  repl))))))
 
 
 ; (first (filter #(= uuid (:uuid %)) (mapcat :repls @projects)))

@@ -31,8 +31,8 @@
       (.exists f)      :other
       :else            :non-existent)))
  
-(defn lein-project-file? []
-  (not= (kind "project.clj") :non-existent))
+(defn lein-project-file? [project-path]
+  (not= (kind (str project-path "/project.clj")) :non-existent))
 
 (defn projects []
 	@project.state/project-map)
@@ -58,8 +58,7 @@
 	  									; :completion-provider (auto-complete/build-project-completion-provider project-path)
 	  									:repls (atom {}) 
 	  									:buffers (atom {})})))
-	  ; (println "add project with path key: " project-path)
-	  (if (lein-project-file?)
+	  (if (lein-project-file? project-path)
 	  		(try
 		  		(when-let [lein-project (lein-project/read (str project-path "/project.clj"))]
 		  		(swap! projects (fn [m] (assoc-in m [project-path :lein-project] lein-project))))

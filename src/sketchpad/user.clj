@@ -1,16 +1,19 @@
 (ns sketchpad.user
 	(:refer-clojure :exclude [find replace])
-	(:use [seesaw meta dev core]
+	(:use [seesaw meta dev]
+        [seesaw.core :exclude [height width]]
 			  [clojure.repl]
 			  [sketchpad.config.config]
         [sketchpad.tree.tree]
+        [sketchpad.buffer.action]
         [sketchpad.util.brackets]
-			  [sketchpad.buffer.action]
         [sketchpad.system.desktop]
-				[sketchpad.auto-complete.template])
+				[sketchpad.auto-complete.template]
+				[clojure.java.shell])
 	(:require [sketchpad.util.tab :as tab]
 					  [sketchpad.wrapper.rsyntaxtextarea :as rsta]
 					  [sketchpad.core :as core]
+            ; [sketchpad.buffer.action :as buffer]
             [sketchpad.wrapper.gutter :as gutter]
 					  [sketchpad.buffer.search :as search]
             [sketchpad.project.project :as project]
@@ -391,3 +394,14 @@
 				dot (.getCaretPosition text-area)
 				cur-token (org.fife.ui.rsyntaxtextarea.RSyntaxUtilities/getTokenAtOffset token dot)]
 		cur-token))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;  Grep
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn grep
+"Grep a path."
+	([search-term] (grep search-term "projects/"))
+	([search-term path]
+		(doall
+			(apply println (clojure.string/split (:out (sh "grep" "-nri" search-term path)) #"\n")))))

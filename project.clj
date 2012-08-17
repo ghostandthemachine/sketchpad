@@ -13,5 +13,6 @@
                  [timbre "0.5.1-SNAPSHOT"]
                  [language-support/language-support "0.1.0-SNAPSHOT"]
                  [rsta_spellchecker/rsta_spellchecker "0.1.0-SNAPSHOT"]
-                 [org.apache.commons/commons-io "1.3.2"]]
+                 [org.apache.commons/commons-io "1.3.2"]
+                 [quil/quil "1.6.0"]]
   :jvm-opts ~(if (= (System/getProperty "os.name") "Mac OS X") ["-Xdock:name=SketchPad"] []))
