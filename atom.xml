@@ -4,7 +4,7 @@
   <title><![CDATA[SketchPad]]></title>
   <link href="http://ghostandthemachine.github.com/sketchpad/atom.xml" rel="self"/>
   <link href="http://ghostandthemachine.github.com/sketchpad/"/>
-  <updated>2012-08-14T07:37:42-07:00</updated>
+  <updated>2012-08-19T14:21:05-07:00</updated>
   <id>http://ghostandthemachine.github.com/sketchpad/</id>
   <author>
     <name><![CDATA[]]></name>
@@ -12,5 +12,40 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Project End]]></title>
+    <link href="http://ghostandthemachine.github.com/sketchpad/blog/2012/08/18/project-end/"/>
+    <updated>2012-08-18T16:50:00-07:00</updated>
+    <id>http://ghostandthemachine.github.com/sketchpad/blog/2012/08/18/project-end</id>
+    <content type="html"><![CDATA[<p>Wanted to build my own editor</p>
+
+<p>Great tools available for the project</p>
+
+<p>Power of clojure as a text editing tool</p>
+
+<p>What can interactive code and rich graphics lead to?</p>
+
+<p>Three years ago I started programming with <a href="www.processing.org">Processing</a>. I had a background in visual fx and audio production so Processing was a logical entry point. It wasn&#8217;t until I started CS courses and using IDE&#8217;s like Eclipse and Netbeans that I realized how effective the Processing library and editor really were. Allowing developers with all different experience levels from students to professionals to be able to download a single application that contained all of the needed components to build and execute engaging applications. For the beginner this means energy is spent on learning the language and the concepts rather than configuring environments. For experienced users, lean environments like Processing can be a Swiss Army knife of sorts, eliminating the bloat of unneeded IDE components and providing quick. intuitive access to the tools you do need.</p>
+
+<p>After spending a few months in every editor from XCode, to Sumblime Text, I realized what I wanted most in my IDE wasn&#8217;t countless features but the right features. Over the last year I have moved to using Sublime Text as my primary editor. While Sublime is an awesome looking editor that is very efficient for navigating buffers, searching, etc., it still can&#8217;t compete with VIM and Emacs for things like scripting and buffer manipulation. Tasks that would take me ten or fifteen minutes in Sublime would take a friend one minute in VIM with a good script. By the end of this past Spring semester I was pretty much ready to move away from Sublime and jump to VIM. Around that time the 2012 Google Summer of Code organizations and <a href="www.clojure.org">Clojure</a> was added to the program organizations.</p>
+
+<h2>SketchPad</h2>
+
+<p><img src="https://raw.github.com/ghostandthemachine/sketchpad/master/resources/sketchpad-lambda-logo-small.png"></p>
+
+<p>The SketchPad environment is written in Clojure and is built for working with Clojure projects. The editor supports syntax highlighting for over 30 programming languages and language support for many of the most commonly used languages like Java, JavaScript, HTML, XML, etc.</p>
+
+<h2>Design</h2>
+
+<h4>Structure</h4>
+
+<p>SketchPad is designed to be as intuitive and direct as possible for accessing everything from buffer text to seesaw (swing) UI components. In contrast with large IDE&#8217;s like Eclipse and Netbeans, SketchPad has very little overhead when it comes to interacting with all of the UI components. Unlike VIM and emacs though it can support more modern graphics. Combined with the flexibility of seesaw, the wide range of features of RSyntaxTextArea, and the power of Clojure, this creates a lean and flexible environment for a range of developers.</p>
+
+<p>To begin manipulating code, and projects using these tools it&#8217;s important to understand the simple structure of SketchPad. All of the application state is stored in the <code>app</code> atom which is located in <code>sketchpad.state.state/app</code>. This diagram shows an outline of the map&#8217;s general structure.</p>
+
+<p>Error processing input, expected syntax: {% img [class name(s)] [http[s]:/]/path/to/image [width [height]] [title text | &#8220;title text&#8221; [&#8220;alt text&#8221;]] %}</p>
+]]></content>
+  </entry>
   
 </feed>

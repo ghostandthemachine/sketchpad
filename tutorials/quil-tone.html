@@ -34,7 +34,9 @@
 </head>
 
 <body    class="collapse-sidebar sidebar-footer" >
-  <header role="banner"><hgroup>
+  <header role="banner"><a href="https://github.com/ghostandthemachine/sketchpad"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png" alt="Fork me on GitHub"></a>
+
+<hgroup>
 	<table style="background-color=#333;">
 		<tr style="background-color=#333;">
 			<td style="background-color=#333;">
@@ -44,11 +46,12 @@
 			  
 			</td>
 			<td style="background-color=#333;">
-				<img src="favicon.png"/>
+				<img src="https://raw.github.com/ghostandthemachine/sketchpad/master/resources/sketchpad-lambda-logo-small.png"/>
 			</td>
 		</tr>
 	</table>
 </hgroup>
+
 
 </header>
   <nav role="navigation"><ul class="subscription" data-subscription="rss">
@@ -67,6 +70,7 @@
   <li><a href="/sketchpad/about/">About</a></li>
   <li><a href="/sketchpad/documentation/">Domuentation</a></li>
   <li><a href="/sketchpad/tutorials/">Tutorials</a></li>
+	<li><a href="/sketchpad/blog/">Blog</a></li>  
 </ul>
 
 </nav>
@@ -82,7 +86,7 @@
   
   <h2>Working with projects</h2>
 
-<p>The SketchPad project system is based on <a href="https://github.com/technomancy/leiningen/">Leiningen</a> and Clojars. Leiningen is integrated into the application as a core dependency and allows SketchPad to create, build, and run Clojure projets without the need for any other libraries or system dependencies. To begin working on a project you first need to open an existing project or create a new one.</p>
+<p>The SketchPad project system is based on <a href="https://github.com/technomancy/leiningen/">Leiningen</a> and Clojars. Leiningen is integrated into the application as a core dependency and allows SketchPad to create, build, and run Clojure projects without the need for any other libraries or system dependencies. To begin working on a project you first need to open an existing project or create a new one.</p>
 
 <h2>Creating a project</h2>
 
@@ -184,7 +188,7 @@
 
 <p>A REPL can be created in an outside process by right clicking a node in the new project and selecting <code>Create REPL</code>. Leiningen and Pomegranate will download all required dependencies and the new nREPL will be loaded into a new tab. Once the new tab is loaded you can navigate to the previous and next tabs with the key commands <code>meta alt UP</code> for the next REPL tab and <code>meta alt DOWN</code> for the previous tab.</p>
 
-<p>With the new properly classpathed and loaded REPL we can now boot the Overtone server awestruck by our amazing art.</p>
+<p>With the new properly classpathed and loaded REPL we can now boot the Overtone server awe struck by our amazing art.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -228,6 +232,10 @@
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/sketchpad/blog/2012/08/18/project-end/">Project End</a>
+      </li>
     
   </ul>
 </section>

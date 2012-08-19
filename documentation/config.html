@@ -1,0 +1,288 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Config - SketchPad</title>
+  <meta name="author" content="">
+
+  
+  <meta name="description" content="Config Overview SketchPad supports a number of configuration options from buffer key bindings to the look and feel of most components. All of these &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://ghostandthemachine.github.com/sketchpad/documentation/config.html">
+  <link href="/sketchpad/favicon.png" rel="icon">
+  <link href="/sketchpad/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/sketchpad/javascripts/modernizr-2.0.js"></script>
+  <script src="/sketchpad/javascripts/ender.js"></script>
+  <script src="/sketchpad/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/sketchpad/atom.xml" rel="alternate" title="SketchPad" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body    class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><a href="https://github.com/ghostandthemachine/sketchpad"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png" alt="Fork me on GitHub"></a>
+
+<hgroup>
+	<table style="background-color=#333;">
+		<tr style="background-color=#333;">
+			<td style="background-color=#333;">
+			  <h1><a href="/sketchpad/">SketchPad</a></h1>
+			  
+			    <h2>A Clojure IDE written in Clojure</h2>
+			  
+			</td>
+			<td style="background-color=#333;">
+				<img src="https://raw.github.com/ghostandthemachine/sketchpad/master/resources/sketchpad-lambda-logo-small.png"/>
+			</td>
+		</tr>
+	</table>
+</hgroup>
+
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/sketchpad/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:ghostandthemachine.github.com/sketchpad" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/sketchpad/about/">About</a></li>
+  <li><a href="/sketchpad/documentation/">Domuentation</a></li>
+  <li><a href="/sketchpad/tutorials/">Tutorials</a></li>
+	<li><a href="/sketchpad/blog/">Blog</a></li>  
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article role="article">
+  
+  <header>
+    <h1 class="entry-title">Config</h1>
+    
+  </header>
+  
+  <h2>Overview</h2>
+
+<p>SketchPad supports a number of configuration options from buffer key bindings to the look and feel of most components. All of these preferences are managed by the default.clj file which is created in <code>~/.sketchpad/default.clj</code>. If the <code>~/.sketchpad</code> directory does not exist then it will be created along with the <code>default.clj</code> file and the default theme file. The default config file provides access to configuring:</p>
+
+<h2>REPL buffer prefs</h2>
+
+<ul>
+<li>line wrapping</li>
+<li>buffer styles
+
+<ul>
+<li>visible whitespace</li>
+<li>selection border and fill styles</li>
+<li>eol markers</li>
+<li>mark occurrences rendering</li>
+<li>bracket matching color</li>
+<li>bracket matching border color</li>
+</ul>
+</li>
+<li>auto indent</li>
+<li>fonts</li>
+<li>code folding</li>
+<li>tab size</li>
+<li>mark occurrences</li>
+<li>show/hide scroll bars</li>
+<li>enable hyperlinks</li>
+<li>tab lines</li>
+<li>enable code templates</li>
+<li>anti aliasing</li>
+<li>animate bracket matching</li>
+<li>close curly braces
+
+<h2>Auto Completion prefs</h2></li>
+<li>enable auto completion</li>
+<li>auto activation</li>
+<li>auto activation delay time</li>
+<li>auto complete single choice</li>
+<li>show description window</li>
+<li>description window size</li>
+<li>parameter assistance</li>
+<li>auto completion trigger key
+
+<h2>Buffer prefs</h2></li>
+<li>line wrapping</li>
+<li>buffer styles
+
+<ul>
+<li>visible whitespace</li>
+<li>selection border and fill styles</li>
+<li>eol markers</li>
+<li>mark occurrences rendering</li>
+<li>bracket matching color</li>
+<li>bracket matching border color</li>
+</ul>
+</li>
+<li>auto indent</li>
+<li>fonts</li>
+<li>code folding</li>
+<li>tab size</li>
+<li>mark occurrences</li>
+<li>show/hide scroll bars</li>
+<li>enable hyperlinks</li>
+<li>tab lines</li>
+<li>enable code templates</li>
+<li>anti aliasing</li>
+<li>animate bracket matching</li>
+<li>close curly braces
+
+<h2>Buffer gutter prefs</h2></li>
+<li>border color</li>
+<li>fold indicator</li>
+<li>line number color</li>
+<li>line number font</li>
+<li>line number starting index</li>
+<li>active range color
+
+<h2>Buffer key bindings</h2></li>
+<li>begin-line <code>meta LEFT</code></li>
+<li>begin <code>meta UP</code></li>
+<li>selection-begin <code>meta shift UP</code></li>
+<li>end-line <code>meta RIGHT</code></li>
+<li>selection-begin-line <code>meta shift LEFT</code></li>
+<li>selection-end-line <code>meta shift RIGHT</code></li>
+<li>end <code>meta DOWN</code></li>
+<li>selection-end <code>meta shift DOWN</code></li>
+<li>backward <code>LEFT</code></li>
+<li>selection-backward <code>shift LEFT</code></li>
+<li>previous-word <code>alt LEFT</code></li>
+<li>selection-previous-word <code>alt shift LEFT</code></li>
+<li>down <code>DOWN</code></li>
+<li>selection-down <code>shift DOWN</code></li>
+<li>line-down <code>alt DOWN</code></li>
+<li>forward <code>RIGHT</code></li>
+<li>selection-forward <code>shift RIGHT</code></li>
+<li>next-word <code>alt RIGHT</code></li>
+<li>selection-next-word <code>alt shift RIGHT</code></li>
+<li>up <code>UP</code></li>
+<li>selection-up <code>alt shift UP</code></li>
+<li>line-up <code>alt UP</code></li>
+<li>page-up <code>PAGE_UP</code></li>
+<li>selection-page-up <code>shift PAGE_UP</code></li>
+<li>selection-page-left <code>meta shift PAGE_UP</code></li>
+<li>page-down <code>PAGE_DOWN</code></li>
+<li>selection-page-down <code>shift PAGE_DOWN</code></li>
+<li>selection-page-right <code>meta shift PAGE_DOWN</code></li>
+<li>key-cut <code>meta CUT</code></li>
+<li>key-copy <code>meta COPY</code></li>
+<li>key-paste <code>meta PASTE</code></li>
+<li>cut <code>meta X</code></li>
+<li>copy <code>meta C</code></li>
+<li>paste <code>meta V</code></li>
+<li>delete-next-char <code>DELETE</code></li>
+<li>delete-cut <code>shift DELETE</code></li>
+<li>delete-rest-of-line <code>meta DELETE</code></li>
+<li>toggle-text-mode <code>INSERT</code></li>
+<li>insert-paste <code>shift INSERT</code></li>
+<li>insert-copy <code>meta INSERT</code></li>
+<li>select-all <code>meta A</code></li>
+<li>delete-line <code>meta D</code></li>
+<li>join-lines <code>meta J</code></li>
+<li>delete-prev-char <code>shift BACK_SPACE</code></li>
+<li>delete-prev-word <code>meta BACK_SPACE</code></li>
+<li>scroll-down <code>meta alt OPEN_BRACKET</code></li>
+<li>scroll-up <code>meta alt CLOSE_BRACKET</code></li>
+<li>insert-tab <code>TAB</code></li>
+<li>insert-break <code>ENTER</code></li>
+<li>shift-insert-break <code>shift ENTER</code></li>
+<li>dumb-complete-word <code>alt TAB</code></li>
+<li>undo <code>meta Z</code></li>
+<li>redo <code>meta shift Z</code></li>
+<li>next-bookmark <code>F2</code></li>
+<li>prev-bookmark <code>shift F2</code></li>
+<li>toggle-bookmark <code>meta F2</code></li>
+<li>prev-occurrence <code>meta shift K</code></li>
+<li>next-occurrence <code>meta K</code>})</li>
+</ul>
+
+
+  
+    <footer>
+      
+      
+    </footer>
+  
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/sketchpad/blog/2012/08/18/project-end/">Project End</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 -  -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
