@@ -71,7 +71,7 @@
         (if (@current-tab-state :clean)
           (tab/close-tab) ;; nothing has changed, just close.
           (do 
-            (let [answer (option-windows/close-or-save-current-dialogue @(:title buffer))]
+            (let [answer (option-windows/close-or-save-current-dialogue @(get-in buffer [:component :title]))]
               (cond 
                 (= answer 0) ;; answered yes to save
                   (do

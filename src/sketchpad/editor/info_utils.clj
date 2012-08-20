@@ -2,6 +2,7 @@
 	(:use [seesaw core])
 	(:require [sketchpad.state.state :as state]
 		[sketchpad.util.tab :as tab]
+		[sketchpad.tree.utils :as tree.utils]
 		[sketchpad.state.state :as state]))
 
 (defn format-position-str [line column]
@@ -29,8 +30,12 @@
 "Update the currently displayed doc title in the info panel"
 [e]
 	(if (tab/tabs?)
-		(config! (:doc-title-label @state/app) :text (tab/title))
-		(config! (:doc-title-label @state/app) :text "")))
+		(invoke-later
+			(config! (:doc-title-label @state/app) :text (tab/title))
+			(when @(:file (tab/current-buffer))
+				(tree.utils/set-tree-selection (.getAbsolutePath @(:file (tab/current-buffer))))))
+		(invoke-later
+			(config! (:doc-title-label @state/app) :text ""))))
 
 (defn attach-caret-handler [text-area]
 	(listen text-area :caret-update update-doc-position-label!))

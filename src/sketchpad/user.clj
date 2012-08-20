@@ -8,13 +8,12 @@
         [sketchpad.buffer.action]
         [sketchpad.util.brackets]
         [sketchpad.system.desktop]
-				[sketchpad.auto-complete.template]
-				[clojure.java.shell])
+				[sketchpad.auto-complete.template])
 	(:require [sketchpad.util.tab :as tab]
 					  [sketchpad.wrapper.rsyntaxtextarea :as rsta]
 					  [sketchpad.core :as core]
-            ; [sketchpad.buffer.action :as buffer]
             [sketchpad.wrapper.gutter :as gutter]
+            [sketchpad.menu.source :as source]
 					  [sketchpad.buffer.search :as search]
             [sketchpad.project.project :as project]
             [sketchpad.project.form :as project.form]
@@ -313,6 +312,11 @@
   []
   (tab/current-buffer))
 
+(defn current-repl
+"Returns the map of the current project repl if one is open."
+  []
+  (tab/current-repl))
+
 (defn current-text-area []
 "Returns the current text area."
   (get-in (current-buffer) [:component :text-area]))
@@ -395,13 +399,7 @@
 				cur-token (org.fife.ui.rsyntaxtextarea.RSyntaxUtilities/getTokenAtOffset token dot)]
 		cur-token))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;  Grep
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defn grep
-"Grep a path."
-	([search-term] (grep search-term "projects/"))
-	([search-term path]
-		(doall
-			(apply println (clojure.string/split (:out (sh "grep" "-nri" search-term path)) #"\n")))))
+"Grep the current projects or a given the given paths."
+  ([search-term] (source/grep-files search-term))
+  ([search-term & args] (source/grep-files search-term args)))

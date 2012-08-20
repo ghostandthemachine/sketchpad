@@ -55,10 +55,12 @@
       (.setFocusable false))
     button)))
 
+
+
 (defn button-tab 
 [buffer]
   (let [button (tab-button buffer)
-        label (label :text @(:title buffer)
+        label (label :text @(get-in buffer [:component :title])
                       :foreground (color :white)
                       :focusable?  false
                       :font (font/font "MENLO-12"))

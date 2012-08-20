@@ -279,7 +279,7 @@
 	  (focus (get-in buffer [:component :text-area]))))
 
 (defn add-buffer [buffer]
-	(add-tab! @(:title buffer) (:container buffer)))
+	(add-tab! @(get-in buffer [:component :title]) (:container buffer)))
 
 (defn buffer-tab-component! [buffer]
 	(.setTabComponentAt (get-in (:buffer-tabbed-panel @state/app) [:component :container]) (index-of-buffer buffer) (get-in buffer [:tab :container])))
@@ -319,7 +319,11 @@
   (get-meta (current-repl-text-area) :uuid))
 
 (defn current-repl []
-	(first (filter #(= (get-repl-uuid) (:uuid %)) (mapcat :repls @(:projects @state/app)))))
+	(mapcat :repls (vals @(:projects @state/app))))
+
+(defn current-repl
+	[]
+	(second (mapcat #(deref (:repls %)) (vals @(:projects @state/app)))))
 
 (defn current-buffer 
 ([]

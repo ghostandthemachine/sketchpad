@@ -15,6 +15,14 @@
            JOptionPane/YES_NO_CANCEL_OPTION)]
  	answer))
 
+(defn close-or-save-application-dialogue [title]
+ (when-let [answer (JOptionPane/showConfirmDialog 
+ 					 nil
+ 					 (str "Do you want to save the open buffers?" title)
+           "Unsaved Changes"
+           JOptionPane/YES_NO_CANCEL_OPTION)]
+ 	answer))
+
 (defn close-repl-dialogue []
  (when-let [answer (JOptionPane/showConfirmDialog 
  					 nil

@@ -56,7 +56,9 @@
 	  									:id id 
 	  									:theme theme
 	  									; :completion-provider (auto-complete/build-project-completion-provider project-path)
-	  									:repls (atom {}) 
+	  									:repls (atom {})
+	  									:last-focused-repl (atom nil)
+	  									:last-focused-buffer (atom nil)
 	  									:buffers (atom {})})))
 	  (if (lein-project-file? project-path)
 	  		(try
@@ -80,6 +82,7 @@
 (reset! (:project-set @state/app) (sorted-set)))
 
 (defn clear-projects []
+	(clear-project-set)
 	(reset! (:projects @state/app) {}))
 
 (defn setup-non-project-map []

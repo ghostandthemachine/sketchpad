@@ -15,7 +15,7 @@
 	:font "MENLO-BOLD-12"
 	:tab-size 				2
 	:hyper-links-enabled false
-	:mark-occurences false
+	:mark-occurences true
 	:mark-occurences-color "#ADA6A9"
 	:paint-mark-occurences-border false
 	:matched-bracket-bg-color [80 240 70 50]
@@ -40,7 +40,7 @@
 	:font "MENLO-BOLD-12"
 	:tab-size 				2
 	:hyper-links-enabled false
-	:mark-occurences false
+	:mark-occurences true
 	:mark-occurences-color "#ADA6A9"
 	:paint-mark-occurences-border false
 	:matched-bracket-bg-color [80 240 70 50]
@@ -81,13 +81,13 @@
 	{})
 
 (def default-gutter-prefs
-  {:border-color                       [0 0 0 0]
-   :bookmarking-enabled                false
-   :fold-indicator-enabled             true  ;; not functional until new Clojure Lexxer is integrated
-   :line-number-color                  [143 144 134]
-   :line-number-font                   "MENLO-12-BOLD"
-   :line-number-start-index            1
-   :active-range-color 				   [50 50 41]})
+  {:border-color [0 0 0 0]
+   :bookmarking-enabled false
+   :fold-indicator-enabled true  ;; not functional until new Clojure Lexxer is integrated
+   :line-number-color [143 144 134]
+   :line-number-font "MENLO-12-BOLD"
+   :line-number-start-index 1
+   :active-range-color [50 50 41]})
 
 (def default-sketchpad-prefs
 	{:show-tabs? true})
@@ -159,3 +159,4 @@
 	:toggle-bookmark "meta F2"
 	:prev-occurrence "meta shift K"
 	:next-occurrence "meta K"})
+

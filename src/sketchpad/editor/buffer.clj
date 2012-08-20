@@ -114,7 +114,7 @@
 (defn blank-clj-buffer!
 	([] (blank-clj-buffer! nil))
 	([parent-dir] 
-	(let [buffer (editor.build/scratch-buffer-tab "tmp")]
+	(let [buffer (editor.build/scratch-buffer-tab "sketchpad-tmp")]
 		(init-buffer-tab-state buffer)
 		(sketchpad.project/add-buffer-to-app buffer)
 		(tab/show-buffer buffer))))

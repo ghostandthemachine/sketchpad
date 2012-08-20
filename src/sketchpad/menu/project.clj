@@ -79,5 +79,5 @@
             (seesaw/separator)
             (seesaw.core/menu-item :text "Clear All Projects" 
                         :mnemonic "C" 
-                        :listen [:action (fn [_] (tree.utils/clear-projects))])]))
+                        :listen [:action (fn [_] (clear-projects))])]))
 

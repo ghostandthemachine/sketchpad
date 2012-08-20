@@ -8,7 +8,8 @@
             [sketchpad.config.config :as config.config]
             [sketchpad.buffer.action :as buffer.action]
             [sketchpad.repl.app.sketchpad-repl :as app.sketchpad-repl])
-  (:import (java.util.concurrent LinkedBlockingDeque)
+  (:import (java.util UUID)
+            (java.util.concurrent LinkedBlockingDeque)
            (org.fife.ui.rtextarea RTextScrollPane)))
 
 (defn- sketchpad-reader [q prompt exit]
@@ -52,6 +53,7 @@
                   				:component {:container repl-container :text-area text-area :scroller repl-in-scroll-pane}
                   				:title repl-title
                   				:history repl-history
+                          :uuid (.. UUID randomUUID toString)
                   				:que repl-que
                   				:tab tab}]
     (meta/put-meta! text-area :repl-history repl-history)

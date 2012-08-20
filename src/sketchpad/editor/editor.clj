@@ -4,14 +4,23 @@
         [sketchpad.system.desktop])
   (:require [sketchpad.editor.ui :as editor.ui]
             [sketchpad.tree.popup :as popup]
+            [sketchpad.project.project :as sketchpad.project]
             [sketchpad.editor.info-utils :as editor.info-utils]
-            [sketchpad.state.state :as state])
+            [sketchpad.state.state :as state]
+            [sketchpad.util.tab :as tab])
   (:import (javax.swing UIManager)))
 
 (defn put [laf k v]
   (.put laf (str "TabbedPane." k) v))
 
 (defn tab-change-handler [buffer-tabbed-panel]
+  
+  ; (listen buffer-tabbed-panel :selection 
+  ;   (fn [e]
+  ;     (let [buffer (tab/current-buffer)]
+  ;       (if-let[buffer-project (sketchpad.project/project-by-name (:project buffer))]
+  ;         (reset! (:last-active-buffer buffer-project) buffer)))))
+
   (listen buffer-tabbed-panel :selection editor.info-utils/update-doc-title-label!)
   (listen buffer-tabbed-panel :selection editor.info-utils/update-doc-position-label!))
 

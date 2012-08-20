@@ -19,6 +19,7 @@
             [sketchpad.editor.editor :as sketchpad.editor]
             [sketchpad.project.project :as project]
             [sketchpad.menu.menu-bar :as menu]
+            [sketchpad.wrapper.rsyntaxtextarea :as rsyntaxtextarea]
             [sketchpad.editor.info :as info]
             [sketchpad.buffer.action :as buffer.action]
             [sketchpad.repl.info :as repl.info]
@@ -34,6 +35,19 @@
       false))
   true)
 
+; (defn check-buffers
+;   [e]
+;   (if (tabs?)
+;     (let [response (close-or-save-application-dialogue "Quit Application")]
+;       (cond
+;         (= response 0)
+;           (println 0)
+;         (= response 1)
+;           (println 1)
+;         (= response 2)
+;           (println 2)
+;         ))))
+
 (defn create-app
   []
   (let [buffer-info (info/buffer-info)
@@ -47,7 +61,7 @@
         file-tree {:type :file-tree
                    :component (file-tree state/app)}
 
-        repl-tabbed-panel      (app.repl/repl-tabbed-panel)
+        repl-tabbed-panel (app.repl/repl-tabbed-panel)
         repl-info (repl.info/repl-info)
         repl-component (vertical-panel :items[(get-in repl-tabbed-panel [:component :container])
                                                    :fill-h
@@ -95,11 +109,12 @@
                      repl-tabbed-panel
                      repl-component
                      main-vertical-split-pane
-                     top-horizontal-split-panel))
-        icon-url (clojure.java.io/resource "sketchpad-lambda-logo.png")
-        icon (.createImage (Toolkit/getDefaultToolkit) icon-url)]
-    (.setIconImage frame icon)
-    (set-osx-icon icon)
+                     top-horizontal-split-panel))]
+  (when (rsyntaxtextarea/is-osx?)
+    (let [icon-url (clojure.java.io/resource "sketchpad-lambda-logo.png")
+          icon (.createImage (Toolkit/getDefaultToolkit) icon-url)]
+      (.setIconImage frame icon)
+      (set-osx-icon icon)))
   app))
 
 
@@ -118,7 +133,7 @@
               (seq (.getURLs (java.lang.ClassLoader/getSystemClassLoader))))))
 
 (defn init-projects []
-  (project/add-project "tmp")
+  (project/add-project "sketchpad-tmp")
   (doall (map #(project/add-project %) (load-project-set))))
 
 ;; startup

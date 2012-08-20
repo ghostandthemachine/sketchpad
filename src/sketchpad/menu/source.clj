@@ -1,10 +1,12 @@
  (ns sketchpad.menu.source
-   (:require [seesaw.core :as seesaw]
-             [seesaw.keystroke :as keystroke]
-             [sketchpad.buffer.action :as buffer.action]
-             [sketchpad.repl.print :as sketchpad.repl.print]
-             [sketchpad.util.tab :as tab]
-             [sketchpad.buffer.spell-check :as spell-check]))
+  (:use [clojure.java.shell])
+  (:require [seesaw.core :as seesaw]
+            [seesaw.keystroke :as keystroke]
+            [sketchpad.buffer.action :as buffer.action]
+            [sketchpad.repl.print :as sketchpad.repl.print]
+            [sketchpad.util.tab :as tab]
+            [sketchpad.buffer.spell-check :as spell-check]
+            [sketchpad.state.state :as state]))
 
 
    
@@ -46,6 +48,17 @@
     (spell-check/remove-english-spell-checker text-area)
     (.repaint text-area)))
 
+(defn grep-files
+"Grep the current projects or a given path."
+  ([search-term] (:out  (apply sh "grep" "-nir" "-I" search-term (keys @(:projects @state/app)))))
+  ([search-term & opts]
+    (:out  (apply sh "grep" "-nir" "-I" search-term opts))))
+
+(defn grep-cmd
+"Focus the editor REPL and create a search function."
+([]
+  (sketchpad.repl.print/append-command (str "(grep \"\")") -2)
+  (tab/focus-application-repl)))
 
 (defn make-source-menu-items []
  {:search (seesaw.core/menu-item :text "Search..." 
@@ -71,7 +84,11 @@
  :remove-spell-check (seesaw.core/menu-item :text "Remove Spell Checker" 
                               :mnemonic "S" 
                               :key (keystroke/keystroke "meta alt S") 
-                              :listen [:action (fn [_] (remove-spell-check))])})
+                              :listen [:action (fn [_] (remove-spell-check))])
+ :grep (seesaw.core/menu-item :text "Grep project or path..." 
+                              :mnemonic "G" 
+                              :key (keystroke/keystroke "meta G") 
+                              :listen [:action (fn [_] (grep-cmd))])})
 
 (defn make-source-menu
   []
@@ -83,7 +100,10 @@
                   (menu-items :search-replace)
                   (menu-items :search-replace-all)
                   (seesaw.core/separator)
-                  (menu-items :toggle-comment)
+                  (menu-items :grep)
                   (seesaw.core/separator)
-                  (menu-items :add-spell-check)
-                  (menu-items :remove-spell-check)])))
+                  (menu-items :toggle-comment)
+                  ; (seesaw.core/separator)
+                  ; (menu-items :add-spell-check)
+                  ; (menu-items :remove-spell-check)
+                  ])))

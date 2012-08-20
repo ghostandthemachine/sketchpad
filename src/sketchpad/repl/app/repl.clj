@@ -20,6 +20,7 @@
   (:require [clojure.string :as string]
             [sketchpad.rsyntax :as rsyntax]
             [clojure.java.io :as io]
+            [sketchpad.project.project :as sketchpad.project]
             [sketchpad.config.config :as config]
             [sketchpad.buffer.action :as buffer.action]
             [sketchpad.editor.ui :as editor.ui]
@@ -32,8 +33,7 @@
             [sketchpad.repl.tab :as repl.tab]
             [sketchpad.repl.app.component :as repl.app.component]
             [leiningen.core.project :as lein])
-  (:import 
-           (java.io.IOException)))
+  (:import (java.io.IOException)))
 
 (use 'clojure.java.javadoc)
 
@@ -109,7 +109,7 @@
 
 (defn update-repl-history [app]
   (swap! (:items repl-history) replace-first
-         (get-text-str (app :application-repl))))
+    (get-text-str (app :application-repl))))
   
 (defn scroll-to-last [text-area]
   (.scrollRectToVisible text-area
@@ -155,12 +155,28 @@
     (attach-action-keys ta-in ["control UP" prev-hist]
                               ["control DOWN" next-hist])))
 
- (defn attach-tab-change-handler [repl-tabbed-panel]
-   (listen repl-tabbed-panel :selection 
-        (fn [e] 
-          (let [num-tabs (tab-count repl-tabbed-panel)]
-           (if (> 0 num-tabs)
-             (swap! state/app assoc :doc-title-atom (current-editor-buffer repl-tabbed-panel)))))))
+(defn update-last-repl
+  [e]
+  (when-let [repl (current-repl)]
+  	
+  	(println "REPL: ")
+  	(println repl)
+  	
+	 	(let [project (:project repl)]
+
+		(println project)
+	 	
+		  ; (reset!
+  		;   (:last-focused-repl (sketchpad.project/get-project project)) repl)
+      )))
+
+(defn attach-tab-change-handler [repl-tabbed-panel]
+  (listen repl-tabbed-panel :selection update-last-repl)
+  (listen repl-tabbed-panel :selection 
+    (fn [e] 
+      (let [num-tabs (tab-count repl-tabbed-panel)]
+       (when (> 0 num-tabs)
+          (swap! state/app assoc :doc-title-atom (current-repl)))))))
 
 (defn init-repl-tabbed-panel [repl-tabbed-panel repl]
   (let [text-area (get-in repl [:component :text-area])
@@ -174,7 +190,7 @@
     (auto-complete/install-auto-completion text-area)
     (config! scroller :background config/app-color)
     (config/apply-repl-prefs! text-area)
-    (send-to-application-repl text-area "(require 'sketchpad.user)(in-ns 'sketchpad.user)")))
+    (send-to-application-repl text-area "(require 'sketchpad.user)\n(in-ns 'sketchpad.user)")))
 
 (defn repl-tabbed-panel
   []
@@ -192,3 +208,4 @@
      :component {:container repl-tabbed-panel}
      :application-repl application-repl}))
 
+	

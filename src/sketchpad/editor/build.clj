@@ -15,7 +15,6 @@
 						[sketchpad.util.utils :as utils]
 						[sketchpad.project.project :as sketchpad.project]
 						[sketchpad.editor.component :as editor.component]
-						[sketchpad.editor.quil-component :as editor.quil-component]
 						[sketchpad.editor.info-utils :as editor.info-utils]
 						[sketchpad.menu.view :as sketchpad.menu.view]
 						[sketchpad.file.file :as file]))
@@ -92,13 +91,16 @@
 		  tab-state (get buffer-component :state)
 		  uuid (.. UUID randomUUID toString)
 		  buffer { :type :buffer
+		  
 					     :text-area text-area
 							 :title (:title buffer-component)
 							 :label (:label buffer-component)
-							 :file (atom nil)
 							 :container container
+							 :file (atom nil)
+							 
 							 :state tab-state
 							 :new-file? (atom true)
+							 
 							 :component buffer-component
 							 :project project-path
 							 :uuid uuid}]

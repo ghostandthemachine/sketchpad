@@ -15,7 +15,7 @@
 (defn project-creation-form
   []
   (let [project-path-str (str (.getAbsoluteFile (java.io.File. config/project-path)) "/")
-  		repo-text-area (rsyntax/text-area :columns 200 
+  			repo-text-area (rsyntax/text-area :columns 200 
   																				:id :project-form-dependencies
   																				:listen [:component-resized re-pack!])
   			project-title (text :id :project-form-project)
@@ -36,7 +36,7 @@
 			(config! version-number :text "0.0.1-SNAPSHOT")
 			(config! project-path :text project-path-str)
 			(config! project-description :text "FIXME: write")
-			(config! repo-text-area :text "[org.clojure/clojure \"1.3.0\"]\n")
+			(config! repo-text-area :text "[org.clojure/clojure \"1.4.0\"]\n")
 			(.setCaretPosition repo-text-area (.getLastVisibleOffset repo-text-area))
 		(install-clojars-auto-completions repo-text-area)
 		form))

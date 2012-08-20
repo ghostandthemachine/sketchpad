@@ -44,8 +44,9 @@
     (do
       (when (file/save-file! buffer)
             (tab/mark-current-tab-clean!))))
-  (when (= @(:title buffer) "project.clj")
-    (project/update-lein-project! (project/project-from-buffer buffer))))))
+  (when (= @(get-in buffer [:component :title]) "project.clj")
+    (project/update-lein-project! (project/project-from-buffer buffer)))
+  (tree.utils/update-tree))))
 
 (defn save-as
 "Open the save as dialog for the current buffer."
@@ -57,7 +58,8 @@
 	  (when-let[new-file (file/save-file-as!)]
       (when @(:new-file? buffer)
         (reset! (:new-file? buffer) false)
-        (reset! (:title buffer) (.getName new-file)))))))
+        (reset! (:title buffer) (.getName new-file))))
+    (tree.utils/update-tree))))
 
 (defn new-project 
 "Create a new Leiningen project."
