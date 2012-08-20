@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Project End - SketchPad</title>
+  <title>SketchPad: A Clojure development environment - SketchPad</title>
   <meta name="author" content="">
 
   
-  <meta name="description" content="Wanted to build my own editor Great tools available for the project Power of clojure as a text editing tool What can interactive code and rich &hellip;">
+  <meta name="description" content="Three years ago I started programming with Processing. I had a background in visual fx and audio production so Processing was a logical entry point. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,7 +81,7 @@
   
   <header>
     
-      <h1 class="entry-title">Project End</h1>
+      <h1 class="entry-title">SketchPad: A Clojure Development Environment</h1>
     
     
       <p class="meta">
@@ -104,33 +104,80 @@
   </header>
 
 
-<div class="entry-content"><p>Wanted to build my own editor</p>
+<div class="entry-content"><p>Three years ago I started programming with <a href="www.processing.org">Processing</a>. I had a background in visual fx and audio production so Processing was a logical entry point. It wasn&#8217;t until I started CS courses and using IDE&#8217;s like Eclipse and Netbeans that I realized how effective the Processing library and editor really were. Allowing developers with all different experience levels from students to professionals to be able to download a single application that contained all of the needed components to build and execute engaging applications. For the beginner this means energy is spent on learning the language and the concepts rather than configuring environments. For experienced users, lean environments like Processing can be a Swiss Army knife of sorts, eliminating the bloat of unneeded IDE components and providing quick. intuitive access to the tools you do need.</p>
 
-<p>Great tools available for the project</p>
+<p>After spending a few months in every editor from XCode, to Sumblime Text, I realized what I wanted most in my IDE wasn&#8217;t countless features but the right features. Over the last year I have moved to using Sublime Text as my primary editor. While Sublime is an awesome looking editor that is very efficient for navigating buffers, searching, etc., it still can&#8217;t compete with VIM and Emacs for things like scripting and buffer manipulation. Tasks that would take me ten or fifteen minutes in Sublime would take a friend one minute in VIM with a good script. By the end of this past Spring semester I was pretty much ready to move away from Sublime and jump to VIM. Around that time the 2012 Google Summer of Code organizations were announced and <a href="www.clojure.org">Clojure</a> was added to the program organizations.</p>
 
-<p>Power of clojure as a text editing tool</p>
+<h2>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</h2>
 
-<p>What can interactive code and rich graphics lead to?</p>
+<p><img class="left" src="https://raw.github.com/ghostandthemachine/sketchpad/master/resources/sketchpad-lambda-logo-small.png"></p>
 
-<p>Three years ago I started programming with <a href="www.processing.org">Processing</a>. I had a background in visual fx and audio production so Processing was a logical entry point. It wasn&#8217;t until I started CS courses and using IDE&#8217;s like Eclipse and Netbeans that I realized how effective the Processing library and editor really were. Allowing developers with all different experience levels from students to professionals to be able to download a single application that contained all of the needed components to build and execute engaging applications. For the beginner this means energy is spent on learning the language and the concepts rather than configuring environments. For experienced users, lean environments like Processing can be a Swiss Army knife of sorts, eliminating the bloat of unneeded IDE components and providing quick. intuitive access to the tools you do need.</p>
+<h1>The Application</h1>
 
-<p>After spending a few months in every editor from XCode, to Sumblime Text, I realized what I wanted most in my IDE wasn&#8217;t countless features but the right features. Over the last year I have moved to using Sublime Text as my primary editor. While Sublime is an awesome looking editor that is very efficient for navigating buffers, searching, etc., it still can&#8217;t compete with VIM and Emacs for things like scripting and buffer manipulation. Tasks that would take me ten or fifteen minutes in Sublime would take a friend one minute in VIM with a good script. By the end of this past Spring semester I was pretty much ready to move away from Sublime and jump to VIM. Around that time the 2012 Google Summer of Code organizations and <a href="www.clojure.org">Clojure</a> was added to the program organizations.</p>
+<p>The SketchPad environment is written in Clojure and is built for working with Clojure and <a href="https://github.com/technomancy/leiningen">Leiningen</a> projects. The editor supports syntax highlighting for over 30 programming languages and language support for many of the most commonly used languages like Java, JavaScript, HTML, XML, etc. SketchPad began as a fork of <a href="https://github.com/arthuredelstein/clooj">Clooj</a> and is built on top of a few core libraries:</p>
 
-<h2>SketchPad</h2>
+<ul>
+<li><a href="https://github.com/daveray/seesaw">seesaw</a> - Seesaw is a library/DSL for constructing user interfaces in Clojure.</li>
+<li><a href="https://github.com/technomancy/leiningen">Leiningen</a> - &#8220;Leiningen is for automating Clojure projects without setting your hair on fire.&#8221;</li>
+<li><a href="http://fifesoft.com/rsyntaxtextarea/">RSyntaxTextArea</a> - Fifesoft syntax highlighting and language support library.</li>
+</ul>
 
-<p><img src="https://raw.github.com/ghostandthemachine/sketchpad/master/resources/sketchpad-lambda-logo-small.png"></p>
 
-<p>The SketchPad environment is written in Clojure and is built for working with Clojure projects. The editor supports syntax highlighting for over 30 programming languages and language support for many of the most commonly used languages like Java, JavaScript, HTML, XML, etc.</p>
+<p><img class="right" src="https://raw.github.com/ghostandthemachine/sketchpad/master/img/quil-tone-creation-form.png">
+These libraries allow SketchPad to be a complete Clojure development environment without the need for additional dependencies. Leiningen is integrated directly into the application and manages project dependencies via Pomegranate, and Clojure REPL&#8217;s in separate processes using nREPL. Creating new project and adding dependencies is easy. Using the project creation form you can see all available repositories on <a href="www.clojars.org">CLojars</a> by typing in dependency names. A new project directory is created and all require dependencies can be downloaded and used with out any additional tools.</p>
+
+<p>SketchPad is a lightweight Clojure editor but still has many useful features found in modern IDE&#8217;s. Some of these include:</p>
+
+<ul>
+<li>Clojure auto completion</li>
+<li>Search and Replace</li>
+<li>Confugrable buffer key bindings</li>
+<li>Editing macros</li>
+<li>Dependency management</li>
+</ul>
+
+
+<p>Some of the features that are unique to SketchPad include:</p>
+
+<ul>
+<li>A built in Clojure REPL which directly interacts with all aspect of the UI and open projects</li>
+<li>Standalone Clojure environment including dependency downloading</li>
+</ul>
+
+
+<p>In addition to the initial features of the project, there are many opportunities that the design of the application allows Clojure developers. While Clojure is a powerful language for managing data, it also makes for an equally powerful scripting language for a modern development environment. Instead of needing to learn new scripting languages to manipulate buffers and interact with projects, Clojure developers can use Clojure itself. The application REPL provides accesses to all of the buffer manipulation functions as well as the entire application UI. This accessibility is intended to allow for supporting complete customization of the application for any project.</p>
+
+<p>The application consists of nested maps for the UI and all projects and buffers. This makes accessing elements easy. So you can do things like:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='clj'><span class='line'><span class="c1">;; get the current buffer text area</span>
+</span><span class='line'><span class="nv">sketchpad.user=&gt;</span> <span class="p">(</span><span class="k">def </span><span class="nv">cur-text-area</span> <span class="p">(</span><span class="nf">get-in</span> <span class="p">(</span><span class="nf">current-buffer</span><span class="p">)</span> <span class="p">[</span><span class="ss">:component</span> <span class="ss">:text-area</span><span class="p">]))</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">;; edit the buffer text</span>
+</span><span class='line'><span class="nv">sketchpad.user=&gt;</span> <span class="p">(</span><span class="nf">delete-line</span> <span class="nv">cur-text-area</span><span class="p">)</span>
+</span><span class='line'><span class="nv">sketchpad.user=&gt;</span> <span class="p">(</span><span class="nf">select-to-line-begining</span> <span class="nv">cur-text-area</span><span class="p">)</span>
+</span><span class='line'><span class="nv">sketchpad.user=&gt;</span> <span class="nv">s</span><span class="p">(</span><span class="nf">cut</span> <span class="nv">cur-text-area</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">;; </span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h2>Design</h2>
 
 <h4>Structure</h4>
 
-<p>SketchPad is designed to be as intuitive and direct as possible for accessing everything from buffer text to seesaw (swing) UI components. In contrast with large IDE&#8217;s like Eclipse and Netbeans, SketchPad has very little overhead when it comes to interacting with all of the UI components. Unlike VIM and emacs though it can support more modern graphics. Combined with the flexibility of seesaw, the wide range of features of RSyntaxTextArea, and the power of Clojure, this creates a lean and flexible environment for a range of developers.</p>
+<p><img class="left" src="https://raw.github.com/ghostandthemachine/sketchpad/gh-pages/images/sketchpad-structure.png" width="425" height="375">
+SketchPad is designed to be as intuitive and direct as possible for accessing everything from buffer text to seesaw (swing) UI components. In contrast with large IDE&#8217;s like Eclipse and Netbeans, SketchPad has very little overhead when it comes to interacting with all of the UI components. Unlike VIM and emacs though it can support more modern graphics. Combined with the flexibility of seesaw, the wide range of features of RSyntaxTextArea, and the power of Clojure, this creates a lean and flexible environment for a range of developers.</p>
 
-<p>To begin manipulating code, and projects using these tools it&#8217;s important to understand the simple structure of SketchPad. All of the application state is stored in the <code>app</code> atom which is located in <code>sketchpad.state.state/app</code>. This diagram shows an outline of the map&#8217;s general structure.</p>
-
-<p>Error processing input, expected syntax: {% img [class name(s)] [http[s]:/]/path/to/image [width [height]] [title text | &#8220;title text&#8221; [&#8220;alt text&#8221;]] %}</p>
+<p>Manipulating code and projects using these tools is easy. All of the application state is stored in the <code>app</code> atom which is located in <code>sketchpad.state.state/app</code>. This diagram shows an outline of the map&#8217;s general structure.</p>
 </div>
 
 
@@ -184,7 +231,7 @@
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/sketchpad/blog/2012/08/18/project-end/">Project End</a>
+        <a href="/sketchpad/blog/2012/08/18/project-end/">SketchPad: A Clojure development environment</a>
       </li>
     
   </ul>
