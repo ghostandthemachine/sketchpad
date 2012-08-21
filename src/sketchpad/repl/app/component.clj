@@ -34,17 +34,16 @@
     application-repl-q))
 
 (defn application-repl-component []
-	(let [text-area (rsyntax/text-area :syntax          :clojure    
-                                            :border          (border/line-border :thickness 1 :color config.config/app-color)                          
-                                            :id             :editor
-                                            :class          :repl)
+	(let [text-area (rsyntax/text-area :syntax :clojure    
+                                     :border (border/line-border :thickness 1 :color config.config/app-color)
+                                     :id :editor
+                                     :class :repl)
 				repl-title (atom "SketchPad")
 				repl-history {:items (atom nil) :pos (atom 0) :last-end-pos (atom 0)}
 				repl-in-scroll-pane (RTextScrollPane. text-area false) ;; default to no linenumbers
-				repl-container (seesaw/vertical-panel 
-				                      :items          [repl-in-scroll-pane]                                      
-				                      :id             :repl-container
-				                      :class          :repl)
+				repl-container (seesaw/vertical-panel :items [repl-in-scroll-pane]                                      
+												                      :id :repl-container
+												                      :class :repl)
 				repl-undo-count (atom 0)
 				repl-que (create-application-repl text-area)
 				tab (repl.tab/label-tab {:container repl-container

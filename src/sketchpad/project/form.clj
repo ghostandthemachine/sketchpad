@@ -16,8 +16,8 @@
   []
   (let [project-path-str (str (.getAbsoluteFile (java.io.File. config/project-path)) "/")
   			repo-text-area (rsyntax/text-area :columns 200 
-  																				:id :project-form-dependencies
-  																				:listen [:component-resized re-pack!])
+											:id :project-form-dependencies
+											:listen [:component-resized re-pack!])
   			project-title (text :id :project-form-project)
   			version-number (text :id :project-form-version)
   			project-path (text :id :project-form-path)

@@ -403,3 +403,22 @@
 "Grep the current projects or a given the given paths."
   ([search-term] (source/grep-files search-term))
   ([search-term & args] (source/grep-files search-term args)))
+
+
+(defn app-repl
+"Returns the map representing the SketchPad application REPL."
+  []
+  (:application-repl @app))
+
+(defn app-repl-text-area
+"Returns the text area for the SketchPad application REPL."
+  []
+  (get-in (app-repl) [:component :text-area]))
+
+
+
+
+
+
+
+

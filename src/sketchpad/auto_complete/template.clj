@@ -1,10 +1,9 @@
 (ns sketchpad.auto-complete.template
-	(:import (org.fife.ui.autocomplete TemplateCompletion))
-	(:require [sketchpad.auto-complete.auto-complete :as auto-complete]))
+	(:import (org.fife.ui.autocomplete TemplateCompletion)
+						(org.fife.ui.rsyntaxtextarea CodeTemplateManager)
+						(org.fife.ui.rsyntaxtextarea RSyntaxTextArea)
+						(org.fife.ui.rsyntaxtextarea.templates StaticCodeTemplate)))
 
-(defn add-template
-  [input-str template]
-  (.addCompletion auto-complete/completion-provider (TemplateCompletion. auto-complete/completion-provider input-str template)))
-
-(do
-	(add-template "fr" "(search-replace \"${search}\" \"${replace}\""))
+(defn install-templates
+	[ac]
+	(.addCompletion (.getCompletionProvider ac) (TemplateCompletion. (.getCompletionProvider ac) "sr" "(search-replace \"${search}\" \"${replace}\"")))

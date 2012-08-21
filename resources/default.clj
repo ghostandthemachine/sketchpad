@@ -160,3 +160,5 @@
 	:prev-occurrence "meta shift K"
 	:next-occurrence "meta K"})
 
+(def default-fuzzy-buffer-settings
+	{:file-type-exclusions ["class" "Ds_Store" "jpeg" "png" "tiff" "psd"]})

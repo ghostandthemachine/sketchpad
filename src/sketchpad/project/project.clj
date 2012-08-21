@@ -60,6 +60,9 @@
 	  									:last-focused-repl (atom nil)
 	  									:last-focused-buffer (atom nil)
 	  									:buffers (atom {})})))
+
+	  (auto-complete/add-files-to-fuzzy-complete project-path)
+
 	  (if (lein-project-file? project-path)
 	  		(try
 		  		(when-let [lein-project (lein-project/read (str project-path "/project.clj"))]

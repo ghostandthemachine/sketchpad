@@ -484,6 +484,8 @@ You never have to change the opaque property yourself; it is always done for you
 (def spell-checker-pref-handlers
 	{:underline-color spell-checker-underline-color})
 
+(def fuzzy-buffer-settings default-fuzzy-buffer-settings)
+
 (def file-tree-pref-handlers
   {})
 
