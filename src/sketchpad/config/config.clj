@@ -67,112 +67,112 @@
 (defn whitespace-visible
 "Returns whether whitespace (spaces and tabs) is visible."
 [text-area pref]
-  (.setWhitespaceVisible text-area pref))
+  (seesaw/invoke-later (.setWhitespaceVisible text-area pref)))
 
 (defn clear-whitespace-lines
 "Returns whether or not lines containing nothing but whitespace are made into blank lines when Enter is pressed in them."
 [text-area pref]
-  (.setClearWhitespaceEnabled text-area pref))
+  (seesaw/invoke-later (.setClearWhitespaceEnabled text-area pref)))
 
 (defn line-wrap
 "Sets whether or not word wrap is enabled. This is overridden so that the \"current line highlight\" gets updated if it needs to be."
 [text-area pref]
-  (.setLineWrap text-area pref))
+  (seesaw/invoke-later (.setLineWrap text-area pref)))
 
 (defn highlight-current-line
 "Sets whether or not the current line is highlighted. This method fires a property change of type RTextAreaBase.HIGHLIGHT_CURRENT_LINE_PROPERTY."
 [text-area pref]
-  (.setHighlightCurrentLine (cast RTextArea text-area) pref))
+  (seesaw/invoke-later (.setHighlightCurrentLine (cast RTextArea text-area) pref)))
 
 (defn rounded-selection-edges
 "Sets whether the edges of selections are rounded in this text area. This method fires a property change of type RTextAreaBase.ROUNDED_SELECTION_PROPERTY."
 [text-area pref]
-  (.setRoundedSelectionEdges text-area pref))
+  (seesaw/invoke-later (.setRoundedSelectionEdges text-area pref)))
 
 (defn animate-bracket-matching
 "Sets whether bracket matching should be animated. This fires a property change event of type ANIMATE_BRACKET_MATCHING_PROPERTY."
 [text-area pref]
-  (.setAnimateBracketMatching text-area pref))
+  (seesaw/invoke-later (.setAnimateBracketMatching text-area pref)))
 
 (defn anti-aliasing
 "Sets whether anti-aliasing is enabled in this editor. This method fires a property change event of type ANTIALIAS_PROPERTY."
 [text-area pref]
-  (.setAntiAliasingEnabled text-area pref))
+  (seesaw/invoke-later (.setAntiAliasingEnabled text-area pref)))
 
 (defn code-folding
 "Returns whether code folding is enabled. Note that only cetext-areain languages support code folding; those that do not will ignore this property."
 [text-area pref]
-  (.setCodeFoldingEnabled text-area pref))
+  (seesaw/invoke-later (.setCodeFoldingEnabled text-area pref)))
 
 (defn auto-indent
 "Sets whether or not auto-indent is enabled. This fires a property change event of type AUTO_INDENT_PROPERTY."
 [text-area pref]
-  (.setAutoIndentEnabled text-area pref))
+  (seesaw/invoke-later (.setAutoIndentEnabled text-area pref)))
 
 (defn bracket-matching-enabled
 "Sets whether bracket matching is enabled. This fires a property change event of type BRACKET_MATCHING_PROPERTY."
 [text-area pref]
-  (.setBracketMatchingEnabled text-area pref))
+  (seesaw/invoke-later (.setBracketMatchingEnabled text-area pref)))
 
 (defn clear-white-space-lines
 "Sets whether or not lines containing nothing but whitespace are made into blank lines when Enter is pressed in them. This method fires a property change event of type CLEAR_WHITESPACE_LINES_PROPERTY."
 [text-area pref]
-  (.setClearWhitespaceLinesEnabled text-area pref))
+  (seesaw/invoke-later (.setClearWhitespaceLinesEnabled text-area pref)))
 
 (defn eol-marker
 "Sets whether EOL markers are visible at the end of each line. This method fires a property change of type EOL_VISIBLE_PROPERTY."
 [text-area pref]
-  (.setEOLMarkersVisible text-area pref))
+  (seesaw/invoke-later (.setEOLMarkersVisible text-area pref)))
 
 (defn font
 "Sets the font used by this text area. Note that this method does not alter the appearance of an RSyntaxTextArea since it uses different fonts for each token type."
 [text-area pref]
-  (.setFont text-area (font/font pref)))
+  (seesaw/invoke-later (.setFont text-area (font/font pref))))
 
 (defn tab-size
 "Set num spaces per tab."
 [text-area pref]
-  (.setTabSize text-area pref))
+  (seesaw/invoke-later (.setTabSize text-area pref)))
 
-(defn hyper-links-enabled
+(defn hyperlinks-enabled
 "Sets whether hyperlinks are enabled for this text area. This method fires a property change event of type HYPERLINKS_ENABLED_PROPERTY."
 [text-area pref]
-  (.setHyperlinksEnabled text-area pref))
+  (seesaw/invoke-later (.setHyperlinksEnabled text-area pref)))
 
 (defn mark-occurences
 "Toggles whether \"mark occurrences\" is enabled. This method fires a property change event of type MARK_OCCURRENCES_PROPERTY."
 [text-area pref]
-  (.setMarkOccurrences text-area pref))
+  (seesaw/invoke-later (.setMarkOccurrences text-area pref)))
 
 (defn mark-occurences-color
 "Sets the \"mark occurrences\" color."
 [text-area pref]
-  (.setMarkOccurrencesColor text-area (c/color pref)))
+  (seesaw/invoke-later (.setMarkOccurrencesColor text-area (c/color pref))))
 
 (defn paint-mark-occurences-border
 "Toggles whether a border should be painted around marked occurrences."
 [text-area pref]
-  (.setPaintMarkOccurrencesBorder text-area pref))
+  (seesaw/invoke-later (.setPaintMarkOccurrencesBorder text-area pref)))
 
 (defn matched-bracket-bg-color
 "Sets the color used as the background for a matched bracket."
 [text-area pref]
-  (.setMatchedBracketBGColor text-area (apply c/color pref)))
+  (seesaw/invoke-later (.setMatchedBracketBGColor text-area (apply c/color pref))))
 
 (defn matched-bracket-border-color
 "Sets the color used as the border for a matched bracket."
 [text-area pref]
-  (.setMatchedBracketBorderColor text-area (apply c/color pref)))
+  (seesaw/invoke-later (.setMatchedBracketBorderColor text-area (apply c/color pref))))
 
 (defn tab-lines-enabled
 "Toggles whether tab lines are painted. This method fires a property change event of type TAB_LINES_PROPERTY."
 [text-area pref]
-  (.setPaintTabLines text-area pref))
+  (seesaw/invoke-later (.setPaintTabLines text-area pref)))
 
 (defn tab-lines-color
 "Sets the color use to paint tab lines. This method fires a property change event of type TAB_LINE_COLOR_PROPERTY."
 [text-area pref]
-  (.setTabLineColor text-area (apply c/color pref)))
+  (seesaw/invoke-later (.setTabLineColor text-area (apply c/color pref))))
 
 (defn templates-enabled
 "Enables or disables templates. Templates are a set of \"shorthand
@@ -191,7 +191,7 @@ Templates are a shared resource among all instances of RSyntaxTextArea; that is,
 "Toggles whether curly braces should be automatically closed when a newline is entered after an opening curly brace. Note that this property is only honored for languages that use curly braces to denote code blocks.
 This method fires a property change event of type CLOSE_CURLY_BRACES_PROPERTY."
 [text-area pref]
-  (.setCloseCurlyBraces text-area pref))
+  (seesaw/invoke-later (.setCloseCurlyBraces text-area pref)))
 
 (defn text-area-theme
 "Set the current RSyntaxTextArea theme."
@@ -206,22 +206,22 @@ This method fires a property change event of type CLOSE_CURLY_BRACES_PROPERTY."
 NOTE: the opaque property is set to true when the background is set to a color. When an image is used for the background (by this method), opaque is set to false. This is because we perform better when setOpaque is true, but if we use an image for the background when opaque is true, we get on-screen garbage when the user scrolls via the arrow keys. Thus we need setOpaque to be false in that case.
 You never have to change the opaque property yourself; it is always done for you."
 [text-area pref]
-  (.setBackgroundImage text-area (ImageIO/read (File. pref))))
+  (seesaw/invoke-later (.setBackgroundImage text-area (ImageIO/read (File. pref)))))
 
 (defn current-line-highlight
 "Sets whether or not the current line is highlighted. This method fires a property change of type RTextAreaBase.HIGHLIGHT_CURRENT_LINE_PROPERTY."
 [text-area pref]
-  (.setHighlightCurrentLine text-area pref))
+  (seesaw/invoke-later (.setHighlightCurrentLine text-area pref)))
 
 (defn current-line-highlight-color
 "Sets the color to use to highlight the current line. Note that if highlighting the current line is turned off, you will not be able to see this highlight. This method fires a property change of type RTextAreaBase.CURRENT_LINE_HIGHLIGHT_COLOR_PROPERTY."
 [text-area pref]
-  (.setCurrentLineHighlightColor text-area (apply c/color pref)))
+  (seesaw/invoke-later (.setCurrentLineHighlightColor text-area (apply c/color pref))))
 
 (defn current-line-highlight-fade
 "Sets whether the current line highlight should have a \"fade\" effect. This method fires a property change event of type CURRENT_LINE_HIGHLIGHT_FADE_PROPERTY."
 [text-area pref]
-  (.setFadeCurrentLineHighlight text-area pref))
+  (seesaw/invoke-later (.setFadeCurrentLineHighlight text-area pref)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; SketchPad
@@ -247,27 +247,27 @@ You never have to change the opaque property yourself; it is always done for you
 "Set whether or not to display the vertical scroll bar component."
 [scroll-pane bool]
   (when-not bool
-    (.setPreferredSize 
-      (.getVerticalScrollBar scroll-pane) (Dimension. 0 0))))
+    (seesaw/invoke-later (.setPreferredSize
+      (.getVerticalScrollBar scroll-pane) (Dimension. 0 0)))))
 
 (defn horizontal-scroll-bar 
 "Set whether or not to display the horizontal scroll bar component."
 [scroll-pane bool]
   (when-not bool
-    (.setPreferredSize 
-      (.getHorizontalScrollBar scroll-pane) (Dimension. 0 0))))
+    (seesaw/invoke-later (.setPreferredSize
+      (.getHorizontalScrollBar scroll-pane) (Dimension. 0 0)))))
 
 (defn fold-indicator-enabled
 "Enable and disable the fold indicators."
-  [scroller pref] (.setFoldIndicatorEnabled scroller pref))
+  [scroller pref] (seesaw/invoke-later (.setFoldIndicatorEnabled scroller pref)))
 
 (defn line-numbers-enabled
 "Enable and disable line numbers."
-  [scroller pref] (.setLineNumbersEnabled scroller pref))
+  [scroller pref] (seesaw/invoke-later (.setLineNumbersEnabled scroller pref)))
 
 (defn scroller-border-enabled
 "Enable and disable scroller border."
-  [scroller pref] (if (not pref) (.setBorder scroller (border/empty-border :thickness 0))))
+  [scroller pref] (if (not pref) (seesaw/invoke-later (.setBorder scroller (border/empty-border :thickness 0)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; File Tree
@@ -277,15 +277,15 @@ You never have to change the opaque property yourself; it is always done for you
 "Set whether or not to display the vertical scroll bar component."
 [scroll-pane bool]
   (when-not bool
-    (.setPreferredSize 
-      (.getVerticalScrollBar scroll-pane) (Dimension. 0 0))))
+    (seesaw/invoke-later (.setPreferredSize
+      (.getVerticalScrollBar scroll-pane) (Dimension. 0 0)))))
 
 (defn tree-horizontal-scroll-bar 
 "Set whether or not to display the horizontal scroll bar component."
 [scroll-pane bool]
   (when-not bool
-    (.setPreferredSize 
-      (.getHorizontalScrollBar scroll-pane) (Dimension. 0 0))))
+    (seesaw/invoke-later (.setPreferredSize
+      (.getHorizontalScrollBar scroll-pane) (Dimension. 0 0)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Gutter
@@ -294,31 +294,36 @@ You never have to change the opaque property yourself; it is always done for you
 (defn border-color
 "Set Gutter border color."
   [gutter pref]
-  (.setBorderColor gutter (apply c/color pref)))
+  (seesaw/invoke-later (.setBorderColor gutter (apply c/color pref))))
+
 (defn bookmarking-enabled
 "Enabled book marking."
   [gutter pref]
-  (.setBookmarkingEnabled gutter pref))
+  (seesaw/invoke-later (.setBookmarkingEnabled gutter pref)))
+
 (defn fold-indicator-enabled
 "Enabled code folding indicators."
   [gutter pref]
-  (.setFoldIndicatorEnabled gutter pref))
+  (seesaw/invoke-later (.setFoldIndicatorEnabled gutter pref)))
+
 (defn line-number-color
 "Set line number color"
   [gutter pref]
-  (.setLineNumberColor gutter (apply c/color pref)))
+  (seesaw/invoke-later (.setLineNumberColor gutter (apply c/color pref))))
+
 (defn line-number-font
 "Set the line number font."
   [gutter pref]
-  (.setLineNumberFont gutter (font/font pref)))
+  (seesaw/invoke-later (.setLineNumberFont gutter (font/font pref))))
+
 (defn line-number-start-index
 "Set starting number of line numbering"
   [gutter pref]
-  (.setLineNumberingStartIndex gutter pref))
+  (seesaw/invoke-later (.setLineNumberingStartIndex gutter pref)))
 (defn active-range-color
 "Set the active range color."
   [gutter pref]
-  (.setActiveLineRangeColor gutter (apply c/color pref)))
+  (seesaw/invoke-later (.setActiveLineRangeColor gutter (apply c/color pref))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Auto Completion
@@ -327,53 +332,53 @@ You never have to change the opaque property yourself; it is always done for you
 (defn auto-complete
 "Enable Auto Completion."
   [ac pref]
-  (.setAutoCompleteEnabled ac pref))
+  (seesaw/invoke-later (.setAutoCompleteEnabled ac pref)))
 
 (defn auto-activation
 "Enable Auto Completion auto activation."
   [ac pref]
-  (.setAutoActivationEnabled ac pref))
+  (seesaw/invoke-later (.setAutoActivationEnabled ac pref)))
 
 (defn auto-activation-delay
 "Set delay time for auto activation."
   [ac pref]
-  (.setAutoActivationDelay ac pref))
+  (seesaw/invoke-later (.setAutoActivationDelay ac pref)))
 
 (defn auto-complete-single-choice
 "Set Auto Completion to have a single choice."
   [ac pref]
-  (.setAutoCompleteSingleChoices ac pref))
+  (seesaw/invoke-later (.setAutoCompleteSingleChoices ac pref)))
 
 (defn show-description-window
 "Enabled displaying Auto Completion description window."
   [ac pref]
-  (.setShowDescWindow ac pref))
+  (seesaw/invoke-later (.setShowDescWindow ac pref)))
 
 (defn description-window-size
 "Set description window size."
   [ac pref]
-  (.setDescriptionWindowSize ac (first pref) (second pref)))
+  (seesaw/invoke-later (.setDescriptionWindowSize ac (first pref) (second pref))))
 
 (defn choices-window-size
 "Set choices window size."
   [ac pref]
-  (.setChoicesWindowSize ac (first pref) (second pref)))
+  (seesaw/invoke-later (.setChoicesWindowSize ac (first pref) (second pref))))
 
 (defn parameter-assistance
 "Enable parameter assistance."
   [ac pref]
-  (.setParameterAssistanceEnabled ac pref))
+  (seesaw/invoke-later (.setParameterAssistanceEnabled ac pref)))
 
 (defn trigger-key
 "Set Auto Completion trigger key."
   [ac pref]
-  (.setTriggerKey ac (key/keystroke pref)))
+  (seesaw/invoke-later (.setTriggerKey ac (key/keystroke pref))))
 
 
 (defn spell-checker-underline-color
 "Set the color of the spell checker squiggly line."
 	[sc pref]
-	(.setSquiggleUnderlineColor sc (c/color pref)))
+	(seesaw/invoke-later (.setSquiggleUnderlineColor sc (c/color pref))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Handler Maps
@@ -396,7 +401,7 @@ You never have to change the opaque property yourself; it is always done for you
    :eol-marker eol-marker                          
    :font font                               
    :tab-size tab-size                            
-   :hyper-links-enabled hyper-links-enabled                
+   :hyperlinks-enabled hyperlinks-enabled                
    :mark-occurences mark-occurences                    
    :mark-occurences-color mark-occurences-color              
    :paint-mark-occurences-border paint-mark-occurences-border       
@@ -414,7 +419,7 @@ You never have to change the opaque property yourself; it is always done for you
 (def buffer-scroller-pref-handlers
   {:vertical-scroll-bar vertical-scroll-bar
    :horizontal-scroll-bar horizontal-scroll-bar
-   :fold-indicator-enabled fold-indicator-enabled
+   :fold-indicator-enabled fold-indicator-enabled 
    :line-numbers-enabled  line-numbers-enabled
    :scroller-border-enabled scroller-border-enabled})
 
@@ -435,7 +440,7 @@ You never have to change the opaque property yourself; it is always done for you
    :eol-marker eol-marker                          
    :font font                               
    :tab-size tab-size                            
-   :hyper-links-enabled hyper-links-enabled                
+   :hyperlinks-enabled hyperlinks-enabled                
    :mark-occurences mark-occurences                    
    :mark-occurences-color mark-occurences-color              
    :paint-mark-occurences-border paint-mark-occurences-border       
@@ -484,8 +489,13 @@ You never have to change the opaque property yourself; it is always done for you
 (def spell-checker-pref-handlers
 	{:underline-color spell-checker-underline-color})
 
-(def fuzzy-buffer-settings default-fuzzy-buffer-settings)
+(def fuzzy-file-type-exclusions ["class" "Ds_Store" "jpeg" "png" "tiff" "psd" "swf" "so" "scx" "pdf" "svg"])
+(def fuzzy-buffer-pref-handlers 
+	{:buffer-theme text-area-theme
+	 :font font})
 
+(def fuzzy-buffer-settings default-fuzzy-buffer-prefs)
+	 
 (def file-tree-pref-handlers
   {})
 
@@ -497,6 +507,10 @@ You never have to change the opaque property yourself; it is always done for you
 (defn apply-buffer-scroller-prefs! [scroller]
   (doseq [[k pref] default-buffer-scroller-prefs]
     ((k buffer-scroller-pref-handlers) scroller pref)))
+
+(defn apply-fuzzy-buffer-prefs! [text-area]
+  (doseq [[k pref] default-fuzzy-buffer-prefs]
+    ((k fuzzy-buffer-pref-handlers) text-area pref)))
 
 (defn apply-gutter-prefs! [gutter]
   (doseq [[k pref] default-gutter-prefs]

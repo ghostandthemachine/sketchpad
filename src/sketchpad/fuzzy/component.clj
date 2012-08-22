@@ -65,6 +65,14 @@
 														:maximum-size [1000 :by 15])]
 		(auto-complete/install-fuzzy-provider text-area)
 		(config/apply-fuzzy-buffer-prefs! text-area)
+
+		;;;;;;;;;;;;;;;;;
+		;; hack to fix line highlighting location
+		;; a char has to be entered for it to re evaluate proper location
+		(config! text-area :text "000000")
+		(config! text-area :text "")
+		;;;;;;;;;
+
 		(attach-handlers panel text-area)
 		{:type :fuzzy-panel
 		 :component {:container panel

@@ -16,6 +16,7 @@
             [sketchpad.config.config :as config]
             [sketchpad.repl.app.repl :as app.repl]
             [sketchpad.state.state :as state]
+            [sketchpad.fuzzy.component :as fuzzy]
             [sketchpad.editor.editor :as sketchpad.editor]
             [sketchpad.project.project :as project]
             [sketchpad.menu.menu-bar :as menu]
@@ -52,8 +53,10 @@
   []
   (let [buffer-info (info/buffer-info)
         buffer-tabbed-panel (sketchpad.editor/buffer-tabbed-panel)
+        fuzzy (fuzzy/component)
         buffer-component {:type :buffer-component
-                          :component {:container (vertical-panel :items[(get-in buffer-tabbed-panel [:component :container])
+                          :component {:container (vertical-panel :items[(get-in fuzzy [:component :container])
+                                                                        (get-in buffer-tabbed-panel [:component :container])
                                                                         :fill-h
                                                                         (get-in buffer-info [:component :container])]
                                                                  :background config/app-color
@@ -104,6 +107,7 @@
                      file-tree
                      buffer-tabbed-panel
                      buffer-info
+                     fuzzy
                      buffer-component
                      repl-info
                      repl-tabbed-panel

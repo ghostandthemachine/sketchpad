@@ -55,17 +55,17 @@
       (.setFocusable false))
     button)))
 
-
-
 (defn button-tab 
 [buffer]
   (let [button (tab-button buffer)
         label (label :text @(get-in buffer [:component :title])
                       :foreground (color :white)
                       :focusable?  false
-                      :font (font/font "MENLO-12"))
+                      :class :tab-label
+                      :font (font/font "MENLO-10"))
         container (flow-panel :align :right
                               :items [label button]
+                              :maximum-size [300 :by 100]
                               :class :button-tab)]
     (when-not  @sketchpad.config.prefs/show-tabs?
       (config! container :visible? false))

@@ -188,8 +188,8 @@
     (wrapper.rsyntaxtextarea/set-input-map! text-area (input.default/default-input-map))
     (add-repl-input-handler text-area)
     (config! scroller :background config/app-color)
-    (config/apply-repl-prefs! text-area)
     (auto-complete/install-auto-completion text-area)
+    (config/apply-repl-prefs! text-area)
     (send-to-application-repl text-area "(require 'sketchpad.user)\n(in-ns 'sketchpad.user)")))
 
 (defn repl-tabbed-panel

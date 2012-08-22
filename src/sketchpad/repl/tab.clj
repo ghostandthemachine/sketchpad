@@ -10,6 +10,7 @@
 				[sketchpad.config.styles :as styles]
 				[sketchpad.project.project :as sketchpad.project]
 				[seesaw.bind :as bind]
+				[seesaw.font :as font]
 				[sketchpad.config.prefs :as sketchpad.config.prefs]))	
 
 (defn paint-button 
@@ -45,7 +46,8 @@
 (defn button-tab [repl]
 	(let [label (label :text @(:title repl) 
 		  				:foreground (color :white)
-		  				:focusable? false)
+		  				:focusable? false
+              :font (font/font "MENLO-10"))
 		  button (tab-button repl)
 		  container (flow-panel :align :right :items [label button])]
 		(bind/bind (:title repl) (bind/transform (fn [s] s)) (bind/property label :text))

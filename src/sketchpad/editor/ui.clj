@@ -15,8 +15,25 @@
 (def border-color (color 150 150 150))
 (def tab-bg-color (color 0 0 0))
 (def selected-border-color (color 150 150 150 100))
-(defn unselected-tab-graient [x1 y1 x2 y2] (linear-gradient :start [x1 y1] :end [x2 y2] :fractions [0 0.1 0.8] :colors [(color 46 47 44) (color 57 57 55) (color 77 77 75)]))
-(defn selected-tab-graient [x1 y1 x2 y2] (linear-gradient :start [x1 y1] :end [x2 y2] :fractions [0.2 1] :colors [(color 42 43 40) (color 54 55 50)]))
+
+(defn unselected-tab-graient
+	[x1 y1 x2 y2]
+	(linear-gradient
+		:start [x1 y1]
+		:end [x2 y2]
+		:fractions [0 0.1 0.8]
+		:colors [(color 46 47 44) (color 57 57 55) (color 77 77 75)]))
+
+(defn selected-tab-graient
+	[x1 y1 x2 y2]
+	(linear-gradient
+		:start [x1 y1]
+		:end [x2 y2]
+		:fractions [0.2 1]
+		:colors [(color 42 43 40) (color 54 55 50)]))
+
+(def selected-font-color (color 255 255 255))
+(def unselected-font-color (color 150 150 150))
 
 (defonce bg-img (ImageIcon. "img/sketchpad-lambda-logo-light.png"))
 (def pad 4)
@@ -105,8 +122,10 @@
 										(proxy-super paintTab gfx tab-placement rects tab-index icon-rect text-rect))
 										
 									(paintTabBackground [gfx tab-placement tab-index x y w h selected?]
+										(let [lbl (select (.getTabComponentAt tabbed-panel tab-index) [:.tab-label])]
 											(if selected? 
 												(do 
+													(config! lbl :foreground selected-font-color)
 													(swap! bg (fn [_] selected-fill-color))
 													(swap! bg (fn [_] fill-color))
 													(push gfx
@@ -114,10 +133,11 @@
 															(tab-shape (java.awt.Rectangle. x y w h) :closed)
 															(style :background (selected-tab-graient x (+ y h) x y)))))
 												(do 
+													(config! lbl :foreground unselected-font-color)
 													(push gfx	
 														(draw gfx
-														(tab-shape (java.awt.Rectangle. x y w h) :closed)
-														(style :background (unselected-tab-graient x (+ y h) x y)))))))
+															(tab-shape (java.awt.Rectangle. x y w h) :closed)
+															(style :background (unselected-tab-graient x (+ y h) x y))))))))
 										
 									(calculateTabHeight [placement index font-height]
 										(if @sketchpad.config.prefs/show-tabs?

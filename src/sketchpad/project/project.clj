@@ -71,7 +71,8 @@
 
 (defn remove-project [project-path]
 	(let [projects (:projects @state/app)]
-		(swap! projects dissoc project-path)))
+		(swap! projects dissoc project-path))
+	(auto-complete/update-fuzzy-completions))
 
 (defn update-lein-project! [project]
 	(let [projects (@state/app :projects)

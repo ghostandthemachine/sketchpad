@@ -6,6 +6,7 @@
   (:require [sketchpad.config.config :as config]
             [sketchpad.wrapper.rsyntaxtextarea :as wrapper.rsyntaxtextarea]
             [sketchpad.input.default :as input.default]
+            [sketchpad.state.state :as state]
             [sketchpad.auto-complete.template :as template]))
 
 (defn create-completion-provider
@@ -75,29 +76,64 @@
   (build-project-completions (create-provider) project-path))
 
 (defonce fuzzy-provider (org.fife.ui.autocomplete.DefaultCompletionProvider. ))
-(defonce fuzzy-auto-completion (org.fife.ui.autocomplete.AutoCompletion. fuzzy-provider))
-(doto fuzzy-auto-completion
-  (config/auto-activation true)
-  (config/auto-activation-delay 0))
 
 (defn not-sufix?
   [f suffix-vec]
   (let [suffix (last (clojure.string/split (.getName f) #"\."))]
     (not (nil? (some #(= suffix %) suffix-vec)))))
 
-
 (defn add-files-to-fuzzy-complete
   [project-path]
-  (let [completions (java.util.Vector. )
+  (let [project-name (last (clojure.string/split project-path #"/"))
+        completions (java.util.Vector. )
         directory (clojure.java.io/file project-path)
-        files (filter #(.isFile %) (file-seq directory))]
+        files (filter 
+                (fn [file]
+                  (and
+                    (.isFile file)
+                    (nil? (re-find #"\.\w+/" (.getAbsolutePath file)))
+                    (nil? (re-find #"\.pygments-cache/" (.getAbsolutePath file)))))
+                (file-seq directory))]
     (doseq [f files]
-      (when (not (not-sufix? f (:file-type-exclusions config/fuzzy-buffer-settings)))
-        (.addCompletion fuzzy-provider (ShorthandCompletion. fuzzy-provider (str (.getName f)) (str f)))))))
+      (when (and
+              (not (= (.getName f) ".DS_Store"))
+              (not (not-sufix? f config/fuzzy-file-type-exclusions))
+        (let [path-split (clojure.string/split (.getAbsolutePath f) (java.util.regex.Pattern/compile project-name) 2)]
+          (.addCompletion fuzzy-provider
+            (ShorthandCompletion. fuzzy-provider 
+              (str (.getName f))
+              (str "{"
+                    ":file " "\"" (last path-split) "\""
+                    " "
+                    ":project " "\"" (first path-split) project-name "\""
+                    " "
+                    ":absolute-path " "\"" (.getAbsolutePath f) "\""
+                    "}")
+              (str (last path-split))))))))))
 
-(defn install-fuzzy-completions
+(defn update-fuzzy-completions
+  []
+  (let [project-keys (keys @(:projects @state/app))]
+    (.clear fuzzy-provider)
+    (doseq [proj project-keys]
+      (add-files-to-fuzzy-complete proj))))
+
+(defonce fuzzy-auto-completetion (org.fife.ui.autocomplete.AutoCompletion. fuzzy-provider))
+
+(defn- init-fuzzy-ac
+	[]
+	(doto 
+	  fuzzy-auto-completetion
+  	(.setAutoActivationEnabled true)
+	  (.setDescriptionWindowSize 300 500) 
+	  (.setShowDescWindow false)))
+
+(do (init-fuzzy-ac))
+	
+
+(defn install-fuzzy-provider
   [rsta]
-  (.install fuzzy-auto-completion rsta))
+  (.install fuzzy-auto-completetion rsta))
 
 
 

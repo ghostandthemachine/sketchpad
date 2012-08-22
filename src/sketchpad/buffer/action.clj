@@ -4,6 +4,7 @@
   	(:import 	(java.util UUID)
               (org.fife.ui.rsyntaxtextarea RSyntaxTextAreaEditorKit)
            		(org.fife.ui.rtextarea RTextAreaEditorKit)
+              (org.fife.ui.rsyntaxtextarea.RSyntaxTextAreaEditorKit)
            		(java.awt.event ActionEvent))
   	(:require 	[clojure.string :as string]
   				[sketchpad.config.app :as app]
@@ -66,6 +67,24 @@
 ([rta]
   (perform-action 
     (org.fife.ui.rtextarea.RTextAreaEditorKit$BeepAction.)
+    (action-event rta) 
+    rta)))
+
+(defn increase-font 
+"Increase the current buffer font size."
+([] (increase-font (tab/current-text-area)))
+([rta]
+  (perform-action 
+    (org.fife.ui.rsyntaxtextarea.RSyntaxTextAreaEditorKit$IncreaseFontSizeAction.)
+    (action-event rta) 
+    rta)))
+
+(defn decrease-font 
+"Decrease the current buffer font size."
+([] (decrease-font (tab/current-text-area)))
+([rta]
+  (perform-action 
+    (org.fife.ui.rsyntaxtextarea.RSyntaxTextAreaEditorKit$DecreaseFontSizeAction.)
     (action-event rta) 
     rta)))
 

@@ -295,6 +295,8 @@
 ([buffer title]
 	(title-at! (index-of-buffer buffer) title)))
 
+(defn tab-component-at
+	([tabbed-panel i] (.getTabbedComponentAt tabbed-panel i)))
 
 (defn repl-title!
 ([repl] (buffer-title! repl))

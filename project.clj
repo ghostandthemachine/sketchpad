@@ -9,6 +9,7 @@
                  [language-builder "1.0.0-SNAPSHOT"]
                  [auto-complete "0.1.0-SNAPSHOT"]
                  [leiningen "2.0.0-preview7"]
+                 [org.clojure/data.xml "0.0.6"]
                  [language-support/language-support "0.1.0-SNAPSHOT"]
                  [rsta_spellchecker/rsta_spellchecker "0.1.0-SNAPSHOT"]]
   :jvm-opts ~(if (= (System/getProperty "os.name") "Mac OS X") ["-Xdock:name=SketchPad"] []))

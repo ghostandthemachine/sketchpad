@@ -12,12 +12,11 @@
 	:code-folding true
 	:auto-indent true
 	:eol-marker false
-	:font "MENLO-BOLD-12"
-	:tab-size 				2
-	:hyper-links-enabled false
-	:mark-occurences true
+	:font "MENLO-14-BOLD"
+	:tab-size 2
+	:hyperlinks-enabled false
 	:mark-occurences-color "#ADA6A9"
-	:paint-mark-occurences-border false
+	:paint-mark-occurences-border true
 	:matched-bracket-bg-color [80 240 70 50]
 	:matched-bracket-border-color [80 240 70 100]
 	:tab-lines-enabled true
@@ -37,18 +36,17 @@
 	:code-folding true
 	:auto-indent true
 	:eol-marker false
-	:font "MENLO-BOLD-12"
+	:font "MENLO-14-BOLD"
 	:tab-size 				2
-	:hyper-links-enabled false
-	:mark-occurences true
 	:mark-occurences-color "#ADA6A9"
-	:paint-mark-occurences-border false
+  :paint-mark-occurences-border true
 	:matched-bracket-bg-color [80 240 70 50]
 	:matched-bracket-border-color [80 240 70 100]
 	:tab-lines-enabled true
 	:tab-lines-color [100 100 100 100]
 	:templates-enabled true
 	:close-curly-braces true
+	:hyperlinks-enabled true
 	:response-timeout 1000})
 
 (def default-repl-scroller-prefs
@@ -58,7 +56,7 @@
 
 (def default-auto-completion-prefs
   { :auto-complete true
-  	:auto-activation true
+  	:auto-activation false
   	:auto-activation-delay 1000
   	:auto-complete-single-choice false
   	:show-description-window true
@@ -85,7 +83,7 @@
    :bookmarking-enabled false
    :fold-indicator-enabled true  ;; not functional until new Clojure Lexxer is integrated
    :line-number-color [143 144 134]
-   :line-number-font "MENLO-12-BOLD"
+   :line-number-font "MENLO-14-BOLD"
    :line-number-start-index 1
    :active-range-color [50 50 41]})
 
@@ -158,7 +156,10 @@
 	:prev-bookmark "shift F2"
 	:toggle-bookmark "meta F2"
 	:prev-occurrence "meta shift K"
-	:next-occurrence "meta K"})
+	:next-occurrence "meta K"
+	:increase-font-size "meta PLUS"
+	:decrease-font-size "meta MINUS"})
 
-(def default-fuzzy-buffer-settings
-	{:file-type-exclusions ["class" "Ds_Store" "jpeg" "png" "tiff" "psd"]})
+(def default-fuzzy-buffer-prefs
+	{:buffer-theme "sublime.xml"
+   :font "MENLO-14-BOLD"})

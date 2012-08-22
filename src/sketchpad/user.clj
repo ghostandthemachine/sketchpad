@@ -207,12 +207,14 @@
   ([s] (search s :default))
   ([s flag]
     (cond 
-        (= flag :default)
-          (search/search (tab/current-text-area) s)
-        (or (= flag :all)(= flag :a)(= flag :start)(= flag :s))
-          (search/search (tab/current-text-area) s)
-        ))
-    )
+      (= flag :default)
+        (do
+        	(search/search (tab/current-text-area) s)
+        	(.requestFocus (tab/current-text-area)))
+      (or (= flag :all)(= flag :a)(= flag :start)(= flag :s))
+        (do
+        	(search/search (tab/current-text-area) s)
+        	(.requestFocus (tab/current-text-area))))))
 
 (defn search-replace
 "Search for a word in the current buffer from the current caret position and replace the next occurence of it."

@@ -14,7 +14,7 @@
   (.put laf (str "TabbedPane." k) v))
 
 (defn tab-change-handler [buffer-tabbed-panel]
-  
+
   ; (listen buffer-tabbed-panel :selection 
   ;   (fn [e]
   ;     (let [buffer (tab/current-buffer)]

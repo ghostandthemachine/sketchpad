@@ -6,6 +6,7 @@
            (javax.swing InputMap KeyStroke)
            (javax.swing.text DefaultEditorKit)
            (org.fife.ui.rtextarea RTextAreaEditorKit)
+           (org.fife.ui.rsyntaxtextarea RSyntaxTextAreaEditorKit)
            (org.fife.ui.rsyntaxtextarea RSyntaxTextAreaDefaultInputMap)))
 
 (defn default-input-map
@@ -249,4 +250,5 @@
       (.put
         (keystroke/keystroke (:next-occurrence config/default-buffer-key-bindings))
         RTextAreaEditorKit/rtaNextOccurrenceAction))
+
     input-map))
