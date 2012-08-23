@@ -9,15 +9,15 @@
 				[clojure pprint]
 				[seesaw meta core border color])
 	(:require [clojure.string :as str]
-						[sketchpad.state.state :as state]
-						[sketchpad.editor.tab :as button-tab]
-						[sketchpad.util.tab :as tab]
-						[sketchpad.util.utils :as utils]
-						[sketchpad.project.project :as sketchpad.project]
-						[sketchpad.editor.component :as editor.component]
-						[sketchpad.editor.info-utils :as editor.info-utils]
-						[sketchpad.menu.view :as sketchpad.menu.view]
-						[sketchpad.file.file :as file]))
+			[sketchpad.state.state :as state]
+			[sketchpad.editor.tab :as button-tab]
+			[sketchpad.util.tab :as tab]
+			[sketchpad.util.utils :as utils]
+			[sketchpad.project.project :as sketchpad.project]
+			[sketchpad.editor.component :as editor.component]
+			[sketchpad.editor.info-utils :as editor.info-utils]
+			[sketchpad.menu.view :as sketchpad.menu.view]
+			[sketchpad.file.file :as file]))
 
 (defn app-tabbed-panel []
 	(get-in (:buffer-tabbed-panel @state/app) [:component :container]))
@@ -91,21 +91,41 @@
 		  tab-state (get buffer-component :state)
 		  uuid (.. UUID randomUUID toString)
 		  buffer { :type :buffer
-		  
-					     :text-area text-area
-							 :title (:title buffer-component)
-							 :label (:label buffer-component)
-							 :container container
-							 :file (atom nil)
-							 
-							 :state tab-state
-							 :new-file? (atom true)
-							 
-							 :component buffer-component
-							 :project project-path
-							 :uuid uuid}]
+				:text-area text-area
+				:title (:title buffer-component)
+				:label (:label buffer-component)
+				:container container
+				:file (atom nil)
+				:state tab-state
+				:new-file? (atom true)
+				:component buffer-component
+				:project project-path
+				:uuid uuid}]
 		(tab/add-tab! "untitled" container)
 		(let [tab (custom-tab buffer)]
 	(init-new-tab (assoc buffer :tab tab)))))
 
+(defn new-project-buffer-tab
+[project-path selection-path]
+	(let [tabbed-panel (app-tabbed-panel)
+		  buffer-component (editor.component/buffer-component)
+		  container (get buffer-component :container)
+		  text-area (get buffer-component :text-area)
+		  tab-state (get buffer-component :state)
+		  uuid (.. UUID randomUUID toString)
+		  buffer { :type :buffer
+				:text-area text-area
+				:title (:title buffer-component)
+				:label (:label buffer-component)
+				:container container
+				:file (atom nil)
+				:state tab-state
+				:new-file? (atom true)
+				:selection-path selection-path
+				:component buffer-component
+				:project project-path
+				:uuid uuid}]
+		(tab/add-tab! "untitled" container)
+		(let [tab (custom-tab buffer)]
+	(init-new-tab (assoc buffer :tab tab)))))
 

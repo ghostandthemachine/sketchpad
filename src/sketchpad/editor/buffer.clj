@@ -72,9 +72,8 @@
 	  (tab/focus-buffer buffer)
 	  (update-buffer-info-file-title (tab/title))
 	  (tab/mark-tab-clean! buffer)
-	  (seesaw/invoke-later
-		  (.discardAllEdits text-area)
-		  (.setCaretPosition text-area 0))))
+	  (.discardAllEdits text-area)
+	  (.setCaretPosition text-area 0)))
 
 (defn selected-file-path []
   (when-let [tree-path (-> @state/app :docs-tree .getSelectionPaths first)]
@@ -103,27 +102,30 @@
 		(add-auto-completion-from-type buffer))))
 
 (defn open-buffer [file-path project-path]
-	(let [project (sketchpad.project/project-from-path project-path)
-		  buffer (editor.build/project-buffer-tab project-path)]
-		(load-file-into-buffer project buffer file-path)
-		(init-buffer-tab-state buffer)
-		(sketchpad.project/add-buffer-to-project project-path buffer)
-		(sketchpad.project/add-buffer-to-app buffer)
-		(tab/show-buffer buffer)))
+	(seesaw/invoke-later
+		(let [project (sketchpad.project/project-from-path project-path)
+			  buffer (editor.build/project-buffer-tab project-path)]
+			(load-file-into-buffer project buffer file-path)
+			(init-buffer-tab-state buffer)
+			(sketchpad.project/add-buffer-to-project project-path buffer)
+			(sketchpad.project/add-buffer-to-app buffer)
+			(tab/show-buffer buffer))))
 
 (defn blank-clj-buffer!
 	([] (blank-clj-buffer! nil))
 	([parent-dir] 
-	(let [buffer (editor.build/scratch-buffer-tab "sketchpad-tmp")]
-		(init-buffer-tab-state buffer)
-		(sketchpad.project/add-buffer-to-app buffer)
-		(tab/show-buffer buffer))))
+	(seesaw/invoke-later
+		(let [buffer (editor.build/scratch-buffer-tab "sketchpad-tmp")]
+			(init-buffer-tab-state buffer)
+			(sketchpad.project/add-buffer-to-app buffer)
+			(tab/show-buffer buffer)))))
 
 (defn new-project-buffer!
 "Create a new buffer for a loaded project."
-	[project-path]
-	(let [buffer (editor.build/project-buffer-tab project-path)]
-		(init-buffer-tab-state buffer)
-		(sketchpad.project/add-buffer-to-project project-path buffer)
-		(sketchpad.project/add-buffer-to-app buffer)
-		(tab/show-buffer buffer)))
+	[project-path selection-path]
+	(seesaw/invoke-later
+		(let [buffer (editor.build/new-project-buffer-tab project-path selection-path)]
+			(init-buffer-tab-state buffer)
+			(sketchpad.project/add-buffer-to-project project-path buffer)
+			(sketchpad.project/add-buffer-to-app buffer)
+			(tab/show-buffer buffer))))

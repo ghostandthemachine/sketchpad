@@ -21,7 +21,7 @@
       (.setLeftComponent (@app :top-horizontal-split-panel) (@app :docs-tree-panel))
       (.setDividerLocation (@app :top-horizontal-split-panel) @file-tree-divider-position)
       (.requestFocus (@app :docs-tree) true))))
-  
+
 (defonce show-editor (atom true))
 
 (defn toggle-editor

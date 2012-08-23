@@ -62,6 +62,9 @@
             (seesaw/menu-item :text "Open Project"
                               :listen [:action (fn [_] (menu.project/open-project))])
             (seesaw/separator)
+            (seesaw/menu-item :text "New File"
+                              :listen [:action (fn [_] (menu.file/new-file selection-path))])
+            (seesaw/separator)
             (seesaw/menu-item :text "New Folder" 
                               :mnemonic "M" 
                               :listen [:action (fn [_] (menu.project/new-folder selection-path))])

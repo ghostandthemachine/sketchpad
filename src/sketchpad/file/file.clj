@@ -146,9 +146,11 @@
                                "Oops" JOptionPane/ERROR_MESSAGE)
                            (.printStackTrace e)))))
 
-(defn save-file-as! []
+(defn save-file-as! 
+([](save-file-as! (current-project)))
+([dir-path]
   (try
-    (when-let [new-file (utils/choose-file (@app :frame) "Save file as" (current-project) false)]
+    (when-let [new-file (utils/choose-file (@app :frame) "Save file as" dir-path false)]
       (utils/awt-event
         (let [path (.getAbsolutePath new-file)]
           (spit path "")))
@@ -156,7 +158,7 @@
       (catch Exception e (do (JOptionPane/showMessageDialog nil
                                "Unable to create file."
                                "Oops" JOptionPane/ERROR_MESSAGE)
-                           (.printStackTrace e)))))
+                           (.printStackTrace e))))))
 
 
 
