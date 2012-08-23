@@ -28,18 +28,19 @@
           ellipse-style (style :foreground button-base-color :background button-base-color :stroke 1 :cap :round)
           d 3
           lp 7]
-      (cond
-        clean?
-        (do
-          (draw g
-                (line lp lp (- w lp) (- h lp)) line-style
-                (line lp (- h lp) (- w lp) lp) line-style
-                (rounded-rect d d (- w d d) (- h d d) 5 5) border-style))
-        (not clean?)
-        (do
-          (draw g
-                (ellipse lp lp (- w lp lp) (- h lp lp)) ellipse-style
-                (rounded-rect d d (- w d d) (- h d d) 5 5) border-style)))))
+      (when @sketchpad.config.prefs/show-tabs?
+        (cond
+          clean?
+          (do
+            (draw g
+                  (line lp lp (- w lp) (- h lp)) line-style
+                  (line lp (- h lp) (- w lp) lp) line-style
+                  (rounded-rect d d (- w d d) (- h d d) 5 5) border-style))
+          (not clean?)
+          (do
+            (draw g
+                  (ellipse lp lp (- w lp lp) (- h lp lp)) ellipse-style
+                  (rounded-rect d d (- w d d) (- h d d) 5 5) border-style))))))
 
 (defn tab-button 
 ([buffer]
@@ -62,13 +63,13 @@
                       :foreground (color :white)
                       :focusable?  false
                       :class :tab-label
-                      :font (font/font "MENLO-10"))
+                      :font (font/font "MENLO-12"))
         container (flow-panel :align :right
                               :items [label button]
                               :maximum-size [300 :by 100]
                               :class :button-tab)]
-    (when-not  @sketchpad.config.prefs/show-tabs?
-      (config! container :visible? false))
+    (bind/bind sketchpad.config.prefs/show-tabs? (bind/transform (fn [s] s)) (bind/property container :visible?))
+    (bind/bind sketchpad.config.prefs/show-tabs? (bind/transform (fn [s] s)) (bind/property label :visible?))
     (bind/bind (:title buffer) (bind/transform (fn [s] s)) (bind/property label :text))
     (doto container
       (.setOpaque false)

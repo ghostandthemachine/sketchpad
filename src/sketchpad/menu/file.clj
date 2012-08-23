@@ -30,23 +30,24 @@
 "Save the current buffer."
 ([] (save (tab/current-buffer)))
 ([buffer]
-(let [new-file? @(buffer :new-file?)]
-  (if new-file?
-    (do
-      (when-let [new-file (file/save-file-as!)]
-        (let[new-file-title (.getName new-file)] 
-          (reset! (:file buffer) new-file)
-          (reset! (:new-file? buffer) false) 
-          (when (file/save-file! buffer)
-            (tab/title-at! (tab/index-of-buffer buffer) new-file-title)
-            (reset! (:title buffer) new-file-title)
-            (tab/mark-current-tab-clean!)))))
-    (do
-      (when (file/save-file! buffer)
-            (tab/mark-current-tab-clean!))))
-  (when (= @(get-in buffer [:component :title]) "project.clj")
-    (project/update-lein-project! (project/project-from-buffer buffer)))
-  (tree.utils/update-tree))))
+(when (tab/tabs?)
+	(let [new-file? @(buffer :new-file?)]
+	  (if new-file?
+	    (do
+	      (when-let [new-file (file/save-file-as!)]
+	        (let[new-file-title (.getName new-file)] 
+	          (reset! (:file buffer) new-file)
+	          (reset! (:new-file? buffer) false) 
+	          (when (file/save-file! buffer)
+	            (tab/title-at! (tab/index-of-buffer buffer) new-file-title)
+	            (reset! (:title buffer) new-file-title)
+	            (tab/mark-current-tab-clean!)))))
+	    (do
+	      (when (file/save-file! buffer)
+	            (tab/mark-current-tab-clean!))))
+	  (when (= @(get-in buffer [:component :title]) "project.clj")
+	    (project/update-lein-project! (project/project-from-buffer buffer)))
+	  (tree.utils/update-tree)))))
 
 (defn save-as
 "Open the save as dialog for the current buffer."

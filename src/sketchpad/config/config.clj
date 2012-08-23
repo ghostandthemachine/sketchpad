@@ -201,6 +201,14 @@ This method fires a property change event of type CLOSE_CURLY_BRACES_PROPERTY."
      (catch Exception e
        (println (str "The theme " pref " can not be found...")))))
 
+ (defn ta-theme
+"Set the current RSyntaxTextArea theme."
+[text-area pref]
+  (try
+     (theme/apply! (theme/theme pref) text-area)
+     (catch Exception e
+       (println (str "The theme " pref " can not be found...")))))
+
 (defn background-img
 "Sets this image as the background image. This method fires a property change event of type RTextAreaBase.BACKGROUND_IMAGE_PROPERTY.
 NOTE: the opaque property is set to true when the background is set to a color. When an image is used for the background (by this method), opaque is set to false. This is because we perform better when setOpaque is true, but if we use an image for the background when opaque is true, we get on-screen garbage when the user scrolls via the arrow keys. Thus we need setOpaque to be false in that case.
@@ -489,10 +497,12 @@ You never have to change the opaque property yourself; it is always done for you
 (def spell-checker-pref-handlers
 	{:underline-color spell-checker-underline-color})
 
-(def fuzzy-file-type-exclusions ["class" "Ds_Store" "jpeg" "png" "tiff" "psd" "swf" "so" "scx" "pdf" "svg"])
+(def fuzzy-file-type-exclusions ["dll" "class" "Ds_Store" "jpeg" "png" "tiff" "psd" "swf" "so" "scx" "pdf" "svg" "jnilib" "dylib"])
 (def fuzzy-buffer-pref-handlers 
 	{:buffer-theme text-area-theme
 	 :font font})
+
+(def info-font (seesaw.font/font "MENLO-12"))
 
 (def fuzzy-buffer-settings default-fuzzy-buffer-prefs)
 	 

@@ -47,9 +47,11 @@
 	(let [label (label :text @(:title repl) 
 		  				:foreground (color :white)
 		  				:focusable? false
-              :font (font/font "MENLO-10"))
+              :font (font/font "MENLO-12"))
 		  button (tab-button repl)
 		  container (flow-panel :align :right :items [label button])]
+    		(bind/bind sketchpad.config.prefs/show-tabs? (bind/transform (fn [s] s)) (bind/property container :visible?))
+	      (bind/bind sketchpad.config.prefs/show-tabs? (bind/transform (fn [s] s)) (bind/property label :visible?))
 		(bind/bind (:title repl) (bind/transform (fn [s] s)) (bind/property label :text))
 		(doto container
 			(.setOpaque false)

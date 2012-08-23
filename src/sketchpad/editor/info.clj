@@ -23,17 +23,19 @@
 
 (defn buffer-info []
 	(let [doc-position-label (label :text ""
-													:border nil
-													:foreground (color :white)
-													:id :buffer-info-label)
+									:font config/info-font
+									:border nil
+									:foreground (color :white)
+									:id :buffer-info-label)
 		doc-title-label (label :text ""
-													:border nil
-													:foreground (color :white)
-													:id :buffer-info-label)
+							:border nil
+							:foreground (color :white)
+							:font config/info-font
+							:id :buffer-info-label)
 		buffer-info-panel (horizontal-panel
 										:items [[:fill-h 10] doc-position-label :fill-h doc-title-label [:fill-h 10]]
 										:background config/app-color
-										:border nil
+										; :border (seesaw.border/empty-border :thickness 5)
 										:maximum-size [10000 :by 20] ;; HACK. need to figure out the safe way to set max height when no tab is present
 										:id :buffer-info-panel
 										:paint paint-info-panel)

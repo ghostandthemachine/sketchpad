@@ -6,7 +6,7 @@
 	; :background-image "img/invisible.png"
 	:whitespace-visible false
 	:line-wrap 	true
-	:rounded-selection-edges true
+	:rounded-selection-edges false
 	:animate-bracket-matching true
 	:anti-aliasing true
 	:code-folding true
@@ -30,16 +30,16 @@
 	; :background-image "img/invisible.png"
 	:whitespace-visible false
 	:line-wrap 	false
-	:rounded-selection-edges true
+	:rounded-selection-edges false
 	:animate-bracket-matching true
 	:anti-aliasing true
 	:code-folding true
 	:auto-indent true
 	:eol-marker false
 	:font "MENLO-14-BOLD"
-	:tab-size 				2
+	:tab-size 2
 	:mark-occurences-color "#ADA6A9"
-  :paint-mark-occurences-border true
+ 	 :paint-mark-occurences-border true
 	:matched-bracket-bg-color [80 240 70 50]
 	:matched-bracket-border-color [80 240 70 100]
 	:tab-lines-enabled true
@@ -83,7 +83,7 @@
    :bookmarking-enabled false
    :fold-indicator-enabled true  ;; not functional until new Clojure Lexxer is integrated
    :line-number-color [143 144 134]
-   :line-number-font "MENLO-14-BOLD"
+   :line-number-font "MENLO-12-BOLD"
    :line-number-start-index 1
    :active-range-color [50 50 41]})
 

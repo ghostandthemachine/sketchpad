@@ -58,17 +58,19 @@
 
 (defn repl-info []
 	(let [repl-position-label (label :text ""
-													:border nil
-													:foreground (color :white)
-													:id :repl-info-label)
+									:font config/info-font
+									:border nil
+									:foreground (color :white)
+									:id :repl-info-label)
 		repl-title-label (label :text ""
-													:border nil
-													:foreground (color :white)
-													:id :repl-info-label)
+							    :font config/info-font
+							    :border nil
+							    :foreground (color :white)
+							    :id :repl-info-label)
 		repl-info {:type :repl-info
 			       :component {:container (horizontal-panel :items [[:fill-h 10] repl-position-label :fill-h repl-title-label [:fill-h 10]]
 															:background config/app-color
-															:border nil
+															; :border (seesaw.border/empty-border :thickness 5)
 															:maximum-size [10000 :by 20] ;; HACK. need to figure out the safe way to set max height when no tab is present
 															:id :repl-info
 															:paint paint-info-panel)}}]

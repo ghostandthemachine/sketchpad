@@ -7,6 +7,7 @@
             [sketchpad.wrapper.rsyntaxtextarea :as wrapper.rsyntaxtextarea]
             [sketchpad.input.default :as input.default]
             [sketchpad.state.state :as state]
+            [sketchpad.fuzzy.list-cell-renderer :as cell-renderer]
             [sketchpad.auto-complete.template :as template]))
 
 (defn create-completion-provider
@@ -75,7 +76,7 @@
   [project-path]
   (build-project-completions (create-provider) project-path))
 
-(defonce fuzzy-provider (org.fife.ui.autocomplete.DefaultCompletionProvider. ))
+(def fuzzy-provider (org.fife.ui.autocomplete.DefaultCompletionProvider. ))
 
 (defn not-sufix?
   [f suffix-vec]
@@ -118,22 +119,65 @@
     (doseq [proj project-keys]
       (add-files-to-fuzzy-complete proj))))
 
-(defonce fuzzy-auto-completetion (org.fife.ui.autocomplete.AutoCompletion. fuzzy-provider))
-
 (defn- init-fuzzy-ac
-	[]
-	(doto 
-	  fuzzy-auto-completetion
-  	(.setAutoActivationEnabled true)
-	  (.setDescriptionWindowSize 300 500) 
-	  (.setShowDescWindow false)))
-
-(do (init-fuzzy-ac))
-	
+	[ac provider]
+	(doto ac
+		(.setAutoActivationEnabled true)
+		(.setAutoActivationDelay 500)
+		(.setDescriptionWindowSize 800 500) 
+		(.setShowDescWindow false))
+  (doto provider
+    (.setListCellRenderer (cell-renderer/renderer)))
+	ac)
 
 (defn install-fuzzy-provider
   [rsta]
-  (.install fuzzy-auto-completetion rsta))
+  (let [provider fuzzy-provider
+        ac (org.fife.ui.autocomplete.AutoCompletion. provider)]
+      (init-fuzzy-ac ac provider)
+    (.install ac rsta)))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

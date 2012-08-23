@@ -2,24 +2,24 @@
 	(:refer-clojure :exclude [find replace])
 	(:use [seesaw meta dev]
         [seesaw.core :exclude [height width]]
-			  [clojure.repl]
-			  [sketchpad.config.config]
+	  [clojure.repl]
+	  [sketchpad.config.config]
         [sketchpad.tree.tree]
         [sketchpad.buffer.action]
         [sketchpad.util.brackets]
         [sketchpad.system.desktop]
-				[sketchpad.auto-complete.template])
+	[sketchpad.auto-complete.template])
 	(:require [sketchpad.util.tab :as tab]
-					  [sketchpad.wrapper.rsyntaxtextarea :as rsta]
-					  [sketchpad.core :as core]
-            [sketchpad.wrapper.gutter :as gutter]
-            [sketchpad.menu.source :as source]
-					  [sketchpad.buffer.search :as search]
-            [sketchpad.project.project :as project]
-            [sketchpad.project.form :as project.form]
-					  [clojure.pprint :as pprint]
-					  [clojure.stacktrace :as stack-trace]
-					  [seesaw.dev :as seesaw.dev]
+			  [sketchpad.wrapper.rsyntaxtextarea :as rsta]
+			  [sketchpad.core :as core]
+	              [sketchpad.wrapper.gutter :as gutter]
+	              [sketchpad.menu.source :as source]
+		        [sketchpad.buffer.search :as search]
+	              [sketchpad.project.project :as project]
+	              [sketchpad.project.form :as project.form]
+			  [clojure.pprint :as pprint]
+			  [clojure.stacktrace :as stack-trace]
+			  [seesaw.dev :as seesaw.dev]
             [clojure.string :as string])
 	(:import 	(org.fife.ui.rsyntaxtextarea RSyntaxTextAreaEditorKit)
 			 		(org.fife.ui.rtextarea RTextAreaEditorKit)
