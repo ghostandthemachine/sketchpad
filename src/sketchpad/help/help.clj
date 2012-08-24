@@ -104,7 +104,7 @@
     (second
       (re-find #"(.*?)[\s|\)|$]"
                (str (.trim form-string) " ")))))
-
+               
 (defn token-from-caret-pos [text pos]
   (head-token (find-form-string text pos)))
 

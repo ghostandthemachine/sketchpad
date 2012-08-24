@@ -399,8 +399,28 @@
   (get-in (app-repl) [:component :text-area]))
 
 
+(defn accum-token-list [token]
+	(let [token-list (atom [(.getLexeme token)])]
+		(loop [t (token-list-for-line)]
+			(when-not (nil? (.getNextToken t))
+				(swap! token-list (fn [tl] (conj tl (.getLexeme t))))
+				(println (.getNextToken t))
+			 	 (recur (.getNextToken t))))
+		@token-list))
 
 
+(defn read-or-nil [rdr]
+  (try (read rdr) (catch RuntimeException e nil)))
+
+(defn make-forms-seq
+  "Construct a lazy sequence of clojure forms from input f.
+   f can be anything that can be coerced to a reader"
+  [f]
+  (letfn [(forms-seq [rdr]
+            (let [form (read-or-nil rdr)]
+              (if (nil? form) []
+                  (lazy-seq (cons form (forms-seq rdr))))))]
+    (forms-seq (java.io.PushbackReader. (io/reader f)))))
 
 
 

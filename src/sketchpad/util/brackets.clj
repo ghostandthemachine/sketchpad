@@ -1,3 +1,7 @@
+; Copyright (c) 2011, Arthur Edelstein
+; All rights reserved.
+; Eclipse Public License 1.0
+; arthuredelstein@gmail.com
 
 (ns sketchpad.util.brackets
   (:import (javax.swing.text JTextComponent))
@@ -28,15 +32,16 @@
 
 (defn find-enclosing-brackets [text pos]
   (let [process #(process-bracket-stack %1 %2 nil)
+  		_ (println process)
         reckon-dist (fn [stacks]
                       (let [scores (map count stacks)]
                         (count-while #(<= (first scores) %) scores)))
-        before (.substring text 0 (Math/min (.length text) pos))
+        before (.substring text 0 (min (.length text) pos))
         stacks-before (reverse (reductions process nil before))
-        left (- pos (reckon-dist stacks-before))
-        after (.substring text (Math/min (.length text) pos))
+        left (- pos (reckon-dist stacks-before) 1)
+        after (.substring text (min (.length text) pos))
         stacks-after (reductions process (first stacks-before) after)
-        right (+ 1 pos (reckon-dist stacks-after))]
+        right (+ -1 pos (reckon-dist stacks-after))]
     [left right]))
 
 (defn find-bad-brackets [text]
@@ -55,7 +60,7 @@
   (re-matcher #"[\n\r]\s*?[\n\r]" s))
 
 (defn find-left-gap [text pos]
-  (let [p (Math/min (.length text) (inc pos))
+  (let [p (min (.length text) (inc pos))
         before-reverse (string/reverse (.substring text 0 p))
         matcher (blank-line-matcher before-reverse)]
     (if (.find matcher)

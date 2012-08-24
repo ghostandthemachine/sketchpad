@@ -88,10 +88,11 @@
 (defn send-selected-or-form-to-repl
 "Send the currently selected text to the last focused REPL for the project associated with the current buffer."
 	[]
-	(println "send selected/form to PROJCET REPL")
 	(seesaw/invoke-later
 		(let [project (get @(:projects @state/app) (first (tree.utils/get-selected-projects)))
-			repl (:last-focused-repl project)]
+			last-uuid @(:last-focused-repl project)
+			repls (tab/current-repls)
+			repl (get repls last-uuid)]
 			(when-not (nil? repl)
 				(let [text-area (tab/current-text-area)
 					text (.getSelectedText text-area)
@@ -99,18 +100,20 @@
 							text
 							(help/find-form-string
 								(seesaw/config text-area :text)
-								(buffer.action/buffer-cursor-pos)))]
+								(buffer.action/buffer-cursor-point text-area)))]
 					(project-repl/send-repl-cmd repl cmd))))))
 
 (defn send-file-to-repl
 "Send the current buffer to it's associated project REPL."
 	[]
-	(let [project (first (tree.utils/get-selected-projects))
-		repl (:last-focused-repl project)]
+	(seesaw/invoke-later
+		(let [project (get @(:projects @state/app) (first (tree.utils/get-selected-projects)))
+			last-uuid @(:last-focused-repl project)
+			repls (tab/current-repls)
+			repl (get repls last-uuid)]
 		(when-not (nil? repl)
-			(seesaw/invoke-later
-				(let [text (seesaw/config (tab/current-text-area) :text)]
-					(project-repl/send-repl-cmd repl text))))))
+			(let [text (seesaw/config (tab/current-text-area) :text)]
+				(project-repl/send-repl-cmd repl text))))))
 
 (defn make-source-menu-items []
  {:search (seesaw.core/menu-item :text "Search..." 
@@ -149,7 +152,7 @@
                               :mnemonic "-" 
                               :key (keystroke/keystroke "meta MINUS") 
                               :listen [:action (fn [_] (decrease-font-size))])
- :send-selected-or-form (seesaw.core/menu-item :text "Send command to REPL..." 
+ :send-selected-or-form (seesaw.core/menu-item :text "Send selected to REPL..." 
                               :mnemonic "R" 
                               :key (keystroke/keystroke "meta R") 
                               :listen [:action (fn [_] (send-selected-or-form-to-repl))])
