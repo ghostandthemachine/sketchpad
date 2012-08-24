@@ -356,7 +356,7 @@
      (string/trim (last (string/split text #"=>")))))
 
 (defn buffer-cursor-pos 
-([] (buffer-cursor-pos ))
+([] (buffer-cursor-pos (tab/current-text-area)))
 ([rta]
 (let [rta-doc (.getDocument rta)
     root (.getDefaultRootElement rta-doc)

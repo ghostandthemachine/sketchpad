@@ -23,29 +23,29 @@
   	
   	;; Syntax tokens.
   	:identifier {:fg "E0E2E4"}
-  	:reserved_word {:fg "93C763" :bold false :italic true}
-  	:reserved_word_2 {:fg "FFFFFF" :bold false}
+  	:reserved-word {:fg "93C763" :bold false :italic true}
+  	:reserved-word-2 {:fg "FFFFFF" :bold false}
   	:annotation {:fg "E8E2B7"}
-  	:comment_documentation {:fg "6C788C"}
-  	:comment_eol {:fg "66747B"}
-  	:comment_multiline {:fg "66747B"}
-  	:comment_keyword {:fg "ae9fbf"}
-  	:comment_markup {:fg "ae9fbf"}
+  	:comment-documentation {:fg "6C788C"}
+  	:comment-eol {:fg "66747B"}
+  	:comment-multiline {:fg "66747B"}
+  	:comment-keyword {:fg "ae9fbf"}
+  	:comment-markup {:fg "ae9fbf"}
   	:function {:fg "66D9E7" :italic true}
-  	:data_type {:fg "678CB1" :bold true}
-  	:literal_boolean {:fg "93C763" :bold true}
-  	:literal_number_decimal_int {:fg "AD73D9"}
-  	:literal_number_float {:fg "AD73D9"}
-  	:literal_number_hexadecimal {:fg "AD73D9"}
-  	:literal_string_double_quote {:fg "FFF45E"}
-  	:literal_char {:fg "FFF45E"}
-  	:literal_backquote {:fg "FFF45E"}
-  	:markup_tag_delimiter {:fg "678CB1"}
-  	:markup_tag_name {:fg "ABBFD3"}
-  	:markup_tag_attribute {:fg "B3B689"}
-  	:markup_tag_attribute_value {:fg "e1e2cf"}
-  	:markup_processing_instruction {:fg "A082BD"}
-  	:markup_cdata {:fg "ae9fbf"}
+  	:data-type {:fg "678CB1" :bold true}
+  	:literal-boolean {:fg "93C763" :bold true}
+  	:literal-number-decimal-int {:fg "AD73D9"}
+  	:literal-number-float {:fg "AD73D9"}
+  	:literal-number-hexadecimal {:fg "AD73D9"}
+  	:literal-string-double-quote {:fg "FFF45E"}
+  	:literal-char {:fg "FFF45E"}
+  	:literal-backquote {:fg "FFF45E"}
+  	:markup-tag-delimiter {:fg "678CB1"}
+  	:markup-tag-name {:fg "ABBFD3"}
+  	:markup-tag-attribute {:fg "B3B689"}
+  	:markup-tag-attribute-value {:fg "e1e2cf"}
+  	:markup-processing-instruction {:fg "A082BD"}
+  	:markup-cdata {:fg "ae9fbf"}
   	:operator {:fg "EB2828"}
   	:preprocessor {:fg "F92772"}
   	:regex {:fg "d39745"}
@@ -53,7 +53,7 @@
   	:variable {:fg "D8A20" :bold false}
   	:whitespace {:fg "E0E2E4"}
   	
-  	:error_identifier {:fg "E0E2E4" :bg "2E2E2C"}
-  	:error_number_format {:fg "E0E2E4" :bg "2E2E2C"}
-  	:error_string_double {:fg "E0E2E4" :bg "04790e"}
-  	:error_char {:fg "E0E2E4" :bg "04790e"}})	
+  	:error-identifier {:fg "E0E2E4" :bg "2E2E2C"}
+  	:error-number-format {:fg "E0E2E4" :bg "2E2E2C"}
+  	:error-string-double {:fg "E0E2E4" :bg "04790e"}
+  	:error-char {:fg "E0E2E4" :bg "04790e"}})	

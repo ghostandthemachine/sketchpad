@@ -149,26 +149,22 @@
                       (.getLineOfOffset ta-in (.. ta-in getText length)))
         prev-hist #(update-repl-history-display-position ta-in :dec)
         next-hist #(update-repl-history-display-position ta-in :inc)]
-
-
     (attach-action-keys ta-in ["ENTER" submit])
     (attach-action-keys ta-in ["control UP" prev-hist]
                               ["control DOWN" next-hist])))
 
 (defn update-last-repl
-  [e]
-  (when-let [repl (current-repl)]
-  	
-  	(println "REPL: ")
-  	(println repl)
-  	
-	 	(let [project (:project repl)]
-
-		(println project)
-	 	
-		  ; (reset!
-  		;   (:last-focused-repl (sketchpad.project/get-project project)) repl)
-      )))
+	[e]
+	(seesaw.core/invoke-later
+		(let [uuid (get-repl-uuid)
+			repls (current-repls)
+			repl (get repls uuid)]
+		  	(when-not (nil? repl)
+		  		(let [projects @(:projects @state/app)
+		  			project (get projects (:project repl))
+		  			last-repl-atom (get project :last-focused-repl)]
+		  			(println "reset " last-repl-atom " with uuid: " uuid)
+		  			(reset! last-repl-atom uuid))))))
 
 (defn attach-tab-change-handler [repl-tabbed-panel]
   (listen repl-tabbed-panel :selection update-last-repl)

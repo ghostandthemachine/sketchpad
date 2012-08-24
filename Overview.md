@@ -12,3 +12,4 @@ The goal is to have the user namespace provide access and functionality as power
 This part of the project is still young but will be a central cog in the SketchPad architecture. Leiningen has quickly become one the most popular Clojure project management tools and with the release of 2.0 it will only be more widely used. The goal is to leverage all of the Leiningen features from managing dependencies and projects to publishing projects to clojars all from SketchPad and in Clojure. 
 
 ![SketchPad screen shot](https://github.com/ghostandthemachine/sketchpad/blob/master/img/SketchPad-screenshot.png?raw=true)
+  

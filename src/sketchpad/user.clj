@@ -16,6 +16,7 @@
 	              [sketchpad.menu.source :as source]
 		        [sketchpad.buffer.search :as search]
 	              [sketchpad.project.project :as project]
+	              [sketchpad.tree.utils :as tree.utils]
 	              [sketchpad.project.form :as project.form]
 			  [clojure.pprint :as pprint]
 			  [clojure.stacktrace :as stack-trace]
@@ -49,27 +50,6 @@
 		(.getText (tab/current-text-area))
 		(catch java.lang.IllegalArgumentException e
 			(println "no buffer open editor"))))
-			
-; (defn current-project []
-; "return the current Leiningen project being edited in the editor component"
-; 	(try
-; 		(when-let [cur-project (get-meta (tab/current-text-area) :project)]
-; 			cur-project)
-; 		(catch java.lang.IllegalArgumentException e
-; 			(println "no project open in editor buffers"))))
-
-; (defn lein-project [path]
-; "return a parsed Leiningen project.clj by path"
-; 	(when-let [proj (project/read (str (current-project) "/project.clj"))]
-; 		proj))
-
-; (defn current-lein-project []
-; "return the current project's parsed Leiningen project.clj"
-; 	(try
-; 		(when-let [lein-proj (lein-project (current-project))]
-; 		lein-proj)
-; 	(catch java.lang.IllegalArgumentException e
-; 		(println "no project open in buffer"))))
 
 (defn repls []
   (mapcat :repls @(:projects @app)))
@@ -353,7 +333,8 @@
 "Returns the current SketchPad project."
   []
   (let [cur-buffer (current-buffer)
-      current-project (project/project-from-path (:project cur-buffer))]
+        project-title (first (tree.utils/get-selected-projects))
+        current-project (get @(:projects @app) project-title)]
     current-project))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

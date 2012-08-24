@@ -163,6 +163,12 @@
 [repl]
 	(set-selected! (get-in (@state/app :repl-tabbed-panel) [:component :container]) (index-of-repl repl)))
 
+(defn current-text-area 
+([]
+	(current-text-area (get-in (:buffer-tabbed-panel @state/app) [:component :container])))
+([tabbed-panel]
+	(select (current-tab tabbed-panel) [:#editor])))
+	
 (defn next-tab
 	([] (next-tab (get-in (:buffer-tabbed-panel @state/app) [:component :container])))
 	([tabbed-panel]
@@ -175,7 +181,8 @@
 					(= current-index (- num-tabs 1))
 						(.setSelectedIndex tabbed-panel 0)
 					:else 
-						(.setSelectedIndex tabbed-panel 0))))))
+						(.setSelectedIndex tabbed-panel 0))
+				(.requestFocus (current-text-area tabbed-panel))))))
 
 (defn previous-tab 
 	([] (previous-tab (get-in (:buffer-tabbed-panel @state/app) [:component :container])))
@@ -189,7 +196,8 @@
 				(= current-index 0)
 					(.setSelectedIndex tabbed-panel (- num-tabs 1))
 				:else 
-					(.setSelectedIndex tabbed-panel (- num-tabs 1)))))))
+					(.setSelectedIndex tabbed-panel (- num-tabs 1)))
+				(.requestFocus (current-text-area tabbed-panel))))))
 
 
 (defn current-tab-file-name 
@@ -197,12 +205,6 @@
 	(current-tab-file-name (:buffer-tabbed-panel @state/app)))
 ([tabbed-panel]
 	(.getAbsolutePath (get-meta (select (current-tab tabbed-panel) [:#editor]) :file))))
-
-(defn current-text-area 
-([]
-	(current-text-area (get-in (:buffer-tabbed-panel @state/app) [:component :container])))
-([tabbed-panel]
-	(select (current-tab tabbed-panel) [:#editor])))
 
 (defn current-buffers []
 	(get @state/app :current-buffers))
@@ -320,13 +322,16 @@
 (defn get-repl-uuid []
   (get-meta (current-repl-text-area) :uuid))
 
-(defn current-repl []
-	(mapcat :repls (vals @(:projects @state/app))))
+(defn current-repls
+	[]
+	(into {} (mapcat #(deref (:repls %)) (vals @(:projects @state/app)))))
 
 (defn current-repl
 	[]
-	(second (mapcat #(deref (:repls %)) (vals @(:projects @state/app)))))
-
+	(let [current-uuid (get-repl-uuid)
+		repls (current-repls)]
+		(get repls current-repls)))
+		
 (defn current-buffer 
 ([]
 	(current-editor-buffer (get-in (:buffer-tabbed-panel @state/app) [:component :container])))

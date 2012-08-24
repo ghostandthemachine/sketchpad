@@ -55,7 +55,7 @@
   (re-matcher #"[\n\r]\s*?[\n\r]" s))
 
 (defn find-left-gap [text pos]
-  (let [p (min (.length text) (inc pos))
+  (let [p (Math/min (.length text) (inc pos))
         before-reverse (string/reverse (.substring text 0 p))
         matcher (blank-line-matcher before-reverse)]
     (if (.find matcher)

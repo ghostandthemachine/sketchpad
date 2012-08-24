@@ -16,15 +16,16 @@
 (defn text-area-from-index [tabbed-panel i]
   (select (.getComponentAt tabbed-panel i) [:#editor]))
 
-(def button-base-color (color 150 150 150))
-
 (defn paint-tab-button [buffer c g]
     (let [clean? (@(:state buffer) :clean)
           w          (width c)
           h          (height c)
+          button-base-color (color 255 255 255)
           line-style (style :foreground button-base-color :stroke 2 :cap :round)
           project-color (project/buffer-color buffer)
-          border-style (style :foreground @project-color :stroke 0.5)
+          border-style (if project-color 
+          					(style :foreground @project-color :stroke 0.5)
+          					(style :foreground (color 255 255 255) :stroke 0.5))
           ellipse-style (style :foreground button-base-color :background button-base-color :stroke 1 :cap :round)
           d 3
           lp 7]

@@ -2,8 +2,8 @@
   (:use [sketchpad.repl.app.util])
 	(:require [seesaw.core :as seesaw]
 		[clojure.string :as string]
-    [clooj.brackets :as brackets]
-    [sketchpad.util.utils :as utils]
+		    [clooj.brackets :as brackets]
+		    [sketchpad.util.utils :as utils]
 		[sketchpad.repl.component :as repl.component]
 		[sketchpad.repl.server :as repl.server]
     [sketchpad.repl.history :as repl.history]
@@ -173,7 +173,7 @@
               :text-area   (:text-area component)
               :title       (:title component)
               :project     (:path project)
-              :uuid        (.. UUID randomUUID toString)
+              :uuid        (seesaw.meta/get-meta (:text-area component) :uuid)
               :history     (repl.history/history)}
         tab (repl.tab/button-tab repl)]
     (assoc repl :tab tab)))
@@ -197,6 +197,3 @@
             (tab/focus-repl repl)
             (tab/repl-tab-component! repl)
   repl))))))
-
-
-; (first (filter #(= uuid (:uuid %)) (mapcat :repls @projects)))

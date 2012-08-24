@@ -1,4 +1,4 @@
-(def default-background-color [39 49 34])
+ (def default-background-color [39 49 34])
 
 (def default-editor-prefs
    {:buffer-theme "sublime.xml" ;; load RSyntaxTextArea from xml theme file
@@ -22,7 +22,7 @@
 	:tab-lines-enabled true
 	:tab-lines-color [100 100 100 100]
 	:templates-enabled true
-	:close-curly-braces true})
+	:close-curly-braces true}) 
 
 (def default-repl-prefs
    {:buffer-theme "sublime.xml" ;; load RSyntaxTextArea from xml theme file

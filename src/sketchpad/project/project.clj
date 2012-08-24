@@ -106,7 +106,7 @@
   (swap! buffers assoc (:uuid buffer) buffer)))
 
 (defn remove-buffer-from-project [buffer]
-  	(let [buffers (get-in @(@state/app :projects) [(:project-path buffer) :buffers])]
+  	(let [buffers (get-in @(@state/app :projects) [(:project buffer) :buffers])]
   (swap! buffers dissoc (:uuid buffer))))
 
 (defn add-repl-to-project [project-path repl]

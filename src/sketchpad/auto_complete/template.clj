@@ -7,3 +7,5 @@
 (defn install-templates
 	[ac]
 	(.addCompletion (.getCompletionProvider ac) (TemplateCompletion. (.getCompletionProvider ac) "sr" "(search-replace \"${search}\" \"${replace}\"")))
+
+  

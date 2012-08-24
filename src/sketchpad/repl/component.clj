@@ -8,8 +8,9 @@
             [sketchpad.wrapper.rsyntaxtextarea :as wrapper.rsyntaxtextarea]
             [sketchpad.auto-complete.auto-complete :as auto-complete]
             [clojure.string :as string])
-  (:import (org.fife.ui.rtextarea RTextScrollPane)
-           (java.io BufferedReader BufferedWriter PipedReader PipedWriter PrintWriter Writer
+  (:import (java.util UUID) 
+  		(org.fife.ui.rtextarea RTextScrollPane)
+           	(java.io BufferedReader BufferedWriter PipedReader PipedWriter PrintWriter Writer
                     StringReader PushbackReader)))
 
 (defn- init-prompt [rta]
@@ -39,6 +40,7 @@ Examples from clojuredocs.org: [clojuredocs or cdoc]\n\n")
                                 :class  :repl)
         repl-scroll-pane (RTextScrollPane. text-area false)
         repl-container (vertical-panel :items [repl-scroll-pane] :class :repl-container)]
+    (seesaw.meta/put-meta! text-area :uuid  (.. UUID randomUUID toString))
     (config! repl-scroll-pane :border nil)
     (init-repl text-area)
     {:container repl-container

@@ -20,11 +20,14 @@
 (defn new-file
 "Create a new file"
   ([] 
-    (new-file nil))
+  (new-file nil))
   ([selection-path]
     (if-let [current-project-path (first (tree.utils/get-selected-projects))]
       (seesaw.core/invoke-later
         (editor.buffer/new-project-buffer! current-project-path selection-path)
+        (tree.utils/update-tree))
+      (seesaw.core/invoke-later
+        (editor.buffer/new-project-buffer! "tmp" selection-path)
         (tree.utils/update-tree)))))
 
 (defn save

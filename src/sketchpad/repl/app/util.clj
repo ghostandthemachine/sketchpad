@@ -100,29 +100,6 @@
           (swap! items conj ""))
         (swap! (repl-history :pos) (fn [pos] 0)))))))
 
-; (defn sketchpad-reader [q prompt exit]
-;     (read-string (.take q)))
-
-; (defn sketchpad-prompt [rsta]
-;   (buffer.action/append-text rsta (str \newline (ns-name *ns*) "=> "))
-;   (.setCaretPosition rsta (.getLastVisibleOffset rsta))
-;   (.discardAllEdits rsta))
-
-; (defn sketchpad-printer [rsta value]
-;   (buffer.action/append-text rsta (str value)))
-
-; (defn create-application-repl [repl-rsta]
-;   (let [application-repl-q (LinkedBlockingDeque. )
-;         reader (partial sketchpad-reader application-repl-q)
-;         printer (partial sketchpad-printer repl-rsta)
-;         prompt (partial sketchpad-prompt repl-rsta)]
-;     (future 
-;       (sketchpad-repl repl-rsta
-;         :read reader
-;         :print printer
-;         :prompt prompt))
-;     application-repl-q))
-
 (defn append-history-text [rsta m]
   (let [pos @(m :pos)
         history-str (string/trim (str (nth @(m :items) pos)))]
@@ -147,39 +124,3 @@
               (swap! history-pos (fn [pos] pos))))
       (clear-repl-input rsta)
       (append-history-text rsta repl-history))))
-
-; (defn send-selected-to-repl [app]
-;   (let [ta (app :doc-text-area)
-;         region (selected-region ta)
-;         txt (:text region)]
-;     (if-not (and txt (correct-expression? txt))
-;         (.setText (app :arglist-label) "Malformed expression")
-;          (let [line (.getLineOfOffset ta (:start region))]
-;            (send-to-project-repl app txt (relative-file app) line)))))
-
-; (defn send-doc-to-repl [app]
-;   (let [text (->> app :doc-text-area .getText)]
-;     (send-to-project-repl app text (relative-file app) 0)))
-
-
-; (defn load-file-in-repl [app]
-;   (when-lets [f0 @(:current-file app)
-;               f (or (get-temp-file f0) f0)]
-;     (send-to-project-repl app (str "(load-file \"" (.getAbsolutePath f) "\")"))))
-
-; (defn apply-namespace-to-repl [app]
-;   (when-let [current-ns (get-file-ns (config (app :doc-text-area) :text))]
-;     (send-to-project-repl app (str "(ns " current-ns ")"))
-;     (swap! repls assoc-in
-;            [(-> app :repl deref :project-path) :ns]
-;            current-ns)))
-
-; (defn restart-repl [app project-path]
-;   (buffer.action/append-text (app :application-repl)
-;                (str "\n=== RESTARTING " project-path " REPL ===\n"))
-;   (when-let [proc (-> app :repl deref :proc)]
-;     (.destroy proc))
-;   (reset! (:repl app) (create-outside-repl (app :repl-out-writer) project-path))
-;   (apply-namespace-to-repl app))
-
-;       

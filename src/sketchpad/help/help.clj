@@ -8,7 +8,7 @@
            (clojure.lang RT Reflector)
            (java.io File))
   (:use [seesaw.core :only (select)]
-        [clooj.brackets]
+        [sketchpad.util.brackets]
         [clj-inspector.jars :only (clj-sources-from-jar jar-files)]
         [clj-inspector.vars :only (analyze-clojure-source
                                     parse-ns-form)]
@@ -96,8 +96,6 @@
 
 (defn find-form-string [text pos]
   (let [[left right] (find-enclosing-brackets text pos)]
-  	(println left right)
-  	(println (.substring text left right))
     (when (> (.length text) left)
       (.substring text (inc left)))))
 

@@ -28,14 +28,17 @@
 
 (defn update-doc-title-label!
 "Update the currently displayed doc title in the info panel"
-[e]
-	(if (tab/tabs?)
-		(invoke-later
-			(config! (:doc-title-label @state/app) :text (tab/title))
-			(when @(:file (tab/current-buffer))
-				(tree.utils/set-tree-selection (.getAbsolutePath @(:file (tab/current-buffer))))))
-		(invoke-later
-			(config! (:doc-title-label @state/app) :text ""))))
+	[e]
+	(invoke-later
+		(if (tab/tabs?)
+			(do
+				(let [doc-title (:doc-title-label @state/app)
+					file @(:file (tab/current-buffer))]
+					(config! doc-title :text (tab/title))
+					(when file
+						(tree.utils/set-tree-selection (.getAbsolutePath file)))))
+			(do
+				(config! (:doc-title-label @state/app) :text "")))))
 
 (defn attach-caret-handler [text-area]
 	(listen text-area :caret-update update-doc-position-label!))

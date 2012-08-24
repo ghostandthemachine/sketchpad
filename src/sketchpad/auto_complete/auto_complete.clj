@@ -28,7 +28,7 @@
 
 (defn install-auto-completion
   [rta] 
-    (template/install-templates default-auto-completion)
+;    (template/install-templates default-auto-completion)
     (config/apply-auto-completion-prefs! default-auto-completion)
     (.install default-auto-completion rta))
 

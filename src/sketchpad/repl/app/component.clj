@@ -48,14 +48,17 @@
 				repl-que (create-application-repl text-area)
 				tab (repl.tab/label-tab {:container repl-container
 				                  :title repl-title})
+				uuid (.. UUID randomUUID toString)
 				application-repl {:type :application-repl
                   				:component {:container repl-container :text-area text-area :scroller repl-in-scroll-pane}
                   				:title repl-title
                   				:history repl-history
-                          :uuid (.. UUID randomUUID toString)
+                         			 :uuid uuid
                   				:que repl-que
                   				:tab tab}]
     (meta/put-meta! text-area :repl-history repl-history)
     (meta/put-meta! text-area :repl-que repl-que)
+    (meta/put-meta! text-area :uuid uuid)
+    
     (swap! state/app assoc :application-repl application-repl)
     application-repl))

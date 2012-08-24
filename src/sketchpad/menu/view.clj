@@ -39,60 +39,66 @@
 (defn next-tab
 "Display the next available tab in the editor tabbed panel."
   []
-	(tab/next-tab)
-  (tab/update-tree-selection-from-tab))
+  (seesaw.core/invoke-later
+  	(tab/next-tab)
+	 (tab/update-tree-selection-from-tab)))
 
 (defn previous-tab
 "Display the previous available tab in the editor tabbed panel."
   []
-	(tab/previous-tab)
-  (tab/update-tree-selection-from-tab))
+  (seesaw.core/invoke-later
+  	(tab/previous-tab)
+	(tab/update-tree-selection-from-tab)))
 
-(defn close-tab [app-atom]
+(defn close-tab
 "Close the current tab."
-	(tab/close-current-tab @app-atom))
+	[app-atom]
+	(seesaw.core/invoke-later
+		 (tab/close-current-tab @app-atom)))
 
 (defn next-repl
 "Display the next available tab in the editor tabbed panel."
   []
-  (tab/next-tab (get-in (@state/app :repl-tabbed-panel) [:component :container])))
+  (seesaw.core/invoke-later
+  	(tab/next-tab (get-in (@state/app :repl-tabbed-panel) [:component :container]))))
 
 (defn previous-repl
 "Display the previous available tab in the editor tabbed panel."
   []
-  (tab/previous-tab (get-in (@state/app :repl-tabbed-panel) [:component :container])))
+ (seesaw.core/invoke-later
+ 	(tab/previous-tab (get-in (@state/app :repl-tabbed-panel) [:component :container]))))
 
 (defn close-tab
 "Close the current tab. If the current buffer is dirty this will ask if you are sure you want to close the tab."
 ([] (close-tab (tab/current-buffer)))
 ([buffer]
-(when (tab/tabs?)
-      (let [current-tab-state (:state buffer)]
-        (if (@current-tab-state :clean)
-          (tab/close-tab) ;; nothing has changed, just close.
-          (do 
-            (let [answer (option-windows/close-or-save-current-dialogue @(get-in buffer [:component :title]))]
-              (cond 
-                (= answer 0) ;; answered yes to save
-                  (do
-                    (if @(:new-file? buffer) ;; is it a new buffer?
-                      (do 
-                        (buffer.io/save-new-buffer! buffer)
-                        (tab/close-tab)
-                        (sketchpad.project/remove-buffer-from-app buffer)
-                        (sketchpad.project/remove-buffer-from-project buffer)
-
-                      (do
-                        (buffer.io/save-buffer! buffer)
-                        (tab/close-tab)
-                        (sketchpad.project/remove-buffer-from-app buffer)
-                        (sketchpad.project/remove-buffer-from-project buffer)))))
-                (= answer 1) ;; don't save just close
-                  (do 
-                    (tab/close-tab)
-                    (sketchpad.project/remove-buffer-from-app buffer)))))))
-                    (tab/save-tab-selections))))
-
+(seesaw.core/invoke-later
+	(when (tab/tabs?)
+	      (let [current-tab-state (:state buffer)]
+	        (if (@current-tab-state :clean)
+	          (tab/close-tab) ;; nothing has changed, just close.
+	          (do 
+	            (let [answer (option-windows/close-or-save-current-dialogue @(get-in buffer [:component :title]))]
+	              (cond 
+	                (= answer 0) ;; answered yes to save 
+	                  (do
+	                    (if @(:new-file? buffer) ;; is it a new buffer?
+	                      (do
+	                        (buffer.io/save-new-buffer! buffer)
+	                        (tab/remove-tab! buffer)
+	                        (sketchpad.project/remove-buffer-from-app buffer)
+	                        (sketchpad.project/remove-buffer-from-project buffer))
+	                      (do
+	                        (file/save-file! buffer) 
+	                        (sketchpad.project/remove-buffer-from-app buffer)
+	                        (sketchpad.project/remove-buffer-from-project buffer)
+	                        (tab/remove-tab! buffer))))
+	                (= answer 1) ;; don't save just close
+	                  (do
+	                    (tab/remove-tab! buffer)
+	                    (sketchpad.project/remove-buffer-from-app buffer)))))))
+	                    (tab/save-tab-selections)))))
+	
 (defn make-view-menu-items []
 	{:goto-repl 		(seesaw.core/menu-item 	:text "Go to REPL input" 
                            						:mnemonic "R" 

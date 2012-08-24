@@ -14,14 +14,11 @@
                                                :class    [:editor-comp :syntax-editor])
         doc-scroll-pane       	(sp/scroll-pane text-area)
         doc-scroller-container  (vertical-panel :border nil
-                                                :items [doc-scroll-pane] :class :rsta-scroller
-                                                :background (color 255 0 0))
+                                                :items [doc-scroll-pane] :class :rsta-scroller)
         doc-scroller-gutter     (.getGutter doc-scroll-pane)
         doc-vertical-container  			    (vertical-panel :border nil
-                                              :background (color 255 0 0)
                                               :items [doc-scroller-container] :class :container)
         doc-horizontal-container (horizontal-panel :border nil
-                                                   :background (color 255 0 0)
                                                    :items [doc-vertical-container])]
     (wrapper.rsyntaxtextarea/set-input-map! text-area (input.default/default-input-map))
 

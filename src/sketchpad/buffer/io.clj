@@ -24,3 +24,4 @@
         (file/save-file! buffer file)
         (tree.utils/update-tree)
 		(update-info-title (tab/title))))
+   

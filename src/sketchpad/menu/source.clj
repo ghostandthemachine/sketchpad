@@ -5,6 +5,9 @@
             [sketchpad.buffer.action :as buffer.action]
             [sketchpad.repl.print :as sketchpad.repl.print]
             [sketchpad.util.tab :as tab]
+            [sketchpad.repl.project-repl :as project-repl]
+            [sketchpad.help.help :as help]
+            [sketchpad.tree.utils :as tree.utils]
             [sketchpad.buffer.spell-check :as spell-check]
             [sketchpad.config.layout :as layout]
             [sketchpad.state.state :as state]))
@@ -82,6 +85,33 @@
   (when (tab/tabs?)
     (buffer.action/decrease-font)))
 
+(defn send-selected-or-form-to-repl
+"Send the currently selected text to the last focused REPL for the project associated with the current buffer."
+	[]
+	(println "send selected/form to PROJCET REPL")
+	(seesaw/invoke-later
+		(let [project (get @(:projects @state/app) (first (tree.utils/get-selected-projects)))
+			repl (:last-focused-repl project)]
+			(when-not (nil? repl)
+				(let [text-area (tab/current-text-area)
+					text (.getSelectedText text-area)
+					cmd (if (> (count text) 0)
+							text
+							(help/find-form-string
+								(seesaw/config text-area :text)
+								(buffer.action/buffer-cursor-pos)))]
+					(project-repl/send-repl-cmd repl cmd))))))
+
+(defn send-file-to-repl
+"Send the current buffer to it's associated project REPL."
+	[]
+	(let [project (first (tree.utils/get-selected-projects))
+		repl (:last-focused-repl project)]
+		(when-not (nil? repl)
+			(seesaw/invoke-later
+				(let [text (seesaw/config (tab/current-text-area) :text)]
+					(project-repl/send-repl-cmd repl text))))))
+
 (defn make-source-menu-items []
  {:search (seesaw.core/menu-item :text "Search..." 
                               :mnemonic "F" 
@@ -119,7 +149,14 @@
                               :mnemonic "-" 
                               :key (keystroke/keystroke "meta MINUS") 
                               :listen [:action (fn [_] (decrease-font-size))])
- })
+ :send-selected-or-form (seesaw.core/menu-item :text "Send command to REPL..." 
+                              :mnemonic "R" 
+                              :key (keystroke/keystroke "meta R") 
+                              :listen [:action (fn [_] (send-selected-or-form-to-repl))])
+ :send-file-to-repl (seesaw.core/menu-item :text "Send file to REPL..." 
+                              :mnemonic "R" 
+                              :key (keystroke/keystroke "meta shift R") 
+                              :listen [:action (fn [_] (send-file-to-repl))])})
 
 (defn make-source-menu
   []
@@ -130,6 +167,9 @@
                   (menu-items :search)
                   (menu-items :search-replace)
                   (menu-items :search-replace-all)
+                  (seesaw.core/separator)
+                  (menu-items :send-selected-or-form)
+                  (menu-items :send-file-to-repl)
                   (seesaw.core/separator)
                   (menu-items :grep)
                   (seesaw.core/separator)
