@@ -76,7 +76,9 @@
 	(when (tab/tabs?)
 	      (let [current-tab-state (:state buffer)]
 	        (if (@current-tab-state :clean)
-	          (tab/close-tab) ;; nothing has changed, just close.
+	          (do
+		          (tab/close-tab) ;; nothing has changed, just close.
+      	          (sketchpad.project/remove-buffer-from-project buffer))
 	          (do 
 	            (let [answer (option-windows/close-or-save-current-dialogue @(get-in buffer [:component :title]))]
 	              (cond 

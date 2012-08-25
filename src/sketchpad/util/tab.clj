@@ -206,8 +206,10 @@
 ([tabbed-panel]
 	(.getAbsolutePath (get-meta (select (current-tab tabbed-panel) [:#editor]) :file))))
 
-(defn current-buffers []
-	(get @state/app :current-buffers))
+(defn current-buffers
+	[]
+	(into {} (mapcat #(deref (:buffers %)) (vals @(:projects @state/app)))))
+	
 
 (defn current-buffer-uuid
 ([] (current-buffer-uuid (get-in (:buffer-tabbed-panel @state/app) [:component :container])))
@@ -221,7 +223,7 @@
   (if (tabs? tabbed-panel)
 	(do 
 		(let [uuid (current-buffer-uuid tabbed-panel)
-			  buffers @(current-buffers)]
+			  buffers (current-buffers)]
   			(get buffers uuid)))
   	"No buffers are currently open")))
 
@@ -339,7 +341,7 @@
   (if (tabs? tabbed-panel)
 	(do 
 		(let [uuid (current-buffer-uuid tabbed-panel)
-			  buffers @(current-buffers)]
+			  buffers (current-buffers)]
   			(get buffers uuid)))
   	"No buffers are currently open")))
 

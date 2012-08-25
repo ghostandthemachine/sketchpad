@@ -8,7 +8,7 @@
   (fuzzy/toggle-fuzzy))
 
 (defn make-goto-menu-items []
- {:goto-anything (seesaw.core/menu-item :text "Goto Anything..." 
+ {:goto-anything (seesaw.core/menu-item :text "Goto file..." 
                               :mnemonic "P" 
                               :key (keystroke/keystroke "meta P") 
                               :listen [:action (fn [_] (toggle-fuzzy))])})

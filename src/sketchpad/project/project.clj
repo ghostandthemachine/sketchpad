@@ -10,14 +10,9 @@
 						[leiningen.core.project :as lein-project])
 	(:import [java.io File]))
 
-(comment
-	"SketchPad project format."
-	{:path project-root-path
-	 :lein-project lein-project
-	 :id uuid
-	 :theme theme
-	 :repls (atom #{})
-	 :buffers (atom nil)})
+(defn current-buffers
+	[]
+	(into {} (mapcat #(deref (:buffers %)) (vals @(:projects @state/app)))))
 
 (defonce auto-completion-providers (atom {}))
 
@@ -92,11 +87,8 @@
 (defn setup-non-project-map []
 	(add-project @state/app "/default"))
 
-(defn current-buffers []
-	(:current-buffers @state/app))
-
 (defn add-buffer-to-app [buffer]
-	(swap! (current-buffers) assoc (:uuid buffer) buffer))
+	(swap! (:current-buffers @state/app) assoc (:uuid buffer) buffer))
 
 (defn remove-buffer-from-app [buffer]
 	(swap! (current-buffers) dissoc (:uuid buffer)))
@@ -110,8 +102,8 @@
   (swap! buffers dissoc (:uuid buffer))))
 
 (defn add-repl-to-project [project-path repl]
-	(let [buffers (get-in @(@state/app :projects) [project-path :repls])]
-  (swap! buffers assoc (:uuid repl) repl)))
+	(let [repls (get-in @(@state/app :projects) [project-path :repls])]
+  (swap! repls assoc (:uuid repl) repl)))
 
 (defn remove-repl-from-project [repl]
   	(let [buffers (get-in @(@state/app :projects) [(:project repl) :repls])]

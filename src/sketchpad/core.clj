@@ -14,12 +14,14 @@
         [sketchpad.config.prefs])
   (:require [sketchpad.wrapper.theme :as theme]
             [sketchpad.config.config :as config]
+            [sketchpad.util.option-windows :as options]
             [sketchpad.repl.app.repl :as app.repl]
             [sketchpad.state.state :as state]
             [sketchpad.fuzzy.component :as fuzzy]
             [sketchpad.editor.editor :as sketchpad.editor]
             [sketchpad.project.project :as project]
             [sketchpad.menu.menu-bar :as menu]
+            [sketchpad.file.file :as file.file]
             [sketchpad.wrapper.rsyntaxtextarea :as rsyntaxtextarea]
             [sketchpad.editor.info :as info]
             [sketchpad.buffer.action :as buffer.action]
@@ -36,19 +38,30 @@
       false))
   true)
 
-; (defn check-buffers
-;   [e]
-;   (if (tabs?)
-;     (let [response (close-or-save-application-dialogue "Quit Application")]
-;       (cond
-;         (= response 0)
-;           (println 0)
-;         (= response 1)
-;           (println 1)
-;         (= response 2)
-;           (println 2)
-;         ))))
+(defn dirty-buffers?
+	[]
+ 	(some #(= % [:clean false])  (mapcat #(deref (:state %)) (vals (sketchpad.util.tab/current-buffers)))))
 
+ (defn save-all-files
+ 	[]
+ 	(let [buffers (sketchpad.util.tab/current-buffers)]
+ 		(doseq [buffer buffers]
+ 			(when (false? (:clean @(:state buffer)))
+ 				(sketchpad.file.file/save-file! buffer)))))
+
+ (defn quit-handler
+ 	[e]
+ 	(println e)
+ 	(when (dirty-buffers?)
+		(let [response (options/close-or-save-current-dialogue "Save before quit")]
+ 			(cond
+ 				(= response 0)	;; yes
+ 					(do
+ 						(save-all-files)
+ 						(System/exit 0))
+ 				(= response 1)
+ 					(System/exit 0)))))
+	
 (defn create-app
   []
   (let [buffer-info (info/buffer-info)
@@ -119,8 +132,8 @@
           icon (.createImage (Toolkit/getDefaultToolkit) icon-url)]
       (.setIconImage frame icon)
       (set-osx-icon icon)))
+	(listen frame :window-closing quit-handler)
   app))
-
 
 (defn add-behaviors
   [app-atom]
@@ -139,7 +152,6 @@
 (defn init-projects []
   (project/add-project "sketchpad-tmp")
   (doall (map #(project/add-project %) (load-project-set))))
-
 ;; startup
 (defn startup-sketchpad [app-atom]
   (let [app @app-atom]
