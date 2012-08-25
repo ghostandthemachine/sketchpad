@@ -16,7 +16,7 @@
    (let [cp (org.fife.ui.autocomplete.ClojureCompletionProvider. )]
      (add-all-ns-completions cp)
      (.setParameterizedCompletionParams cp \space " " \))
-     (.setAutoActivationRules cp true "")
+;     (.setAutoActivationRules cp true "")
      cp)))
 
 (defonce completion-provider (create-completion-provider))
@@ -28,21 +28,24 @@
 
 (defn install-auto-completion
   [rta] 
-;    (template/install-templates default-auto-completion)
-    (config/apply-auto-completion-prefs! default-auto-completion)
-    (.install default-auto-completion rta))
-
-(defn install-project-auto-completion
-"Adds all project ns completions to a text area. Takes a text-area and a SketchPad project."
-  [rsta  completion-provider]
-    (config/apply-auto-completion-prefs! completion-provider)
-    (.install completion-provider rsta))
+  (let [provider completion-provider
+  	  ac (org.fife.ui.autocomplete.AutoCompletion. provider)]
+    (template/install-templates ac)
+    (config/apply-auto-completion-prefs! ac)
+    (.install ac rta)))
+;
+;(defn install-project-auto-completion
+;"Adds all project ns completions to a text area. Takes a text-area and a SketchPad project."
+;  [rsta  completion-provider]
+;    (config/apply-auto-completion-prefs! completion-provider)
+;    (.install completion-provider rsta))
 
 (defn install-html-auto-completion
   [rta]
-  (let [completion-provider (org.fife.ui.autocomplete.AutoCompletion. (org.fife.rsta.ac.html.HtmlCompletionProvider.))]
-    (config/apply-auto-completion-prefs! completion-provider)
-    (doto completion-provider
+  (let [provider (org.fife.rsta.ac.html.HtmlCompletionProvider.)
+  	  ac (org.fife.ui.autocomplete.AutoCompletion. provider)]
+    (config/apply-auto-completion-prefs! ac)
+    (doto ac
       (.install rta))))
 
 (defn create-provider
@@ -76,7 +79,7 @@
   [project-path]
   (build-project-completions (create-provider) project-path))
 
-(def fuzzy-provider (org.fife.ui.autocomplete.DefaultCompletionProvider. ))
+(defonce fuzzy-provider (org.fife.ui.autocomplete.DefaultCompletionProvider. ))
 
 (defn not-sufix?
   [f suffix-vec]
@@ -125,15 +128,17 @@
 		(.setAutoActivationEnabled true)
 		(.setAutoActivationDelay 500)
 		(.setDescriptionWindowSize 800 500) 
-		(.setShowDescWindow false))
+		(.setShowDescWindow true))
   (doto provider
     (.setListCellRenderer (cell-renderer/renderer)))
 	ac)
 
+(def fuzzy-ac (org.fife.ui.autocomplete.AutoCompletion. fuzzy-provider))
+
 (defn install-fuzzy-provider
   [rsta]
   (let [provider fuzzy-provider
-        ac (org.fife.ui.autocomplete.AutoCompletion. provider)]
+        ac fuzzy-ac]
       (init-fuzzy-ac ac provider)
     (.install ac rsta)))
 

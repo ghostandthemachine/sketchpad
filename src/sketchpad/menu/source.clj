@@ -180,9 +180,8 @@
                   (seesaw.core/separator)
                   (menu-items :increase-font-size)
                   (menu-items :decrease-font-size)
-                  ; (seesaw.core/separator)
-                  ; (menu-items :add-spell-check)
-                  ; (menu-items :remove-spell-check)
-                  ])))
+                  (seesaw.core/separator)
+                  (menu-items :add-spell-check)
+                  (menu-items :remove-spell-check) ])))
 
                   
