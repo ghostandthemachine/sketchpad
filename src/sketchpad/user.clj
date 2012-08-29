@@ -425,4 +425,13 @@
 
 
 
+(defn add-app-repl []
+	(doseq [project (vals @(:projects @app))]
+		(when (= (get-in project [:lein-project :name]) "sketchpad")
+			(let [app-repl-uuid (get-in @app [:application-repl :uuid])
+				app-repl (:application-repl @app)]
+			  (swap! (:repls project) assoc app-repl-uuid app-repl)
+			  (reset! (:last-focused-repl project) app-repl-uuid)))))
 
+(do (add-app-repl))
+	

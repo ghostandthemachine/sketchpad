@@ -123,9 +123,9 @@
 (defn new-project-buffer!
 "Create a new buffer for a loaded project."
 	[project-path selection-path]
-	(seesaw/invoke-later
-		(let [buffer (editor.build/new-project-buffer-tab project-path selection-path)]
-			(init-buffer-tab-state buffer)
-			(sketchpad.project/add-buffer-to-project project-path buffer)
-			(sketchpad.project/add-buffer-to-app buffer)
+	(let [buffer (editor.build/new-project-buffer-tab project-path selection-path)]
+		(init-buffer-tab-state buffer)
+		(sketchpad.project/add-buffer-to-project project-path buffer)
+		(sketchpad.project/add-buffer-to-app buffer)
+		(seesaw/invoke-later
 			(tab/show-buffer buffer))))

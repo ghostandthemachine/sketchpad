@@ -73,8 +73,10 @@
     :class :menu
     :text "Project"
     :items [(seesaw/menu-item :text "New Project"
+    							:key (keystroke/keystroke "meta shift N")
                             :listen [:action (fn [_] (create-project))])
             (seesaw/menu-item :text "Open Project"
+    							:key (keystroke/keystroke "meta shift O")
                               :listen [:action (fn [_] (open-project))])
             (seesaw/separator)
             (seesaw.core/menu-item :text "Clear All Projects" 

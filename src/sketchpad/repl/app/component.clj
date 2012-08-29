@@ -59,6 +59,5 @@
     (meta/put-meta! text-area :repl-history repl-history)
     (meta/put-meta! text-area :repl-que repl-que)
     (meta/put-meta! text-area :uuid uuid)
-
     (swap! state/app assoc :application-repl application-repl)
     application-repl))

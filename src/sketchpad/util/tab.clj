@@ -98,7 +98,9 @@
 		(.setSelectedComponent tabbed-panel c)))
 
 (defn index-of-buffer [buffer]
-	(.indexOfComponent (get-in (:buffer-tabbed-panel @state/app) [:component :container]) (get buffer :container)))
+	(.indexOfComponent
+		(get-in (:buffer-tabbed-panel @state/app) [:component :container])
+		(get-in buffer [:component :container])))
 
 (defn index-of-repl 
 ([repl] (index-of-repl (get-in (:repl-tabbed-panel @state/app) [:component :container]) repl))
@@ -259,12 +261,14 @@
   	  (write-value-to-prefs sketchpad-prefs "current-tab" current-index)))
 
 (defn close-tab 
-([]
+	([]
 	(if (tabs? (get-in (:buffer-tabbed-panel @state/app) [:component :container]))
 		(remove-tab! (current-editor-buffer))))
-([tabbed-panel]
-	(if (tabs? tabbed-panel)
-		(remove-tab! tabbed-panel (current-editor-buffer)))))
+	([tabbed-panel]
+		(close-tab tabbed-panel (current-editor-buffer)))
+	([tabbed-panel buffer]
+		(if (tabs? tabbed-panel)
+			(remove-tab! tabbed-panel (current-editor-buffer)))))
 
 (defn close-current-tab []
 	(remove-tab! (get-in (:buffer-tabbed-panel @state/app) [:component :container]) (current-editor-buffer)))
@@ -338,12 +342,11 @@
 ([]
 	(current-editor-buffer (get-in (:buffer-tabbed-panel @state/app) [:component :container])))
 ([tabbed-panel]
-  (if (tabs? tabbed-panel)
-	(do 
-		(let [uuid (current-buffer-uuid tabbed-panel)
-			  buffers (current-buffers)]
-  			(get buffers uuid)))
-  	"No buffers are currently open")))
+  (when (tabs? tabbed-panel)
+		(do 
+			(let [uuid (current-buffer-uuid tabbed-panel)
+				  buffers (current-buffers)]
+	  			(get buffers uuid))))))
 
 (defn uuid-at [idx]
 	(let [text-area (select (component-at tabbed-panel idx) [:#editor])]

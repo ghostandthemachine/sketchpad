@@ -77,7 +77,7 @@
 (defn make-file-menu-items []
  {:new-file (seesaw.core/menu-item :text "New File" 
                               :mnemonic "N" 
-                              :key (keystroke/keystroke "meta N") 
+                              :key (keystroke/keystroke "meta N")
                               :listen [:action (fn [_] (new-file))])
   :save     (seesaw.core/menu-item :text "Save" 
                               :mnemonic "S" 

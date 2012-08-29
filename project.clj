@@ -13,3 +13,4 @@
                  [language-support/language-support "0.1.0-SNAPSHOT"]
                  [rsta_spellchecker/rsta_spellchecker "0.1.0-SNAPSHOT"]]
   :jvm-opts ~(if (= (System/getProperty "os.name") "Mac OS X") ["-Xdock:name=SketchPad"] []))
+

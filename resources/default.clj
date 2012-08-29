@@ -84,7 +84,7 @@
    :fold-indicator-enabled true  ;; not functional until new Clojure Lexxer is integrated
    :line-number-color [143 144 134]
    :line-number-font "MENLO-12-BOLD"
-   :line-number-start-index 1
+   :line-number-start-index 0
    :active-range-color [50 50 41]})
 
 (def default-sketchpad-prefs

@@ -30,8 +30,8 @@
   [rta] 
   (let [provider completion-provider
   	  ac (org.fife.ui.autocomplete.AutoCompletion. provider)]
-    (template/install-templates ac)
-    (config/apply-auto-completion-prefs! ac)
+;    (template/install-templates ac)
+;    (config/apply-auto-completion-prefs! ac)
     (.install ac rta)))
 ;
 ;(defn install-project-auto-completion
@@ -55,24 +55,25 @@
      (.setAutoActivationRules cp true "")
      cp)))
 
-(defn make-clojar-completion-provider
-"Builds a Completion Provider from the available repo on Clojars."
-	[]
-	(build-clojar-completions (create-provider)))
+; (defn make-clojar-completion-provider
+; "Builds a Completion Provider from the available repo on Clojars."
+; 	[]
+; 	(build-clojar-completions (create-provider)))
 
-(def clojar-completion-provider (org.fife.ui.autocomplete.AutoCompletion. (make-clojar-completion-provider)))
+; (defonce clojar-completion-provider (org.fife.ui.autocomplete.AutoCompletion. (make-clojar-completion-provider)))
 
 (defn install-clojars-auto-completions
 "Adds all project ns completions to a text area. Takes a text-area and a SketchPad project."
   [text-area]
-    (config/apply-auto-completion-prefs! clojar-completion-provider)
-    (wrapper.rsyntaxtextarea/set-input-map! text-area (input.default/default-input-map))
-    (doto 
-      clojar-completion-provider
-      (.setAutoActivationEnabled true)
-      (.setDescriptionWindowSize 300 500) 
-      (.setShowDescWindow false))
-    (.install clojar-completion-provider text-area))
+    ; (config/apply-auto-completion-prefs! clojar-completion-provider)
+    ; (wrapper.rsyntaxtextarea/set-input-map! text-area (input.default/default-input-map))
+    ; (doto 
+    ;   clojar-completion-provider
+    ;   (.setAutoActivationEnabled true)
+    ;   (.setDescriptionWindowSize 300 500) 
+    ;   (.setShowDescWindow false))
+    ; (.install clojar-completion-provider text-area)
+    )
 
 (defn build-project-completion-provider
 "Builds a Completion Provider for a project."
@@ -126,9 +127,9 @@
 	[ac provider]
 	(doto ac
 		(.setAutoActivationEnabled true)
-		(.setAutoActivationDelay 500)
+		(.setAutoActivationDelay 0)
 		(.setDescriptionWindowSize 800 500) 
-		(.setShowDescWindow true))
+		(.setShowDescWindow false))
   (doto provider
     (.setListCellRenderer (cell-renderer/renderer)))
 	ac)
@@ -140,6 +141,7 @@
   (let [provider fuzzy-provider
         ac fuzzy-ac]
       (init-fuzzy-ac ac provider)
+      (.setListCellRenderer provider (cell-renderer/renderer))
     (.install ac rsta)))
 
 

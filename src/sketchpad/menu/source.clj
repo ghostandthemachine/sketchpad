@@ -5,6 +5,7 @@
             [sketchpad.buffer.action :as buffer.action]
             [sketchpad.repl.print :as sketchpad.repl.print]
             [sketchpad.util.tab :as tab]
+            [sketchpad.repl.app.util :as app.util]
             [sketchpad.repl.project-repl :as project-repl]
             [sketchpad.help.help :as help]
             [sketchpad.tree.utils :as tree.utils]
@@ -85,6 +86,12 @@
   (when (tab/tabs?)
     (buffer.action/decrease-font)))
 
+(defn- current-file []
+	@(:file (tab/current-buffer)))
+
+(defn- current-line []
+	(second (buffer.action/buffer-cursor-pos (tab/current-text-area))))
+
 (defn send-selected-or-form-to-repl
 "Send the currently selected text to the last focused REPL for the project associated with the current buffer."
 	[]
@@ -95,13 +102,17 @@
 			repl (get repls last-uuid)]
 			(when-not (nil? repl)
 				(let [text-area (tab/current-text-area)
-					text (.getSelectedText text-area)
+					text (.getSelectedText text-area)					
 					cmd (if (> (count text) 0)
-							text
-							(help/find-form-string
-								(seesaw/config text-area :text)
-								(buffer.action/buffer-cursor-point text-area)))]
-					(project-repl/send-repl-cmd repl cmd))))))
+							 text
+							 (help/find-form-string
+  								(seesaw/config text-area :text)
+  								(buffer.action/buffer-cursor-point text-area)))]
+					(if  (contains? @(:repls project) (get-in @state/app [:application-repl :uuid]))
+						(do
+							(app.util/send-to-application-repl (get-in repl [:component :text-area]) cmd))
+						(do
+							(project-repl/send-repl-cmd repl cmd))))))))
 
 (defn send-file-to-repl
 "Send the current buffer to it's associated project REPL."

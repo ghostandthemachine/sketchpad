@@ -35,7 +35,7 @@
    <!-- Syntax tokens. -->
    <tokenStyles>
       <style token="IDENTIFIER" fg="E0E2E4"/>
-      <style token="RESERVED_WORD" fg="66D9EF" bold="false" italic="true"/> 
+      <style token="RESERVED_WORD" fg="93C763" bold="false" italic="true"/>
       <style token="RESERVED_WORD_2" fg="FFFFFF" bold="false"/>
       <style token="ANNOTATION" fg="E8E2B7"/>
       <style token="COMMENT_DOCUMENTATION" fg="716F59"/>
@@ -50,7 +50,7 @@
       <style token="LITERAL_NUMBER_FLOAT" fg="AD73D9"/>
       <style token="LITERAL_NUMBER_HEXADECIMAL" fg="AD73D9"/>
       <style token="LITERAL_STRING_DOUBLE_QUOTE" fg="FFF45E"/>
-      <style token="LITERAL_CHAR" fg="A581FF"/>
+      <style token="LITERAL_CHAR" fg="FFF45E"/>
       <style token="LITERAL_BACKQUOTE" fg="FFF45E"/>
       <style token="MARKUP_TAG_DELIMITER" fg="678CB1"/>
       <style token="MARKUP_TAG_NAME" fg="ABBFD3"/>

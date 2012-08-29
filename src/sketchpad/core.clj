@@ -42,6 +42,8 @@
 	[]
  	(some #(= % [:clean false])  (mapcat #(deref (:state %)) (vals (sketchpad.util.tab/current-buffers)))))
 
+
+
  (defn save-all-files
  	[]
  	(let [buffers (sketchpad.util.tab/current-buffers)]

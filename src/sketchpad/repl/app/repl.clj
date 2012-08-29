@@ -138,12 +138,12 @@
         application-repl-history (get-meta rsta :repl-history)
         get-caret-pos #(.getCaretPosition ta-in)
         submit #(invoke-later
-                  (when-let [txt (buffer.action/get-last-cmd rsta)]
-                    (let [pos (application-repl-history :pos)]
-                      (if (correct-expression? txt)
-                        (do
-                          (send-to-application-repl rsta txt)
-                          (swap! pos (fn [p] 0)))))))
+      	            (when-let [txt (buffer.action/get-last-cmd rsta)]
+	                    (let [pos (application-repl-history :pos)]
+	                      (if (correct-expression? txt)
+	                        (do
+	                          (send-to-application-repl rsta txt)
+	                          (swap! pos (fn [p] 0)))))))
         at-top #(zero? (.getLineOfOffset ta-in (get-caret-pos)))
         at-bottom #(= (.getLineOfOffset ta-in (get-caret-pos))
                       (.getLineOfOffset ta-in (.. ta-in getText length)))
