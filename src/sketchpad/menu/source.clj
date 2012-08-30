@@ -1,5 +1,4 @@
 (ns sketchpad.menu.source
-  (:use [clojure.java.shell])
   (:require [seesaw.core :as seesaw]
             [seesaw.keystroke :as keystroke]
             [sketchpad.buffer.action :as buffer.action]
@@ -8,6 +7,7 @@
             [sketchpad.repl.app.util :as app.util]
             [sketchpad.repl.project-repl :as project-repl]
             [sketchpad.help.help :as help]
+            [sketchpad.buffer.grep :as buffer.grep]
             [sketchpad.tree.utils :as tree.utils]
             [sketchpad.buffer.token :as token]
             [sketchpad.buffer.spell-check :as spell-check]
@@ -61,19 +61,18 @@
     (spell-check/remove-english-spell-checker text-area)
     (.repaint text-area)))
 
-(defn grep-files
-"Grep the current projects or a given path."
-  ([search-term] 
-  	(:out  (apply sh "grep" "-nir" "-I" search-term (keys @(:projects @state/app)))))
-  ([search-term & opts]
-    (:out  (apply sh "grep" "-nir" "-I" search-term opts))))
+(defonce last-grep-cmd (atom ""))
+
+(defn append-function-string
+	[s curosor-offset]
+	(sketchpad.repl.print/append-command s curosor-offset)
+	(toggle-repl-if-needed)
+	(tab/focus-application-repl))
 
 (defn grep-cmd
 "Focus the editor REPL and create a search function."
 ([]
-  (sketchpad.repl.print/append-command (str "(grep \"\")") -2)
-  (toggle-repl-if-needed)
-  (tab/focus-application-repl)))
+  (append-function-string (str "(grep \"\")") -2)))
 
 (defn increase-font-size
 "Increase the curren buffer font size."

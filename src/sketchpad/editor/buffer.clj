@@ -125,15 +125,27 @@
 									@proj)]
 		open-project-path))))
 
+(defn- bring-buffer-to-front
+	[file-path]
+	(let [buffer (first (filter #(= (.getAbsolutePath (clojure.java.io/file file-path)) (.getAbsolutePath @(:file % ))) (vals (tab/current-buffers))))]
+		(tab/show-buffer buffer)
+		buffer))
+
+(defn- buffer-already-open?
+	[file-path]
+	(not (nil? (some #(= (.getAbsolutePath (clojure.java.io/file file-path)) (.getAbsolutePath @(:file % ))) (vals (tab/current-buffers))))))
+
 (defn open-buffer [file-path project-path]
-	(seesaw/invoke-later
+	(if (buffer-already-open? file-path)
+		(bring-buffer-to-front file-path)
 		(let [project (sketchpad.project/project-from-path project-path)
 			  buffer (editor.build/project-buffer-tab project-path)]
 			(load-file-into-buffer project buffer file-path)
 			(init-buffer-tab-state buffer)
 			(sketchpad.project/add-buffer-to-project project-path buffer)
 			(sketchpad.project/add-buffer-to-app buffer)
-			(tab/show-buffer buffer))))
+			(tab/show-buffer buffer)
+			buffer)))
 
 (defn blank-clj-buffer!
 	([] (blank-clj-buffer! nil))

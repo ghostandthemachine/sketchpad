@@ -23,6 +23,7 @@
 			<resourcefileset dir="resources">
 				<include name="default.clj" />
 				<include name="themes/*" />
+				<include name="english_dic.zip" />
 			</resourcefileset>
 		</jarbundler>
 	</target>

@@ -2,28 +2,28 @@
 	(:refer-clojure :exclude [find replace])
 	(:use [seesaw meta dev]
         [seesaw.core :exclude [height width]]
-	  [clojure.repl]
-   	  [clojure.java.shell]
-	  [sketchpad.config.config]
+	      [clojure.repl]
+   	    [clojure.java.shell]
+	      [sketchpad.config.config]
         [sketchpad.tree.tree]
         [sketchpad.buffer.action]
         [sketchpad.util.brackets]
         [sketchpad.buffer.token]
         [sketchpad.system.desktop]
-	[sketchpad.auto-complete.template])
+	      [sketchpad.auto-complete.template])
 	(:require [sketchpad.util.tab :as tab]
-			  [sketchpad.wrapper.rsyntaxtextarea :as rsta]
-			  [sketchpad.core :as core]
-	              [sketchpad.wrapper.gutter :as gutter]
-	              [sketchpad.menu.source :as source]
+			      [sketchpad.wrapper.rsyntaxtextarea :as rsta]
+			      [sketchpad.core :as core]
+	          [sketchpad.wrapper.gutter :as gutter]
 		        [sketchpad.buffer.search :as search]
-	              [sketchpad.project.project :as project]
-	              [sketchpad.tree.utils :as tree.utils]
-	              [sketchpad.project.form :as project.form]
-			  [clojure.pprint :as pprint]
-			  [clojure.stacktrace :as stack-trace]
-			  [seesaw.dev :as seesaw.dev]
-			  [clojure.java.io :as io]
+	          [sketchpad.project.project :as project]
+	          [sketchpad.tree.utils :as tree.utils]
+	          [sketchpad.project.form :as project.form]
+			      [clojure.pprint :as pprint]
+			      [clojure.stacktrace :as stack-trace]
+			      [seesaw.dev :as seesaw.dev]
+			      [clojure.java.io :as io]
+            [sketchpad.buffer.grep :as buffer.grep]
             [clojure.string :as string])
 	(:import 	(org.fife.ui.rsyntaxtextarea RSyntaxTextAreaEditorKit)
 			 		(org.fife.ui.rtextarea RTextAreaEditorKit)
@@ -366,8 +366,8 @@
 
 (defn grep
 "Grep the current projects or a given the given paths."
-  ([search-term] (source/grep-files search-term))
-  ([search-term & args] (source/grep-files search-term args)))
+  ([search-term] (buffer.grep/grep-files search-term))
+  ([search-term & args] (buffer.grep/grep-files search-term args)))
 
 
 (defn app-repl

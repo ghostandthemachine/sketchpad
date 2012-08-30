@@ -1,7 +1,7 @@
 (defproject sketchpad "0.0.1-SNAPSHOT"
   :description "A light weight IDE for programming with Overtone and Clojure"
   :main sketchpad.core
-  :resource-paths ["resources"] ; non-code files included in classpath/jar
+  :resource-paths ["resources" "resources/english_dic.zip"] ; non-code files included in classpath/jar
   :dependencies [[org.clojure/clojure "1.4.0"]
                  [seesaw "1.4.2"]
                  [clooj "0.3.4.2-SNAPSHOT"]

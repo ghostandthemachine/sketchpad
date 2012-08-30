@@ -37,7 +37,7 @@
 "Open a file."
   ([]
   (seesaw.core/invoke-later
-	  (let [open-path (choose-file :filters [["Folders" #(.isDirectory %)]
+	  (when-let [open-path (choose-file :filters [["Folders" #(.isDirectory %)]
 							                       (file-filter "All files" (constantly true))]
 				                       :success-fn (fn [fc file] (.getAbsolutePath file)))]
 		(editor.buffer/open-buffer open-path ".sketchpad-tmp")))))

@@ -126,7 +126,12 @@ more than one line, and if used with a text component using a
 (defonce fuzzy-provider (org.fife.ui.autocomplete.DefaultCompletionProvider. ))
 (defonce fuzzy-ac (org.fife.ui.autocomplete.AutoCompletion. fuzzy-provider))
 
-(defn not-sufix?
+(defn- not-sufix?
+  [f suffix-vec]
+  (let [suffix (last (clojure.string/split (.getName f) #"\."))]
+    (not (nil? (some #(= suffix %) suffix-vec)))))
+
+(defn- in-inclusions?
   [f suffix-vec]
   (let [suffix (last (clojure.string/split (.getName f) #"\."))]
     (not (nil? (some #(= suffix %) suffix-vec)))))
@@ -136,19 +141,19 @@ more than one line, and if used with a text component using a
 	(let [project-name (last (clojure.string/split project-path #"/"))]
 		(when (and
 		      (not (= (.getName f) ".DS_Store"))
-		      (not (not-sufix? f config/fuzzy-file-type-exclusions))
-		(let [path-split (clojure.string/split (.getAbsolutePath f) (java.util.regex.Pattern/compile project-name) 2)]
-		  (.addCompletion fuzzy-provider
-		    (ShorthandCompletion. fuzzy-provider 
-		      (str (.getName f))
-		      (str "{"
-		            ":file " "\"" (last path-split) "\""
-		            " "
-		            ":project " "\"" (first path-split) project-name "\""
-		            " "
-		            ":absolute-path " "\"" (.getAbsolutePath f) "\""
-		            "}")
-		      (str (last path-split)))))))))
+		      (in-inclusions? f config/fuzzy-file-type-inclusions))
+  		(let [path-split (clojure.string/split (.getAbsolutePath f) (java.util.regex.Pattern/compile project-name) 2)]
+  		  (.addCompletion fuzzy-provider
+  		    (ShorthandCompletion. fuzzy-provider 
+  		      (str (.getName f))
+  		      (str "{"
+  		            ":file " "\"" (last path-split) "\""
+  		            " "
+  		            ":project " "\"" (first path-split) project-name "\""
+  		            " "
+  		            ":absolute-path " "\"" (.getAbsolutePath f) "\""
+  		            "}")
+  		      (str (last path-split))))))))
 
 (defn add-files-to-fuzzy-complete
   [project-path]

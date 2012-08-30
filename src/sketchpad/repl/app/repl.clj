@@ -22,11 +22,15 @@
             [clojure.java.io :as io]
             [sketchpad.project.project :as sketchpad.project]
             [sketchpad.config.config :as config]
+            [sketchpad.editor.buffer :as buffer]
+            [sketchpad.buffer.search :as search]
+            [sketchpad.buffer.grep :as buffer.grep]
             [sketchpad.buffer.action :as buffer.action]
             [sketchpad.editor.ui :as editor.ui]
             [sketchpad.wrapper.rtextscrollpane :as sp]
             [sketchpad.wrapper.rsyntaxtextarea :as wrapper.rsyntaxtextarea]
             [sketchpad.state.state :as state]
+            [sketchpad.buffer.token :as token]
             [sketchpad.auto-complete.auto-complete :as auto-complete]
             [sketchpad.input.default :as input.default]
             [clojure.tools.nrepl :as repl]
@@ -173,11 +177,30 @@
       (let [num-tabs (tab-count repl-tabbed-panel)]
        (when (> 0 num-tabs)
           (swap! state/app assoc :doc-title-atom (current-repl)))))))
-;
-; (defn- repl-double-click-handler
-; 	[text-area e]
-; 	(println (token/accum-token-list
-; 	(
+
+
+(defn- double-click?
+[e]
+(= (.getClickCount e) 2))
+
+ (defn repl-double-click-handler
+ 	[text-area e]
+ 	(when (double-click? e)
+ 		(let [line-str (apply str  (token/line-token text-area))
+ 			line-seq (clojure.string/split line-str #"\:")]
+ 			(when (token/can-be-opened? line-seq)
+ 				(invoke-later
+	 				(let [buffer (buffer/open-buffer (first line-seq) ".sketchpad-tmp")]
+	 					(search/search  (get-in buffer [:component :text-area]) (last line-seq))
+	 					(let [selection-end (.getSelectionEnd text-area)]
+	 						(doto text-area
+	 							(.setSelectionStart selection-end)
+	 							(.setSelectionEnd selection-end)))))))))
+
+(defn attach-repl-mouse-click-handler
+	[repl]
+	(let [text-area (get-in repl [:component :text-area])]
+		(listen text-area :mouse-clicked (partial repl-double-click-handler text-area))))
 
 (defn init-repl-tabbed-panel [repl-tabbed-panel repl]
   (let [text-area (get-in repl [:component :text-area])
@@ -191,7 +214,7 @@
     (config! scroller :background config/app-color)
     (auto-complete/install-auto-completion repl)
     (config/apply-repl-prefs! text-area)
-    (send-to-application-repl text-area "(require 'sketchpad.user)\n(in-ns 'sketchpad.user)")))
+    (send-to-application-repl text-area "(require 'sketchpad.user)\n\t\t(in-ns 'sketchpad.user)")))
 
 (defn repl-tabbed-panel
   []
@@ -202,6 +225,7 @@
         application-repl (repl.app.component/application-repl-component)]
     (init-repl-tabbed-panel repl-tabbed-panel application-repl)
     (attach-tab-change-handler repl-tabbed-panel)
+    (attach-repl-mouse-click-handler application-repl)
     (swap! state/app conj (gen-map
                             repl-tabbed-panel
                             application-repl))

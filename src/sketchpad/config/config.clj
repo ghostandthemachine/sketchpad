@@ -498,6 +498,7 @@ You never have to change the opaque property yourself; it is always done for you
 	{:underline-color spell-checker-underline-color})
 
 (def fuzzy-file-type-exclusions ["dll" "class" "Ds_Store" "jpeg" "png" "tiff" "psd" "swf" "so" "scx" "pdf" "svg" "jnilib" "dylib"])
+(def fuzzy-file-type-inclusions [ "markdown" "md" "c" "java" "txt" "tex" "clj" "html" "xml" "js"])
 (def fuzzy-buffer-pref-handlers 
 	{:buffer-theme text-area-theme
 	 :font font})

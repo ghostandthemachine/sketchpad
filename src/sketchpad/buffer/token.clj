@@ -27,7 +27,7 @@
 	([] (line-token (tab/current-text-area)))
 	([text-area]
 		(let [list-from-line (token-list-for-line text-area)
-			token-list (atom [(.getLexeme list-from-line)])]
+			token-list (atom [])]
 			(loop [t list-from-line]
 				(when-not (nil? (.getNextToken t))
 					(swap! token-list (fn [tl] (conj tl (.getLexeme t))))
@@ -36,16 +36,20 @@
 
 (defn- file-exists?
 	[possible-path]
-	(let [f (clojure.java.io/file possible-path)]
-		(.exists f)))
+	(if-not (nil? possible-path)
+		(let [f (clojure.java.io/file possible-path)]
+			(.exists f))
+		false))
 
 (defn- is-number?
 	[possible-number]
-	(=
-		(type (load-string possible-number))
-		java.lang.Long))
+	(if-not (nil? possible-number)
+		(=
+			(type (load-string possible-number))
+			java.lang.Long)
+		false))
 
-(defn- can-be-opened?
+(defn can-be-opened?
 	[line-tokens]
 	(and
 		(file-exists? (first line-tokens))

@@ -2,13 +2,13 @@
 	(:require [sketchpad.config.config :as config])
 	(:import (org.fife.ui.rsyntaxtextarea.spell SpellingParser)))
 
-(defonce dic-resource (clojure.java.io/resource "english_dic.zip"))
+ (defonce dic-resource (clojure.java.io/resource "english_dic.zip"))
 
-(defonce english-dic-zip (clojure.java.io/file dic-resource))
+ (defonce english-dic-zip (clojure.java.io/file dic-resource))
 
-(defonce english-spell-checker (SpellingParser/createEnglishSpellingParser english-dic-zip true))
-(do
-	(config/apply-spell-checker-prefs! english-spell-checker))
+ (defonce english-spell-checker (SpellingParser/createEnglishSpellingParser english-dic-zip true))
+ (do
+ 	(config/apply-spell-checker-prefs! english-spell-checker))
 
 
 (defn add-english-spell-checker
