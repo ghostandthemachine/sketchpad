@@ -77,6 +77,7 @@
 							 :state tab-state
 							 :new-file? (atom true)
 							 :uuid uuid
+						     :auto-complete (atom nil)
 							 :project project-path}]
 		(tab/add-tab! "untitled" container)
 		(let [tab (custom-tab buffer)]
@@ -97,13 +98,14 @@
 				:container container
 				:file (atom nil)
 				:state tab-state
+     			:auto-complete (atom nil)
 				:new-file? (atom true)
 				:component buffer-component
 				:project project-path
 				:uuid uuid}]
 		(tab/add-tab! "untitled" container)
 		(let [tab (custom-tab buffer)]
-	(init-new-tab (assoc buffer :tab tab)))))
+			(init-new-tab (assoc buffer :tab tab)))))
 
 (defn new-project-buffer-tab
 [project-path selection-path]
@@ -123,9 +125,11 @@
 				:new-file? (atom true)
 				:selection-path selection-path
 				:component buffer-component
+	     			:auto-complete (atom nil)
 				:project project-path
 				:uuid uuid}]
 		(tab/add-tab! "untitled" container)
+		(.requestFocus text-area)
 		(let [tab (custom-tab buffer)]
-	(init-new-tab (assoc buffer :tab tab)))))
+			(init-new-tab (assoc buffer :tab tab)))))
 

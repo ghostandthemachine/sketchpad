@@ -26,6 +26,7 @@
             [sketchpad.editor.info :as info]
             [sketchpad.buffer.action :as buffer.action]
             [sketchpad.repl.info :as repl.info]
+            [sketchpad.auto-complete.auto-complete :as auto-complete]
             [sketchpad.repl.app.sketchpad-repl :as app.sketchpad-repl]
             [sketchpad.state.state :as sketchpad.state]))
 
@@ -152,7 +153,7 @@
               (seq (.getURLs (java.lang.ClassLoader/getSystemClassLoader))))))
 
 (defn init-projects []
-  (project/add-project "sketchpad-tmp")
+  (project/add-project ".sketchpad-tmp")
   (doall (map #(project/add-project %) (load-project-set))))
 ;; startup
 (defn startup-sketchpad [app-atom]
@@ -163,9 +164,7 @@
           (println thread) (.printStackTrace exception))))
     (add-behaviors app-atom)
     (menu/make-menus app-atom)
-    
     (init-projects)
-
     (let [tree (app :docs-tree)]
       (load-expanded-paths tree)
       (load-tree-selection tree))

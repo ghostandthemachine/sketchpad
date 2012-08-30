@@ -62,11 +62,12 @@
 										:border (border/empty-border :thickness 5))
 			panel (border-panel :center text-area
 														:visible? false
-														:maximum-size [1000 :by 15])]
-		(auto-complete/install-fuzzy-provider text-area)
+														:maximum-size [1000 :by 15])
+			fuzzy {:type :fuzzy-panel
+					 :auto-complete (atom nil)
+					 :component {:container panel
+					 			  :text-area text-area}}]
 		(config/apply-fuzzy-buffer-prefs! text-area)
-
 		(attach-handlers panel text-area)
-		{:type :fuzzy-panel
-		 :component {:container panel
-		 						 :text-area text-area}}))
+    	(auto-complete/install-fuzzy-provider fuzzy)
+		fuzzy))

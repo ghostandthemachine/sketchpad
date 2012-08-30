@@ -73,34 +73,33 @@
 ([] (close-tab (tab/current-buffer)))
 ([buffer]
 (seesaw.core/invoke-later
-  (println (:state buffer))
   (when (tab/tabs?)
     (let [current-tab-state (:state buffer)]
-      (if (@current-tab-state :clean)
-        (do
-          (tab/close-tab (get-in @state/app [:buffer-tabbed-panel :component :container]) buffer) ;; nothing has changed, just close.
-              (sketchpad.project/remove-buffer-from-project buffer))
-        (do 
-          (let [answer (option-windows/close-or-save-current-dialogue @(get-in buffer [:component :title]))]
-            (cond 
-              (= answer 0) ;; answered yes to save 
-                (do
-                  (if @(:new-file? buffer) ;; is it a new buffer?
-                    (do
-                      (buffer.io/save-new-buffer! buffer)
-                      (tab/remove-tab! buffer)
-                      (sketchpad.project/remove-buffer-from-app buffer)
-                      (sketchpad.project/remove-buffer-from-project buffer))
-                    (do
-                      (file/save-file! buffer)
-                      (tab/remove-tab! buffer)
-                      (sketchpad.project/remove-buffer-from-app buffer)
-                      (sketchpad.project/remove-buffer-from-project buffer))))
-              (= answer 1) ;; don't save just close
-                (do
-                  (tab/remove-tab! buffer)
-                  (sketchpad.project/remove-buffer-from-app buffer)))))))
-                  (tab/save-tab-selections)))))
+      (if (:clean @current-tab-state)
+		(when-let [container (get-in @state/app [:buffer-tabbed-panel :component :container])]
+				(tab/close-tab container buffer) ;; nothing has changed, just close.
+	              	(sketchpad.project/remove-buffer-from-project buffer))
+		(do 
+		  (let [answer (option-windows/close-or-save-current-dialogue @(get-in buffer [:component :title]))]
+		    (cond 
+		      (= answer 0) ;; answered yes to save 
+		        (do
+		          (if @(:new-file? buffer) ;; is it a new buffer?
+		            (do
+		              (buffer.io/save-new-buffer! buffer)
+		              (tab/remove-tab! buffer)
+		              (sketchpad.project/remove-buffer-from-app buffer)
+		              (sketchpad.project/remove-buffer-from-project buffer))
+		            (do
+		              (file/save-file! buffer)
+		              (tab/remove-tab! buffer)
+		              (sketchpad.project/remove-buffer-from-app buffer)
+		              (sketchpad.project/remove-buffer-from-project buffer))))
+		      (= answer 1) ;; don't save just close
+		        (do
+		          (tab/remove-tab! buffer)
+		          (sketchpad.project/remove-buffer-from-app buffer)))))))
+		          (tab/save-tab-selections)))))
   
 (defn make-view-menu-items []
   {:goto-repl     (seesaw.core/menu-item  :text "Go to REPL input" 

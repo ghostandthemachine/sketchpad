@@ -12,7 +12,7 @@
 	:code-folding true
 	:auto-indent true
 	:eol-marker false
-	:font "MENLO-14-BOLD"
+	:font "MENLO-15-BOLD"
 	:tab-size 2
 	:hyperlinks-enabled false
 	:mark-occurences-color "#ADA6A9"
@@ -36,7 +36,7 @@
 	:code-folding true
 	:auto-indent true
 	:eol-marker false
-	:font "MENLO-14-BOLD"
+	:font "MENLO-15-BOLD"
 	:tab-size 2
 	:mark-occurences-color "#ADA6A9"
  	 :paint-mark-occurences-border true
@@ -83,8 +83,8 @@
    :bookmarking-enabled false
    :fold-indicator-enabled true  ;; not functional until new Clojure Lexxer is integrated
    :line-number-color [143 144 134]
-   :line-number-font "MENLO-12-BOLD"
-   :line-number-start-index 0
+   :line-number-font "MENLO-14-BOLD"
+   :line-number-start-index 1
    :active-range-color [50 50 41]})
 
 (def default-sketchpad-prefs

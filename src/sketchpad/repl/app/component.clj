@@ -53,7 +53,8 @@
                   				:component {:container repl-container :text-area text-area :scroller repl-in-scroll-pane}
                   				:title repl-title
                   				:history repl-history
-                         			 :uuid uuid
+                         	:uuid uuid
+                          :auto-complete (atom nil)
                   				:que repl-que
                   				:tab tab}]
     (meta/put-meta! text-area :repl-history repl-history)

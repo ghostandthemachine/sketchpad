@@ -315,9 +315,9 @@
 	(when (tabs?)
 		(let [buffer (current-editor-buffer)]
 			(when-not @(:new-file? buffer)
-				(let [file @(:file buffer)
-					  file-path (.getAbsolutePath file)]
-					(tree.utils/set-tree-selection file-path))))))
+				(when-let [file @(:file buffer)]
+					(when-let [file-path (.getAbsolutePath file)]
+					(tree.utils/set-tree-selection file-path)))))))
 
 (defn current-repl-tab []
   (current-tab (get-in (:repl-tabbed-panel @state/app) [:component :container])))

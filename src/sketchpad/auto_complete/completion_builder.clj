@@ -1,6 +1,7 @@
 (ns sketchpad.auto-complete.completion-builder
   (:use [clojure.pprint])
   (:require [clojure.string :as s]
+            [sketchpad.config.prefs :as prefs]
             [clojure.repl :as repl]
             [sketchpad.lein.core.ns :as lein.core.ns])
   (:import (org.fife.ui.autocomplete ShorthandCompletion AutoCompletion VariableCompletion ClojureFunctionCompletion ParameterizedCompletion)
@@ -103,11 +104,16 @@
     (doseq [namespace all-namespaces]
       (add-completions-from-ns provider namespace))))
 
-(defn jar-string-list []
+(defonce jar-string-list (atom (prefs/read-value-from-prefs prefs/sketchpad-prefs "clojars-repos")))
+
+(defn update-jar-string-list []
 	(try 
     (when-let [jar-str (slurp "http://clojars.org/repo/all-jars.clj")]
-		  (s/split jar-str #"\n"))
-    (catch java.net.UnknownHostException e)))
+		  (let [repos (s/split jar-str #"\n")]
+        (prefs/write-value-to-prefs prefs/sketchpad-prefs "clojars-repos" repos)
+        (reset! jar-string-list repos)))
+    (catch java.net.UnknownHostException e
+        (println "Can't connect to Clojars. Using old list from prefs...."))))
 
 (defn clojar-completion-seq [jar-list]
 	(map #(-> % trim-brackets (s/split #"\s")) jar-list))
@@ -119,7 +125,7 @@
     (.addCompletion provider completion)))
 
 (defn build-clojar-completions [provider]
-	(doseq [repo-str (jar-string-list)]
+	(doseq [repo-str @jar-string-list]
 		(add-completion-from-repo provider repo-str))
 		provider)
 

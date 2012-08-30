@@ -42,27 +42,31 @@
   (let [id (get-project-id!)
   		theme (theme/get-new-theme id)
   		projects (@state/app :projects)]
-	  (swap! (@state/app :project-set) conj project-path)
-	  (let [project (swap! projects (fn [m] (assoc m project-path {:type :project
-								  									:path project-path
-								  									:id id 
-								  									:theme theme
-								  									; :completion-provider (auto-complete/build-project-completion-provider project-path)
-								  									:repls (atom {})
-								  									:last-focused-repl (atom nil)
-								  									:last-focused-buffer (atom nil)
-								  									:buffers (atom {})})))]
+	  (let [repls (atom {})
+	  		last-focused-repl (atom nil)
+	  		project {:type :project
+					:path project-path
+					:id id 
+					:theme theme
+					:repls repls
+					:last-focused-repl last-focused-repl
+					:last-focused-buffer (atom nil)
+			  		:buffers (atom {})}]
+	(swap! (@state/app :project-set) conj project-path)
+	(swap! projects (fn [m] (assoc m project-path project)))
+	
 	(auto-complete/add-files-to-fuzzy-complete project-path)
-	  (if (lein-project-file? project-path)
-	  		(try
-		  		(when-let [lein-project (lein-project/read (str project-path "/project.clj"))]
-		  			(swap! projects (fn [m] (assoc-in m [project-path :lein-project] lein-project)))
-					(seesaw/invoke-later
-						(when  (= (:name lein-project) "sketchpad")
-							(swap! (:repls project) assoc (get-in @state/app [:application-repl :uuid]) (:application-repl @state/app))
-							(reset! (get project :last-focused-repl)  (get-in @state/app [:application-repl :uuid]))
-							(swap! (get-in  @projects [project-path :lein-project]) (get-in @state/app (:application-repl :uuid)) (:application-repl @state/app)))))
-		  		(catch Exception e))))))
+	
+	(if (lein-project-file? project-path)
+		(try
+			(when-let [lein-project (lein-project/read (str project-path "/project.clj"))]
+				(swap! projects (fn [m] (assoc-in m [project-path :lein-project] lein-project)))
+				(seesaw/invoke-later
+					(when  (= (:name lein-project) "sketchpad")
+						(let [app-repl-uuid (get-in @state/app [:application-repl :uuid])]
+							(swap! repls assoc (get-in @state/app [:application-repl :uuid]) (:application-repl @state/app))
+							(reset! (get project :last-focused-repl)  (get-in @state/app [:application-repl :uuid]))))))
+				(catch Exception e))))))
 
 
 (defn remove-project [project-path]

@@ -9,6 +9,7 @@
             [sketchpad.repl.project-repl :as project-repl]
             [sketchpad.help.help :as help]
             [sketchpad.tree.utils :as tree.utils]
+            [sketchpad.buffer.token :as token]
             [sketchpad.buffer.spell-check :as spell-check]
             [sketchpad.config.layout :as layout]
             [sketchpad.state.state :as state]))
@@ -105,9 +106,7 @@
 					text (.getSelectedText text-area)					
 					cmd (if (> (count text) 0)
 							 text
-							 (help/find-form-string
-  								(seesaw/config text-area :text)
-  								(buffer.action/buffer-cursor-point text-area)))]
+							 (apply str (token/line-token)))]
 					(if  (contains? @(:repls project) (get-in @state/app [:application-repl :uuid]))
 						(do
 							(app.util/send-to-application-repl (get-in repl [:component :text-area]) cmd))

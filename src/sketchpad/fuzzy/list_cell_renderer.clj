@@ -4,14 +4,6 @@
 	(:use [seesaw.core]))
 
 
-
-
-
-
-
-
-
-
 (defn renderer
 "Returns a custom cell renderer for the fuzzy search auto complete."
 	[]
@@ -21,6 +13,7 @@
 		 r (proxy [javax.swing.DefaultListCellRenderer] []
 			(getListCellRendererComponent [list value index selected? focus?]
 				(config! main-label :text (str value))
+				(println "list cell renderer sleected?: " selected?)
 				(if selected?
 					(config! p :background (seesaw.color/color :pink))
 					(config! p :background (seesaw.color/color :white)))

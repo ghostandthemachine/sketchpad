@@ -3,10 +3,12 @@
 	(:use [seesaw meta dev]
         [seesaw.core :exclude [height width]]
 	  [clojure.repl]
+   	  [clojure.java.shell]
 	  [sketchpad.config.config]
         [sketchpad.tree.tree]
         [sketchpad.buffer.action]
         [sketchpad.util.brackets]
+        [sketchpad.buffer.token]
         [sketchpad.system.desktop]
 	[sketchpad.auto-complete.template])
 	(:require [sketchpad.util.tab :as tab]
@@ -57,7 +59,6 @@
 
 (defn buffers []
   (mapcat :buffers @(:projects @app)))
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Cursor and mark position
@@ -302,7 +303,7 @@
 
 (defn current-text-area []
 "Returns the current text area."
-  (get-in (current-buffer) [:component :text-area]))
+  (tab/current-text-area))
 
 (defn current-form []
   (let [current-text-area (current-text-area)
@@ -363,26 +364,6 @@
         gutter (.getGutter scroller)]
     gutter))
 
-(defn token-list-for-line
-"Returns the token list for a given line."
-	[]
-	(let [text-area (current-text-area)
-				doc (.getDocument text-area)
-				line (.getCaretLine text-area)
-				token (.getTokenListForLine doc line)]
-		token))
-
-(defn current-token 
-"Returns the Token object for the current token."	
-	[]
-	(let [text-area (current-text-area)
-				doc (.getDocument text-area)
-				line (.getCaretLine text-area)
-				token (.getTokenListForLine doc line)
-				dot (.getCaretPosition text-area)
-				cur-token (org.fife.ui.rsyntaxtextarea.RSyntaxUtilities/getTokenAtOffset token dot)]
-		cur-token))
-
 (defn grep
 "Grep the current projects or a given the given paths."
   ([search-term] (source/grep-files search-term))
@@ -398,17 +379,6 @@
 "Returns the text area for the SketchPad application REPL."
   []
   (get-in (app-repl) [:component :text-area]))
-
-
-(defn accum-token-list [token]
-	(let [token-list (atom [(.getLexeme token)])]
-		(loop [t (token-list-for-line)]
-			(when-not (nil? (.getNextToken t))
-				(swap! token-list (fn [tl] (conj tl (.getLexeme t))))
-				(println (.getNextToken t))
-			 	 (recur (.getNextToken t))))
-		@token-list))
-
 
 (defn read-or-nil [rdr]
   (try (read rdr) (catch RuntimeException e nil)))
@@ -434,4 +404,12 @@
 			  (reset! (:last-focused-repl project) app-repl-uuid)))))
 
 (do (add-app-repl))
-	
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;  System commands
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defn ls
+"System ls call."
+	[& opts]
+	 (:out (apply sh "ls" opts)))

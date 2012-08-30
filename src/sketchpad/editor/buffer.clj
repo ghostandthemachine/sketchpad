@@ -34,27 +34,34 @@
 		(let [suffix (last (clojure.string/split (.getName @(:file buffer)) #"\."))]
 			(cond
 				(= suffix "clj")
-					(auto-complete/install-auto-completion (get-in buffer [:component :text-area]))
+					(auto-complete/install-auto-completion buffer)
 				(= suffix "java")
 					(let [java-lang-support (JavaLanguageSupport. )]
+						(reset! (:auto-complete buffer) java-lang-support)
 						(.install java-lang-support (get-in buffer [:component :text-area])))
 				(= suffix "c")
 					(let [c-lang-support (CLanguageSupport. )]
+						(reset! (:auto-complete buffer) c-lang-support)
 						(.install c-lang-support (get-in buffer [:component :text-area])))
 				(= suffix "groovy")
 					(let [groovy-lang-support (GroovyLanguageSupport. )]
+						(reset! (:auto-complete buffer) groovy-lang-support)
 						(.install groovy-lang-support (get-in buffer [:component :text-area])))
 				(= suffix "js")
 					(let [js-lang-support (JavaScriptLanguageSupport. )]
+						(reset! (:auto-complete buffer) js-lang-support)
 						(.install js-lang-support (get-in buffer [:component :text-area])))
 				(= suffix "perl")
 					(let [perl-lang-support (PerlLanguageSupport. )]
+						(reset! (:auto-complete buffer) perl-lang-support)
 						(.install perl-lang-support (get-in buffer [:component :text-area])))
 				(= suffix "php")
 					(let [php-lang-support (PhpLanguageSupport. )]
+						(reset! (:auto-complete buffer) php-lang-support)
 						(.install php-lang-support (get-in buffer [:component :text-area])))
 				(= suffix "jsp")
 					(let [jsp-lang-support (JspLanguageSupport. )]
+						(reset! (:auto-complete buffer) jsp-lang-support)
 						(.install jsp-lang-support (get-in buffer [:component :text-area])))
 				; not working correctly. There is some print out bug when looking at ac clomplets list
 				; (= suffix "sh")
@@ -62,13 +69,15 @@
 				; 		(.install sh-lang-support (get-in buffer [:component :text-area])))
 				(= suffix "xml")
 					(let [xml-lang-support (XmlLanguageSupport. )]
+						(reset! (:auto-complete buffer) xml-lang-support)
 						(.install xml-lang-support (get-in buffer [:component :text-area])))
 				(= suffix "html")
 					(let [html-lang-support (HtmlLanguageSupport. )]
+						(reset! (:auto-complete buffer) html-lang-support)
 						(.install html-lang-support (get-in buffer [:component :text-area])))))))
 
 (defn init-buffer-tab-state [buffer]
-	(let [text-area (:text-area buffer)]
+	(let [text-area (get-in buffer [:component :text-area])]
 	  (tab/focus-buffer buffer)
 	  (update-buffer-info-file-title (tab/title))
 	  (tab/mark-tab-clean! buffer)
@@ -101,6 +110,21 @@
 		(reset! (:new-file? buffer) false)
 		(add-auto-completion-from-type buffer))))
 
+
+(defn file-project-path
+	[file]
+	(let [project-paths @(:projects @state/app)
+		proj (atom nil)]
+		(doseq [p (keys project-paths)]
+			(let [files (file-seq p)]
+				(when (contains? files file)
+					(println p)
+					(reset! proj p)))
+		(let [open-project-path (if (nil? @proj)
+									".sketchpad-tmp"
+									@proj)]
+		open-project-path))))
+
 (defn open-buffer [file-path project-path]
 	(seesaw/invoke-later
 		(let [project (sketchpad.project/project-from-path project-path)
@@ -115,7 +139,7 @@
 	([] (blank-clj-buffer! nil))
 	([parent-dir] 
 	(seesaw/invoke-later
-		(let [buffer (editor.build/scratch-buffer-tab "sketchpad-tmp")]
+		(let [buffer (editor.build/scratch-buffer-tab ".sketchpad-tmp")]
 			(init-buffer-tab-state buffer)
 			(sketchpad.project/add-buffer-to-app buffer)
 			(tab/show-buffer buffer)))))
@@ -123,9 +147,8 @@
 (defn new-project-buffer!
 "Create a new buffer for a loaded project."
 	[project-path selection-path]
-	(let [buffer (editor.build/new-project-buffer-tab project-path selection-path)]
-		(init-buffer-tab-state buffer)
-		(sketchpad.project/add-buffer-to-project project-path buffer)
-		(sketchpad.project/add-buffer-to-app buffer)
-		(seesaw/invoke-later
-			(tab/show-buffer buffer))))
+		(let [buffer (editor.build/new-project-buffer-tab project-path selection-path)]
+			(sketchpad.project/add-buffer-to-project project-path buffer)
+			(sketchpad.project/add-buffer-to-app buffer)
+			(init-buffer-tab-state buffer)
+			(tab/show-buffer buffer)))

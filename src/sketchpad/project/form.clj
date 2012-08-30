@@ -4,10 +4,8 @@
 	(:require [seesaw.forms :as forms]
 						[sketchpad.rsyntax :as rsyntax]
 						[sketchpad.project.create :as create]
-						[sketchpad.project.create :as create]
+						[sketchpad.state.state :as state]
 						[sketchpad.config.config :as config]))
-
-; (defn form-success )
 
 (defn- re-pack! [e]
 	(pack! (.. e getComponent getParent)))
@@ -39,6 +37,10 @@
 			(config! repo-text-area :text "[org.clojure/clojure \"1.4.0\"]\n")
 			(.setCaretPosition repo-text-area (.getLastVisibleOffset repo-text-area))
 		(install-clojars-auto-completions repo-text-area)
+		(swap! state/app 
+			assoc :creation-form {:type :creation-form
+		 						  :component {:container form
+		    		 			  :text-area repo-text-area}})
 		form))
 
 (defn defproject-template [project-name version]

@@ -172,6 +172,7 @@
               :text-area   (:text-area component)
               :title       (:title component)
               :project     (:path project)
+              :auto-complete (atom nil)
               :uuid        (seesaw.meta/get-meta (:text-area component) :uuid)
               :history     (repl.history/history)}
         tab (repl.tab/button-tab repl)]

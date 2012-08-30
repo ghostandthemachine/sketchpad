@@ -173,6 +173,11 @@
       (let [num-tabs (tab-count repl-tabbed-panel)]
        (when (> 0 num-tabs)
           (swap! state/app assoc :doc-title-atom (current-repl)))))))
+;
+; (defn- repl-double-click-handler
+; 	[text-area e]
+; 	(println (token/accum-token-list
+; 	(
 
 (defn init-repl-tabbed-panel [repl-tabbed-panel repl]
   (let [text-area (get-in repl [:component :text-area])
@@ -184,7 +189,7 @@
     (wrapper.rsyntaxtextarea/set-input-map! text-area (input.default/default-input-map))
     (add-repl-input-handler text-area)
     (config! scroller :background config/app-color)
-    (auto-complete/install-auto-completion text-area)
+    (auto-complete/install-auto-completion repl)
     (config/apply-repl-prefs! text-area)
     (send-to-application-repl text-area "(require 'sketchpad.user)\n(in-ns 'sketchpad.user)")))
 
@@ -201,6 +206,7 @@
                             repl-tabbed-panel
                             application-repl))
     {:type :repl-tabbed-panel
+     :auto-complete (atom nil)
      :component {:container repl-tabbed-panel}
      :application-repl application-repl}))
 

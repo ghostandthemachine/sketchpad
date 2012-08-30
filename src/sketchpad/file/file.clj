@@ -3,6 +3,7 @@
             [sketchpad.project.project :as project]
             [sketchpad.util.utils :as utils]
             [sketchpad.util.tab :as tab]
+            [sketchpad.state.state :as state]
             [clojure.string :as string])
   (:use [seesaw core dev meta])
   (:import (java.io File StringReader BufferedWriter OutputStreamWriter FileOutputStream)
@@ -131,8 +132,6 @@
 (defn get-file-state-by-tab-index [app i]
   (@(get-meta (select (.getComponentAt (app :editor-tabbed-pane) i) [:#editor]) :state) :clean))
 
-
-
 (defn new-file! []
   (try
     (when-let [new-file (utils/choose-file (@app :frame) "New file" (current-project) false)]
@@ -160,8 +159,6 @@
                                "Oops" JOptionPane/ERROR_MESSAGE)
                            (.printStackTrace e))))))
 
-
-
-
-
-
+(defn current-files
+	[]
+	(into #{} (mapcat #(deref (:file %)) (vals (tab/current-buffers)))))

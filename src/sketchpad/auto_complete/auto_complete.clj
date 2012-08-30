@@ -7,8 +7,47 @@
             [sketchpad.wrapper.rsyntaxtextarea :as wrapper.rsyntaxtextarea]
             [sketchpad.input.default :as input.default]
             [sketchpad.state.state :as state]
+            [seesaw.core :as seesaw]
             [sketchpad.fuzzy.list-cell-renderer :as cell-renderer]
             [sketchpad.auto-complete.template :as template]))
+
+(defn make-ac
+	[provider]
+	(proxy [org.fife.ui.autocomplete.AutoCompletion] [provider]
+	(insertCompletion [c]
+		(proxy-super insertCompletion c))))
+
+(defn template
+"A completion made up of a template with arbitrary parameters that the user
+can tab through and fill in.  This completion type is useful for inserting
+common boilerplate code, such as for-loops.<p>
+The format of a template is similar to those in Eclipse.  The following
+example would be the format for a for-loop template:
+
+<pre>
+for (int ${i} = 0; ${i} &lt; ${array}.length; ${i}++) {
+   ${cursor}
+}
+</pre>
+
+In the above example, the first <code>${i}</code> is a parameter for the
+user to type into; all the other <code>${i}</code> instances are
+automatically changed to what the user types in the first one.  The parameter
+named <code>${cursor}</code> is the \"ending position\" of the template.  It's
+where the caret moves after it cycles through all other parameters.  If the
+user types into it, template mode terminates.  If more than one
+<code>${cursor}</code> parameter is specified, behavior is undefined.<p>
+
+Two dollar signs in a row (\"<code>$$</code>\") will be evaluated as a single
+dollar sign.  Otherwise, the template parsing is pretty straightforward and
+fault-tolerant.<p>
+Leading whitespace is automatically added to lines if the template spans
+more than one line, and if used with a text component using a
+<code>PlainDocument</code>, tabs will be converted to spaces if requested.
+@author Robert Futrell
+@version 1.0"
+	[provider input template]
+	(org.fife.ui.autocomplete.TemplateCompletion. provider input template))
 
 (defn create-completion-provider
   ([] (create-completion-provider :default))
@@ -27,11 +66,13 @@
 
 
 (defn install-auto-completion
-  [rta] 
+  [buffer] 
   (let [provider completion-provider
-  	  ac (org.fife.ui.autocomplete.AutoCompletion. provider)]
+  	    ac (org.fife.ui.autocomplete.AutoCompletion. provider)
+        rta (get-in buffer [:component :text-area])]
 ;    (template/install-templates ac)
-;    (config/apply-auto-completion-prefs! ac)
+    (reset! (:auto-complete buffer) ac)
+    (config/apply-auto-completion-prefs! ac)
     (.install ac rta)))
 ;
 ;(defn install-project-auto-completion
@@ -55,25 +96,27 @@
      (.setAutoActivationRules cp true "")
      cp)))
 
-; (defn make-clojar-completion-provider
-; "Builds a Completion Provider from the available repo on Clojars."
-; 	[]
-; 	(build-clojar-completions (create-provider)))
+(defn make-clojar-completion-provider
+ "Builds a Completion Provider from the available repo on Clojars."
+ 	[]
+ 	(build-clojar-completions (create-provider)))
 
-; (defonce clojar-completion-provider (org.fife.ui.autocomplete.AutoCompletion. (make-clojar-completion-provider)))
+(defonce clojars-provider (future (make-clojar-completion-provider)))
 
 (defn install-clojars-auto-completions
 "Adds all project ns completions to a text area. Takes a text-area and a SketchPad project."
   [text-area]
-    ; (config/apply-auto-completion-prefs! clojar-completion-provider)
-    ; (wrapper.rsyntaxtextarea/set-input-map! text-area (input.default/default-input-map))
-    ; (doto 
-    ;   clojar-completion-provider
-    ;   (.setAutoActivationEnabled true)
-    ;   (.setDescriptionWindowSize 300 500) 
-    ;   (.setShowDescWindow false))
-    ; (.install clojar-completion-provider text-area)
-    )
+    (when (future-done? clojars-provider)
+      (seesaw/invoke-later
+    		(let [provider @clojars-provider
+    			ac (org.fife.ui.autocomplete.AutoCompletion. provider)]
+     			(config/apply-auto-completion-prefs! ac)
+     			(wrapper.rsyntaxtextarea/set-input-map! text-area (input.default/default-input-map))
+     			(doto ac
+       			(.setAutoActivationEnabled true)
+       			(.setDescriptionWindowSize 300 500) 
+       			(.setShowDescWindow false))
+      			(.install ac text-area)))))
 
 (defn build-project-completion-provider
 "Builds a Completion Provider for a project."
@@ -81,11 +124,31 @@
   (build-project-completions (create-provider) project-path))
 
 (defonce fuzzy-provider (org.fife.ui.autocomplete.DefaultCompletionProvider. ))
+(defonce fuzzy-ac (org.fife.ui.autocomplete.AutoCompletion. fuzzy-provider))
 
 (defn not-sufix?
   [f suffix-vec]
   (let [suffix (last (clojure.string/split (.getName f) #"\."))]
     (not (nil? (some #(= suffix %) suffix-vec)))))
+
+(defn add-file-completion
+	[project-path f]
+	(let [project-name (last (clojure.string/split project-path #"/"))]
+		(when (and
+		      (not (= (.getName f) ".DS_Store"))
+		      (not (not-sufix? f config/fuzzy-file-type-exclusions))
+		(let [path-split (clojure.string/split (.getAbsolutePath f) (java.util.regex.Pattern/compile project-name) 2)]
+		  (.addCompletion fuzzy-provider
+		    (ShorthandCompletion. fuzzy-provider 
+		      (str (.getName f))
+		      (str "{"
+		            ":file " "\"" (last path-split) "\""
+		            " "
+		            ":project " "\"" (first path-split) project-name "\""
+		            " "
+		            ":absolute-path " "\"" (.getAbsolutePath f) "\""
+		            "}")
+		      (str (last path-split)))))))))
 
 (defn add-files-to-fuzzy-complete
   [project-path]
@@ -100,28 +163,7 @@
                     (nil? (re-find #"\.pygments-cache/" (.getAbsolutePath file)))))
                 (file-seq directory))]
     (doseq [f files]
-      (when (and
-              (not (= (.getName f) ".DS_Store"))
-              (not (not-sufix? f config/fuzzy-file-type-exclusions))
-        (let [path-split (clojure.string/split (.getAbsolutePath f) (java.util.regex.Pattern/compile project-name) 2)]
-          (.addCompletion fuzzy-provider
-            (ShorthandCompletion. fuzzy-provider 
-              (str (.getName f))
-              (str "{"
-                    ":file " "\"" (last path-split) "\""
-                    " "
-                    ":project " "\"" (first path-split) project-name "\""
-                    " "
-                    ":absolute-path " "\"" (.getAbsolutePath f) "\""
-                    "}")
-              (str (last path-split))))))))))
-
-(defn update-fuzzy-completions
-  []
-  (let [project-keys (keys @(:projects @state/app))]
-    (.clear fuzzy-provider)
-    (doseq [proj project-keys]
-      (add-files-to-fuzzy-complete proj))))
+	(add-file-completion project-path f))))
 
 (defn- init-fuzzy-ac
 	[ac provider]
@@ -131,61 +173,30 @@
 		(.setDescriptionWindowSize 800 500) 
 		(.setShowDescWindow false))
   (doto provider
-    (.setListCellRenderer (cell-renderer/renderer)))
+     (.setParameterizedCompletionParams \space " " \))
+     (.setAutoActivationRules true "")
+     (.setListCellRenderer (cell-renderer/renderer)))
 	ac)
 
-(def fuzzy-ac (org.fife.ui.autocomplete.AutoCompletion. fuzzy-provider))
-
 (defn install-fuzzy-provider
-  [rsta]
+  [fuzzy-buffer]
   (let [provider fuzzy-provider
-        ac fuzzy-ac]
+        ac (org.fife.ui.autocomplete.AutoCompletion. provider)
+        text-area (get-in fuzzy-buffer [:component :text-area])
+        fuzzy-ac (:auto-complete fuzzy-buffer)]
       (init-fuzzy-ac ac provider)
-      (.setListCellRenderer provider (cell-renderer/renderer))
-    (.install ac rsta)))
+      ; (.setListCellRenderer provider (cell-renderer/renderer))
+      (swap! fuzzy-ac assoc :auto-complete ac)
+    (.install ac text-area)))
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+(defn update-fuzzy-completions
+  []
+  (let [project-keys (keys @(:projects @state/app))
+  	  ac (get-in @state/app [:fuzzy :auto-complete])
+  	  text-area (get-in @state/app [:fuzzy :text-area])]
+    (.clear fuzzy-provider)
+    (.uninstall ac)
+    (doseq [proj project-keys]
+      (add-files-to-fuzzy-complete proj))
+    (install-fuzzy-provider text-area)))
