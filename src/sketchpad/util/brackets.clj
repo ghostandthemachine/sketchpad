@@ -14,8 +14,7 @@
        (not (some #{[a b]} [[\( \)] [\[ \]] [\{ \}]]))))
 
 (defn process-bracket-stack
-  "Receiving a bracket stack s, deal with the next character c
-   and datum dat."
+  "Receiving a bracket stack s, deal with the next character c and datum dat."
   [s c dat]
   (let [l (ffirst s)        ;last char
         p (next s)          ;pop stack

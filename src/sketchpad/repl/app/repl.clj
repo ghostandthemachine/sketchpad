@@ -167,8 +167,6 @@
 		  		(let [projects @(:projects @state/app)
 		  			project (get projects (:project repl))
 		  			last-repl-atom (get project :last-focused-repl)]
-		  			(println "reset " last-repl-atom " with uuid: " uuid)
-		  			(println (keys repl))
 		  			(reset! last-repl-atom uuid))))))
 
 (defn attach-tab-change-handler [repl-tabbed-panel]

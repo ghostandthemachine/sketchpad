@@ -405,6 +405,10 @@
 
 (do (add-app-repl))
 
+(defn theme
+  [theme-name]
+  (text-area-theme (current-text-area) (str theme-name ".xml")))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;  System commands

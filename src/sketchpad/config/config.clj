@@ -21,25 +21,25 @@
 (defn exists? [path]
   (.exists (java.io.File. path)))
 
-(defonce sketchpad-app-url (str (System/getProperty "user.home") "/.sketchpad"))
+(defonce sketchpad-resources-url (str (System/getProperty "user.home") "/.sketchpad"))
 
 (defn add-defaults-if-needed
 "If the .sketchpad/ directory does not exist, create it with defaults from resources."
   []
-  (when-not (exists? (str sketchpad-app-url "/default.clj"))
+  (when-not (exists? (str sketchpad-resources-url "/default.clj"))
     (let [src-url (clojure.java.io/resource "default.clj")
-          dst-dir (java.io.File. sketchpad-app-url)
-          dst-file (java.io.File. (str sketchpad-app-url "/default.clj"))]
+          dst-dir (java.io.File. sketchpad-resources-url)
+          dst-file (java.io.File. (str sketchpad-resources-url "/default.clj"))]
       (.mkdirs dst-dir)
-      (spit (str sketchpad-app-url "/default.clj") (slurp src-url)))))
+      (spit (str sketchpad-resources-url "/default.clj") (slurp src-url)))))
 
 (defn add-theme-if-needed
-  []
-  (when-not (exists? (str sketchpad-app-url "/sublime.xml"))
-    (let [src-url (clojure.java.io/resource "sublime.xml")
-          dst-dir (java.io.File. sketchpad-app-url)
-          dst-file (java.io.File. (str sketchpad-app-url "/sublime.xml"))]
-      (spit (str sketchpad-app-url "/sublime.xml") (slurp src-url)))))
+  [theme-name]
+  (when-not (exists? (str sketchpad-resources-url (str "/" theme-name ".xml")))
+    (let [src-url (clojure.java.io/resource (str theme-name ".xml"))
+          dst-dir (java.io.File. sketchpad-resources-url)
+          dst-file (java.io.File. (str sketchpad-resources-url (str "/" theme-name ".xml")))]
+      (spit (str sketchpad-resources-url (str "/" theme-name ".xml")) (slurp src-url)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;  Load the config files
@@ -47,9 +47,13 @@
 
 (do
   (add-defaults-if-needed)
-  (add-theme-if-needed))
+  (add-theme-if-needed "sublime")
+  (add-theme-if-needed "dark")
+  (add-theme-if-needed "default")
+  (add-theme-if-needed "vs")
+  (add-theme-if-needed "eclipse"))
 
-(load-string (slurp (str sketchpad-app-url "/default.clj")))
+(load-string (slurp (str sketchpad-resources-url "/default.clj")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;  Config functions
@@ -196,18 +200,11 @@ This method fires a property change event of type CLOSE_CURLY_BRACES_PROPERTY."
 (defn text-area-theme
 "Set the current RSyntaxTextArea theme."
 [text-area pref]
+(seesaw/invoke-later
   (try
-     (theme/apply! (theme/theme (str sketchpad-app-url "/" pref)) text-area)
+     (theme/apply! (theme/theme (str sketchpad-resources-url "/" pref)) text-area)
      (catch Exception e
-       (println (str "The theme " pref " can not be found...")))))
-
- (defn ta-theme
-"Set the current RSyntaxTextArea theme."
-[text-area pref]
-  (try
-     (theme/apply! (theme/theme pref) text-area)
-     (catch Exception e
-       (println (str "The theme " pref " can not be found...")))))
+       (println (str "The theme " pref " can not be found..."))))))
 
 (defn background-img
 "Sets this image as the background image. This method fires a property change event of type RTextAreaBase.BACKGROUND_IMAGE_PROPERTY.

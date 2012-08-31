@@ -13,7 +13,7 @@
 	:auto-indent true
 	:eol-marker false
 	:font "MENLO-15-BOLD"
-	:tab-size 2
+	:tab-size 1
 	:hyperlinks-enabled false
 	:mark-occurences-color "#ADA6A9"
 	:paint-mark-occurences-border true
@@ -37,7 +37,7 @@
 	:auto-indent true
 	:eol-marker false
 	:font "MENLO-15-BOLD"
-	:tab-size 2
+	:tab-size 1
 	:mark-occurences-color "#ADA6A9"
  	 :paint-mark-occurences-border true
 	:matched-bracket-bg-color [80 240 70 50]
@@ -56,8 +56,8 @@
 
 (def default-auto-completion-prefs
   { :auto-complete true
-  	:auto-activation false
-  	:auto-activation-delay 1000
+  	:auto-activation true
+  	:auto-activation-delay 300
   	:auto-complete-single-choice false
   	:show-description-window true
   	:description-window-size [600 300]
