@@ -14,6 +14,7 @@
 (defn add-english-spell-checker
 "Add an English language spell checker to a given RSyntaxTextArea."
 	[rsta]
+	(println "add spell check")
 	(.addParser rsta english-spell-checker))
 
 (defn remove-english-spell-checker

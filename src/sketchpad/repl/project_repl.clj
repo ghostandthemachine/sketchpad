@@ -185,7 +185,6 @@
     (future
       (let [port @server-port
             conn (nrepl/connect :port port)]
-        (seesaw/invoke-later 
           (let[repl (repl-panel project)
                repl (assoc repl :port port :conn conn)]
             (sketchpad.project/add-repl-to-project (:path project) repl)
@@ -196,4 +195,4 @@
             (tab/show-repl repl)
             (tab/focus-repl repl)
             (tab/repl-tab-component! repl)
-  repl))))))
+  repl)))))

@@ -26,8 +26,7 @@
                 (-> project :repl-options :port)
                 0)))
 
-(def profile {:dependencies '[[org.clojure/tools.nrepl "0.2.0-beta7"
-                               :exclusions [org.clojure/clojure]]
+(def profile {:dependencies '[[org.clojure/tools.nrepl "0.2.0-beta7"]
                               [clojure-complete "0.2.1"
                                :exclusions [org.clojure/clojure]]]})
 

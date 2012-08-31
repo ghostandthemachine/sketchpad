@@ -28,17 +28,36 @@
 
 (defn update-doc-title-label!
 "Update the currently displayed doc title in the info panel"
-	[e]
+	([] (invoke-later
+		(let [buffer-tabbed-panel (get-in @state/app [:buffer-tabbed-panel :component :container])]
+			(if (tab/tabs? buffer-tabbed-panel)
+				(do
+					(let [doc-title (:doc-title-label @state/app)]
+						(when-let [buffer (tab/current-buffer buffer-tabbed-panel)]
+							(let [base-title @(:title buffer)
+								title (if (:clean @(:state buffer))
+										base-title
+										(str "*" base-title "*"))]
+							(config! doc-title :text title)
+							(when-let [file @(:file buffer)]
+								(tree.utils/set-tree-selection (.getAbsolutePath file)))))))
+				(do
+					(config! (:doc-title-label @state/app) :text ""))))))
+	([e]
 	(invoke-later
 		(if (tab/tabs? (.getSource e))
 			(do
 				(let [doc-title (:doc-title-label @state/app)]
 					(when-let [buffer (tab/current-buffer (.getSource e))]
-						(config! doc-title :text @(:title buffer))
+						(let [base-title @(:title buffer)
+							title (if (:clean @(:state buffer))
+									base-title
+									(str "*" base-title "*"))]
+						(config! doc-title :text title)
 						(when-let [file @(:file buffer)]
-							(tree.utils/set-tree-selection (.getAbsolutePath file))))))
+							(tree.utils/set-tree-selection (.getAbsolutePath file)))))))
 			(do
-				(config! (:doc-title-label @state/app) :text "")))))
+				(config! (:doc-title-label @state/app) :text ""))))))
 
 (defn attach-caret-handler [text-area]
 	(listen text-area :caret-update update-doc-position-label!))

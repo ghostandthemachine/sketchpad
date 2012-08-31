@@ -191,6 +191,7 @@
  			(when (token/can-be-opened? line-seq)
  				(invoke-later
 	 				(let [buffer (buffer/open-buffer (first line-seq) ".sketchpad-tmp")]
+	 					(.setCaretPosition (get-in buffer [:component :text-area]) 0)
 	 					(search/search  (get-in buffer [:component :text-area]) (last line-seq))
 	 					(let [selection-end (.getSelectionEnd text-area)]
 	 						(doto text-area

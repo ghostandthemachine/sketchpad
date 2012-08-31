@@ -10,6 +10,7 @@
         [sketchpad.state.state :as state]
         [sketchpad.project.form :as project.form]
         [seesaw.core :as seesaw.core]
+        [sketchpad.editor.info-utils :as info-utils]
         [seesaw.keystroke :as keystroke]
         [sketchpad.auto-complete.auto-complete :as auto-complete]
         [sketchpad.tree.utils :as tree.utils]))
@@ -68,6 +69,7 @@
     (seesaw.core/invoke-later
       (when (= @(get-in buffer [:component :title]) "project.clj")
         (project/update-lein-project! (project/project-from-buffer buffer)))
+        (info-utils/update-doc-title-label!) 
       (tree.utils/update-tree))))))
 
 (defn save-as

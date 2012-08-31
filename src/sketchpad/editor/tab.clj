@@ -71,6 +71,10 @@
                               :class :button-tab)]
     (bind/bind sketchpad.config.prefs/show-tabs? (bind/transform (fn [s] s)) (bind/property container :visible?))
     (bind/bind sketchpad.config.prefs/show-tabs? (bind/transform (fn [s] s)) (bind/property label :visible?))
+    
+    (config! container :visible? sketchpad.config.prefs/show-tabs?)
+    (config! label :visible? sketchpad.config.prefs/show-tabs?)
+    
     (bind/bind (:title buffer) (bind/transform (fn [s] s)) (bind/property label :text))
     (doto container
       (.setOpaque false)

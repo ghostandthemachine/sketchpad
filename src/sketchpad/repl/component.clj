@@ -28,7 +28,7 @@ Examples from clojuredocs.org: [clojuredocs or cdoc]\n\n")
 [text-area]
   (config/apply-repl-prefs! text-area)
   (wrapper.rsyntaxtextarea/set-input-map! text-area (default-input-map))
-  (auto-complete/install-auto-completion text-area)  
+  (auto-complete/install-auto-completion text-area)
   (init-prompt text-area))
 
 (defn repl-component 
@@ -46,5 +46,3 @@ Examples from clojuredocs.org: [clojuredocs or cdoc]\n\n")
     {:container repl-container
      :text-area text-area
      :title (atom "nREPL")})))
-
-
