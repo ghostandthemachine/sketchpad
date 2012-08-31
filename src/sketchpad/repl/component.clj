@@ -6,7 +6,6 @@
             [sketchpad.config.config :as config]
             [sketchpad.buffer.action :as buffer.action]
             [sketchpad.wrapper.rsyntaxtextarea :as wrapper.rsyntaxtextarea]
-            [sketchpad.auto-complete.auto-complete :as auto-complete]
             [clojure.string :as string])
   (:import (java.util UUID) 
   		(org.fife.ui.rtextarea RTextScrollPane)
@@ -28,7 +27,6 @@ Examples from clojuredocs.org: [clojuredocs or cdoc]\n\n")
 [text-area]
   (config/apply-repl-prefs! text-area)
   (wrapper.rsyntaxtextarea/set-input-map! text-area (default-input-map))
-  (auto-complete/install-auto-completion text-area)
   (init-prompt text-area))
 
 (defn repl-component 

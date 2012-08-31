@@ -2,21 +2,22 @@
   (:use [sketchpad.repl.app.util])
 	(:require [seesaw.core :as seesaw]
 		[clojure.string :as string]
-		    [clooj.brackets :as brackets]
-		    [sketchpad.util.utils :as utils]
+		 [clooj.brackets :as brackets]
+		[sketchpad.util.utils :as utils]
 		[sketchpad.repl.component :as repl.component]
 		[sketchpad.repl.server :as repl.server]
-    [sketchpad.repl.history :as repl.history]
+    		[sketchpad.repl.history :as repl.history]
 		[sketchpad.repl.connection :as repl.connection]
 		[sketchpad.repl.tab :as repl.tab]
-    [sketchpad.buffer.action :as buffer.action]
-    [sketchpad.util.option-windows :as option-windows]
+		[sketchpad.buffer.action :as buffer.action]
+		[sketchpad.util.option-windows :as option-windows]
 		[sketchpad.config.config :as config]
-    [sketchpad.util.tab :as tab]
-    [sketchpad.repl.info :as repl.info]
-    [sketchpad.state.state :as state]
-    [sketchpad.project.project :as sketchpad.project]
-    [clojure.tools.nrepl :as nrepl])
+	      [sketchpad.util.tab :as tab]
+            [sketchpad.repl.info :as repl.info]
+            [sketchpad.auto-complete.auto-complete :as auto-complete]
+	      [sketchpad.state.state :as state]
+	      [sketchpad.project.project :as sketchpad.project]
+	      [clojure.tools.nrepl :as nrepl])
   (:import  (java.util UUID)
             (java.io
              BufferedReader BufferedWriter
@@ -185,14 +186,16 @@
     (future
       (let [port @server-port
             conn (nrepl/connect :port port)]
+        (seesaw/invoke-later 
           (let[repl (repl-panel project)
                repl (assoc repl :port port :conn conn)]
             (sketchpad.project/add-repl-to-project (:path project) repl)
             (add-repl-behaviors repl)
             (add-repl-mouse-handlers repl project)
+            (auto-complete/install-auto-completion repl)
             (repl.info/attach-caret-handler (get-in repl [:component :text-area]))
             (tab/add-repl repl)
             (tab/show-repl repl)
             (tab/focus-repl repl)
             (tab/repl-tab-component! repl)
-  repl)))))
+  repl))))))

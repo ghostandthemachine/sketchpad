@@ -69,8 +69,7 @@
     (seesaw.core/invoke-later
       (when (= @(get-in buffer [:component :title]) "project.clj")
         (project/update-lein-project! (project/project-from-buffer buffer)))
-        (info-utils/update-doc-title-label!) 
-      (tree.utils/update-tree))))))
+        (info-utils/update-doc-title-label!))))))
 
 (defn save-as
 "Open the save as dialog for the current buffer."

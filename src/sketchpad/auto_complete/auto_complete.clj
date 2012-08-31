@@ -70,7 +70,7 @@ more than one line, and if used with a text component using a
   (let [provider completion-provider
   	    ac (org.fife.ui.autocomplete.AutoCompletion. provider)
         rta (get-in buffer [:component :text-area])]
-;    (template/install-templates ac)
+    (template/install-templates ac)
     (reset! (:auto-complete buffer) ac)
     (config/apply-auto-completion-prefs! ac)
     (.install ac rta)))
@@ -102,7 +102,7 @@ more than one line, and if used with a text component using a
  	(build-clojar-completions (create-provider)))
 
 (defonce clojars-provider (future (make-clojar-completion-provider)))
-
+	
 (defn install-clojars-auto-completions
 "Adds all project ns completions to a text area. Takes a text-area and a SketchPad project."
   [text-area]
@@ -116,6 +116,9 @@ more than one line, and if used with a text component using a
        			(.setAutoActivationEnabled true)
        			(.setDescriptionWindowSize 300 500) 
        			(.setShowDescWindow false))
+       			(doto provider
+			         (.setParameterizedCompletionParams \space " " \))
+			         (.setAutoActivationRules true ""))
       			(.install ac text-area)))))
 
 (defn build-project-completion-provider
@@ -177,11 +180,11 @@ more than one line, and if used with a text component using a
 		(.setAutoActivationDelay 0)
 		(.setDescriptionWindowSize 800 500) 
 		(.setShowDescWindow false))
-  (doto provider
-     (.setParameterizedCompletionParams \space " " \))
-     (.setAutoActivationRules true "")
-     (.setListCellRenderer (cell-renderer/renderer)))
-	ac)
+	  (doto provider
+	     (.setParameterizedCompletionParams \space " " \))
+	     (.setAutoActivationRules true "")
+	     (.setListCellRenderer (cell-renderer/renderer)))
+		ac)
 
 (defn install-fuzzy-provider
   [fuzzy-buffer]

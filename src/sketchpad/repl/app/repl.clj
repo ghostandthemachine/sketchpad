@@ -168,6 +168,7 @@
 		  			project (get projects (:project repl))
 		  			last-repl-atom (get project :last-focused-repl)]
 		  			(println "reset " last-repl-atom " with uuid: " uuid)
+		  			(println (keys repl))
 		  			(reset! last-repl-atom uuid))))))
 
 (defn attach-tab-change-handler [repl-tabbed-panel]
@@ -183,6 +184,11 @@
 [e]
 (= (.getClickCount e) 2))
 
+(defn- check-project-path
+	[abs-path]
+	 (first 
+	(filter #(re-find (re-pattern %) "/Users/jonrose/code/projects/sketchpad/src/sketchpad/user.clj") (keys @(:projects @state/app)))))
+
  (defn repl-double-click-handler
  	[text-area e]
  	(when (double-click? e)
@@ -190,7 +196,9 @@
  			line-seq (clojure.string/split line-str #"\:")]
  			(when (token/can-be-opened? line-seq)
  				(invoke-later
-	 				(let [buffer (buffer/open-buffer (first line-seq) ".sketchpad-tmp")]
+	 				(let [abs-path (first line-seq)
+	 					project-path (check-project-path abs-path)
+	 					buffer (buffer/open-buffer abs-path project-path)]
 	 					(.setCaretPosition (get-in buffer [:component :text-area]) 0)
 	 					(search/search  (get-in buffer [:component :text-area]) (last line-seq))
 	 					(let [selection-end (.getSelectionEnd text-area)]

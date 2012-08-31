@@ -35,12 +35,11 @@
 					(let [doc-title (:doc-title-label @state/app)]
 						(when-let [buffer (tab/current-buffer buffer-tabbed-panel)]
 							(let [base-title @(:title buffer)
+								proj (:project buffer)
 								title (if (:clean @(:state buffer))
 										base-title
 										(str "*" base-title "*"))]
-							(config! doc-title :text title)
-							(when-let [file @(:file buffer)]
-								(tree.utils/set-tree-selection (.getAbsolutePath file)))))))
+							(config! doc-title :text (str  title "  --  " proj))))))
 				(do
 					(config! (:doc-title-label @state/app) :text ""))))))
 	([e]
@@ -50,14 +49,14 @@
 				(let [doc-title (:doc-title-label @state/app)]
 					(when-let [buffer (tab/current-buffer (.getSource e))]
 						(let [base-title @(:title buffer)
+							proj (:project buffer)
 							title (if (:clean @(:state buffer))
 									base-title
 									(str "*" base-title "*"))]
-						(config! doc-title :text title)
-						(when-let [file @(:file buffer)]
-							(tree.utils/set-tree-selection (.getAbsolutePath file)))))))
+						(config! doc-title :text (str title "  --  " proj))))))
 			(do
 				(config! (:doc-title-label @state/app) :text ""))))))
 
 (defn attach-caret-handler [text-area]
 	(listen text-area :caret-update update-doc-position-label!))
+
