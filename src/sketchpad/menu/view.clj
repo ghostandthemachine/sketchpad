@@ -72,34 +72,34 @@
   (when (tab/tabs?)
     (let [current-tab-state (:state buffer)]
       (if (:clean @current-tab-state)
-		(when-let [container (get-in @state/app [:buffer-tabbed-panel :component :container])]
-			(tab/close-tab container buffer) ;; nothing has changed, just close.
-	      (sketchpad.project/remove-buffer-from-project buffer))
-		(do 
-		  (let [answer (option-windows/close-or-save-current-dialogue @(get-in buffer [:component :title]))]
-		    (cond 
-		      (= answer 0) ;; answered yes to save 
-		      (do
-					(if @(:new-file? buffer) ;; is it a new buffer?
-						(seesaw.core/invoke-later
-							(when-let [new-file (file/save-file-as! (:selection-path buffer))]
-								(let [new-file-title (.getName new-file)] 
-									(reset! (:file buffer) new-file)
-									(reset! (:new-file? buffer) false)
-									;; create the new
-									(spit new-file "")
-									(when (file/save-file! buffer)
-										(tab/title-at! (tab/index-of-buffer buffer) new-file-title)
-										(auto-complete/add-file-completion (:project buffer) new-file)
-										(reset! (:title buffer) new-file-title)
-										(file/save-file! buffer)
-										(tab/close-tab (get-in @state/app [:buffer-tabbed-panel :component :container]) buffer)))))))
-		      (= answer 1) ;; don't save just close
-		        (do
-		          (tab/remove-tab! buffer)
-		          (sketchpad.project/remove-buffer-from-app buffer)
-	           (sketchpad.project/remove-buffer-from-project buffer)))))))
-		          (tab/save-tab-selections)))))
+    		(when-let [container (get-in @state/app [:buffer-tabbed-panel :component :container])]
+    			(tab/close-tab container buffer) ;; nothing has changed, just close.
+    	    (sketchpad.project/remove-buffer-from-project buffer))
+    		(do 
+    		  (let [answer (option-windows/close-or-save-current-dialogue @(get-in buffer [:component :title]))]
+    		    (cond 
+    		      (= answer 0) ;; answered yes to save 
+    		      (do
+    					(if @(:new-file? buffer) ;; is it a new buffer?
+    						(seesaw.core/invoke-later
+    							(when-let [new-file (file/save-file-as! (:selection-path buffer))]
+    								(let [new-file-title (.getName new-file)] 
+    									(reset! (:file buffer) new-file)
+    									(reset! (:new-file? buffer) false)
+    									;; create the new
+    									(spit new-file "")
+    									(when (file/save-file! buffer)
+    										(tab/title-at! (tab/index-of-buffer buffer) new-file-title)
+    										(auto-complete/add-file-completion (:project buffer) new-file)
+    										(reset! (:title buffer) new-file-title)
+    										(file/save-file! buffer)
+    										(tab/close-tab (get-in @state/app [:buffer-tabbed-panel :component :container]) buffer)))))))
+    		      (= answer 1) ;; don't save just close
+    		        (do
+    		          (tab/remove-tab! buffer)
+    		          (sketchpad.project/remove-buffer-from-app buffer)
+    	           (sketchpad.project/remove-buffer-from-project buffer)))))))
+    		          (tab/save-tab-selections)))))
   
 (defn make-view-menu-items []
   {:goto-repl     (seesaw.core/menu-item  :text "Go to REPL input" 

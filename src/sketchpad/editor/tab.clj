@@ -23,6 +23,7 @@
           button-base-color (color 255 255 255)
           line-style (style :foreground button-base-color :stroke 2 :cap :round)
           project-color (project/buffer-color buffer)
+          background-style (style :background (color 39 40 34))
           border-style (if project-color 
           					(style :foreground @project-color :stroke 0.5)
           					(style :foreground (color 255 255 255) :stroke 0.5))
@@ -34,14 +35,16 @@
           clean?
           (do
             (draw g
+                  (rounded-rect d d (- w d d) (- h d d) 5 5) background-style
+                  (rounded-rect d d (- w d d) (- h d d) 5 5) border-style
                   (line lp lp (- w lp) (- h lp)) line-style
-                  (line lp (- h lp) (- w lp) lp) line-style
-                  (rounded-rect d d (- w d d) (- h d d) 5 5) border-style))
+                  (line lp (- h lp) (- w lp) lp) line-style))
           (not clean?)
           (do
             (draw g
-                  (ellipse lp lp (- w lp lp) (- h lp lp)) ellipse-style
-                  (rounded-rect d d (- w d d) (- h d d) 5 5) border-style))))))
+                  (rounded-rect d d (- w d d) (- h d d) 5 5) background-style
+                  (rounded-rect d d (- w d d) (- h d d) 5 5) border-style
+                  (ellipse lp lp (- w lp lp) (- h lp lp)) ellipse-style))))))
 
 (defn tab-button 
 ([buffer]

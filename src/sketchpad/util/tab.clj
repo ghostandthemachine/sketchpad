@@ -268,7 +268,7 @@
 		(close-tab tabbed-panel (current-editor-buffer)))
 	([tabbed-panel buffer]
 		(if (tabs? tabbed-panel)
-			(remove-tab! tabbed-panel (current-editor-buffer)))))
+			(remove-tab! tabbed-panel buffer))))
 
 (defn close-current-tab []
 	(remove-tab! (get-in (:buffer-tabbed-panel @state/app) [:component :container]) (current-editor-buffer)))
