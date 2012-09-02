@@ -98,7 +98,8 @@
 		      (= answer 1) ;; don't save just close
 		        (do
 		          (tab/remove-tab! buffer)
-		          (sketchpad.project/remove-buffer-from-app buffer)))))))
+		          (sketchpad.project/remove-buffer-from-app buffer)
+	           (sketchpad.project/remove-buffer-from-project buffer)))))))
 		          (tab/save-tab-selections)))))
   
 (defn make-view-menu-items []

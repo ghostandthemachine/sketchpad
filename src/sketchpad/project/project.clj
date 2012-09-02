@@ -96,7 +96,7 @@
 	(swap! (:current-buffers @state/app) assoc (:uuid buffer) buffer))
 
 (defn remove-buffer-from-app [buffer]
-	(swap! (current-buffers) dissoc (:uuid buffer)))
+	(swap! (:current-buffers @state/app) dissoc (:uuid buffer)))
 
 (defn add-buffer-to-project [project-path buffer]
 	(let [buffers (get-in @(@state/app :projects) [project-path :buffers])]

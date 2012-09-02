@@ -55,8 +55,7 @@
     param-list))
 
 (defn var-type
-  "Determing the type (var, function, macro) of a var from the metadata and
-  return it as a string. (Borrowed from autodoc.)"
+"Determing the type (var, function, macro) of a var from the metadata and return it as a string. (Borrowed from autodoc.)"
   [v]
   (cond (:macro (meta v)) "macro"
         (= (:tag (meta v)) clojure.lang.MultiFn) "multimethod"
