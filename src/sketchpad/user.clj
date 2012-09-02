@@ -214,7 +214,6 @@
 
 ; Can probably just import some file util namespace from clojure.file that will provide the necessary functions (like checking if a path is a file or directory, getting and setting permissions, mkdir, move, rename, delete, etc...
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Repl functions (so scripts can manipulate the repl)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -334,10 +333,7 @@
 (defn current-project
 "Returns the current SketchPad project."
   []
-  (let [cur-buffer (current-buffer)
-        project-title (first (tree.utils/get-selected-projects))
-        current-project (get @(:projects @app) project-title)]
-    current-project))
+  (tab/current-project))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; REPL
@@ -384,16 +380,13 @@
   (try (read rdr) (catch RuntimeException e nil)))
 
 (defn make-forms-seq
-  "Construct a lazy sequence of clojure forms from input f.
-   f can be anything that can be coerced to a reader"
+  "Construct a lazy sequence of clojure forms from input f. F can be anything that can be coerced to a reader"
   [f]
   (letfn [(forms-seq [rdr]
             (let [form (read-or-nil rdr)]
               (if (nil? form) []
                   (lazy-seq (cons form (forms-seq rdr))))))]
     (forms-seq (java.io.PushbackReader. (io/reader f)))))
-
-
 
 (defn add-app-repl []
 	(doseq [project (vals @(:projects @app))]
@@ -406,9 +399,10 @@
 (do (add-app-repl))
 
 (defn theme
-  [theme-name]
-  (text-area-theme (current-text-area) (str theme-name ".xml")))
-
+  ([theme-name] (theme (current-text-area) theme-name))
+  ([text-area theme-name]
+  (invoke-later
+    (text-area-theme text-area (str theme-name ".xml")))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;  System commands

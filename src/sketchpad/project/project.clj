@@ -74,7 +74,6 @@
 							(reset! (get project :last-focused-repl)  (get-in @state/app [:application-repl :uuid]))))))
 				(catch Exception e))))))
 
-
 (defn remove-project [project-path]
 	(let [projects (:projects @state/app)]
 		(swap! projects dissoc project-path))

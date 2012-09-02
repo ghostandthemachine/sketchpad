@@ -200,11 +200,10 @@ This method fires a property change event of type CLOSE_CURLY_BRACES_PROPERTY."
 (defn text-area-theme
 "Set the current RSyntaxTextArea theme."
 [text-area pref]
-(seesaw/invoke-later
-  (try
-     (theme/apply! (theme/theme (str sketchpad-resources-url "/" pref)) text-area)
-     (catch Exception e
-       (println (str "The theme " pref " can not be found..."))))))
+(try
+   (theme/apply! (theme/theme (str sketchpad-resources-url "/" pref)) text-area)
+   (catch Exception e
+     (println (str "The theme " pref " can not be found...")))))
 
 (defn background-img
 "Sets this image as the background image. This method fires a property change event of type RTextAreaBase.BACKGROUND_IMAGE_PROPERTY.

@@ -1,5 +1,6 @@
 (ns sketchpad.file.file
   (:require [seesaw.bind :as bind]
+  				[seesaw.chooser :as chooser]
             [sketchpad.project.project :as project]
             [sketchpad.util.utils :as utils]
             [sketchpad.util.tab :as tab]
@@ -119,9 +120,7 @@
 (defn current-project
 "Returns the current SketchPad project."
   []
-  (let [cur-buffer (tab/current-buffer)
-        current-project (project/project-from-path (:project cur-buffer))]
-    current-project))
+  (tab/current-project))
 
 
 (defn set-global-rsta!
@@ -145,11 +144,16 @@
                                "Oops" JOptionPane/ERROR_MESSAGE)
                            (.printStackTrace e)))))
 
+(defn- save-file-chooser
+	([dir-path]
+	(chooser/choose-file :type :save
+											 :dir dir-path)))
+
 (defn save-file-as! 
 ([](save-file-as! (current-project)))
 ([dir-path]
   (try
-    (when-let [new-file (utils/choose-file (@app :frame) "Save file as" dir-path false)]
+    (when-let [new-file (save-file-chooser dir-path)]
       (utils/awt-event
         (let [path (.getAbsolutePath new-file)]
           (spit path "")))

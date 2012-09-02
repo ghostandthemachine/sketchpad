@@ -125,7 +125,7 @@
 				:new-file? (atom true)
 				:selection-path selection-path
 				:component buffer-component
-	   :auto-complete (atom nil)
+	         :auto-complete (atom nil)
 				:project project-path
 				:uuid uuid}]
 		(tab/add-tab! "untitled" container)

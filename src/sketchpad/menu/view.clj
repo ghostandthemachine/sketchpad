@@ -6,7 +6,9 @@
     [sketchpad.util.tab :as tab]
     [sketchpad.config.app :as app]
     [sketchpad.state.state :as state]
+    [sketchpad.util.tab :as tab]
     [sketchpad.file.file :as file]
+    [sketchpad.auto-complete.auto-complete :as auto-complete]    
     [sketchpad.buffer.io :as buffer.io]
     [sketchpad.project.project :as sketchpad.project]
     [sketchpad.util.option-windows :as option-windows]))
@@ -50,12 +52,6 @@
     (tab/previous-tab)
   (tab/update-tree-selection-from-tab)))
 
-(defn close-tab
-"Close the current tab."
-  [app-atom]
-  (seesaw.core/invoke-later
-     (tab/close-current-tab @app-atom)))
-
 (defn next-repl
 "Display the next available tab in the editor tabbed panel."
   []
@@ -77,24 +73,27 @@
     (let [current-tab-state (:state buffer)]
       (if (:clean @current-tab-state)
 		(when-let [container (get-in @state/app [:buffer-tabbed-panel :component :container])]
-				(tab/close-tab container buffer) ;; nothing has changed, just close.
-	              	(sketchpad.project/remove-buffer-from-project buffer))
+			(tab/close-tab container buffer) ;; nothing has changed, just close.
+	      (sketchpad.project/remove-buffer-from-project buffer))
 		(do 
 		  (let [answer (option-windows/close-or-save-current-dialogue @(get-in buffer [:component :title]))]
 		    (cond 
 		      (= answer 0) ;; answered yes to save 
-		        (do
-		          (if @(:new-file? buffer) ;; is it a new buffer?
-		            (do
-		              (buffer.io/save-new-buffer! buffer)
-		              (tab/remove-tab! buffer)
-		              (sketchpad.project/remove-buffer-from-app buffer)
-		              (sketchpad.project/remove-buffer-from-project buffer))
-		            (do
-		              (file/save-file! buffer)
-		              (tab/remove-tab! buffer)
-		              (sketchpad.project/remove-buffer-from-app buffer)
-		              (sketchpad.project/remove-buffer-from-project buffer))))
+		      (do
+					(if @(:new-file? buffer) ;; is it a new buffer?
+						(seesaw.core/invoke-later
+							(when-let [new-file (file/save-file-as! (:selection-path buffer))]
+								(let [new-file-title (.getName new-file)] 
+									(reset! (:file buffer) new-file)
+									(reset! (:new-file? buffer) false)
+									;; create the new
+									(spit new-file "")
+									(when (file/save-file! buffer)
+										(tab/title-at! (tab/index-of-buffer buffer) new-file-title)
+										(auto-complete/add-file-completion (:project buffer) new-file)
+										(reset! (:title buffer) new-file-title)
+										(file/save-file! buffer)
+										(tab/close-tab (get-in @state/app [:buffer-tabbed-panel :component :container]) buffer)))))))
 		      (= answer 1) ;; don't save just close
 		        (do
 		          (tab/remove-tab! buffer)

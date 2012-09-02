@@ -376,3 +376,9 @@
 	([repl]
 	  (focus-buffer repl)))
 
+(defn current-project
+	[]
+	(when (tabs?)
+		(let [buffer (current-buffer)
+	   		project-path (:project buffer)]
+		(project-path @(:projects @state/app)))))
