@@ -340,7 +340,7 @@
 		
 (defn current-buffer 
 ([]
-	(current-editor-buffer (get-in (:buffer-tabbed-panel @state/app) [:component :container])))
+	(current-buffer (get-in (:buffer-tabbed-panel @state/app) [:component :container])))
 ([tabbed-panel]
   (when (tabs? tabbed-panel)
 		(do 

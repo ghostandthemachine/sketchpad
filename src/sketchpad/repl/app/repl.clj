@@ -185,7 +185,7 @@
 (defn- check-project-path
 	[abs-path]
 	 (first 
-	(filter #(re-find (re-pattern %) "/Users/jonrose/code/projects/sketchpad/src/sketchpad/user.clj") (keys @(:projects @state/app)))))
+	(filter #(re-find (re-pattern %) abs-path) (keys @(:projects @state/app)))))
 
  (defn repl-double-click-handler
  	[text-area e]

@@ -110,7 +110,8 @@
 						(do
 							(app.util/send-to-application-repl (get-in repl [:component :text-area]) cmd))
 						(do
-							(project-repl/send-repl-cmd repl cmd))))))))
+							(when (> (count @(:repls project)) 0)
+								(project-repl/send-repl-cmd repl cmd)))))))))
 
 (defn send-file-to-repl
 "Send the current buffer to it's associated project REPL."

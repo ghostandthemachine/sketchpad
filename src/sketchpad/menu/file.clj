@@ -56,11 +56,14 @@
 		      (when-let [new-file (file/save-file-as! (:selection-path buffer))]
 		        (let[new-file-title (.getName new-file)] 
 	  	          (reset! (:file buffer) new-file)
-	  	          (reset! (:new-file? buffer) false) 
+	  	          (reset! (:new-file? buffer) false)
+                ;; create the new
+                (spit new-file "")
 	  	          (when (file/save-file! buffer)
 	  	            (tab/title-at! (tab/index-of-buffer buffer) new-file-title)
 	  	            (auto-complete/add-file-completion (:project buffer) new-file)
 	  	            (reset! (:title buffer) new-file-title)
+                  (save buffer)
 	  	            (tab/mark-current-tab-clean!))))))
 	    (do
         (seesaw.core/invoke-later

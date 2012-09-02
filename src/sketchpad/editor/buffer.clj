@@ -47,10 +47,10 @@
 					(let [groovy-lang-support (GroovyLanguageSupport. )]
 						(reset! (:auto-complete buffer) groovy-lang-support)
 						(.install groovy-lang-support (get-in buffer [:component :text-area])))
-				(= suffix "js")
-					(let [js-lang-support (JavaScriptLanguageSupport. )]
-						(reset! (:auto-complete buffer) js-lang-support)
-						(.install js-lang-support (get-in buffer [:component :text-area])))
+				; (= suffix "js")
+				; 	(let [js-lang-support (JavaScriptLanguageSupport. )]
+				; 		(reset! (:auto-complete buffer) js-lang-support)
+				; 		(.install js-lang-support (get-in buffer [:component :text-area])))
 				(= suffix "perl")
 					(let [perl-lang-support (PerlLanguageSupport. )]
 						(reset! (:auto-complete buffer) perl-lang-support)
@@ -133,19 +133,25 @@
 
 (defn- buffer-already-open?
 	[file-path]
-	(not (nil? (some #(= (.getAbsolutePath (clojure.java.io/file file-path)) (.getAbsolutePath @(:file % ))) (vals (tab/current-buffers))))))
+	(let [f (clojure.java.io/file file-path)
+		  file-abs (.getAbsolutePath f)
+		  cur-buffers (vals (tab/current-buffers))]
+		(not (nil? (some #(= file-abs (.getAbsolutePath @(:file %))) cur-buffers)))))
 
 (defn open-buffer [file-path project-path]
 	(if (buffer-already-open? file-path)
-		(bring-buffer-to-front file-path)
-		(let [project (sketchpad.project/project-from-path project-path)
-			  buffer (editor.build/project-buffer-tab project-path)]
-			(load-file-into-buffer project buffer file-path)
-			(init-buffer-tab-state buffer)
-			(sketchpad.project/add-buffer-to-project project-path buffer)
-			(sketchpad.project/add-buffer-to-app buffer)
-			(tab/show-buffer buffer)
-			buffer)))
+		(do
+			(bring-buffer-to-front file-path))
+		(do
+			(let [project (sketchpad.project/project-from-path project-path)
+			  	  buffer (editor.build/project-buffer-tab project-path)]
+				(load-file-into-buffer project buffer file-path)
+				(init-buffer-tab-state buffer)
+				(sketchpad.project/add-buffer-to-project project-path buffer)
+				(sketchpad.project/add-buffer-to-app buffer)
+				(seesaw/invoke-later
+					(tab/show-buffer buffer))
+				buffer))))
 
 (defn blank-clj-buffer!
 	([] (blank-clj-buffer! nil))
@@ -164,3 +170,4 @@
 			(sketchpad.project/add-buffer-to-app buffer)
 			(init-buffer-tab-state buffer)
 			(tab/show-buffer buffer)))
+

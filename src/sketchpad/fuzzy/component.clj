@@ -26,18 +26,17 @@
 
 (defn- enter-handler
 	[panel text-area]
-	(let [text-area (get-in (:fuzzy @sketchpad.state.state/app) [:component :text-area])
-				cmd (config text-area :text)]
-		(try
-			(let [file-map (load-string cmd)]
-				(when (.exists (clojure.java.io/file (:absolute-path file-map)))
-					(editor.buffer/open-buffer (:absolute-path file-map) (:project file-map)))
-				(invoke-later
-					(reset! fuzzy-visible false)
-					(config! panel :visible? false)
-					(config! text-area :visible? false :text "")))
-			(catch Throwable e
-				(invoke-later
+	(invoke-later
+		(let [text-area (get-in (:fuzzy @sketchpad.state.state/app) [:component :text-area])
+					cmd (config text-area :text)]
+			(try
+				(let [file-map (load-string cmd)]
+					(when (.exists (clojure.java.io/file (:absolute-path file-map)))
+						(editor.buffer/open-buffer (:absolute-path file-map) (:project file-map)))
+						(reset! fuzzy-visible false)
+						(config! panel :visible? false)
+						(config! text-area :visible? false :text ""))
+				(catch Throwable e
 					(config! text-area :text ""))))))
 
 (defn- esc-handler

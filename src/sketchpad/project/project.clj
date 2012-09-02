@@ -96,8 +96,6 @@
 	(swap! (:current-buffers @state/app) assoc (:uuid buffer) buffer))
 
 (defn remove-buffer-from-app [buffer]
-	(println "is buffer in project? ")
-	(println (contains? (current-buffers) (:uuid buffer)))
 	(swap! (current-buffers) dissoc (:uuid buffer)))
 
 (defn add-buffer-to-project [project-path buffer]
