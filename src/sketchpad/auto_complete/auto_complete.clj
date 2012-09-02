@@ -194,17 +194,17 @@ more than one line, and if used with a text component using a
         fuzzy-ac (:auto-complete fuzzy-buffer)]
       (init-fuzzy-ac ac provider)
       ; (.setListCellRenderer provider (cell-renderer/renderer))
-      (swap! fuzzy-ac assoc :auto-complete ac)
+      (reset! fuzzy-ac ac)
     (.install ac text-area)))
 
 
 (defn update-fuzzy-completions
   []
   (let [project-keys (keys @(:projects @state/app))
-  	  ac (get-in @state/app [:fuzzy :auto-complete])
+  	  ac @(get-in @state/app [:fuzzy :auto-complete])
   	  text-area (get-in @state/app [:fuzzy :text-area])]
     (.clear fuzzy-provider)
     (.uninstall ac)
     (doseq [proj project-keys]
       (add-files-to-fuzzy-complete proj))
-    (install-fuzzy-provider text-area)))
+    (install-fuzzy-provider (:fuzzy @state/app))))

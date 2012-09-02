@@ -35,9 +35,11 @@
 
 (defn delete-project
 "Delete a project. !!(This really deletes the proejct)!!"
-  []
-  (let [project-path (first (tree.utils/get-selected-projects))]
-    (tree.utils/delete-project project-path)))
+  ([] (delete-project (first (tree.utils/get-selected-projects))))
+  ([project-path]
+  (seesaw/invoke-later
+	  	(project/delete-project project-path)
+ 		 (tree.utils/update-tree))))
 
 (defn clear-projects
 "Clear all projects in the current workspace."

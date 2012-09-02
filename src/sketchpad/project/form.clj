@@ -47,14 +47,19 @@
 	(str "defproject " project-name " \"" version "\"\n"))
 
 (defn description-template [description]
-	(str "\t:description \"" description "\"\n"))
+	(str ":description \"" description "\"\n"))
 
 (defn dependencies-template [dependencies-str]
-	(let [dependencies (clojure.string/split dependencies-str #"\n")
-				deps-str (str "\t:dependencies [" 
-									(eval dependencies-str)
-									"]")]
-		deps-str))
+	(let [deps-str (atom "  :dependencies [")
+							dependencies (clojure.string/split dependencies-str #"\n")
+							deps-seq (clojure.string/split	(eval dependencies-str) #"\n")]
+				(swap! deps-str #(str % (first deps-seq) "\n"))
+				(doseq [s (rest deps-seq)]
+						(swap! deps-str #(str % (str (apply str (repeat 17 " ")))))
+						(swap! deps-str #(str % s "\n")))
+						(swap! deps-str #(clojure.string/join (take (- (count @deps-str) 1) %)))
+				(swap! deps-str #(str % "]"))
+		(apply str @deps-str)))
 
 (defn project-clj-template [opts-map])
 
@@ -65,7 +70,7 @@
 
 (defn- make-project-map [component]
 	(let [name (select-text component :#project-form-project)
-				version (select-text component :#project-form-version)
+					version (select-text component :#project-form-version)
 		 		path (select-text component :#project-form-path)
 		 		description (select-text component :#project-form-description)
 		 		dependencies-str (select-text component :#project-form-dependencies)
@@ -73,7 +78,7 @@
 		 			(str 
 		 				"("
 		 				(defproject-template name version)
-		 				(description-template description)
+		 				"  " (description-template description)
 		 				(dependencies-template dependencies-str)
 		 				")")
 		 	  project-map {:path path

@@ -63,9 +63,9 @@
 														:visible? false
 														:maximum-size [1000 :by 15])
 			fuzzy {:type :fuzzy-panel
-					 :auto-complete (atom nil)
-					 :component {:container panel
-					 			  :text-area text-area}}]
+					 				:auto-complete (atom nil)
+					 				:component {:container panel
+					 			 :text-area text-area}}]
 		(config/apply-fuzzy-buffer-prefs! text-area)
 		(attach-handlers panel text-area)
     	(auto-complete/install-fuzzy-provider fuzzy)

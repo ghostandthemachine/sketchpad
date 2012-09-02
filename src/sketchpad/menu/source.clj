@@ -100,7 +100,9 @@
 			last-uuid @(:last-focused-repl project)
 			repls (tab/current-repls)
 			repl (get repls last-uuid)]
-			(when-not (nil? repl)
+			(when-not (and
+															(nil? repl)
+															(nil? last-uuid))
 				(let [text-area (tab/current-text-area)
 					text (.getSelectedText text-area)					
 					cmd (if (> (count text) 0)

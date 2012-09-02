@@ -73,7 +73,7 @@
                               :mnemonic "M" 
                               :listen [:action (fn [_] (tree.utils/remove-project @state/app))])
             (seesaw/menu-item :text "Delete Project" 
-                              :listen [:action (fn [_] (tree.utils/delete-project @state/app))]) 
+                              :listen [:action (fn [_] (menu.project/delete-project (first (tree.utils/get-selected-projects))))]) 
             (seesaw/separator)
             (seesaw/menu-item :text "Create REPL"
                               :listen [:action (fn [_] (menu.project/create-repl selection-path))])

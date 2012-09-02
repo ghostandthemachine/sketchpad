@@ -329,7 +329,7 @@
 
 (defn remove-selected-project [app]
   (apply swap! project.state/project-set disj (get-selected-projects app))
-  (project/remove-project (get-selected-projects app))
+  (project/remove-project (first (get-selected-projects app)))
   (update-project-tree) )
 
 (defn remove-project [app]

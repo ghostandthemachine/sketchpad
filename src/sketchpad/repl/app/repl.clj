@@ -221,7 +221,7 @@
     (config! scroller :background config/app-color)
     (auto-complete/install-auto-completion repl)
     (config/apply-repl-prefs! text-area)
-    (send-to-application-repl text-area "(require 'sketchpad.user)\n\t\t(in-ns 'sketchpad.user)")))
+    (send-to-application-repl text-area (str "(require 'sketchpad.user)\n" (apply str (repeat 17 " ")) "(in-ns 'sketchpad.user)"))))
 
 (defn repl-tabbed-panel
   []

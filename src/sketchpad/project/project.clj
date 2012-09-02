@@ -8,7 +8,13 @@
 						[sketchpad.auto-complete.auto-complete :as auto-complete]
 						[seesaw.core :as seesaw]
 						[leiningen.core.project :as lein-project])
-	(:import [java.io File]))
+	(:import (java.io File)
+										(javax.swing JOptionPane)))
+
+(defn confirmed? [question title]
+  (= JOptionPane/YES_OPTION
+     (JOptionPane/showConfirmDialog
+       nil question title  JOptionPane/YES_NO_OPTION)))
 
 (defn current-buffers
 	[]
@@ -72,6 +78,7 @@
 (defn remove-project [project-path]
 	(let [projects (:projects @state/app)]
 		(swap! projects dissoc project-path))
+	(swap! (@state/app :project-set) disj project-path)
 	(auto-complete/update-fuzzy-completions))
 
 (defn update-lein-project! [project]
@@ -139,3 +146,28 @@
 	(let [short-keys (map #(last (clojure.string/split (str %) #"/")) (keys @(:projects @state/app)))
 		  long-keys (keys @(:projects @state/app))]
 		 (or (contains? short-keys project-name) (contains? long-keys project-name))))
+
+(defn delete-file
+  "Delete file f. Raise an exception if it fails unless silently is true. From Clojure-Contrib"
+  [f & [silently]]
+  (or (.delete (clojure.java.io/file f))
+      silently
+      (throw (java.io.IOException. (str "Couldn't delete " f)))))
+
+(defn delete-file-recursively
+  "Delete file f. If it's a directory, recursively delete all its contents.
+Raise an exception if any deletion fails unless silently is true. From Clojure-Contrib"
+  [f & [silently]]
+  (let [f (clojure.java.io/file f)]
+    (if (.isDirectory f)
+      (doseq [child (.listFiles f)]
+        (delete-file-recursively child silently)))
+    (delete-file f silently)))
+
+(defn delete-project [project-path]
+		(let [proj (get @(:projects @state/app) project-path)
+								confirm (confirmed? (str "Are you sure you want to delete the project " project-path "?\n" "This will permanently delete all files in this directory.") "Delete Project")]
+				(when confirm JOptionPane/YES_OPTION)
+						(do
+								(remove-project project-path)
+								(delete-file-recursively project-path))))
