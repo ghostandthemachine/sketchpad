@@ -21,6 +21,7 @@
 	          [sketchpad.project.form :as project.form]
 			      [clojure.pprint :as pprint]
 			      [clojure.stacktrace :as stack-trace]
+			      [leiningen.new :as lein-new]
 			      [seesaw.dev :as seesaw.dev]
 			      [clojure.java.io :as io]
             [sketchpad.buffer.grep :as buffer.grep]
@@ -411,3 +412,16 @@
 "System ls call."
 	[& opts]
 	 (:out (apply sh "ls" opts)))
+
+(defn lein-new
+"Use lein-new to create a new Leiningen project from a lein template."
+	([template project-name] (lein-new template project-path (name project-name)))
+	([template project-path project-name]
+	(let [project-name-str (name project-name)
+			new-project-abs-path (str project-path "/" project-name)]
+		(when-let [new-project-dir (clojure.java.io/file new-project-abs-path)]
+			(when (.mkdir new-project-dir)
+				(lein-new/new "--to-dir" new-project-abs-path (name template) (name project-name))
+				(project/add-project new-project-abs-path)
+				(invoke-later
+					(tree.utils/update-tree)))))))
