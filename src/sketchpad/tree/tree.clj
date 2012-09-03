@@ -51,7 +51,7 @@
         proj (.getPathComponent path 1)
         project-str (str (buffer.action/trim-parens (last (string/split (.toString proj) #"   "))))]
     (when (file/text-file? file) ;; handle if dir is selected instead of file
-      (do 
+      (do
         (editor.buffer/open-buffer (get-selected-file-path @state/app) project-str)
         (save-tree-selection tree path))))
   (catch java.lang.NullPointerException e)))

@@ -8,6 +8,7 @@
       [sketchpad.state.state :as state]
       [sketchpad.system.desktop :as desktop]
       [sketchpad.util.tab :as tab]
+      [sketchpad.menu.view :as menu.view]
 			[sketchpad.project.form :as project.form]))
 
 (defn create-project
@@ -46,6 +47,8 @@
   []
   (let [confirmed? (utils/confirmed? "Are you sure you want to clear all projects in the current workspace?" "Clear Projects")]
     (when confirmed?
+      (doseq [buffer (tab/current-buffers)]
+        (menu.view/close-tab buffer))
       (project/clear-projects))))
 
 (defn new-folder
@@ -65,8 +68,9 @@
 
 (defn create-repl [selection-path]
 "Create a new project REPL at the given path."
+(seesaw/invoke-later
   (let [project-path (first (tree.utils/get-selected-projects))]
-    (repl/repl (project/project-from-path project-path))))
+    (repl/repl (project/project-from-path project-path)))))
 
 (defn make-project-menu
   []

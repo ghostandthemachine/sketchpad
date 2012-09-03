@@ -122,10 +122,10 @@
 										(proxy-super paintTab gfx tab-placement rects tab-index icon-rect text-rect))
 										
 									(paintTabBackground [gfx tab-placement tab-index x y w h selected?]
-										(let [lbl (select (.getTabComponentAt tabbed-panel tab-index) [:.tab-label])]
+										; (let [lbl (select (.getTabComponentAt tabbed-panel tab-index) [:.tab-label])]
 											(if selected? 
 												(do 
-													(config! lbl :foreground selected-font-color)
+													; (config! lbl :foreground selected-font-color)
 													(swap! bg (fn [_] selected-fill-color))
 													(swap! bg (fn [_] fill-color))
 													(push gfx
@@ -133,11 +133,11 @@
 															(tab-shape (java.awt.Rectangle. x y w h) :closed)
 															(style :background (selected-tab-graient x (+ y h) x y)))))
 												(do 
-													(config! lbl :foreground unselected-font-color)
+													; (config! lbl :foreground unselected-font-color)
 													(push gfx	
 														(draw gfx
 															(tab-shape (java.awt.Rectangle. x y w h) :closed)
-															(style :background (unselected-tab-graient x (+ y h) x y))))))))
+															(style :background (unselected-tab-graient x (+ y h) x y)))))))
 										
 									(calculateTabHeight [placement index font-height]
 										(if @sketchpad.config.prefs/show-tabs?

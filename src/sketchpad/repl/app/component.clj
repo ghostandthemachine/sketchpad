@@ -35,7 +35,7 @@
 
 (defn application-repl-component []
 	(let [text-area (rsyntax/text-area :syntax :clojure    
-                                     :border (border/line-border :thickness 1 :color config.config/app-color)
+                                     :border nil
                                      :id :editor
                                      :class :repl)
 				repl-title (atom "SketchPad")
@@ -53,9 +53,9 @@
                   				:component {:container repl-container :text-area text-area :scroller repl-in-scroll-pane}
                   				:title repl-title
                   				:history repl-history
-                      :uuid uuid
-                      :project ".sketchpad-tmp"
-                      :auto-complete (atom nil)
+                          :uuid uuid
+                          :project ".sketchpad-tmp"
+                          :auto-complete (atom nil)
                   				:que repl-que
                   				:tab tab}]
     (meta/put-meta! text-area :repl-history repl-history)

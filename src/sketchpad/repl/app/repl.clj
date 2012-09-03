@@ -172,10 +172,17 @@
 (defn attach-tab-change-handler [repl-tabbed-panel]
   (listen repl-tabbed-panel :selection update-last-repl)
   (listen repl-tabbed-panel :selection 
-    (fn [e] 
-      (let [num-tabs (tab-count repl-tabbed-panel)]
-       (when (> 0 num-tabs)
-          (swap! state/app assoc :doc-title-atom (current-repl)))))))
+    (fn ([e]
+      (invoke-later
+        (if (tabs? (.getSource e))
+          (do
+            (let [doc-title (:repl-title-label @state/app)]
+              (when-let [buffer (current-buffer (.getSource e))]
+                (let [title @(:title buffer)
+                  proj (:project buffer)]
+                (config! title :text (str title "  --  " proj))))))
+          (do
+            (config! (:repl-title-label @state/app) :text ""))))))))
 
 
 (defn- double-click?

@@ -43,14 +43,14 @@
   []
   (seesaw.core/invoke-later
     (tab/next-tab)
-   (tab/update-tree-selection-from-tab)))
+    (tab/update-tree-selection-from-tab)))
 
 (defn previous-tab
 "Display the previous available tab in the editor tabbed panel."
   []
   (seesaw.core/invoke-later
     (tab/previous-tab)
-  (tab/update-tree-selection-from-tab)))
+    (tab/update-tree-selection-from-tab)))
 
 (defn next-repl
 "Display the next available tab in the editor tabbed panel."

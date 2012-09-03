@@ -77,9 +77,10 @@
 						(.install html-lang-support (get-in buffer [:component :text-area])))))))
 
 (defn init-buffer-tab-state [buffer]
-	(let [text-area (get-in buffer [:component :text-area])]
+	(let [text-area (get-in buffer [:component :text-area])
+		  title (get-in buffer [:tab :label])]
 	  (tab/focus-buffer buffer)
-	  (update-buffer-info-file-title (tab/title))
+	  (update-buffer-info-file-title (seesaw/config title :text))
 	  (tab/mark-tab-clean! buffer)
 	  (.discardAllEdits text-area)
 	  (.setCaretPosition text-area 0)))
@@ -118,7 +119,6 @@
 		(doseq [p (keys project-paths)]
 			(let [files (file-seq p)]
 				(when (contains? files file)
-					(println p)
 					(reset! proj p)))
 		(let [open-project-path (if (nil? @proj)
 									".sketchpad-tmp"
@@ -139,19 +139,19 @@
 		(not (nil? (some #(= file-abs (.getAbsolutePath @(:file %))) cur-buffers)))))
 
 (defn open-buffer [file-path project-path]
-	(if (buffer-already-open? file-path)
-		(do
-			(bring-buffer-to-front file-path))
-		(do
-			(let [project (sketchpad.project/project-from-path project-path)
-			  	  buffer (editor.build/project-buffer-tab project-path)]
-				(load-file-into-buffer project buffer file-path)
-				(init-buffer-tab-state buffer)
-				(sketchpad.project/add-buffer-to-project project-path buffer)
-				(sketchpad.project/add-buffer-to-app buffer)
-				(seesaw/invoke-later
-					(tab/show-buffer buffer))
-				buffer))))
+	(seesaw/invoke-later
+		(if (buffer-already-open? file-path)
+			(do
+				(bring-buffer-to-front file-path))
+			(do
+				(let [project (sketchpad.project/project-from-path project-path)
+				  	  buffer (editor.build/project-buffer-tab project-path)]
+					(load-file-into-buffer project buffer file-path)
+					(init-buffer-tab-state buffer)
+					(sketchpad.project/add-buffer-to-project project-path buffer)
+					(sketchpad.project/add-buffer-to-app buffer)
+					(tab/show-buffer buffer)
+				buffer)))))
 
 (defn blank-clj-buffer!
 	([] (blank-clj-buffer! nil))

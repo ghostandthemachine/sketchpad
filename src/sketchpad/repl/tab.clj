@@ -67,6 +67,7 @@
 (defn label-tab [repl]
 	(let [label (label :text @(:title repl) 
 		  				:foreground (color :white)
+		  				:class :tab-label
 		  				:focusable? false)
 		  container (flow-panel :align :right :items [label])]
 		(bind/bind (:title repl) (bind/transform (fn [s] s)) (bind/property label :text))

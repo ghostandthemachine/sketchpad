@@ -93,7 +93,8 @@
 
 (defn clear-projects []
 	(clear-project-set)
-	(reset! (:projects @state/app) {}))
+	(let [tmp (get ".sketchpad-tmp" @(:projects @state/app))]
+		(reset! (:projects @state/app) {".sketchpad-tmp" tmp})))
 
 (defn setup-non-project-map []
 	(add-project @state/app "/default"))

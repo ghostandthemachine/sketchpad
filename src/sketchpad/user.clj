@@ -418,10 +418,12 @@
 	([template project-name] (lein-new template project-path (name project-name)))
 	([template project-path project-name]
 	(let [project-name-str (name project-name)
-			new-project-abs-path (str project-path "/" project-name)]
+			new-project-abs-path (str project-path project-name)]
 		(when-let [new-project-dir (clojure.java.io/file new-project-abs-path)]
 			(when (.mkdir new-project-dir)
-				(lein-new/new "--to-dir" new-project-abs-path (name template) (name project-name))
-				(project/add-project new-project-abs-path)
-				(invoke-later
-					(tree.utils/update-tree)))))))
+        (let[abs-path (.getAbsolutePath new-project-dir)]
+          (println abs-path)
+  				(lein-new/new "--to-dir" abs-path (name template) (name project-name))
+  				(project/add-project abs-path)
+  				(invoke-later
+  				  (tree.utils/update-tree))))))))

@@ -345,6 +345,7 @@
   (when (tabs? tabbed-panel)
 		(do 
 			(let [uuid (current-buffer-uuid tabbed-panel)
+				; _ (println uuid)
 				  buffers (current-buffers)]
 	  			(get buffers uuid))))))
 
@@ -381,4 +382,10 @@
 	(when (tabs?)
 		(let [buffer (current-buffer)
 	   		project-path (:project buffer)]
-		(project-path @(:projects @state/app)))))
+		(get @(:projects @state/app) project-path))))
+
+(defn current-tab-label
+	([tabbed-panel]
+		(let [buffer (get-in (current-buffer tabbed-panel))
+			  label (get-in buffer [:tab :label])]
+			label)))
