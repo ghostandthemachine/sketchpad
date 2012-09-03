@@ -1,6 +1,7 @@
 (ns sketchpad.menu.menu-bar
   (:use [seesaw core keystroke meta])
-  (:require 
+  (:require
+        [sketchpad.wrapper.rsyntaxtextarea :as rsta]
         [sketchpad.util.tab :as tab]
         [sketchpad.project.project :as project]
         [sketchpad.menu.file :as sketchpad.menu.file]
@@ -35,4 +36,5 @@
                         view-menu
                         goto-menu
                         source-menu
-                        help-menu]))))
+                        (when (rsta/is-osx?)
+                          help-menu)]))))

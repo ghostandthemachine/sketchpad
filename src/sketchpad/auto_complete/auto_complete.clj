@@ -114,7 +114,8 @@ more than one line, and if used with a text component using a
      			(wrapper.rsyntaxtextarea/set-input-map! text-area (input.default/default-input-map))
      			(doto ac
        			(.setAutoActivationEnabled true)
-       			(.setDescriptionWindowSize 300 500) 
+       			(.setDescriptionWindowSize 300 500)
+            (.setAutoActivationDelay 200)
        			(.setShowDescWindow false))
        			(doto provider
 			         (.setParameterizedCompletionParams \space " " \))

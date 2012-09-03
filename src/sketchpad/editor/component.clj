@@ -26,6 +26,8 @@
     (config/apply-buffer-scroller-prefs! doc-scroll-pane)
     (config/apply-gutter-prefs! (.getGutter doc-scroll-pane))
 
+    (config! doc-scroll-pane :border nil)
+
     (.setPreferredSize (.getVerticalScrollBar doc-scroll-pane) (Dimension. 0 0))
     (.setPreferredSize (.getHorizontalScrollBar doc-scroll-pane) (Dimension. 0 0))
 

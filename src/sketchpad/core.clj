@@ -114,6 +114,7 @@
                     :current-buffers (atom {})
                     :current-tab -1
                     :repls (atom {})
+                    :tab-count (atom 0)
                     :changed   false
                     :doc-text-area nil
                     :doc-scroll-pane nil}

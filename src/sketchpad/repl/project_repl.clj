@@ -186,16 +186,15 @@
     (future
       (let [port @server-port
             conn (nrepl/connect :port port)]
-        (seesaw/invoke-later 
-          (let[repl (repl-panel project)
-               repl (assoc repl :port port :conn conn)]
-            (sketchpad.project/add-repl-to-project (:path project) repl)
-            (add-repl-behaviors repl)
-            (add-repl-mouse-handlers repl project)
-            (auto-complete/install-auto-completion repl)
-            (repl.info/attach-caret-handler (get-in repl [:component :text-area]))
-            (tab/add-repl repl)
-            (tab/show-repl repl)
-            (tab/focus-repl repl)
-            (tab/repl-tab-component! repl)
-  repl))))))
+        (let[repl (repl-panel project)
+             repl (assoc repl :port port :conn conn)]
+          (sketchpad.project/add-repl-to-project (:path project) repl)
+          (add-repl-behaviors repl)
+          (add-repl-mouse-handlers repl project)
+          (auto-complete/install-auto-completion repl)
+          (repl.info/attach-caret-handler (get-in repl [:component :text-area]))
+          (tab/add-repl repl)
+          (tab/show-repl repl)
+          (tab/focus-repl repl)
+          (tab/repl-tab-component! repl)
+  repl)))))

@@ -20,7 +20,7 @@
     (let [clean? (@(:state buffer) :clean)
           w          (width c)
           h          (height c)
-          button-base-color (color 255 255 255)
+          button-base-color (color 170 170 170)
           line-style (style :foreground button-base-color :stroke 2 :cap :round)
           project-color (project/buffer-color buffer)
           background-style (style :background (color 39 40 34))
