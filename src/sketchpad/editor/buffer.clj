@@ -139,7 +139,7 @@
 		(not (nil? (some #(= file-abs (.getAbsolutePath @(:file %))) cur-buffers)))))
 
 (defn open-buffer [file-path project-path]
-	(seesaw/invoke-later
+	; (seesaw/invoke-later
 		(if (buffer-already-open? file-path)
 			(do
 				(bring-buffer-to-front file-path))
@@ -151,7 +151,8 @@
 					(sketchpad.project/add-buffer-to-project project-path buffer)
 					(sketchpad.project/add-buffer-to-app buffer)
 					(tab/show-buffer buffer)
-				buffer)))))
+				buffer))))
+; )
 
 (defn blank-clj-buffer!
 	([] (blank-clj-buffer! nil))
