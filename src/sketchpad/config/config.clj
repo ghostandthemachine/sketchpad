@@ -246,8 +246,8 @@ You never have to change the opaque property yourself; it is always done for you
   (show-tabs! true))
 ([bool]
 "Show or hide the buffer tabs."
-  `(seesaw/config! (seesaw/select (:buffer-tabbed-panel @state/app) [:.button-tab]) :visible? ~bool)
-  (do (swap! sketchpad.config.prefs/show-tabs? (fn [_] bool)))))
+  (seesaw/config! (seesaw/select (get-in @state/app [:buffer-tabbed-panel :component :container]) [:.button-tab]) :visible? bool)
+  (reset! sketchpad.config.prefs/show-tabs? bool)))
 
 (defn hide-tabs! []
 "Hide the current buffer tabs."

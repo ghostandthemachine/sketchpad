@@ -30,8 +30,9 @@ Examples from clojuredocs.org: [clojuredocs or cdoc]\n\n")
   (init-prompt text-area))
 
 (defn repl-component 
-([]
-  (let [text-area (rsyntax/text-area 
+([project]
+  (let [project-title (last (clojure.string/split (:path project) #"/"))
+        text-area (rsyntax/text-area 
                                 :border (line-border :thickness 1 :color config/app-color)                          
                                 :syntax :clojure
                                 :id     :editor
@@ -43,4 +44,4 @@ Examples from clojuredocs.org: [clojuredocs or cdoc]\n\n")
     (init-repl text-area)
     {:container repl-container
      :text-area text-area
-     :title (atom "nREPL")})))
+     :title (atom (str project-title))})))

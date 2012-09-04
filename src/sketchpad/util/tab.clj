@@ -210,7 +210,9 @@
 
 (defn current-buffers
 	[]
-	(into {} (mapcat #(deref (:buffers %)) (vals @(:projects @state/app)))))
+	(into {} (mapcat (fn [proj]
+						(when-not (nil? proj)
+							(deref (:buffers proj)))) (vals @(:projects @state/app)))))
 	
 
 (defn current-buffer-uuid

@@ -12,6 +12,7 @@
 			[sketchpad.state.state :as state]
 			[sketchpad.editor.tab :as button-tab]
 			[sketchpad.util.tab :as tab]
+			[sketchpad.config.prefs :as sketchpad.config.prefs]
 			[sketchpad.util.utils :as utils]
 			[sketchpad.project.project :as sketchpad.project]
 			[sketchpad.editor.component :as editor.component]

@@ -1,20 +1,21 @@
 (ns sketchpad.repl.project-repl
   (:use [sketchpad.repl.app.util])
 	(:require [seesaw.core :as seesaw]
-		[clojure.string :as string]
-		 [clooj.brackets :as brackets]
-		[sketchpad.util.utils :as utils]
-		[sketchpad.repl.component :as repl.component]
-		[sketchpad.repl.server :as repl.server]
+        [clojure.string :as string]
+        [clooj.brackets :as brackets]
+        [sketchpad.repl.info-utils :as repl.info-utils]
+        [sketchpad.util.utils :as utils]
+        [sketchpad.repl.component :as repl.component]
+        [sketchpad.repl.server :as repl.server]
     		[sketchpad.repl.history :as repl.history]
-		[sketchpad.repl.connection :as repl.connection]
-		[sketchpad.repl.tab :as repl.tab]
-		[sketchpad.buffer.action :as buffer.action]
-		[sketchpad.util.option-windows :as option-windows]
-		[sketchpad.config.config :as config]
+    		[sketchpad.repl.connection :as repl.connection]
+    		[sketchpad.repl.tab :as repl.tab]
+    		[sketchpad.buffer.action :as buffer.action]
+    		[sketchpad.util.option-windows :as option-windows]
+    		[sketchpad.config.config :as config]
 	      [sketchpad.util.tab :as tab]
-            [sketchpad.repl.info :as repl.info]
-            [sketchpad.auto-complete.auto-complete :as auto-complete]
+        [sketchpad.repl.info :as repl.info]
+        [sketchpad.auto-complete.auto-complete :as auto-complete]
 	      [sketchpad.state.state :as state]
 	      [sketchpad.project.project :as sketchpad.project]
 	      [clojure.tools.nrepl :as nrepl])
@@ -24,6 +25,16 @@
              InputStreamReader
              File PipedReader PipedWriter PrintWriter Writer
                     StringReader PushbackReader)))
+
+(defonce creating-project-repl (atom false))
+
+(defn start-creating-repl
+  []
+  (reset! creating-project-repl true))
+
+(defn stop-creating-repl
+  []
+  (reset! creating-project-repl false))
 
 ;; from reply
 (def exit-str
@@ -166,12 +177,11 @@
 
 (defn- repl-panel
   [project]
-  (let [component (repl.component/repl-component)
+  (let [component (repl.component/repl-component project)
         repl {:type :repl
               :component   component
               :text-area   (:text-area component)
               :title       (:title component)
-
               :project     (:path project)
               :auto-complete (atom nil)
               :uuid        (seesaw.meta/get-meta (:text-area component) :uuid)
@@ -182,7 +192,10 @@
 (defn repl
 "Builds a new REPL component for a given project."
 [project]
-  (let [server-port (future (repl.server/repl-server project))]
+  (start-creating-repl)
+  (let [server-port (future (repl.server/repl-server project))
+        msg-str (str "Creating new REPL for " (last (clojure.string/split (:path project) #"/")) "...")
+        info-timer (repl.info-utils/post-msg msg-str)]
     (future
       (let [port @server-port
             conn (nrepl/connect :port port)]
@@ -197,4 +210,6 @@
             (tab/show-repl repl)
             (tab/focus-repl repl)
             (tab/repl-tab-component! repl)
+  (repl.info-utils/post-msg "")
+  (stop-creating-repl)  
   repl)))))

@@ -12,6 +12,7 @@
         [sketchpad.system.desktop]
 	      [sketchpad.auto-complete.template])
 	(:require [sketchpad.util.tab :as tab]
+            [sketchpad.repl.info-utils :as repl.info-utils]
 			      [sketchpad.wrapper.rsyntaxtextarea :as rsta]
 			      [sketchpad.core :as core]
 	          [sketchpad.wrapper.gutter :as gutter]
@@ -419,11 +420,32 @@
 	([template project-path project-name]
 	(let [project-name-str (name project-name)
 			new-project-abs-path (str project-path project-name)]
-		(when-let [new-project-dir (clojure.java.io/file new-project-abs-path)]
+		(if-let [new-project-dir (clojure.java.io/file new-project-abs-path)]
 			(when (.mkdir new-project-dir)
         (let[abs-path (.getAbsolutePath new-project-dir)]
           (println abs-path)
   				(lein-new/new "--to-dir" abs-path (name template) (name project-name))
   				(project/add-project abs-path)
   				(invoke-later
-  				  (tree.utils/update-tree))))))))
+  				  (tree.utils/update-tree))))
+      (println new-project-abs-path " could not be createad...")))))
+
+(defn lein-new-template
+  ([template-name] (lein-new-template (name template-name) (str template-name "-template")))
+  ([template-name template-dir]
+  (let [project-name-str (name template-name)
+        template-path (str (name project-name-str) "-template")
+        new-project-abs-path (str project-path template-path)]
+        (println new-project-abs-path)
+    (if-let [new-project-dir (clojure.java.io/file new-project-abs-path)]
+      (do
+        (println new-project-dir)
+        (repl.info-utils/post-msg new-project-dir)
+        (when (.mkdir new-project-dir)
+          (let[abs-path (.getAbsolutePath new-project-dir)]
+            (lein-new/new "template" (name project-name-str) "--to-dir" new-project-abs-path)
+            (project/add-project abs-path)
+            (invoke-later
+              (tree.utils/update-tree)))))
+      (println new-project-abs-path " could not be createad..."))
+    )))

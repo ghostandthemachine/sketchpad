@@ -9,6 +9,7 @@
       [sketchpad.state.state :as state]
       [sketchpad.system.desktop :as desktop]
       [sketchpad.util.tab :as tab]
+      [sketchpad.repl.project-repl :as repl.project-repl]
       [sketchpad.menu.view :as menu.view]
 			[sketchpad.project.form :as project.form]))
 
@@ -71,8 +72,9 @@
 (defn create-repl [selection-path]
 "Create a new project REPL at the given path."
 (seesaw/invoke-later
-  (let [project-path (first (tree.utils/get-selected-projects))]
-    (repl/repl (project/project-from-path project-path)))))
+  (when-not @repl.project-repl/creating-project-repl
+    (let [project-path (first (tree.utils/get-selected-projects))]
+      (repl/repl (project/project-from-path project-path))))))
 
 (defn make-project-menu
   []

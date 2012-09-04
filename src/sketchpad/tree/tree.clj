@@ -46,15 +46,16 @@
   (.setSelectionRow (@state/app :docs-tree) row))
 
 (defn handle-double-click [row path]
-(try 
-  (let [file (.. path getLastPathComponent getUserObject)
-        proj (.getPathComponent path 1)
-        project-str (str (buffer.action/trim-parens (last (string/split (.toString proj) #"   "))))]
-    (when (file/text-file? file) ;; handle if dir is selected instead of file
-      (do
-        (editor.buffer/open-buffer (get-selected-file-path @state/app) project-str)
-        (save-tree-selection tree path))))
-  (catch java.lang.NullPointerException e)))
+  (invoke-later
+    (try
+      (let [file (.. path getLastPathComponent getUserObject)
+            proj (.getPathComponent path 1)
+            project-str (str (buffer.action/trim-parens (last (string/split (.toString proj) #"   "))))]
+        (when (file/text-file? file) ;; handle if dir is selected instead of file
+          (do
+            (editor.buffer/open-buffer (get-selected-file-path @state/app) project-str)
+            (save-tree-selection tree path))))
+      (catch java.lang.NullPointerException e))))
 
 (defn click-handler [e]
   (let [tree (get-in (@state/app :file-tree) [:component :tree])
