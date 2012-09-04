@@ -5,6 +5,7 @@
       [sketchpad.util.utils :as utils]
       [sketchpad.project.project :as project]
       [sketchpad.repl.project-repl :as repl]
+      [sketchpad.auto-complete.auto-complete :as auto-complete]
       [sketchpad.state.state :as state]
       [sketchpad.system.desktop :as desktop]
       [sketchpad.util.tab :as tab]
@@ -49,7 +50,8 @@
     (when confirmed?
       (doseq [buffer (tab/current-buffers)]
         (menu.view/close-tab buffer))
-      (project/clear-projects))))
+      (project/clear-projects)
+      (auto-complete/update-fuzzy-completions))))
 
 (defn new-folder
 "Append a folder creation prompt to the SketchPad REPL."

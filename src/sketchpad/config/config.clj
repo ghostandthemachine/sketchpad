@@ -41,6 +41,12 @@
           dst-file (java.io.File. (str sketchpad-resources-url (str "/" theme-name ".xml")))]
       (spit (str sketchpad-resources-url (str "/" theme-name ".xml")) (slurp src-url)))))
 
+(defn create-project-dir-if-needed
+  [dir]
+  (let [f (clojure.java.io/file dir)]
+    (when-not (.exists f)
+      (.mkdirs f))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;  Load the config files
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -54,6 +60,9 @@
   (add-theme-if-needed "eclipse"))
 
 (load-string (slurp (str sketchpad-resources-url "/default.clj")))
+
+(do
+  (create-project-dir-if-needed project-dir-path))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;  Config functions

@@ -93,7 +93,7 @@
 (def default-spell-checker-prefs
 	{:underline-color :orange})
 
-(def project-dir-path "projects/")
+(def project-dir-path (str (System/getProperty "user.home") "/sketchpad/projects/"))
 
 (def default-project-style-prefs
 	[:white :orange :green :yellow :blue :red :purple :pink])

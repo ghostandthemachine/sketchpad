@@ -26,15 +26,16 @@
         view-menu (sketchpad.menu.view/make-view-menu)
         goto-menu (sketchpad.menu.goto/make-goto-menu)
         source-menu (sketchpad.menu.source/make-source-menu)
-        help-menu (make-help-menu)]
-    (config! 
-      (:frame @app-atom) :menubar 
-                      (menubar :items [ 
-                        file-menu
+        help-menu (make-help-menu)
+        items [file-menu
                         edit-menu
                         project-menu
                         view-menu
                         goto-menu
-                        source-menu
-                        (when (rsta/is-osx?)
-                          help-menu)]))))
+                        source-menu]
+        items (if (rsta/is-osx?)
+                (conj items help-menu)
+                items)]
+    (config! 
+      (:frame @app-atom) :menubar 
+                      (menubar :items items))))
