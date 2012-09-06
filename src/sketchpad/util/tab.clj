@@ -331,14 +331,20 @@
   (get-meta (current-repl-text-area) :uuid))
 
 (defn current-repls
-	[]
-	(into {} (mapcat #(deref (:repls %)) (vals @(:projects @state/app)))))
+[]
+	(into {} (mapcat (fn [proj]
+						(when-not (nil? proj)
+							(deref (:repls proj)))) (vals @(:projects @state/app)))))
 
 (defn current-repl
-	[]
-	(let [current-uuid (get-repl-uuid)
-		repls (current-repls)]
-		(get repls current-repls)))
+	([]
+		(current-repl (get-in (:repl-tabbed-panel @state/app) [:component :container])))
+	([repl-tabbed-panel]
+	  (when (tabs? repl-tabbed-panel)
+			(do 
+				(let [uuid (current-buffer-uuid repl-tabbed-panel)
+					  repls (current-repls)]
+	  			(get repls uuid))))))
 		
 (defn current-buffer 
 ([]
@@ -347,7 +353,6 @@
   (when (tabs? tabbed-panel)
 		(do 
 			(let [uuid (current-buffer-uuid tabbed-panel)
-				; _ (println uuid)
 				  buffers (current-buffers)]
 	  			(get buffers uuid))))))
 

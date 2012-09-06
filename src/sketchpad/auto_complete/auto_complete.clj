@@ -72,6 +72,8 @@ more than one line, and if used with a text component using a
         rta (get-in buffer [:component :text-area])]
     (template/install-templates ac)
     (reset! (:auto-complete buffer) ac)
+    (.setParameterizedCompletionParams provider \space " " \))
+    (.setAutoActivationRules provider true "")
     (config/apply-auto-completion-prefs! ac)
     (.install ac rta)))
 ;
@@ -115,7 +117,7 @@ more than one line, and if used with a text component using a
      			(doto ac
        			(.setAutoActivationEnabled true)
        			(.setDescriptionWindowSize 300 500)
-            (.setAutoActivationDelay 200)
+	            (.setAutoActivationDelay 200)
        			(.setShowDescWindow false))
        			(doto provider
 			         (.setParameterizedCompletionParams \space " " \))

@@ -39,6 +39,14 @@
 					(let [java-lang-support (JavaLanguageSupport. )]
 						(reset! (:auto-complete buffer) java-lang-support)
 						(.install java-lang-support (get-in buffer [:component :text-area])))
+				(= suffix "md")
+					(let [html-lang-support (HtmlLanguageSupport. )]
+						(reset! (:auto-complete buffer) html-lang-support)
+						(.install html-lang-support (get-in buffer [:component :text-area])))
+				(= suffix "markdown")
+					(let [html-lang-support (HtmlLanguageSupport. )]
+						(reset! (:auto-complete buffer) html-lang-support)
+						(.install html-lang-support (get-in buffer [:component :text-area])))
 				(= suffix "c")
 					(let [c-lang-support (CLanguageSupport. )]
 						(reset! (:auto-complete buffer) c-lang-support)
@@ -171,4 +179,3 @@
 			(sketchpad.project/add-buffer-to-app buffer)
 			(init-buffer-tab-state buffer)
 			(tab/show-buffer buffer)))
-

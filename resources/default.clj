@@ -57,7 +57,7 @@
 (def default-auto-completion-prefs
   { :auto-complete true
   	:auto-activation true
-  	:auto-activation-delay 300
+  	:auto-activation-delay 500
   	:auto-complete-single-choice false
   	:show-description-window true
   	:description-window-size [600 300]
@@ -93,7 +93,7 @@
 (def default-spell-checker-prefs
 	{:underline-color :orange})
 
-(def project-dir-path (str (System/getProperty "user.home") "/sketchpad/projects/"))
+(def project-dir-path (str (System/getProperty "user.home") "/code/projects/"))
 
 (def default-project-style-prefs
 	[:white :orange :green :yellow :blue :red :purple :pink])
