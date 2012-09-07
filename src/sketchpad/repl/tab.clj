@@ -17,18 +17,29 @@
 "custom renderer for tab x"
 [repl c g]
 	(when sketchpad.config.prefs/show-tabs?
-		(let [project-color @(sketchpad.project/repl-color repl)
-				w          (width c)
-		    h          (height c)
-		    line-style (style :foreground styles/base-color :stroke 2 :cap :round)
-		    border-style (style :foreground project-color :stroke 0.5)
-		    d 3
-		    lp 7]
-		(draw g
-		  (line lp lp (- w lp) (- h lp)) line-style
-		  (line lp (- h lp) (- w lp) lp) line-style)
-		(draw g
-		  (rounded-rect d d (- w d d) (- h d d) 5 5) border-style))))
+		(if-let [project-color @(sketchpad.project/repl-color repl)]
+			(let [w          (width c)
+			    h          (height c)
+			    line-style (style :foreground styles/base-color :stroke 2 :cap :round)
+			    border-style (style :foreground project-color :stroke 0.5)
+			    d 3
+			    lp 7]
+			(draw g
+			  (line lp lp (- w lp) (- h lp)) line-style
+			  (line lp (- h lp) (- w lp) lp) line-style)
+			(draw g
+			  (rounded-rect d d (- w d d) (- h d d) 5 5) border-style))
+			(let [w          (width c)
+			    h          (height c)
+			    line-style (style :foreground styles/base-color :stroke 2 :cap :round)
+			    border-style (style :foreground (color 255 255 255) :stroke 0.5)
+			    d 3
+			    lp 7]
+			(draw g
+			  (line lp lp (- w lp) (- h lp)) line-style
+			  (line lp (- h lp) (- w lp) lp) line-style)
+			(draw g
+			  (rounded-rect d d (- w d d) (- h d d) 5 5) border-style)))))
 
 (defn tab-button [repl]
 	(let [button (button :focusable? false
