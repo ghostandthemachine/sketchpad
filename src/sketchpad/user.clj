@@ -10,6 +10,7 @@
         [sketchpad.util.brackets]
         [sketchpad.buffer.token]
         [sketchpad.system.desktop]
+        [sketchpad.leiningen.new]
 	      [sketchpad.auto-complete.template])
 	(:require [sketchpad.util.tab :as tab]
             [sketchpad.repl.info-utils :as repl.info-utils]
@@ -22,7 +23,6 @@
 	          [sketchpad.project.form :as project.form]
 			      [clojure.pprint :as pprint]
 			      [clojure.stacktrace :as stack-trace]
-			      [leiningen.new :as lein-new]
 			      [seesaw.dev :as seesaw.dev]
 			      [clojure.java.io :as io]
             [sketchpad.buffer.grep :as buffer.grep]
@@ -413,42 +413,3 @@
 "System ls call."
 	[& opts]
 	 (:out (apply sh "ls" opts)))
-
-(defn lein-new
-"Use lein-new to create a new Leiningen project from a lein template."
-  ([template project-name] (lein-new template project-path (name project-name)))
-  ([template project-path project-name]
-  (let [project-name-str (name project-name)
-      new-project-abs-path (str project-path project-name)]
-    (if-let [new-project-dir (clojure.java.io/file new-project-abs-path)]
-    	(do
-    		(println "new project dir " new-project-dir)
-	      (when (.mkdir new-project-dir)
-	        (println "made new dir " new-project-dir)
-	        (let[abs-path (.getAbsolutePath new-project-dir)]
-	          (println abs-path)
-	          
-	          (try
-		          (lein-new/new "--to-dir" abs-path (name template) (name project-name))
-             (catch Exception e (println e)))
-
-	          (project/add-project abs-path)
-	          (tree.utils/update-tree))))
-	      (println new-project-abs-path " could not be createad...")))))
-
-; (defn lein-new-template
-;   ([template-name] (lein-new-template (name template-name) (str template-name "-template")))
-;   ([template-name template-dir]
-;   (let [project-name-str (name template-name)
-;         template-path (str (name project-name-str) "-template")
-;         new-project-abs-path (str project-path template-path)]
-;     (if-let [new-project-dir (clojure.java.io/file new-project-abs-path)]
-;       (do
-;         (when (.mkdir new-project-dir)
-;           (let[abs-path (.getAbsolutePath new-project-dir)]
-;             (lein-new/new "template" (name project-name-str) "--to-dir" new-project-abs-path)
-;             (project/add-project abs-path)
-;             (invoke-later
-;               (tree.utils/update-tree)))))
-;       (println new-project-abs-path " could not be createad..."))
-;     )))
