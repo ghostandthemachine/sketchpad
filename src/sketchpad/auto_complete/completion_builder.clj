@@ -3,7 +3,7 @@
   (:require [clojure.string :as s]
             [sketchpad.config.prefs :as prefs]
             [clojure.repl :as repl]
-            [sketchpad.lein.core.ns :as lein.core.ns])
+            [sketchpad.leiningen.ns :as leiningen.ns])
   (:import (org.fife.ui.autocomplete ShorthandCompletion AutoCompletion VariableCompletion ClojureFunctionCompletion ParameterizedCompletion)
            (org.fife.ui.autocomplete.DefaultCompletionProvider)
            (org.fife.ui.autocomplete.DefaultCompletionProvider)
@@ -132,7 +132,7 @@
 "Takes a Completion Provider and a class path. Returns the Completion Provider with all ns completions added."
   [provider project-path]
   [provider]
-  (let [all-namespaces (lein.core.ns/namespaces-in-dir project-path)]
+  (let [all-namespaces (leiningen.ns/namespaces-in-dir project-path)]
     (doseq [namespace all-namespaces]
       (add-completions-from-ns provider namespace))
     provider))
