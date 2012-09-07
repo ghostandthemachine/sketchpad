@@ -407,15 +407,14 @@
   (trim-enclosing-char s "[" "]"))
 
 (defn append-text [text-pane text]
-  (invoke-later
-    (when-let [doc (.getDocument text-pane)]
-      (try
-        (.append text-pane text)
-        (.discardAllEdits text-pane)
-        (.setCaretPosition text-pane (.getLastVisibleOffset text-pane))
-      (catch Throwable e
-        (println "append-text ERROR")
-        (append-text text-pane "=> "))))))
+  (when-let [doc (.getDocument text-pane)]
+    (try
+      (.append text-pane text)
+      (.discardAllEdits text-pane)
+      (.setCaretPosition text-pane (.getLastVisibleOffset text-pane))
+    (catch Throwable e
+      (println "append-text ERROR")
+      (append-text text-pane "=> ")))))
 
 (defn append-text-update [rsta s]
   (try

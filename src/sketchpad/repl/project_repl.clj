@@ -47,36 +47,37 @@
 "Send a given command to the specified outside REPL."
 	([repl cmd] (send-repl-cmd repl cmd "NO_SOURCE_PATH" 0))
 	([repl cmd file line]
-	(let [repl-server (:server repl)
-		repl-history (:history repl)
-		conn (:conn repl)
-		text-area (get-in repl [:component :text-area])
-		items (:items repl-history)]
-		(buffer.action/append-text text-area (str \newline))
-		(when-let [response (-> (nrepl/client conn config/repl-response-timeout)
-		(nrepl/message {:op :eval :code cmd})
-							    nrepl/combine-responses)]
-          (let [response-str 
-                  (str  
-                    (cond
-                      (contains? response :err)
-                          (:err response)
-                      (contains? response :out)
-                          (:out response)
-                      :default
-                        (first (:value response)))
-                    \newline)
-                ns-response (-> (nrepl/client conn config/repl-response-timeout)
-                        (nrepl/message {:op :eval :code "(str *ns*)"})
-                    nrepl/combine-responses)
-                prompt-str (str (:ns ns-response) "=> ")]
-            (buffer.action/append-text text-area response-str)
-	          (buffer.action/append-text text-area prompt-str)
-	          (.discardAllEdits text-area))
-	   (when (not= cmd (first @items))
-	      (swap! items replace-first cmd)
-	      (swap! items conj ""))
-	  	(swap! (repl-history :pos) (fn [pos] 0))))))
+  (seesaw/invoke-later
+  	(let [repl-server (:server repl)
+  		repl-history (:history repl)
+  		conn (:conn repl)
+  		text-area (get-in repl [:component :text-area])
+  		items (:items repl-history)]
+  		(buffer.action/append-text text-area (str \newline))
+  		(when-let [response (-> (nrepl/client conn config/repl-response-timeout)
+  		(nrepl/message {:op :eval :code cmd})
+  							    nrepl/combine-responses)]
+            (let [response-str 
+                    (str  
+                      (cond
+                        (contains? response :err)
+                            (:err response)
+                        (contains? response :out)
+                            (:out response)
+                        :default
+                          (first (:value response)))
+                      \newline)
+                  ns-response (-> (nrepl/client conn config/repl-response-timeout)
+                          (nrepl/message {:op :eval :code "(str *ns*)"})
+                      nrepl/combine-responses)
+                  prompt-str (str (:ns ns-response) "=> ")]
+              (buffer.action/append-text text-area response-str)
+  	          (buffer.action/append-text text-area prompt-str)
+  	          (.discardAllEdits text-area))
+  	   (when (not= cmd (first @items))
+  	      (swap! items replace-first cmd)
+  	      (swap! items conj ""))
+  	  	(swap! (repl-history :pos) (fn [pos] 0)))))))
 
 (defn sys-cmd 
   ([repl kwarg] (sys-cmd repl kwarg nil))

@@ -13,13 +13,15 @@
            (org.fife.ui.rtextarea RTextScrollPane)))
 
 (defn- sketchpad-reader [q prompt exit]
-    (read-string (.take q)))
+  (read-string (.take q)))
 
 (defn- sketchpad-prompt [rsta]
-  (buffer.action/append-text rsta (str \newline (ns-name *ns*) "=> ")))
+  (seesaw/invoke-later
+    (buffer.action/append-text rsta (str \newline (ns-name *ns*) "=> "))))
 
 (defn- sketchpad-printer [rsta value]
-  (buffer.action/append-text rsta (str value)))
+  (seesaw/invoke-later
+    (buffer.action/append-text rsta (str value))))
 
 (defn- create-application-repl [repl-rsta]
   (let [application-repl-q (LinkedBlockingDeque. )

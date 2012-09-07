@@ -30,32 +30,6 @@
             [sketchpad.repl.app.sketchpad-repl :as app.sketchpad-repl]
             [sketchpad.state.state :as sketchpad.state]))
 
-;(defn set-osx-icon
-;  [icon]
-;  (try
-;    (import 'com.apple.eawt.Application)
-;    (.setDockIconImage (com.apple.eawt.Application/getApplication) icon)
-;    (catch Exception e
-;      false))
-;  true)
-
-(defn get-os
-  "Return the OS as a keyword. One of :windows :linux :max"
-  []
-  (let [os (System/getProperty "os.name")]
-    (cond
-      (re-find #"[Ww]indows" os) :windows
-      (re-find #"[Ll]inux" os)   :linux
-      (re-find #"[Mm]ac" os)     :mac)))
-
-(defn- set-osx-icon [icon]
-  (branch (get-os)
-    :mac (try
-           (import 'com.apple.eawt.Application)
-           (-> (com.apple.eawt.Application/getApplication)
-               (.setDockIconImage icon))
-           (catch Exception e))))
-
 (defn dirty-buffers?
 	[]
  	(some #(= % [:clean false])  (mapcat #(deref (:state %)) (vals (sketchpad.util.tab/current-buffers)))))
@@ -148,11 +122,6 @@
                      repl-component
                      main-vertical-split-pane
                      top-horizontal-split-panel))]
-  (when (rsyntaxtextarea/is-osx?)
-    (let [icon-url (clojure.java.io/resource "sketchpad-lambda-logo.png")
-          icon (.createImage (Toolkit/getDefaultToolkit) icon-url)]
-      (.setIconImage frame icon)
-      (set-osx-icon icon)))
 	(listen frame :window-closing quit-handler)
   app))
 
