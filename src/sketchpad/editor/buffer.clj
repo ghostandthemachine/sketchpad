@@ -33,8 +33,14 @@
 	(when @(:file buffer)
 		(let [suffix (last (clojure.string/split (.getName @(:file buffer)) #"\."))]
 			(cond
+				(= suffix "cljs")
+					(do
+						(auto-complete/install-auto-completion buffer)
+						(seesaw/config! (get-in buffer [:component :text-area]) :syntax :clojure))
 				(= suffix "clj")
-					(auto-complete/install-auto-completion buffer)
+					(do
+						(auto-complete/install-auto-completion buffer)
+						(seesaw/config! (get-in buffer [:component :text-area]) :syntax :clojure))
 				(= suffix "java")
 					(let [java-lang-support (JavaLanguageSupport. )]
 						(reset! (:auto-complete buffer) java-lang-support)
@@ -55,10 +61,8 @@
 					(let [groovy-lang-support (GroovyLanguageSupport. )]
 						(reset! (:auto-complete buffer) groovy-lang-support)
 						(.install groovy-lang-support (get-in buffer [:component :text-area])))
-				; (= suffix "js")
-				; 	(let [js-lang-support (JavaScriptLanguageSupport. )]
-				; 		(reset! (:auto-complete buffer) js-lang-support)
-				; 		(.install js-lang-support (get-in buffer [:component :text-area])))
+				(= suffix "js")
+					(seesaw/config! (get-in buffer [:component :text-area]) :syntax :javascript)
 				(= suffix "perl")
 					(let [perl-lang-support (PerlLanguageSupport. )]
 						(reset! (:auto-complete buffer) perl-lang-support)

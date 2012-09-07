@@ -36,19 +36,22 @@
   ([template project-path project-name]
   (let [project-name-str (name project-name)
       new-project-abs-path (str project-path project-name)]
-    (if-let [new-project-dir (clojure.java.io/file new-project-abs-path)]
-    	(do
-    		(println "new project dir " new-project-dir)
-	      (when (.mkdir new-project-dir)
-	        (println "made new dir " new-project-dir)
-	        (let[abs-path (.getAbsolutePath new-project-dir)]
-	          (println abs-path)
-	          (try
-		          (lein-new/new "--to-dir" abs-path (name template) (name project-name))
-             (catch Exception e (println e)))
-	          (project/add-project abs-path)
-	          (tree.utils/update-tree))))
-	      (println new-project-abs-path " could not be createad...")))))
+
+    (if (not (= "noir" project-name-str))
+	    (if-let [new-project-dir (clojure.java.io/file new-project-abs-path)]
+	    	(do
+	    		(println "new project dir " new-project-dir)
+		      (when (.mkdir new-project-dir)
+		        (println "made new dir " new-project-dir)
+		        (let[abs-path (.getAbsolutePath new-project-dir)]
+		          (println abs-path)
+		          (try
+			          (lein-new/new "--to-dir" abs-path (name template) (name project-name))
+	             (catch Exception e (println e)))
+		          (project/add-project abs-path)
+		          (tree.utils/update-tree))))
+		      (println new-project-abs-path " could not be createad..."))
+	    (println "Sorry, " project-name-str " can not be loaded as a Leiningen tempalte.")))))
 
 ; (defn lein-new-template
 ;   ([template-name] (lein-new-template (name template-name) (str template-name "-template")))
