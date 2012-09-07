@@ -423,14 +423,18 @@
     (if-let [new-project-dir (clojure.java.io/file new-project-abs-path)]
     	(do
     		(println "new project dir " new-project-dir)
-      (when (.mkdir new-project-dir)
-        (println "made new dir " new-project-dir)
-        (let[abs-path (.getAbsolutePath new-project-dir)]
-          (println abs-path)
-          (lein-new/new "--to-dir" abs-path (name template) (name project-name))          
-          (project/add-project abs-path)
-          (tree.utils/update-tree))))
-      (println new-project-abs-path " could not be createad...")))))
+	      (when (.mkdir new-project-dir)
+	        (println "made new dir " new-project-dir)
+	        (let[abs-path (.getAbsolutePath new-project-dir)]
+	          (println abs-path)
+	          
+	          (try
+		          (lein-new/new "--to-dir" abs-path (name template) (name project-name))
+             (catch Exception e (println e)))
+
+	          (project/add-project abs-path)
+	          (tree.utils/update-tree))))
+	      (println new-project-abs-path " could not be createad...")))))
 
 ; (defn lein-new-template
 ;   ([template-name] (lein-new-template (name template-name) (str template-name "-template")))
