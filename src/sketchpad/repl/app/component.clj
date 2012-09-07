@@ -17,7 +17,12 @@
 
 (defn- sketchpad-prompt [rsta]
   (seesaw/invoke-later
+<<<<<<< HEAD
     (buffer.action/append-text rsta (str \newline (ns-name *ns*) "=> "))))
+=======
+    (let [prompt-ns (ns-name *ns*)]
+      (buffer.action/append-text rsta (str \newline prompt-ns "=> ")))))
+>>>>>>> master
 
 (defn- sketchpad-printer [rsta value]
   (seesaw/invoke-later
