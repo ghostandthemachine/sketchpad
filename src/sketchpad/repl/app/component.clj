@@ -16,10 +16,13 @@
     (read-string (.take q)))
 
 (defn- sketchpad-prompt [rsta]
-  (buffer.action/append-text rsta (str \newline (ns-name *ns*) "=> ")))
+  (seesaw/invoke-later
+    (let [prompt-ns (ns-name *ns*)]
+      (buffer.action/append-text rsta (str \newline prompt-ns "=> ")))))
 
 (defn- sketchpad-printer [rsta value]
-  (buffer.action/append-text rsta (str value)))
+  (seesaw/invoke-later
+    (buffer.action/append-text rsta (str value))))
 
 (defn- create-application-repl [repl-rsta]
   (let [application-repl-q (LinkedBlockingDeque. )

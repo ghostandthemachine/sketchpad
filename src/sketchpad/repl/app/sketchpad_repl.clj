@@ -31,10 +31,12 @@
 
 		(write
 		([c]
-			(buffer.action/append-text rsta (str c))
+			(seesaw/invoke-later
+				(buffer.action/append-text rsta (str c)))
 			(proxy-super write c))
 		([cbuf off len]
-			(buffer.action/append-text rsta (str cbuf))
+			(seesaw/invoke-later
+				(buffer.action/append-text rsta (str cbuf)))
 			(proxy-super write cbuf off len))))]
 		writer))
 
