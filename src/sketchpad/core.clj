@@ -131,7 +131,7 @@
     (setup-tree app-atom)
 
     ;; this should happen when the repl tabbed panel is created probably
-    (repl.info/attach-repl-info-handler app-atom)
+;    (repl.info/attach-repl-info-handler app-atom)
     ;; global
     (add-visibility-shortcut app)))
 

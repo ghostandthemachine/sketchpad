@@ -19,7 +19,7 @@
     (spit (java.io.File. (str (:path project-map) "/" (:clean-name project-map) "/src/" (:clean-name project-map)) "core.clj") file-text)))
 
 (defn- make-dirs [project-map]
-	(.mkdirs (java.io.File. (:path project-map) (str (:project-name project-map) "/src/" (:clean-name project-map)))))
+	(.mkdirs (java.io.File. (:path project-map) (str (:project project-map) "/src/" (:clean-name project-map)))))
 
 (defn- new-project-clj [project-map]
   (let [file-text (:project-clj project-map)]

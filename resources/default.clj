@@ -13,7 +13,7 @@
 	:auto-indent true
 	:eol-marker false
 	:font "MENLO-15-BOLD"
-	:tab-size 1
+	:tab-size 2
 	:hyperlinks-enabled false
 	:mark-occurences-color "#ADA6A9"
 	:paint-mark-occurences-border true
@@ -37,7 +37,7 @@
 	:auto-indent true
 	:eol-marker false
 	:font "MENLO-15-BOLD"
-	:tab-size 1
+	:tab-size 2
 	:mark-occurences-color "#ADA6A9"
  	 :paint-mark-occurences-border true
 	:matched-bracket-bg-color [80 240 70 50]

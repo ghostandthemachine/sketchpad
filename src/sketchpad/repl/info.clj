@@ -41,7 +41,6 @@
 
 (defn attach-repl-info-handler [app-atom]
 	(let [tabbed-panel (get-in (:repl-tabbed-panel @app-atom) [:component :container])]
-		(listen tabbed-panel :selection (partial update-repl-title-label! tabbed-panel))
   		(listen tabbed-panel :selection (partial update-repl-info-label! tabbed-panel))))
 
 (defn info-panel-bg []

@@ -114,8 +114,9 @@
   (swap! buffers dissoc (:uuid buffer))))
 
 (defn add-repl-to-project [project-path repl]
-	(let [repls (get-in @(@state/app :projects) [project-path :repls])]
-  (swap! repls assoc (:uuid repl) repl)))
+  (let [repls (get-in @(@state/app :projects) [project-path :repls])]
+    (reset! (get-in @(@state/app :projects) [project-path :last-focused-repl]) (:uuid repl))
+    (swap! repls assoc (:uuid repl) repl)))
 
 (defn remove-repl-from-project [repl]
   	(let [buffers (get-in @(@state/app :projects) [(:project repl) :repls])]

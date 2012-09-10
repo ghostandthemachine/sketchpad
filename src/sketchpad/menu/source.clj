@@ -98,7 +98,7 @@
 	(seesaw/invoke-later
 		(let [project (get @(:projects @state/app) (first (tree.utils/get-selected-projects)))
 ;			_ (println project)
-     		 last-uuid @(:last-focused-repl project)
+     		 	last-uuid @(:last-focused-repl project)
 			repls (tab/current-repls)
 			repl (get repls last-uuid)]
 			(when-not (and
